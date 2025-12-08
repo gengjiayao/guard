@@ -209,6 +209,11 @@ class RdmaRxQueuePair : public Object {  // Rx side queue pair
     IrnSackManager m_irn_sack_;
     int32_t m_flow_id;
 
+    Time m_last_pkt_time;
+    double m_est_rate;
+    double m_base_rtt_sec;
+    bool m_proactive_released;
+
     static TypeId GetTypeId(void);
     RdmaRxQueuePair();
     uint32_t GetHash(void);

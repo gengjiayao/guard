@@ -6,7 +6,8 @@
 #include "flow-stat-tag.h"
 
 namespace ns3 {
-FlowStatTag::FlowStatTag() : flow_stat(FLOW_NOTEND) {}
+FlowStatTag::FlowStatTag()
+    : flow_stat(FLOW_NOTEND), initiatedTime(0.0), m_baseRttSeconds(0.0), m_hasBaseRtt(false) {}
 
 TypeId FlowStatTag::GetTypeId(void) {
     static TypeId tid = TypeId("ns3::FlowStatTag").SetParent<Tag>().AddConstructor<FlowStatTag>();
@@ -15,20 +16,25 @@ TypeId FlowStatTag::GetTypeId(void) {
 TypeId FlowStatTag::GetInstanceTypeId(void) const { return GetTypeId(); }
 
 uint32_t FlowStatTag::GetSerializedSize(void) const {
-    return sizeof(flow_stat) + sizeof(initiatedTime);
+    return sizeof(flow_stat) + sizeof(initiatedTime) + sizeof(uint8_t) +
+           sizeof(m_baseRttSeconds);
 }
 
 void FlowStatTag::Serialize(TagBuffer i) const {
     i.WriteU8(flow_stat);
     i.WriteDouble(initiatedTime);
+    i.WriteU8(m_hasBaseRtt ? 1 : 0);
+    i.WriteDouble(m_baseRttSeconds);
 }
 
 void FlowStatTag::Deserialize(TagBuffer i) {
     uint8_t t = i.ReadU8();
     NS_ASSERT(t == FLOW_END || t == FLOW_NOTEND || t == FLOW_START || t == FLOW_START_AND_END);
     flow_stat = t;
-    double t2 = i.ReadDouble();
-    initiatedTime = t2;
+    initiatedTime = i.ReadDouble();
+    uint8_t hasBaseRtt = i.ReadU8();
+    m_hasBaseRtt = (hasBaseRtt != 0);
+    m_baseRttSeconds = i.ReadDouble();
 }
 
 void FlowStatTag::SetType(uint8_t ttl) {
@@ -50,4 +56,13 @@ void FlowStatTag::Print(std::ostream& os) const {
 void FlowStatTag::setInitiatedTime(double t) { this->initiatedTime = t; }
 
 double FlowStatTag::getInitiatedTime() { return this->initiatedTime; }
+
+void FlowStatTag::SetBaseRttSeconds(double t) {
+    m_hasBaseRtt = true;
+    m_baseRttSeconds = t;
+}
+
+double FlowStatTag::GetBaseRttSeconds() const { return m_baseRttSeconds; }
+
+bool FlowStatTag::HasBaseRtt() const { return m_hasBaseRtt; }
 }  // namespace ns3

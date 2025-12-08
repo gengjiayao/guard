@@ -31,10 +31,15 @@ class FlowStatTag : public Tag {
     };
     void setInitiatedTime(double t);
     double getInitiatedTime();
+    void SetBaseRttSeconds(double t);
+    double GetBaseRttSeconds() const;
+    bool HasBaseRtt() const;
 
    private:
     uint8_t flow_stat;
     double initiatedTime;
+    double m_baseRttSeconds;
+    bool m_hasBaseRtt;
 };
 
 }  // namespace ns3

@@ -417,14 +417,42 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
                 HandleRccRequest(rxQp, p, ch);
             }
         }
+        if (rxQp->m_base_rtt_sec == 0 && fst.HasBaseRtt()) {
+            rxQp->m_base_rtt_sec = fst.GetBaseRttSeconds();
+        }
     } else {
         std::cout << "ERROR: no FlowStatTag in ReceiveUdp\n";
         exit(1);
     }
 
+    Time now = Simulator::Now();
+    double beta = 0.125;
+    
+    if (rxQp->m_last_pkt_time.IsZero()) {
+        rxQp->m_est_rate = 0; 
+    } else {
+        double interval = (now - rxQp->m_last_pkt_time).GetSeconds();
+        if (interval > 0) {
+            double inst_rate = (double)payload_size / interval; // Bytes per second
+            rxQp->m_est_rate = beta * rxQp->m_est_rate + (1.0 - beta) * inst_rate;
+        }
+    }
+    rxQp->m_last_pkt_time = now;
+
+    double gamma = 1.0;
+    double v_th_double = rxQp->m_est_rate * rxQp->m_base_rtt_sec * gamma;
+    uint64_t v_th = (uint64_t)v_th_double;
+
     uint32_t currentSeq = rxQp->ReceiverNextExpectedSeq;
-    if (currentSeq + bdp / avg >= flow_size) {
+    uint64_t v_remain = 0;
+    
+    if (flow_size > currentSeq) {
+        v_remain = flow_size - currentSeq;
+    }
+    
+    if (v_remain < v_th && !rxQp->m_proactive_released) {
         HandleRccRemove(rxQp, p, ch);
+        rxQp->m_proactive_released = true;
     }
 
     return 0;
@@ -894,6 +922,9 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
             }
             packet_pos = fst.GetType();
             fst.setInitiatedTime(Simulator::Now().GetSeconds());
+            if (qp->m_baseRtt > 0) {
+                fst.SetBaseRttSeconds(double(qp->m_baseRtt) / 1e9);
+            }
             p->AddPacketTag(fst);
         }
     }

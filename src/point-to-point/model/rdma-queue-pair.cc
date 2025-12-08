@@ -189,6 +189,10 @@ RdmaRxQueuePair::RdmaRxQueuePair() {
     m_nackTimer = Time(0);
     m_milestone_rx = 0;
     m_lastNACK = 0;
+    m_last_pkt_time = Time(0);
+    m_est_rate = 0;
+    m_base_rtt_sec = 0;
+    m_proactive_released = false;
 }
 
 uint32_t RdmaRxQueuePair::GetHash(void) {
