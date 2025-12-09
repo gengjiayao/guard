@@ -37,7 +37,7 @@ if __name__ == "__main__":
 	parser.add_option("-b", "--bandwidth", dest = "bandwidth", help = "the bandwidth of host link (G/M/K), by default 10G", default = "10G")
 	parser.add_option("-t", "--time", dest = "time", help = "the total run time (s), by default 10", default = "10")
 	parser.add_option("-o", "--output", dest = "output", help = "the output file", default = "tmp_traffic.txt")
-	parser.add_option("-i", "--incast", dest = "enable_incast", action="store_true", help = "enable incast traffic pattern", default = True)
+	parser.add_option("-i", "--incast", dest = "enable_incast", action="store_true", help = "enable incast traffic pattern", default = False)
 	options,args = parser.parse_args()
 
 	base_t = 2000000000 # 2000000000
