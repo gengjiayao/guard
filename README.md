@@ -46,6 +46,8 @@
 
 `0xFB` 包在 guard 和 homa 模式下语义不同（grant 速率 vs. credit 颗粒），由 `RdmaHw::Receive()` 根据 `m_cc_mode` 分发。
 
+> **⚠️ 当前 homa 实现需配 `--pfc 1`（lossless）使用。** 第一个数据包携带 `HomaHeader`，丢失后接收端拿不到流大小信息、永远不下发 credit；发送端在用完初始 unscheduled credit 之后会停摆。要在 `--irn 1` 下使用需要补上请求包重发逻辑。
+
 ---
 
 ## 2. 关键文件

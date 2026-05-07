@@ -1417,10 +1417,9 @@ int RdmaHw::ReceiveHomaCredit(Ptr<Packet> p, CustomHeader &ch) {
     uint64_t key = GetQpKey(ch.sip, port, sport, qIndex);
     Ptr<RdmaQueuePair> qp = GetQp(key);
     if (qp == NULL) {
-        if (akashic_Qp.find(key) != akashic_Qp.end()) return 1;
-        printf("ERROR: Node: %u Homa Credit - NIC cannot find the flow, key: %lu\n",
-               m_node->GetId(), key);
-        exit(1);
+        // Race-tolerant: receiver scheduler may emit a credit just as the
+        // sender QP is being torn down. Drop silently like ReceiveAck.
+        return 1;
     }
     qp->homa.m_credit_package++;
     uint32_t nic_idx = GetNicIdxOfQp(qp);
