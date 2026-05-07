@@ -1,14 +1,14 @@
-#ifndef HOMA_FULL_HEADER_H
-#define HOMA_FULL_HEADER_H
+#ifndef HOMA_HEADER_H
+#define HOMA_HEADER_H
 
 #include "ns3/header.h"
 
 namespace ns3 {
 
-// HomaFullHeader: per-packet header for the standard Homa implementation
+// HomaHeader: per-packet header for the standard Homa implementation
 // (cc_mode = 12). Carries a packet type plus the union of fields used by
 // each type. Fields not relevant to the current type are unset / ignored.
-class HomaFullHeader : public Header {
+class HomaHeader : public Header {
 public:
     enum Type : uint8_t {
         DATA = 0,
@@ -20,7 +20,7 @@ public:
         UNKNOWN = 6,
     };
 
-    HomaFullHeader();
+    HomaHeader();
 
     // common
     void SetType(uint8_t t);

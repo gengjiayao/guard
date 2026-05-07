@@ -359,7 +359,7 @@ void SwitchMmu::GetPauseClasses(uint32_t port, uint32_t qIndex, bool pClasses[])
             }
         }
     }
-    // Per-PG PFC disable (e.g., homa-full data queues run lossy).
+    // Per-PG PFC disable (e.g., homa data queues run lossy).
     for (uint32_t i = 0; i < qCnt; i++) {
         if (!m_PFCenabledPg[i]) pClasses[i] = false;
     }

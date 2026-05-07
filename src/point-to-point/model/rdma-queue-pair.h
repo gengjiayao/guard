@@ -33,7 +33,7 @@ enum CcMode {
     CC_MODE_DCTCP = 8,
     CC_MODE_HOMA_SIMPLE = 10,
     CC_MODE_GUARD = 11,
-    CC_MODE_HOMA_FULL = 12,
+    CC_MODE_HOMA = 12,
     CC_MODE_UNDEFINED = 0,
 };
 
@@ -123,10 +123,10 @@ class RdmaQueuePair : public Object {
         // bookkeeping
         uint8_t  m_unscheduled_priority; // priority used for unscheduled bytes (PR3 sets per-cutoff)
         // PR5: receiver-driven retransmit. RESEND control packets push (offset,
-        // length) ranges here; GetNxtPacketHomaFull pops one entry per call
+        // length) ranges here; GetNxtPacketHoma pops one entry per call
         // (preempting normal forward progress).
         std::deque<std::pair<uint64_t, uint32_t>> m_retransmit_queue;
-    } homa_full;
+    } homa;
     struct {
         uint32_t m_lastUpdateSeq;
         DataRate m_curRate;

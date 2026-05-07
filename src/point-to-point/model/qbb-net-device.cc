@@ -112,28 +112,28 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
     for (qIndex = 1; qIndex <= fcount; qIndex++) {
         if (m_qpGrp->IsQpFinished((qIndex + m_rrlast) % fcount)) continue;
         Ptr<RdmaQueuePair> qp = m_qpGrp->Get((qIndex + m_rrlast) % fcount);
-        // homa-full's per-packet priority means qp->m_pg (pinned to 0) doesn't
+        // homa's per-packet priority means qp->m_pg (pinned to 0) doesn't
         // describe the actual queue this packet would land in. Compute the
         // next packet's priority (unscheduled cutoff vs. grant slot) and use
         // that for the PFC pause check. Retransmits preempt forward progress,
         // so look at their offset first if any are queued.
         uint16_t next_pkt_pg = qp->m_pg;
         if (IntHeader::mode == 3) {
-            uint64_t check_offset = qp->homa_full.m_retransmit_queue.empty()
+            uint64_t check_offset = qp->homa.m_retransmit_queue.empty()
                                         ? qp->snd_nxt
-                                        : qp->homa_full.m_retransmit_queue.front().first;
-            next_pkt_pg = (check_offset < qp->homa_full.m_unscheduled_bytes)
-                              ? qp->homa_full.m_unscheduled_priority
-                              : qp->homa_full.m_grant_priority;
+                                        : qp->homa.m_retransmit_queue.front().first;
+            next_pkt_pg = (check_offset < qp->homa.m_unscheduled_bytes)
+                              ? qp->homa.m_unscheduled_priority
+                              : qp->homa.m_grant_priority;
         }
         bool cond1 = !paused[next_pkt_pg];
         bool cond_window_allowed =
             (!qp->IsWinBound() && (!qp->irn.m_enabled || qp->CanIrnTransmit(m_mtu)));
-        // homa-full: a queued RESEND retransmit is also "bytes to send", even
+        // homa: a queued RESEND retransmit is also "bytes to send", even
         // if forward progress is finished.
-        bool homa_full_has_retx =
-            (IntHeader::mode == 3 && !qp->homa_full.m_retransmit_queue.empty());
-        bool cond2 = ((qp->GetBytesLeft() > 0 || homa_full_has_retx) && cond_window_allowed);
+        bool homa_has_retx =
+            (IntHeader::mode == 3 && !qp->homa.m_retransmit_queue.empty());
+        bool cond2 = ((qp->GetBytesLeft() > 0 || homa_has_retx) && cond_window_allowed);
 
         if (!cond2 && !m_qpGrp->IsQpFinished((qIndex + m_rrlast) % fcount)) {
             if (qp->IsFinishedConst()) {
@@ -154,14 +154,14 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
             bool time_ok = m_qpGrp->Get((qIndex + m_rrlast) % fcount)->m_nextAvail.GetTimeStep() <=
                            Simulator::Now().GetTimeStep();
             // Homa Simple: must also have a credit packet to send.
-            // Homa Full: gate by max(unscheduled_bytes, granted_offset), but a
+            // Homa: gate by max(unscheduled_bytes, granted_offset), but a
             // pending retransmit (RESEND) bypasses the gate.
             if (!time_ok
                 || (IntHeader::mode == 2 && qp->homa_simple.m_credit_package == 0)
                 || (IntHeader::mode == 3 &&
-                    qp->snd_nxt >= std::max(qp->homa_full.m_unscheduled_bytes,
-                                            qp->homa_full.m_granted_offset) &&
-                    qp->homa_full.m_retransmit_queue.empty())) {
+                    qp->snd_nxt >= std::max(qp->homa.m_unscheduled_bytes,
+                                            qp->homa.m_granted_offset) &&
+                    qp->homa.m_retransmit_queue.empty())) {
                 continue;
             }
             // Check if the flow has been blocked by PFC

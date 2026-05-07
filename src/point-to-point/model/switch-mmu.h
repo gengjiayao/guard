@@ -120,7 +120,7 @@ class SwitchMmu : public Object {
     bool m_PFCenabled;
     // Per-PG PFC enable. true → GetPauseClasses may mark this PG as paused;
     // false → PFC pauses are never sent for this PG (lossy queue). Used by
-    // homa-full (cc_mode=12) to make its data queues drop-tolerant while
+    // homa (cc_mode=12) to make its data queues drop-tolerant while
     // leaving control / other-cc PGs lossless.
     bool m_PFCenabledPg[qCnt] = {true, true, true, true, true, true, true, true};
     void SetPFCEnabledForPg(uint32_t pg, bool enabled) {

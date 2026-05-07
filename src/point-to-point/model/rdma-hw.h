@@ -277,27 +277,27 @@ class RdmaHw : public Object {
     void ReceiveHomaSimpleData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
 
     /***********************
-     * Homa Full CC (cc_mode 12)
+     * Homa CC (cc_mode 12)
      *
      * Receiver-driven scheduling with overcommit. PR2 introduces:
-     * - HomaFullFlow / HomaFullPriorityQueue: SRPT min-heap keyed on
+     * - HomaFlow / HomaPriorityQueue: SRPT min-heap keyed on
      *   bytes_remaining_to_grant (smallest at top).
-     * - HomaFullScheduler: timer-driven; every pacing_interval pops up
+     * - HomaScheduler: timer-driven; every pacing_interval pops up
      *   to overcommit_degree flows, advances each by 1 MTU of grants,
      *   sends a GRANT (0xFA control packet), re-inserts if not fully
      *   granted.
-     * Sender (GetNxtPacketHomaFull) is gated by max(unscheduled_bytes,
+     * Sender (GetNxtPacketHoma) is gated by max(unscheduled_bytes,
      * granted_offset). 0xFA control packets are dispatched through
-     * ReceiveHomaFullControl.
+     * ReceiveHomaControl.
      *
      * PR3+ will introduce per-packet priority routing (8 queue slots);
      * PR4 makes cc_mode=12 PFC-free; PR5 adds RESEND / NEED_ACK / ACK.
      ***********************/
-    Ptr<Packet> GetNxtPacketHomaFull(Ptr<RdmaQueuePair> qp);  // homa-full sender path
-    void ReceiveHomaFullData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
-    int ReceiveHomaFullControl(Ptr<Packet> p, CustomHeader &ch);
+    Ptr<Packet> GetNxtPacketHoma(Ptr<RdmaQueuePair> qp);  // homa sender path
+    void ReceiveHomaData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
+    int ReceiveHomaControl(Ptr<Packet> p, CustomHeader &ch);
 
-    struct HomaFullFlow {
+    struct HomaFlow {
         uint64_t msg_total_length;
         uint64_t bytes_received;
         uint64_t granted_offset_sent;    // cumulative bytes we've granted to sender
@@ -313,17 +313,17 @@ class RdmaHw : public Object {
         bool fully_granted() const { return granted_offset_sent >= msg_total_length; }
 
         // SRPT min-heap: smaller bytes_remaining_to_grant = "greater" so it bubbles up
-        bool operator < (const HomaFullFlow &other) const {
+        bool operator < (const HomaFlow &other) const {
             return bytes_remaining_to_grant() > other.bytes_remaining_to_grant();
         }
     };
 
-    class HomaFullPriorityQueue {
+    class HomaPriorityQueue {
     private:
-        std::vector<HomaFullFlow*> heap;
+        std::vector<HomaFlow*> heap;
         std::unordered_map<RdmaRxQueuePair*, int> map;
 
-        inline RdmaRxQueuePair* _getKey(HomaFullFlow* flow) const {
+        inline RdmaRxQueuePair* _getKey(HomaFlow* flow) const {
             return PeekPointer(flow->rx_qp);
         }
 
@@ -355,20 +355,20 @@ class RdmaHw : public Object {
         }
 
     public:
-        HomaFullPriorityQueue() {}
+        HomaPriorityQueue() {}
         bool empty() const { return heap.empty(); }
         int size() const { return (int)heap.size(); }
         bool find(RdmaRxQueuePair* key) const { return map.count(key); }
 
-        void insert(HomaFullFlow* flow) {
+        void insert(HomaFlow* flow) {
             RdmaRxQueuePair* key = _getKey(flow);
             heap.push_back(flow);
             map[key] = heap.size() - 1;
             _shift_up(heap.size() - 1);
         }
 
-        HomaFullFlow* pop() {
-            HomaFullFlow* flowToReturn = heap[0];
+        HomaFlow* pop() {
+            HomaFlow* flowToReturn = heap[0];
             RdmaRxQueuePair* key = _getKey(flowToReturn);
             _swap(0, heap.size() - 1);
             heap.pop_back();
@@ -377,19 +377,19 @@ class RdmaHw : public Object {
             return flowToReturn;
         }
 
-        const HomaFullFlow* top() const { return heap[0]; }
+        const HomaFlow* top() const { return heap[0]; }
     };
 
-    class HomaFullScheduler {
+    class HomaScheduler {
     public:
-        HomaFullScheduler(RdmaHw* hw);
-        ~HomaFullScheduler();
+        HomaScheduler(RdmaHw* hw);
+        ~HomaScheduler();
         void SetPacingInterval();
         void OnDataArrival(Ptr<RdmaRxQueuePair> rx_qp, Ptr<Packet> p, CustomHeader &ch);
         void Schedule();
-        void SendGrant(HomaFullFlow* flow, uint8_t grant_priority);
+        void SendGrant(HomaFlow* flow, uint8_t grant_priority);
         void StallCheck();
-        void SendResend(HomaFullFlow* flow, uint64_t offset, uint64_t length);
+        void SendResend(HomaFlow* flow, uint64_t offset, uint64_t length);
 
         RdmaHw* rdma_hw;
         bool is_scheduled;
@@ -397,11 +397,11 @@ class RdmaHw : public Object {
         uint64_t pacing_interval;
         uint32_t overcommit_degree;
         Time stall_rto;
-        HomaFullPriorityQueue active;
-        std::unordered_map<RdmaRxQueuePair*, std::unique_ptr<HomaFullFlow>> flow_hash;
+        HomaPriorityQueue active;
+        std::unordered_map<RdmaRxQueuePair*, std::unique_ptr<HomaFlow>> flow_hash;
     };
 
-    HomaFullScheduler homa_full_scheduler;
+    HomaScheduler homa_scheduler;
 
     /***********************
      * High Precision CC

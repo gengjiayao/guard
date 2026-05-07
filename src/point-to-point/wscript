@@ -29,7 +29,7 @@ def build(bld):
         'model/conweave-voq.cc',
 		'helper/selective-packet-queue.cc',
         'model/homa-simple-header.cc',
-        'model/homa-full-header.cc',
+        'model/homa-header.cc',
         ]
 
     module_test = bld.create_ns3_module_test_library('point-to-point')
@@ -67,7 +67,7 @@ def build(bld):
         'model/conweave-voq.h',
 		'helper/selective-packet-queue.h',
         'model/homa-simple-header.h',
-        'model/homa-full-header.h',
+        'model/homa-header.h',
         ]
 
     if (bld.env['ENABLE_EXAMPLES']):

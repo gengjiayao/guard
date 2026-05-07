@@ -19,7 +19,7 @@
 #include "ns3/switch-node.h"
 #include "ns3/uinteger.h"
 #include "homa-simple-header.h"
-#include "homa-full-header.h"
+#include "homa-header.h"
 #include "ppp-header.h"
 #include "qbb-header.h"
 
@@ -133,7 +133,7 @@ TypeId RdmaHw::GetTypeId(void) {
     return tid;
 }
 
-RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_full_scheduler(this) {
+RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     cnp_total = 0;
     cnp_by_ecn = 0;
     cnp_by_ooo = 0;
@@ -154,8 +154,8 @@ void RdmaHw::Setup(QpCompleteCallback cb) {
         dev->m_rdmaEQ->m_mtu = m_mtu;
         if (m_cc_mode == 10) {  // homa-simple
             dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacketHomaSimple, this);
-        } else if (m_cc_mode == 12) {  // homa-full (PR1: line-rate sender, HomaFullHeader on every pkt)
-            dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacketHomaFull, this);
+        } else if (m_cc_mode == 12) {  // homa (PR1: line-rate sender, HomaHeader on every pkt)
+            dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacketHoma, this);
         } else {
             dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacket, this);
         }
@@ -203,7 +203,7 @@ void print_rate(RdmaQueuePair *qp) {
 void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip,
                           uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt,
                           int32_t flow_id) {
-    // For homa-full (cc_mode=12), the sender writes a per-packet udp.pg into
+    // For homa (cc_mode=12), the sender writes a per-packet udp.pg into
     // each DATA packet (unscheduled cutoff or grant slot). The QP's own m_pg
     // must therefore stay constant for QP-key lookups; we pin it to 0 and use
     // qbbHeader.pg=0 on control packets for the same reason.
@@ -228,11 +228,11 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
     // add qp
     uint32_t nic_idx = GetNicIdxOfQp(qp);
 
-    // For guard (cc_mode=11), borrow homa-full's idea of routing short
+    // For guard (cc_mode=11), borrow homa's idea of routing short
     // messages to higher-priority switch queues (lower pg = higher prio in
     // this codebase). All packets of one flow stay on the same pg, so the
     // QP-key / pause-check / RCC-grant routing all stay consistent.
-    // Bucket boundaries match homa-full's unscheduled cutoffs.
+    // Bucket boundaries match homa's unscheduled cutoffs.
     if (m_cc_mode == 11) {
         DataRate line_rate = m_nic[nic_idx].dev->GetDataRate();
         uint64_t bdp_bytes = baseRtt * line_rate.GetBitRate() / 8000000000lu;
@@ -276,28 +276,28 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
             size < bdp_bytes ? std::max(size, (uint64_t)m_mtu) : std::max(bdp_bytes, (uint64_t)m_mtu);
         qp->homa_simple.m_bdp = bdp_bytes;
     } else if (m_cc_mode == 12) {
-        // Homa Full per-QP init. Sender may emit up to m_unscheduled_bytes
+        // Homa per-QP init. Sender may emit up to m_unscheduled_bytes
         // immediately; bytes beyond that need GRANTs from the receiver.
         uint64_t bdp_bytes = baseRtt * m_bps.GetBitRate() / 8000000000lu;
-        qp->homa_full.m_bdp = bdp_bytes;
-        qp->homa_full.m_unscheduled_bytes =
+        qp->homa.m_bdp = bdp_bytes;
+        qp->homa.m_unscheduled_bytes =
             size < bdp_bytes ? std::max(size, (uint64_t)m_mtu) : std::max(bdp_bytes, (uint64_t)m_mtu);
-        qp->homa_full.m_granted_offset = qp->homa_full.m_unscheduled_bytes;
+        qp->homa.m_granted_offset = qp->homa.m_unscheduled_bytes;
         // PR3 unscheduled cutoffs: shorter messages → higher priority (lower pg).
         // 4 buckets share switch queues 1..4; scheduled bytes will land on 4..7.
         if (size < bdp_bytes / 4) {
-            qp->homa_full.m_unscheduled_priority = 1;
+            qp->homa.m_unscheduled_priority = 1;
         } else if (size < bdp_bytes / 2) {
-            qp->homa_full.m_unscheduled_priority = 2;
+            qp->homa.m_unscheduled_priority = 2;
         } else if (size < bdp_bytes) {
-            qp->homa_full.m_unscheduled_priority = 3;
+            qp->homa.m_unscheduled_priority = 3;
         } else {
-            qp->homa_full.m_unscheduled_priority = 4;
+            qp->homa.m_unscheduled_priority = 4;
         }
         // Default scheduled priority until the first GRANT arrives — pick the
         // bottom of the scheduled range so it gets out of the way of unscheduled
         // bytes. The receiver will overwrite this via GRANT.priority.
-        qp->homa_full.m_grant_priority = 7;
+        qp->homa.m_grant_priority = 7;
     }
     // print_rate(PeekPointer(qp));
 
@@ -376,7 +376,7 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
     uint32_t payload_size = p->GetSize() - ch.GetSerializedSize();
 
     // find corresponding rx queue pair.
-    // homa-full pins the rxQp key's pg to 0 so that per-packet udp.pg
+    // homa pins the rxQp key's pg to 0 so that per-packet udp.pg
     // variation (unscheduled cutoffs / overcommit slots) doesn't fan one
     // logical flow out across multiple rxQp entries.
     uint16_t rx_pg = (m_cc_mode == 12) ? 0 : ch.udp.pg;
@@ -418,7 +418,7 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
     if (x == 1 || x == 2 || x == 6) {  // generate ACK or NACK
         qbbHeader seqh;
         seqh.SetSeq(rxQp->ReceiverNextExpectedSeq);
-        // homa-full: data packets carry varying udp.pg (cutoff/grant slot),
+        // homa: data packets carry varying udp.pg (cutoff/grant slot),
         // but the sender QP key uses pg=0 (overridden in AddQueuePair). The
         // ACK must use pg=0 too so the sender can find the QP.
         seqh.SetPG(m_cc_mode == 12 ? (uint16_t)0 : ch.udp.pg);
@@ -544,9 +544,9 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
         }
     }
 
-    // homa-full (cc_mode 12): PR1 just observes; ACK path is unchanged.
+    // homa (cc_mode 12): PR1 just observes; ACK path is unchanged.
     if (m_cc_mode == 12) {
-        ReceiveHomaFullData(rxQp, p, ch);
+        ReceiveHomaData(rxQp, p, ch);
     }
 
     return 0;
@@ -795,9 +795,9 @@ int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch) {
             return ReceiveHomaSimpleCredit(p, ch);
         }
         return 0;
-    } else if (ch.l3Prot == 0xFA) {  // homa-full control (GRANT/RESEND/BUSY/ACK/...)
+    } else if (ch.l3Prot == 0xFA) {  // homa control (GRANT/RESEND/BUSY/ACK/...)
         if (m_cc_mode == 12) {
-            return ReceiveHomaFullControl(p, ch);
+            return ReceiveHomaControl(p, ch);
         }
         return 0;
     }
@@ -1066,7 +1066,7 @@ void RdmaHw::PktSent(Ptr<RdmaQueuePair> qp, Ptr<Packet> pkt, Time interframeGap)
             if (qp->m_retransmit.IsRunning()) qp->m_retransmit.Cancel();
             qp->m_retransmit = Simulator::Schedule(qp->GetRto(m_mtu), &RdmaHw::HandleTimeout, this,
                                                    qp, qp->GetRto(m_mtu));
-        } else if (ch.l3Prot == 0xFB || ch.l3Prot == 0xFC || ch.l3Prot == 0xFD || ch.l3Prot == 0xFF || ch.l3Prot == 0xFA) {  // ACK, NACK, CNP, homa-full ctrl
+        } else if (ch.l3Prot == 0xFB || ch.l3Prot == 0xFC || ch.l3Prot == 0xFD || ch.l3Prot == 0xFF || ch.l3Prot == 0xFA) {  // ACK, NACK, CNP, homa ctrl
         } else if (ch.l3Prot == 0xFE) {                                            // PFC
         }
     }
@@ -1583,20 +1583,20 @@ Ptr<Packet> RdmaHw::GetNxtPacketHomaSimple(Ptr<RdmaQueuePair> qp) {
 }
 
 /***********************
- * Homa Full CC (cc_mode 12)
+ * Homa CC (cc_mode 12)
  *
  * PR1: minimal sender that emits one DATA packet at a time at line rate
- * with a HomaFullHeader{type=DATA} attached. No credit gating, no
+ * with a HomaHeader{type=DATA} attached. No credit gating, no
  * receiver scheduling, no loss recovery. PR2+ adds those.
  ***********************/
-Ptr<Packet> RdmaHw::GetNxtPacketHomaFull(Ptr<RdmaQueuePair> qp) {
+Ptr<Packet> RdmaHw::GetNxtPacketHoma(Ptr<RdmaQueuePair> qp) {
     // PR5: prefer a queued retransmit (RESEND request) over forward progress.
-    bool is_retransmit = !qp->homa_full.m_retransmit_queue.empty();
+    bool is_retransmit = !qp->homa.m_retransmit_queue.empty();
     uint64_t pkt_offset;
     uint32_t payload_size;
     if (is_retransmit) {
-        auto front = qp->homa_full.m_retransmit_queue.front();
-        qp->homa_full.m_retransmit_queue.pop_front();
+        auto front = qp->homa.m_retransmit_queue.front();
+        qp->homa.m_retransmit_queue.pop_front();
         pkt_offset = front.first;
         payload_size = std::min(front.second, m_mtu);
     } else {
@@ -1615,19 +1615,19 @@ Ptr<Packet> RdmaHw::GetNxtPacketHomaFull(Ptr<RdmaQueuePair> qp) {
     // priority slot the receiver assigned via the latest GRANT. Retransmits
     // pick whichever range the offset falls in.
     uint8_t pkt_priority;
-    if (pkt_offset < qp->homa_full.m_unscheduled_bytes) {
-        pkt_priority = qp->homa_full.m_unscheduled_priority;
+    if (pkt_offset < qp->homa.m_unscheduled_bytes) {
+        pkt_priority = qp->homa.m_unscheduled_priority;
     } else {
-        pkt_priority = qp->homa_full.m_grant_priority;
+        pkt_priority = qp->homa.m_grant_priority;
     }
 
-    HomaFullHeader hfh;
-    hfh.SetType(HomaFullHeader::DATA);
+    HomaHeader hfh;
+    hfh.SetType(HomaHeader::DATA);
     hfh.SetMessageId((uint64_t)qp->m_flow_id);
     hfh.SetMsgTotalLength(qp->m_size);
     hfh.SetPktOffset(pkt_offset);
     hfh.SetPktLength(payload_size);
-    hfh.SetUnscheduledBytes(qp->homa_full.m_unscheduled_bytes);
+    hfh.SetUnscheduledBytes(qp->homa.m_unscheduled_bytes);
     hfh.SetPriority(pkt_priority);
     p->AddHeader(hfh);
 
@@ -1688,12 +1688,12 @@ Ptr<Packet> RdmaHw::GetNxtPacketHomaFull(Ptr<RdmaQueuePair> qp) {
     return p;
 }
 
-void RdmaHw::ReceiveHomaFullData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch) {
-    homa_full_scheduler.OnDataArrival(qp, p, ch);
+void RdmaHw::ReceiveHomaData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch) {
+    homa_scheduler.OnDataArrival(qp, p, ch);
 }
 
-int RdmaHw::ReceiveHomaFullControl(Ptr<Packet> /*p*/, CustomHeader &ch) {
-    // 0xFA control packet. Dispatch by HomaFullHeader::type.
+int RdmaHw::ReceiveHomaControl(Ptr<Packet> /*p*/, CustomHeader &ch) {
+    // 0xFA control packet. Dispatch by HomaHeader::type.
     uint16_t qIndex = ch.ack.pg;
     uint16_t port = ch.ack.dport;
     uint16_t sport = ch.ack.sport;
@@ -1704,25 +1704,25 @@ int RdmaHw::ReceiveHomaFullControl(Ptr<Packet> /*p*/, CustomHeader &ch) {
         return 1;
     }
 
-    switch (ch.udp.homa_full_type) {
-        case HomaFullHeader::GRANT: {
+    switch (ch.udp.homa_type) {
+        case HomaHeader::GRANT: {
             // Advance the sender's authorized offset and remember the priority
             // slot the receiver wants future scheduled packets to use.
-            if (ch.udp.homa_full_granted_offset > qp->homa_full.m_granted_offset) {
-                qp->homa_full.m_granted_offset = ch.udp.homa_full_granted_offset;
+            if (ch.udp.homa_granted_offset > qp->homa.m_granted_offset) {
+                qp->homa.m_granted_offset = ch.udp.homa_granted_offset;
             }
-            qp->homa_full.m_grant_priority = ch.udp.homa_full_grant_priority;
+            qp->homa.m_grant_priority = ch.udp.homa_grant_priority;
             uint32_t nic_idx = GetNicIdxOfQp(qp);
             m_nic[nic_idx].dev->TriggerTransmit();
             return 0;
         }
-        case HomaFullHeader::RESEND: {
+        case HomaHeader::RESEND: {
             // Receiver detected a hole; queue the requested range for
-            // retransmission. GetNxtPacketHomaFull will preempt forward
+            // retransmission. GetNxtPacketHoma will preempt forward
             // progress to drain the queue.
-            qp->homa_full.m_retransmit_queue.push_back(
-                std::make_pair(ch.udp.homa_full_resend_offset,
-                               (uint32_t)ch.udp.homa_full_resend_length));
+            qp->homa.m_retransmit_queue.push_back(
+                std::make_pair(ch.udp.homa_resend_offset,
+                               (uint32_t)ch.udp.homa_resend_length));
             uint32_t nic_idx = GetNicIdxOfQp(qp);
             m_nic[nic_idx].dev->TriggerTransmit();
             return 0;
@@ -1734,9 +1734,9 @@ int RdmaHw::ReceiveHomaFullControl(Ptr<Packet> /*p*/, CustomHeader &ch) {
 }
 
 /***********************
- * Homa Full CC — Scheduler
+ * Homa CC — Scheduler
  ***********************/
-RdmaHw::HomaFullScheduler::HomaFullScheduler(RdmaHw* hw)
+RdmaHw::HomaScheduler::HomaScheduler(RdmaHw* hw)
     : rdma_hw(hw),
       is_scheduled(false),
       is_stall_scheduled(false),
@@ -1744,9 +1744,9 @@ RdmaHw::HomaFullScheduler::HomaFullScheduler(RdmaHw* hw)
       overcommit_degree(1),
       stall_rto(MicroSeconds(15)) {}
 
-RdmaHw::HomaFullScheduler::~HomaFullScheduler() {}
+RdmaHw::HomaScheduler::~HomaScheduler() {}
 
-void RdmaHw::HomaFullScheduler::SetPacingInterval() {
+void RdmaHw::HomaScheduler::SetPacingInterval() {
     // 1 MTU on the wire at line rate. Picks any active flow's NIC for rate.
     uint32_t nic_idx = 0;
     if (!flow_hash.empty()) {
@@ -1757,7 +1757,7 @@ void RdmaHw::HomaFullScheduler::SetPacingInterval() {
     pacing_interval = (uint64_t)(1e9 * 8 * rdma_hw->m_mtu / qp_rate.GetBitRate());
 }
 
-void RdmaHw::HomaFullScheduler::OnDataArrival(Ptr<RdmaRxQueuePair> rx_qp,
+void RdmaHw::HomaScheduler::OnDataArrival(Ptr<RdmaRxQueuePair> rx_qp,
                                               Ptr<Packet> /*p*/, CustomHeader &ch) {
     RdmaRxQueuePair* hkey = PeekPointer(rx_qp);
     auto it = flow_hash.find(hkey);
@@ -1765,19 +1765,19 @@ void RdmaHw::HomaFullScheduler::OnDataArrival(Ptr<RdmaRxQueuePair> rx_qp,
         // First DATA observed for this rx_qp.
         // Tiny messages that fit entirely in unscheduled need no GRANTs — skip
         // tracking them in the scheduler.
-        if (ch.udp.homa_full_msg_total_length <= ch.udp.homa_full_unscheduled_bytes) {
+        if (ch.udp.homa_msg_total_length <= ch.udp.homa_unscheduled_bytes) {
             return;
         }
 
-        std::unique_ptr<HomaFullFlow> new_flow(new HomaFullFlow);
-        new_flow->msg_total_length    = ch.udp.homa_full_msg_total_length;
-        new_flow->bytes_received      = ch.udp.homa_full_pkt_length;
-        new_flow->granted_offset_sent = ch.udp.homa_full_unscheduled_bytes;
-        new_flow->bdp                 = ch.udp.homa_full_unscheduled_bytes;
+        std::unique_ptr<HomaFlow> new_flow(new HomaFlow);
+        new_flow->msg_total_length    = ch.udp.homa_msg_total_length;
+        new_flow->bytes_received      = ch.udp.homa_pkt_length;
+        new_flow->granted_offset_sent = ch.udp.homa_unscheduled_bytes;
+        new_flow->bdp                 = ch.udp.homa_unscheduled_bytes;
         // PR5 hole tracking: if first packet starts at offset 0, advance the
         // contiguous pointer; otherwise leave at 0 so a RESEND fires.
-        if (ch.udp.homa_full_pkt_offset == 0) {
-            new_flow->next_expected_offset = ch.udp.homa_full_pkt_length;
+        if (ch.udp.homa_pkt_offset == 0) {
+            new_flow->next_expected_offset = ch.udp.homa_pkt_length;
         } else {
             new_flow->next_expected_offset = 0;
         }
@@ -1788,7 +1788,7 @@ void RdmaHw::HomaFullScheduler::OnDataArrival(Ptr<RdmaRxQueuePair> rx_qp,
         new_flow->pg                  = 0;
         new_flow->rx_qp               = rx_qp;
 
-        HomaFullFlow* p_flow = new_flow.get();
+        HomaFlow* p_flow = new_flow.get();
         flow_hash[hkey] = std::move(new_flow);
         active.insert(p_flow);
 
@@ -1796,11 +1796,11 @@ void RdmaHw::HomaFullScheduler::OnDataArrival(Ptr<RdmaRxQueuePair> rx_qp,
             is_scheduled = true;
             SetPacingInterval();
             Simulator::Schedule(NanoSeconds(pacing_interval),
-                                &RdmaHw::HomaFullScheduler::Schedule, this);
+                                &RdmaHw::HomaScheduler::Schedule, this);
         }
         if (!is_stall_scheduled) {
             is_stall_scheduled = true;
-            Simulator::Schedule(stall_rto, &RdmaHw::HomaFullScheduler::StallCheck, this);
+            Simulator::Schedule(stall_rto, &RdmaHw::HomaScheduler::StallCheck, this);
         }
         return;
     }
@@ -1809,29 +1809,29 @@ void RdmaHw::HomaFullScheduler::OnDataArrival(Ptr<RdmaRxQueuePair> rx_qp,
     // if this packet fills the next expected offset. Out-of-order packets
     // beyond the gap are not tracked individually in PR5 — the resulting
     // RESEND for the gap may cause a redundant retransmit, which is OK.
-    HomaFullFlow* p_flow = it->second.get();
-    p_flow->bytes_received += ch.udp.homa_full_pkt_length;
-    if (ch.udp.homa_full_pkt_offset == p_flow->next_expected_offset) {
-        p_flow->next_expected_offset += ch.udp.homa_full_pkt_length;
+    HomaFlow* p_flow = it->second.get();
+    p_flow->bytes_received += ch.udp.homa_pkt_length;
+    if (ch.udp.homa_pkt_offset == p_flow->next_expected_offset) {
+        p_flow->next_expected_offset += ch.udp.homa_pkt_length;
         p_flow->last_progress_time = Simulator::Now();
     }
 }
 
-void RdmaHw::HomaFullScheduler::Schedule() {
+void RdmaHw::HomaScheduler::Schedule() {
     if (active.empty()) {
         is_scheduled = false;
         return;
     }
 
     // Pop up to overcommit_degree flows in SRPT order, grant each by 1 MTU.
-    std::vector<HomaFullFlow*> tick;
+    std::vector<HomaFlow*> tick;
     uint32_t N = overcommit_degree;
     while (tick.size() < N && !active.empty()) {
         tick.push_back(active.pop());
     }
 
     for (size_t k = 0; k < tick.size(); k++) {
-        HomaFullFlow* flow = tick[k];
+        HomaFlow* flow = tick[k];
         uint64_t new_offset =
             std::min(flow->granted_offset_sent + rdma_hw->m_mtu, flow->msg_total_length);
         if (new_offset > flow->granted_offset_sent) {
@@ -1853,13 +1853,13 @@ void RdmaHw::HomaFullScheduler::Schedule() {
 
     if (!active.empty()) {
         Simulator::Schedule(NanoSeconds(pacing_interval),
-                            &RdmaHw::HomaFullScheduler::Schedule, this);
+                            &RdmaHw::HomaScheduler::Schedule, this);
     } else {
         is_scheduled = false;
     }
 }
 
-void RdmaHw::HomaFullScheduler::SendGrant(HomaFullFlow* flow, uint8_t grant_priority) {
+void RdmaHw::HomaScheduler::SendGrant(HomaFlow* flow, uint8_t grant_priority) {
     qbbHeader qbbh;
     qbbh.SetSeq(flow->rx_qp->ReceiverNextExpectedSeq);
     qbbh.SetPG(flow->pg);  // pg=0 for cc_mode=12 (matches sender QP key)
@@ -1867,22 +1867,22 @@ void RdmaHw::HomaFullScheduler::SendGrant(HomaFullFlow* flow, uint8_t grant_prio
     qbbh.SetDport(flow->rx_qp->dport);
     qbbh.SetCnp();
 
-    HomaFullHeader hfh;
-    hfh.SetType(HomaFullHeader::GRANT);
+    HomaHeader hfh;
+    hfh.SetType(HomaHeader::GRANT);
     hfh.SetMessageId((uint64_t)flow->rx_qp->m_flow_id);
     hfh.SetGrantedOffset(flow->granted_offset_sent);
     // Sender will use this priority for subsequent scheduled DATA packets.
     hfh.SetGrantPriority(grant_priority);
 
     Ptr<Packet> newp = Create<Packet>(
-        std::max(60 - 14 - 20 - (int)qbbh.GetSerializedSize() - (int)HomaFullHeader::GetHeaderSize(), 0));
+        std::max(60 - 14 - 20 - (int)qbbh.GetSerializedSize() - (int)HomaHeader::GetHeaderSize(), 0));
     newp->AddHeader(hfh);
     newp->AddHeader(qbbh);
 
     Ipv4Header head;
     head.SetDestination(Ipv4Address(flow->rx_qp->dip));
     head.SetSource(Ipv4Address(flow->rx_qp->sip));
-    head.SetProtocol(0xFA);  // homa-full control
+    head.SetProtocol(0xFA);  // homa control
     head.SetTtl(64);
     head.SetPayloadSize(newp->GetSize());
     head.SetIdentification(flow->rx_qp->m_ipid++);
@@ -1895,10 +1895,10 @@ void RdmaHw::HomaFullScheduler::SendGrant(HomaFullFlow* flow, uint8_t grant_prio
     rdma_hw->m_nic[nic_idx].dev->TriggerTransmit();
 }
 
-void RdmaHw::HomaFullScheduler::StallCheck() {
+void RdmaHw::HomaScheduler::StallCheck() {
     Time now = Simulator::Now();
     for (auto& kv : flow_hash) {
-        HomaFullFlow* flow = kv.second.get();
+        HomaFlow* flow = kv.second.get();
         // Skip flows that have nothing missing to RESEND for.
         if (flow->next_expected_offset >= flow->msg_total_length) continue;
         if (flow->next_expected_offset >= flow->granted_offset_sent) continue;
@@ -1913,13 +1913,13 @@ void RdmaHw::HomaFullScheduler::StallCheck() {
         flow->last_progress_time = now;
     }
     if (!flow_hash.empty()) {
-        Simulator::Schedule(stall_rto, &RdmaHw::HomaFullScheduler::StallCheck, this);
+        Simulator::Schedule(stall_rto, &RdmaHw::HomaScheduler::StallCheck, this);
     } else {
         is_stall_scheduled = false;
     }
 }
 
-void RdmaHw::HomaFullScheduler::SendResend(HomaFullFlow* flow, uint64_t offset, uint64_t length) {
+void RdmaHw::HomaScheduler::SendResend(HomaFlow* flow, uint64_t offset, uint64_t length) {
     qbbHeader qbbh;
     qbbh.SetSeq(flow->rx_qp->ReceiverNextExpectedSeq);
     qbbh.SetPG(flow->pg);
@@ -1927,14 +1927,14 @@ void RdmaHw::HomaFullScheduler::SendResend(HomaFullFlow* flow, uint64_t offset, 
     qbbh.SetDport(flow->rx_qp->dport);
     qbbh.SetCnp();
 
-    HomaFullHeader hfh;
-    hfh.SetType(HomaFullHeader::RESEND);
+    HomaHeader hfh;
+    hfh.SetType(HomaHeader::RESEND);
     hfh.SetMessageId((uint64_t)flow->rx_qp->m_flow_id);
     hfh.SetResendOffset(offset);
     hfh.SetResendLength(length);
 
     Ptr<Packet> newp = Create<Packet>(
-        std::max(60 - 14 - 20 - (int)qbbh.GetSerializedSize() - (int)HomaFullHeader::GetHeaderSize(), 0));
+        std::max(60 - 14 - 20 - (int)qbbh.GetSerializedSize() - (int)HomaHeader::GetHeaderSize(), 0));
     newp->AddHeader(hfh);
     newp->AddHeader(qbbh);
 

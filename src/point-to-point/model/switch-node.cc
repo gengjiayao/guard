@@ -72,7 +72,7 @@ uint32_t SwitchNode::DoLbFlowECMP(Ptr<const Packet> p, const CustomHeader &ch,
     else if (ch.l3Prot == 0x11)  // XXX RDMA traffic on UDP
         buf.u32[2] = ch.udp.sport | ((uint32_t)ch.udp.dport << 16);
     else if (ch.l3Prot == 0xFB || ch.l3Prot == 0xFC || ch.l3Prot == 0xFD ||
-             ch.l3Prot == 0xFA)  // ACK / NACK / homa-full ctrl
+             ch.l3Prot == 0xFA)  // ACK / NACK / homa ctrl
         buf.u32[2] = ch.ack.sport | ((uint32_t)ch.ack.dport << 16);
     else {
         std::cout << "[ERROR] Sw(" << m_id << ")," << PARSE_FIVE_TUPLE(ch)
@@ -231,7 +231,7 @@ void SwitchNode::SendToDevContinue(Ptr<Packet> p, CustomHeader &ch) {
              (ch.l3Prot == 0xFD ||
               ch.l3Prot == 0xFC ||
               ch.l3Prot == 0xFB ||
-              ch.l3Prot == 0xFA))) {  // QCN/PFC/ACK/NACK/0xFB/homa-full ctrl: high priority
+              ch.l3Prot == 0xFA))) {  // QCN/PFC/ACK/NACK/0xFB/homa ctrl: high priority
             qIndex = 0;               // high priority
         } else {
             qIndex = (ch.l3Prot == 0x06 ? 1 : ch.udp.pg);  // if TCP, put to queue 1. Otherwise, it

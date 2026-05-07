@@ -1245,7 +1245,7 @@ int main(int argc, char *argv[]) {
         IntHeader::mode = 0;
     else if (cc_mode == 10)  // homa-simple, custom request flag
         IntHeader::mode = 2;
-    else if (cc_mode == 12)  // homa-full, per-packet HomaFullHeader
+    else if (cc_mode == 12)  // homa, per-packet HomaHeader
         IntHeader::mode = 3;
     else  // others, no extra header
         IntHeader::mode = 5;
@@ -1437,7 +1437,7 @@ int main(int argc, char *argv[]) {
             sw->m_mmu->ConfigBufferSize(buffer_size * 1024 *
                                         1024);  // default 0, specify in run.py!!
             sw->m_mmu->node_id = sw->GetId();
-            // homa-full runs lossy on its data queues. Disable PFC on PGs
+            // homa runs lossy on its data queues. Disable PFC on PGs
             // 1..7 so paused-class detection never marks Homa traffic for
             // PFC; PG 0 stays lossless because it carries control packets
             // (ACK / NACK / GRANT / etc.).

@@ -101,9 +101,9 @@ cc_modes = {
     "hpcc": 3,
     "timely": 7,
     "dctcp": 8,
-    "homa": 10,
+    "homa-simple": 10,  # legacy simplified Homa
     "guard": 11,
-    "homa-full": 12,
+    "homa": 12,         # standard Homa (SRPT + 8-priority + RESEND)
 }
 
 lb_modes = {
@@ -215,9 +215,9 @@ def main():
     if enabled_irn == 1 and enabled_pfc == 1 and cc_mode != 12:
         raise Exception(
             "CONFIG ERROR : If IRN is turn-on, then you should turn off PFC (for better perforamnce).")
-    # cc_mode=12 (homa-full) intentionally combines --pfc 1 with --irn 1: PFC
+    # cc_mode=12 (homa) intentionally combines --pfc 1 with --irn 1: PFC
     # stays on at the NIC for the control queue (pg=0), but the MMU disables
-    # PFC pause for Homa Full's data queues (pg 1-7) so they run lossy; IRN
+    # PFC pause for Homa's data queues (pg 1-7) so they run lossy; IRN
     # picks up dropped data packets until PR5 ships native RESEND.
     if enabled_irn == 0 and enabled_pfc == 0:
         raise Exception(

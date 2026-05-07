@@ -1,4 +1,4 @@
-# Homa Full 实现 Plan（cc_mode=12）
+# Homa 实现 Plan（cc_mode=12）
 
 **目标**：在 guard 仓库（NS-3 19）main 分支上完整复刻一个标准版 Homa，对照
 [SIGCOMM'18 paper](https://dl.acm.org/doi/10.1145/3230543.3230564) +
@@ -38,17 +38,17 @@
 | ECN marking | per-queue `ShouldSendCN(qIndex)` | 不需要（Homa 不用 ECN） |
 | IRN (lossy NIC retransmit) | DCQCN 用，有 RTO low/high + BDP limit + SACK manager | **可借鉴而不复用**——Homa 有自己的 RESEND 语义 |
 | QP = single-message | 一个 `RdmaQueuePair` 当作一个消息（m_size 字节，单向） | 1 QP ≡ 1 message，不需要 per-message 重构 |
-| ACK / NACK protocol | `0xFC` ACK / `0xFD` NACK / `0xFE` PFC / `0xFF` CNP / `0xFB` guard rate / homa-simple credit | 给 Homa Full 控制包用 `0xFA`（保留号） |
+| ACK / NACK protocol | `0xFC` ACK / `0xFD` NACK / `0xFE` PFC / `0xFF` CNP / `0xFB` guard rate / homa-simple credit | 给 Homa 控制包用 `0xFA`（保留号） |
 
 ### 1.2 必须新增 / 修改
 
 | 项 | 类型 | 工作量 |
 |----|------|--------|
-| `homa-full-header.{h,cc}` 多 type Header | 新增 | 中 |
+| `homa-header.{h,cc}` 多 type Header | 新增 | 中 |
 | `cc_mode == 12` dispatch | rdma-hw.{h,cc} 改 | 中 |
-| `IntHeader::mode = 3` for Homa Full | int-header.h 改 | 极小 |
-| Receiver overcommit + SRPT 调度 | rdma-hw 加新类 `HomaFullScheduler` | 大 |
-| Sender state machine + 重传 | rdma-hw 加新类 `HomaFullSender` | 大 |
+| `IntHeader::mode = 3` for Homa | int-header.h 改 | 极小 |
+| Receiver overcommit + SRPT 调度 | rdma-hw 加新类 `HomaScheduler` | 大 |
+| Sender state machine + 重传 | rdma-hw 加新类 `HomaSender` | 大 |
 | Per-PG PFC toggle | switch-mmu 扩 | 小 |
 | Priority cutoff 配置 | settings + run.py | 小 |
 | traffic_gen.py 支持 cc_mode=12 | 改 | 极小 |
@@ -68,7 +68,7 @@
 | receiver host | 持 `m_rxQpMap[key]` 的节点 |
 | 8 priority queues | switch 的 qIndex 0–7，packet 的 `ch.udp.pg` |
 | GRANT packet | 用 `0xFA` 作为 IPv4 protocol number（待用） |
-| BUSY / RESEND / ACK | 复用 `0xFA`，靠 HomaFullHeader 的 `type` 字段区分 |
+| BUSY / RESEND / ACK | 复用 `0xFA`，靠 HomaHeader 的 `type` 字段区分 |
 | timeout | 借鉴 IRN 的 RTO 机制，自实现 RESEND 计时器 |
 
 ---
@@ -78,11 +78,11 @@
 | 决策点 | 选项 | 选定 |
 |--------|------|------|
 | 蓝本 | paper / DPDK / Kernel | **SIGCOMM'18 paper + PlatformLab DPDK packet format** |
-| cc_mode 编号 | 10/12/13 | `CC_MODE_HOMA_FULL = 12` |
+| cc_mode 编号 | 10/12/13 | `CC_MODE_HOMA = 12` |
 | 简易版定位 | 删 / 保留 / 重命名 | 保留并重命名为 `CC_MODE_HOMA_SIMPLE = 10`（已完成） |
 | PFC 处理 | per-PG / 全局关 / hacky bypass | **per-PG 开关**（扩 SwitchMmu 加 `m_PFCenabledPg[qCnt]`） |
 | switch 多优先级 | 现有 / 重写 | **直接用** `qCnt = 8` 现成基础设施 |
-| 协议号 | 单 0xFA + type 字段 / 多协议号 | **单 0xFA**，Homa 所有控制 / 数据包都过同一协议号，靠 `HomaFullHeader::type` 区分 |
+| 协议号 | 单 0xFA + type 字段 / 多协议号 | **单 0xFA**，Homa 所有控制 / 数据包都过同一协议号，靠 `HomaHeader::type` 区分 |
 | 重传机制 | 复用 IRN / 自写 | **自写 RESEND**（Homa 有自己的语义：基于 grant offset，不是 SACK） |
 
 ## 4. 待定 / 需要先实验决定
@@ -102,19 +102,19 @@
 
 每个 PR **可独立编译、跑通至少烟测**。建议按顺序合，但 PR2 / PR3 内部可以分 commit。
 
-### PR 1 — 骨架：HomaFullHeader + cc_mode=12 dispatch（占位）
+### PR 1 — 骨架：HomaHeader + cc_mode=12 dispatch（占位）
 
 **目标**：cc_mode=12 走得通 dispatch（即使行为暂时简化为透传），所有
 后续 PR 在这之上加业务逻辑。
 
 **改动**：
-- `src/point-to-point/model/homa-full-header.{h,cc}`（新）
-  - `HomaFullHeader::Type` 枚举：`DATA = 0`, `GRANT = 1`, `RESEND = 2`, `BUSY = 3`, `NEED_ACK = 4`, `ACK = 5`, `UNKNOWN = 6`
+- `src/point-to-point/model/homa-header.{h,cc}`（新）
+  - `HomaHeader::Type` 枚举：`DATA = 0`, `GRANT = 1`, `RESEND = 2`, `BUSY = 3`, `NEED_ACK = 4`, `ACK = 5`, `UNKNOWN = 6`
   - 字段：`type / message_id / msg_total_length / pkt_offset / pkt_length / priority / granted_offset`
   - Serialize / Deserialize（按 PlatformLab DPDK 字段顺序）
 - `src/point-to-point/model/rdma-queue-pair.h`：
-  - 加 `CC_MODE_HOMA_FULL = 12,`
-  - 加 `struct {...} homa_full;` per-QP 状态（暂留空字段）
+  - 加 `CC_MODE_HOMA = 12,`
+  - 加 `struct {...} homa;` per-QP 状态（暂留空字段）
 - `src/network/utils/int-header.h`：
   - 注释更新 `// 0=INT, 1=TS, 2=Homa-Simple, 3=Homa-Full, 5=none`
 - `scratch/network-load-balance.cc`：
@@ -122,15 +122,15 @@
 - `src/point-to-point/model/rdma-hw.{h,cc}`：
   - cc_mode == 12 在 `Setup()` / `AddQueuePair()` / `Receive()` / `ReceiveUdp()` 加占位分支（先打 NS_LOG，行为退化为 cc_mode=10 simple）
 - `src/network/utils/custom-header.{h,cc}`：
-  - 让 0x11 UDP 解析在 `IntHeader::mode == 3` 时识别 `HomaFullHeader`
+  - 让 0x11 UDP 解析在 `IntHeader::mode == 3` 时识别 `HomaHeader`
   - 让 0xFA 协议号被 deserializer 接受
 - `src/point-to-point/model/switch-node.cc`：
   - `0xFA` 包归类为 control，qIndex=0
 - `src/point-to-point/wscript`：注册新文件
-- `run.py`：`cc_modes["homa-full"] = 12`
+- `run.py`：`cc_modes["homa"] = 12`
 - `traffic_gen/traffic_gen.py`：识别 cc_mode=12（同 cc_mode=10 处理即可）
 
-**验收**：`--cc homa-full` 烟测能跑完，输出 FCT 文件（行为先暂时退化）。
+**验收**：`--cc homa` 烟测能跑完，输出 FCT 文件（行为先暂时退化）。
 
 **预计行数**：+400 / -10。
 
@@ -142,20 +142,20 @@
 top-N sender 发 GRANT，按 SRPT 排序，priority 跨多个 queue 分布。
 
 **改动**：
-- `rdma-hw.h`：新类 `HomaFullScheduler`
+- `rdma-hw.h`：新类 `HomaScheduler`
   - 类似 `HomaSimpleScheduler` 的二叉堆，但排序键改为 `(message_remaining_bytes ASC)`，不再按 pg
   - 维护 `active_msgs`（堆）+ `granted_msgs`（最多 N 条，正在 grant 中）
   - 每 RTT 重新评估：从 active 中 pop top-N 进入 granted；其余等下次
-- `ScheduleHomaFull()`：每收到一个 DATA → 看是不是触发新 grant；定时器 1 RTT 重新评估 overcommit
+- `ScheduleHoma()`：每收到一个 DATA → 看是不是触发新 grant；定时器 1 RTT 重新评估 overcommit
 - `SendGrant()`：发 type=GRANT 的包，priority 字段 = 该 sender 在 N 个 granted 中的"slot"（slot 0 → pg 0，slot N-1 → pg N-1）
-- Sender 收到 GRANT：更新 `homa_full.granted_offset` + `granted_priority`
+- Sender 收到 GRANT：更新 `homa.granted_offset` + `granted_priority`
 - 基本 unscheduled 处理：sender 在 RTTbytes 之内可以自由发，priority 用静态 cutoff 表
 - `m_overcommit_degree` 配置项，默认 8
 
 **不在本 PR**：丢包恢复、BUSY、NEED_ACK / ACK。本 PR 假设网络无丢包
 （PFC 还没关），先把 happy-path 跑通。
 
-**验收**：`--cc homa-full --pfc 1`（暂时还在 PFC 上，因为还没做 loss
+**验收**：`--cc homa --pfc 1`（暂时还在 PFC 上，因为还没做 loss
 recovery）烟测：
 - FCT slowdown 数字应该和 simple 同数量级
 - log 看到 GRANT 在多 priority slot 上发出
@@ -171,16 +171,16 @@ recovery）烟测：
 GRANT 发 scheduled；priority 字段按规则填。
 
 **改动**：
-- `qp->homa_full`：
+- `qp->homa`：
   - `bytes_unscheduled`（≤ RTTbytes）
   - `bytes_granted`（receiver 已授权的字节数）
   - `bytes_sent`
   - `current_priority`（unscheduled 段固定，scheduled 段跟 GRANT）
   - `last_progress_time`（用于 PR5 的 RESEND 检测）
-- `GetNxtPacketHomaFull()`：
+- `GetNxtPacketHoma()`：
   - 如果 bytes_sent < bytes_unscheduled：unscheduled，priority = `unscheduled_cutoff_table[m_size]`
-  - 否则：scheduled，priority = qp->homa_full.granted_priority；前提 bytes_sent < bytes_granted（否则停摆）
-  - 写 HomaFullHeader{type=DATA, ...}
+  - 否则：scheduled，priority = qp->homa.granted_priority；前提 bytes_sent < bytes_granted（否则停摆）
+  - 写 HomaHeader{type=DATA, ...}
   - 写 `udp.pg = priority`
 - 静态 unscheduled cutoff 表（4 档默认）：
   ```
@@ -233,7 +233,7 @@ GRANT 发 scheduled；priority 字段按规则填。
 网络下功能正确。
 
 **改动**：
-- Receiver 端 (`HomaFullReceiver`)：
+- Receiver 端 (`HomaReceiver`)：
   - 每个 active rx_msg 跟踪 `next_expected_offset` + `out_of_order_set`（已收到的乱序段）
   - 检测到空洞：1.5 × baseRtt 后给 sender 发 `RESEND{from, to}`
   - 收到 RESEND 请求时：转给 sender 处理（实现在 sender 那边）
@@ -245,7 +245,7 @@ GRANT 发 scheduled；priority 字段按规则填。
 - BUSY：receiver 已发 GRANT 但久未见 DATA → 发 `BUSY` 提示 sender 仍活着但被其他流抢占了，此时 sender 应该让出 priority
   - （可选先实现，论文 §3.7 提到主要为了应对 sender 端拥塞）
 - Sender 端 retransmit buffer：可以借鉴现有 `irn.m_sack` / `IrnSackManager` 的模式，但是 Homa 的 RESEND 是 byte-range 而不是 SACK
-- 配置 `m_homa_full_resend_rto = 1.5 * baseRtt`
+- 配置 `m_homa_resend_rto = 1.5 * baseRtt`
 
 **验收**：
 - 高负载（netload=70）+ 模拟 1% drop 烟测：
@@ -265,7 +265,7 @@ cc_mode=11 (guard) 在相同负载下对比，复现论文里的趋势。
 **改动**：
 - 调 unscheduled cutoff 表 / overcommit degree
 - 跑 leaf_spine_8 / leaf_spine_16 / leaf_spine_128 三个拓扑下的对照
-- 写 `docs/homa-full-results.md` 记录数字
+- 写 `docs/homa-results.md` 记录数字
 - 必要时回头调 PR2/PR3 的参数
 
 **预计行数**：~0 代码改动（除了配置项）；文档为主。
@@ -278,10 +278,10 @@ cc_mode=11 (guard) 在相同负载下对比，复现论文里的趋势。
 
 | 名 | 类型 | 默认 | 用处 |
 |----|------|------|------|
-| `m_homa_full_overcommit_degree` | uint32 | 8 | PR2 |
-| `m_homa_full_unscheduled_cutoffs` | uint64[4] | RTT/4, RTT/2, RTT, ∞ | PR3 |
-| `m_homa_full_resend_rto` | Time | 1.5 × baseRtt | PR5 |
-| `m_homa_full_busy_rto` | Time | 1.0 × baseRtt | PR5 |
+| `m_homa_overcommit_degree` | uint32 | 8 | PR2 |
+| `m_homa_unscheduled_cutoffs` | uint64[4] | RTT/4, RTT/2, RTT, ∞ | PR3 |
+| `m_homa_resend_rto` | Time | 1.5 × baseRtt | PR5 |
+| `m_homa_busy_rto` | Time | 1.0 × baseRtt | PR5 |
 | `m_PFCenabledPg[qCnt]` | bool[8] | derived | PR4 |
 
 ---
@@ -294,20 +294,20 @@ cc_mode=11 (guard) 在相同负载下对比，复现论文里的趋势。
 # 简易版回归（不能破）
 python3 run.py --cc homa --lb fecmp --pfc 1 --simul_time 0.01 --netload 25 --topo leaf_spine_8_100G_OS1
 
-# Homa Full
-python3 run.py --cc homa-full --lb fecmp --pfc 1 --simul_time 0.01 --netload 25 --topo leaf_spine_8_100G_OS1
+# Homa
+python3 run.py --cc homa --lb fecmp --pfc 1 --simul_time 0.01 --netload 25 --topo leaf_spine_8_100G_OS1
 ```
 
 ### 7.2 中等负载（PR3+）
 
 ```bash
-python3 run.py --cc homa-full --lb fecmp --pfc 1 --simul_time 0.05 --netload 50 --topo leaf_spine_8_100G_OS1
+python3 run.py --cc homa --lb fecmp --pfc 1 --simul_time 0.05 --netload 50 --topo leaf_spine_8_100G_OS1
 ```
 
 ### 7.3 PFC-free + lossy（PR5+）
 
 ```bash
-python3 run.py --cc homa-full --lb fecmp --pfc 1 --simul_time 0.1 --netload 70 --topo leaf_spine_16_100G_OS1
+python3 run.py --cc homa --lb fecmp --pfc 1 --simul_time 0.1 --netload 70 --topo leaf_spine_16_100G_OS1
 ```
 
 每个 PR 跑完都清 `mix/output/*`。
@@ -319,7 +319,7 @@ python3 run.py --cc homa-full --lb fecmp --pfc 1 --simul_time 0.1 --netload 70 -
 | 风险 | 影响 | 缓解 |
 |------|------|------|
 | NS-3 19 老版本 + waf 1.7.11 + Py 2.7.18 build chain 脆弱 | 可能某次 PR 触碰宏 / 模块依赖时编译失败 | 每个 PR 都先 `python waf` 确认 build 通过再跑测 |
-| HomaFullHeader 字段顺序跟 PlatformLab 实测包不一致 | 跨实现兼容性差 | 仅在仿真内部使用，不需要跟真实 wire 兼容；按 paper 字段顺序即可 |
+| HomaHeader 字段顺序跟 PlatformLab 实测包不一致 | 跨实现兼容性差 | 仅在仿真内部使用，不需要跟真实 wire 兼容；按 paper 字段顺序即可 |
 | Receiver overcommit + 8 priority 在小拓扑（leaf_spine_8）跑不出区分度 | benchmark 看不到 Homa 的优势 | PR6 在 leaf_spine_128 / fat_k8 上跑，且 mix 长短消息（用 `--cdf AliStorage2019`） |
 | Per-PG PFC 改动影响其他 cc_mode | DCQCN/HPCC/Guard 回归失败 | PR4 默认所有 PG PFC = 全局 m_PFCenabled，仅 cc_mode=12 时显式禁用 |
 | RESEND 实现复杂度爆炸 | PR5 拖延 | 先做最简版（receiver 检测空洞 → RESEND；sender 维护连续 buffer 原样回放）；优化交给 PR6 |
@@ -333,7 +333,7 @@ python3 run.py --cc homa-full --lb fecmp --pfc 1 --simul_time 0.1 --netload 70 -
 - **不做 NIC pacer**：论文里 Homa 也不显式 pacing，靠 line-rate
 - **不做 priority cutoff 自动调优**：用静态表，自动调参留给 PR6 / 后续工作
 - **不实现 NEED_ACK 链路探活之外的复杂 BUSY 逻辑**：先做 RESEND，BUSY 当锦上添花
-- **不兼容 IRN**：`--irn 1 --cc homa-full` 直接报错；Homa 自己管丢包
+- **不兼容 IRN**：`--irn 1 --cc homa` 直接报错；Homa 自己管丢包
 
 ---
 
