@@ -107,12 +107,12 @@ public:
 		  // SeqTsHeader
 		  uint16_t pg;
 		  uint32_t seq;
-		  uint16_t is_request_package; // for homa
+		  uint16_t is_request_package; // for homa-simple
 		  IntHeader ih;
-		  // HomaHeader (only present when is_request_package==1)
-		  uint64_t bdp;
-		  uint64_t homa_requset;
-		  uint64_t homa_unscheduled;
+		  // HomaSimpleHeader (only present when is_request_package==1)
+		  uint64_t homa_simple_bdp;
+		  uint64_t homa_simple_requset;
+		  uint64_t homa_simple_unscheduled;
 	  } udp;
 	  // CnHeader
 	  struct {

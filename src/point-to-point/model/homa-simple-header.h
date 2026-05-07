@@ -1,13 +1,13 @@
-#ifndef HOMA_HEADER_H
-#define HOMA_HEADER_H
+#ifndef HOMA_SIMPLE_HEADER_H
+#define HOMA_SIMPLE_HEADER_H
 
 #include "ns3/header.h"
 
 namespace ns3 {
 
-class HomaHeader : public Header {
+class HomaSimpleHeader : public Header {
 public:
-    HomaHeader ();
+    HomaSimpleHeader ();
 
     void SetBdp (uint64_t bdp);
     uint64_t GetBdp () const;

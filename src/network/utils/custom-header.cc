@@ -165,11 +165,11 @@ void CustomHeader::Serialize (Buffer::Iterator start) const{
 		  if (IntHeader::mode == 2) {
 			  i.WriteHtonU16 (udp.is_request_package);
 		  }
-		  // HomaHeader (only when first packet)
+		  // HomaSimpleHeader (only when first packet)
 		  if (IntHeader::mode == 2 && udp.is_request_package == 1) {
-			  i.WriteHtonU64 (udp.bdp);
-			  i.WriteHtonU64 (udp.homa_requset);
-			  i.WriteHtonU64 (udp.homa_unscheduled);
+			  i.WriteHtonU64 (udp.homa_simple_bdp);
+			  i.WriteHtonU64 (udp.homa_simple_requset);
+			  i.WriteHtonU64 (udp.homa_simple_unscheduled);
 		  }
 		  udp.ih.Serialize(i);
 	  }else if (l3Prot == 0xFF){ // CNP
@@ -310,11 +310,11 @@ CustomHeader::Deserialize (Buffer::Iterator start)
 		  if (IntHeader::mode == 2) {
 			  udp.is_request_package = i.ReadNtohU16 ();
 		  }
-		  // HomaHeader
+		  // HomaSimpleHeader
 		  if (IntHeader::mode == 2 && udp.is_request_package == 1) {
-			  udp.bdp = i.ReadNtohU64();
-			  udp.homa_requset = i.ReadNtohU64();
-			  udp.homa_unscheduled = i.ReadNtohU64();
+			  udp.homa_simple_bdp = i.ReadNtohU64();
+			  udp.homa_simple_requset = i.ReadNtohU64();
+			  udp.homa_simple_unscheduled = i.ReadNtohU64();
 		  }
 
 		  if (getInt)
@@ -322,7 +322,7 @@ CustomHeader::Deserialize (Buffer::Iterator start)
 
 		  l4Size = GetUdpHeaderSize();
 		  if (IntHeader::mode == 2 && udp.is_request_package == 1) {
-			  l4Size += sizeof(udp.bdp) + sizeof(udp.homa_requset) + sizeof(udp.homa_unscheduled);
+			  l4Size += sizeof(udp.homa_simple_bdp) + sizeof(udp.homa_simple_requset) + sizeof(udp.homa_simple_unscheduled);
 		  }
 	  }else if (l3Prot == 0xFF){
 		  cnp.qIndex = i.ReadU8();
@@ -362,7 +362,7 @@ uint32_t CustomHeader::GetAckSerializedSize(void){
 }
 
 uint32_t CustomHeader::GetUdpHeaderSize(void){
-	if (IntHeader::mode == 2) // homa adds is_request_package field
+	if (IntHeader::mode == 2) // homa-simple adds is_request_package field
 		return 8 + sizeof(udp.pg) + sizeof(udp.seq) + IntHeader::GetStaticSize() + sizeof(udp.is_request_package);
 	return 8 + sizeof(udp.pg) + sizeof(udp.seq) + IntHeader::GetStaticSize();
 }

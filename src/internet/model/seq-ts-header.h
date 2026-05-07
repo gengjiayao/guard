@@ -68,7 +68,7 @@ private:
 
   uint32_t m_seq;
   uint16_t m_pg;
-  uint16_t m_is_request; // for homa
+  uint16_t m_is_request; // for homa-simple
 public:
   IntHeader ih;
 };

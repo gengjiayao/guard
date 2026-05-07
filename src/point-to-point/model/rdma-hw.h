@@ -83,7 +83,7 @@ class RdmaHw : public Object {
     int ReceiveCnp(Ptr<Packet> p, CustomHeader &ch);
     int ReceiveAck(Ptr<Packet> p, CustomHeader &ch);  // handle both ACK and NACK
     int ReceiveRate(Ptr<Packet> p, CustomHeader &ch); // guard rate-grant packet
-    int ReceiveHomaCredit(Ptr<Packet> p, CustomHeader &ch); // homa credit packet
+    int ReceiveHomaSimpleCredit(Ptr<Packet> p, CustomHeader &ch); // homa-simple credit packet
     int Receive(Ptr<Packet> p,
                 CustomHeader &
                     ch);  // callback function that the QbbNetDevice should use when receive
@@ -104,7 +104,7 @@ class RdmaHw : public Object {
     void RedistributeQp();
 
     Ptr<Packet> GetNxtPacket(Ptr<RdmaQueuePair> qp);  // get next packet to send, inc snd_nxt
-    Ptr<Packet> GetNxtPacketHoma(Ptr<RdmaQueuePair> qp);  // homa-mode next-packet
+    Ptr<Packet> GetNxtPacketHomaSimple(Ptr<RdmaQueuePair> qp);  // homa-simple-mode next-packet
     void PktSent(Ptr<RdmaQueuePair> qp, Ptr<Packet> pkt, Time interframeGap);
     void UpdateNextAvail(Ptr<RdmaQueuePair> qp, Time interframeGap, uint32_t pkt_size);
     void ChangeRate(Ptr<RdmaQueuePair> qp, DataRate new_rate);
@@ -166,23 +166,23 @@ class RdmaHw : public Object {
     void SendRateControlPacket(Ptr<RdmaRxQueuePair> qp, CustomHeader &ch, uint32_t rate);
 
     /***********************
-     * Homa CC
+     * Homa Simple CC
      ***********************/
-    enum HomaFlowState {
-        HOMA_FLOW_IDLE = 0,
-        HOMA_FLOW_ACTIVE = 1,
-        HOMA_FLOW_WAITING = 2
+    enum HomaSimpleFlowState {
+        HOMA_SIMPLE_FLOW_IDLE = 0,
+        HOMA_SIMPLE_FLOW_ACTIVE = 1,
+        HOMA_SIMPLE_FLOW_WAITING = 2
     };
 
-    struct HomaFlow {
-        HomaFlowState state;
+    struct HomaSimpleFlow {
+        HomaSimpleFlowState state;
         uint16_t pg;
         uint64_t bdp;
         uint64_t token_bucket;
         uint64_t requset_bytes;
         Ptr<RdmaRxQueuePair> rx_qp;
 
-        bool operator < (const HomaFlow &other) const {
+        bool operator < (const HomaSimpleFlow &other) const {
             if (pg != other.pg) {
                 return pg < other.pg;
             }
@@ -190,12 +190,12 @@ class RdmaHw : public Object {
         }
     };
 
-    class HomaPriorityQueue {
+    class HomaSimplePriorityQueue {
     private:
-        std::vector<HomaFlow*> heap;
+        std::vector<HomaSimpleFlow*> heap;
         std::unordered_map<RdmaRxQueuePair*, int> map;
 
-        inline RdmaRxQueuePair* _getKey(HomaFlow* flow) const {
+        inline RdmaRxQueuePair* _getKey(HomaSimpleFlow* flow) const {
             return PeekPointer(flow->rx_qp);
         }
 
@@ -227,22 +227,22 @@ class RdmaHw : public Object {
         }
 
     public:
-        HomaPriorityQueue() {}
+        HomaSimplePriorityQueue() {}
 
         bool empty() const { return heap.empty(); }
         int size() const { return (int)heap.size(); }
 
         bool find(RdmaRxQueuePair* key) const { return map.count(key); }
 
-        void insert(HomaFlow* flow) {
+        void insert(HomaSimpleFlow* flow) {
             RdmaRxQueuePair* key = _getKey(flow);
             heap.push_back(flow);
             map[key] = heap.size() - 1;
             _shift_up(heap.size() - 1);
         }
 
-        HomaFlow* pop() {
-            HomaFlow* flowToReturn = heap[0];
+        HomaSimpleFlow* pop() {
+            HomaSimpleFlow* flowToReturn = heap[0];
             RdmaRxQueuePair* key = _getKey(flowToReturn);
             _swap(0, heap.size() - 1);
             heap.pop_back();
@@ -251,30 +251,30 @@ class RdmaHw : public Object {
             return flowToReturn;
         }
 
-        const HomaFlow* top() const { return heap[0]; }
+        const HomaSimpleFlow* top() const { return heap[0]; }
     };
 
-    class HomaScheduler {
+    class HomaSimpleScheduler {
     public:
-        HomaScheduler(RdmaHw* hw);
-        ~HomaScheduler();
+        HomaSimpleScheduler(RdmaHw* hw);
+        ~HomaSimpleScheduler();
         void SetPacingInterval(Ptr<Packet> p);
-        void AddHomaFlow(HomaFlow &flow, Ptr<Packet> p, CustomHeader &ch);
-        void ScheduleHoma();
-        void SendHomaCreditPackage(HomaFlow &flow);
-        void UpdateFlowState(HomaFlow* flow);
+        void AddHomaSimpleFlow(HomaSimpleFlow &flow, Ptr<Packet> p, CustomHeader &ch);
+        void ScheduleHomaSimple();
+        void SendHomaSimpleCreditPackage(HomaSimpleFlow &flow);
+        void UpdateFlowState(HomaSimpleFlow* flow);
 
         RdmaHw* rdma_hw;
         bool is_scheduled;
         uint64_t pacing_interval;
-        HomaPriorityQueue active_flow;
-        std::unordered_set<HomaFlow*> wait_flow;
-        std::unordered_map<RdmaRxQueuePair*, std::unique_ptr<HomaFlow>> flow_hash;
+        HomaSimplePriorityQueue active_flow;
+        std::unordered_set<HomaSimpleFlow*> wait_flow;
+        std::unordered_map<RdmaRxQueuePair*, std::unique_ptr<HomaSimpleFlow>> flow_hash;
     };
 
-    HomaScheduler homa_scheduler;
-    void ReceiveHomaRequest(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
-    void ReceiveHomaData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
+    HomaSimpleScheduler homa_simple_scheduler;
+    void ReceiveHomaSimpleRequest(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
+    void ReceiveHomaSimpleData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
 
     /***********************
      * High Precision CC

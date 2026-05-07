@@ -35,18 +35,18 @@
 
 控制包用一个新的 IPv4 协议号 `0xFB`（与 ACK=0xFC、NACK=0xFD、CNP=0xFF 并列），交换机按最高优先级转发。
 
-### 1.3 Homa（`cc_mode=10`，移植对照算法）
+### 1.3 Homa Simple（`cc_mode=10`，移植对照算法的简易版）
 
 经典的接收端驱动 credit 调度（[SIGCOMM'18 Homa](https://dl.acm.org/doi/10.1145/3230543.3230564)）：
 
-1. **HomaHeader**：每条流第一个数据包带额外字段 `bdp / homa_request / homa_unscheduled`，告诉接收端流的大小和初始 unscheduled 字节数（≈1 BDP 免 grant 的初始 burst）。
-2. **HomaScheduler**：接收端为每个 NIC 维护一个 `HomaPriorityQueue`（自实现二叉堆 + map）+ `wait_flow` 集合，按 `(pg, 剩余字节升序)` 即 **SRPT** 排序。
-3. **Per-packet credit**：调度器周期性 pop 出最高优先级流，发一个 `0xFB` Homa Credit 包，发送端每收到一个 credit 才能多发一个 MTU。
-4. **状态切换**：流要么 `ACTIVE`（可拿 credit）要么 `WAITING`（已发出去的 credit 还没消化完），`ReceiveHomaData` 在每个 MTU 到达时按 token bucket 状态决定切换。
+1. **HomaSimpleHeader**：每条流第一个数据包带额外字段 `bdp / homa_request / homa_unscheduled`，告诉接收端流的大小和初始 unscheduled 字节数（≈1 BDP 免 grant 的初始 burst）。
+2. **HomaSimpleScheduler**：接收端为每个 NIC 维护一个 `HomaSimplePriorityQueue`（自实现二叉堆 + map）+ `wait_flow` 集合，按 `(pg, 剩余字节升序)` 即 **SRPT** 排序。
+3. **Per-packet credit**：调度器周期性 pop 出最高优先级流，发一个 `0xFB` Homa Simple Credit 包，发送端每收到一个 credit 才能多发一个 MTU。
+4. **状态切换**：流要么 `ACTIVE`（可拿 credit）要么 `WAITING`（已发出去的 credit 还没消化完），`ReceiveHomaSimpleData` 在每个 MTU 到达时按 token bucket 状态决定切换。
 
-`0xFB` 包在 guard 和 homa 模式下语义不同（grant 速率 vs. credit 颗粒），由 `RdmaHw::Receive()` 根据 `m_cc_mode` 分发。
+`0xFB` 包在 guard 和 homa-simple 模式下语义不同（grant 速率 vs. credit 颗粒），由 `RdmaHw::Receive()` 根据 `m_cc_mode` 分发。
 
-> **⚠️ 当前 homa 实现需配 `--pfc 1`（lossless）使用。** 第一个数据包携带 `HomaHeader`，丢失后接收端拿不到流大小信息、永远不下发 credit；发送端在用完初始 unscheduled credit 之后会停摆。要在 `--irn 1` 下使用需要补上请求包重发逻辑。
+> **⚠️ 当前 homa-simple 实现需配 `--pfc 1`（lossless）使用。** 第一个数据包携带 `HomaSimpleHeader`，丢失后接收端拿不到流大小信息、永远不下发 credit；发送端在用完初始 unscheduled credit 之后会停摆。要在 `--irn 1` 下使用需要补上请求包重发逻辑。
 
 ---
 
@@ -54,15 +54,15 @@
 
 ```
 src/point-to-point/model/
-├── rdma-hw.{h,cc}          # 三种算法的 RdmaHw 主体逻辑：ReceiveUdp 分支、UpdateRateHp、HomaScheduler、SyncHwRate
-├── rdma-queue-pair.{h,cc}  # QP 结构：hp.m_grantRate（guard）、homa.{is_request_package,m_credit_package,...}
-├── homa-header.{h,cc}      # Homa 首包 header：bdp / homa_request / homa_unscheduled
+├── rdma-hw.{h,cc}          # 三种算法的 RdmaHw 主体逻辑：ReceiveUdp 分支、UpdateRateHp、HomaSimpleScheduler、SyncHwRate
+├── rdma-queue-pair.{h,cc}  # QP 结构：hp.m_grantRate（guard）、homa_simple.{is_request_package,m_credit_package,...}
+├── homa-simple-header.{h,cc}  # Homa Simple 首包 header：homa_simple_bdp / homa_simple_requset / homa_simple_unscheduled
 ├── flow-stat-tag.{h,cc}    # 在 packet tag 里透传 baseRTT，给 guard 的 EWMA 阈值使用
 └── switch-node.cc          # 0xFB 走 ECMP + 高优先级队列
 
 src/network/utils/
-├── custom-header.{h,cc}    # 反序列化时按 IntHeader::mode 解析 Homa 字段；接受 0xFB 协议号
-└── int-header.h            # IntHeader::mode：0=INT (HPCC/Guard) / 1=TS (Timely) / 2=Homa / 5=none
+├── custom-header.{h,cc}    # 反序列化时按 IntHeader::mode 解析 Homa Simple 字段；接受 0xFB 协议号
+└── int-header.h            # IntHeader::mode：0=INT (HPCC/Guard) / 1=TS (Timely) / 2=Homa Simple / 5=none
 
 src/internet/model/
 └── seq-ts-header.{h,cc}    # 在 mode==2 时多塞一个 m_is_request 字段

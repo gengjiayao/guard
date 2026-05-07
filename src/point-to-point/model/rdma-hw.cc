@@ -18,7 +18,7 @@
 #include "ns3/settings.h"
 #include "ns3/switch-node.h"
 #include "ns3/uinteger.h"
-#include "homa-header.h"
+#include "homa-simple-header.h"
 #include "ppp-header.h"
 #include "qbb-header.h"
 
@@ -132,7 +132,7 @@ TypeId RdmaHw::GetTypeId(void) {
     return tid;
 }
 
-RdmaHw::RdmaHw() : homa_scheduler(this) {
+RdmaHw::RdmaHw() : homa_simple_scheduler(this) {
     cnp_total = 0;
     cnp_by_ecn = 0;
     cnp_by_ooo = 0;
@@ -151,8 +151,8 @@ void RdmaHw::Setup(QpCompleteCallback cb) {
         dev->m_rdmaPktSent = MakeCallback(&RdmaHw::PktSent, this);
         // config NIC
         dev->m_rdmaEQ->m_mtu = m_mtu;
-        if (m_cc_mode == 10) {  // homa
-            dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacketHoma, this);
+        if (m_cc_mode == 10) {  // homa-simple
+            dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacketHomaSimple, this);
         } else {
             dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacket, this);
         }
@@ -238,17 +238,17 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
     } else if (m_cc_mode == 7) {
         qp->tmly.m_curRate = m_bps;
     } else if (m_cc_mode == 10) {
-        qp->homa.m_curRate = m_bps;
-        qp->homa.is_request_package = true;
+        qp->homa_simple.m_curRate = m_bps;
+        qp->homa_simple.is_request_package = true;
         uint64_t bdp_bytes = baseRtt * m_bps.GetBitRate() / 8000000000lu;
         // unscheduled credit (one credit = one packet)
-        qp->homa.m_credit_package = (std::min(bdp_bytes, size) + m_mtu - 1) / m_mtu;
+        qp->homa_simple.m_credit_package = (std::min(bdp_bytes, size) + m_mtu - 1) / m_mtu;
         // bytes still need to grant
-        qp->homa.m_request_bytes = size > bdp_bytes ? size - bdp_bytes : 0;
+        qp->homa_simple.m_request_bytes = size > bdp_bytes ? size - bdp_bytes : 0;
         // unscheduled bytes (free initial burst)
-        qp->homa.m_unscheduled_bytes =
+        qp->homa_simple.m_unscheduled_bytes =
             size < bdp_bytes ? std::max(size, (uint64_t)m_mtu) : std::max(bdp_bytes, (uint64_t)m_mtu);
-        qp->homa.m_bdp = bdp_bytes;
+        qp->homa_simple.m_bdp = bdp_bytes;
     }
     // print_rate(PeekPointer(qp));
 
@@ -469,12 +469,12 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
         }
     }
 
-    // homa (cc_mode 10): receiver-driven credit scheduling
+    // homa-simple (cc_mode 10): receiver-driven credit scheduling
     if (m_cc_mode == 10) {
         if (ch.udp.is_request_package) {
-            ReceiveHomaRequest(rxQp, p, ch);
+            ReceiveHomaSimpleRequest(rxQp, p, ch);
         } else {
-            ReceiveHomaData(rxQp, p, ch);
+            ReceiveHomaSimpleData(rxQp, p, ch);
         }
     }
 
@@ -533,7 +533,7 @@ int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch) {
         } else if (m_cc_mode == 7) {
             qp->tmly.m_curRate = dev->GetDataRate();
         } else if (m_cc_mode == 10) {
-            qp->homa.m_curRate = dev->GetDataRate();
+            qp->homa_simple.m_curRate = dev->GetDataRate();
         }
     }
     return 0;
@@ -717,11 +717,11 @@ int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch) {
         return ReceiveAck(p, ch);
     } else if (ch.l3Prot == 0xFC) {  // ACK
         return ReceiveAck(p, ch);
-    } else if (ch.l3Prot == 0xFB) {  // guard rate grant or homa credit
+    } else if (ch.l3Prot == 0xFB) {  // guard rate grant or homa-simple credit
         if (m_cc_mode == 11) {
             return ReceiveRate(p, ch);
         } else if (m_cc_mode == 10) {
-            return ReceiveHomaCredit(p, ch);
+            return ReceiveHomaSimpleCredit(p, ch);
         }
         return 0;
     }
@@ -1264,16 +1264,16 @@ void RdmaHw::SendRateControlPacket(Ptr<RdmaRxQueuePair> rx_qp, CustomHeader &ch,
 }
 
 /***********************
- * Homa CC
+ * Homa Simple CC
  ***********************/
-RdmaHw::HomaScheduler::HomaScheduler(RdmaHw* hw): rdma_hw(hw) {
+RdmaHw::HomaSimpleScheduler::HomaSimpleScheduler(RdmaHw* hw): rdma_hw(hw) {
     is_scheduled = false;
     pacing_interval = 0;
 }
 
-RdmaHw::HomaScheduler::~HomaScheduler() {}
+RdmaHw::HomaSimpleScheduler::~HomaSimpleScheduler() {}
 
-void RdmaHw::HomaScheduler::SetPacingInterval(Ptr<Packet> p) {
+void RdmaHw::HomaSimpleScheduler::SetPacingInterval(Ptr<Packet> p) {
     // pacing interval ≈ time to put one MTU on the wire at line rate
     uint64_t interval_bytes = rdma_hw->m_mtu;
     uint32_t nic_idx = 0;
@@ -1287,7 +1287,7 @@ void RdmaHw::HomaScheduler::SetPacingInterval(Ptr<Packet> p) {
     this->pacing_interval = (uint64_t)(1e9 * 8 * interval_bytes / qp_rate.GetBitRate());
 }
 
-void RdmaHw::HomaScheduler::SendHomaCreditPackage(HomaFlow &flow) {
+void RdmaHw::HomaSimpleScheduler::SendHomaSimpleCreditPackage(HomaSimpleFlow &flow) {
     qbbHeader seqh;
     seqh.SetSeq(flow.rx_qp->ReceiverNextExpectedSeq);
     seqh.SetPG(flow.pg);
@@ -1301,7 +1301,7 @@ void RdmaHw::HomaScheduler::SendHomaCreditPackage(HomaFlow &flow) {
     Ipv4Header head;
     head.SetDestination(Ipv4Address(flow.rx_qp->dip));
     head.SetSource(Ipv4Address(flow.rx_qp->sip));
-    head.SetProtocol(0xFB);  // homa credit (decoded by cc_mode)
+    head.SetProtocol(0xFB);  // homa-simple credit (decoded by cc_mode)
     head.SetTtl(64);
     head.SetPayloadSize(newp->GetSize());
     head.SetIdentification(flow.rx_qp->m_ipid++);
@@ -1314,7 +1314,7 @@ void RdmaHw::HomaScheduler::SendHomaCreditPackage(HomaFlow &flow) {
     rdma_hw->m_nic[nic_idx].dev->TriggerTransmit();
 }
 
-void RdmaHw::HomaScheduler::UpdateFlowState(HomaFlow* flow) {
+void RdmaHw::HomaSimpleScheduler::UpdateFlowState(HomaSimpleFlow* flow) {
     flow->token_bucket += rdma_hw->m_mtu;
     if (flow->requset_bytes >= rdma_hw->m_mtu) {
         flow->requset_bytes -= rdma_hw->m_mtu;
@@ -1323,94 +1323,94 @@ void RdmaHw::HomaScheduler::UpdateFlowState(HomaFlow* flow) {
     }
 
     if (flow->requset_bytes > 0 && flow->token_bucket < flow->bdp) {
-        flow->state = HOMA_FLOW_ACTIVE;
+        flow->state = HOMA_SIMPLE_FLOW_ACTIVE;
         active_flow.insert(flow);
     } else if (flow->requset_bytes > 0 && flow->token_bucket >= flow->bdp) {
-        flow->state = HOMA_FLOW_WAITING;
+        flow->state = HOMA_SIMPLE_FLOW_WAITING;
         wait_flow.insert(flow);
     } else if (flow->requset_bytes == 0) {
         flow_hash.erase(PeekPointer(flow->rx_qp));
     }
 }
 
-void RdmaHw::HomaScheduler::ScheduleHoma() {
+void RdmaHw::HomaSimpleScheduler::ScheduleHomaSimple() {
     if (flow_hash.size() == 0) {
         is_scheduled = false;
         return;
     }
     if (!active_flow.empty()) {
-        HomaFlow* priority_flow = active_flow.pop();
-        SendHomaCreditPackage(*priority_flow);
+        HomaSimpleFlow* priority_flow = active_flow.pop();
+        SendHomaSimpleCreditPackage(*priority_flow);
         UpdateFlowState(priority_flow);
         Simulator::Schedule(NanoSeconds(this->pacing_interval),
-                            &RdmaHw::HomaScheduler::ScheduleHoma, this);
+                            &RdmaHw::HomaSimpleScheduler::ScheduleHomaSimple, this);
     } else {
         is_scheduled = false;
     }
 }
 
-void RdmaHw::HomaScheduler::AddHomaFlow(HomaFlow &flow_template, Ptr<Packet> p, CustomHeader &ch) {
-    std::unique_ptr<HomaFlow> new_flow_ptr(new HomaFlow(flow_template));
-    HomaFlow* p_flow = new_flow_ptr.get();
+void RdmaHw::HomaSimpleScheduler::AddHomaSimpleFlow(HomaSimpleFlow &flow_template, Ptr<Packet> p, CustomHeader &ch) {
+    std::unique_ptr<HomaSimpleFlow> new_flow_ptr(new HomaSimpleFlow(flow_template));
+    HomaSimpleFlow* p_flow = new_flow_ptr.get();
 
     if (p_flow->token_bucket >= p_flow->bdp) {
-        p_flow->state = HOMA_FLOW_WAITING;
+        p_flow->state = HOMA_SIMPLE_FLOW_WAITING;
         wait_flow.insert(p_flow);
     } else {
-        p_flow->state = HOMA_FLOW_ACTIVE;
+        p_flow->state = HOMA_SIMPLE_FLOW_ACTIVE;
         active_flow.insert(p_flow);
     }
 
     flow_hash[PeekPointer(p_flow->rx_qp)] = std::move(new_flow_ptr);
 
     // only kick off the pacing loop if we now have an active flow.
-    // a pure-waiting flow will be promoted to active by ReceiveHomaData,
+    // a pure-waiting flow will be promoted to active by ReceiveHomaSimpleData,
     // which schedules then.
     if (!is_scheduled && !active_flow.empty()) {
         is_scheduled = true;
         SetPacingInterval(p);
-        ScheduleHoma();
+        ScheduleHomaSimple();
     }
 }
 
-void RdmaHw::ReceiveHomaRequest(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch) {
-    HomaFlow homa_flow;
-    homa_flow.state = HOMA_FLOW_IDLE;
+void RdmaHw::ReceiveHomaSimpleRequest(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch) {
+    HomaSimpleFlow homa_flow;
+    homa_flow.state = HOMA_SIMPLE_FLOW_IDLE;
     homa_flow.rx_qp = qp;
-    homa_flow.requset_bytes = ch.udp.homa_requset;
-    homa_flow.token_bucket = ch.udp.homa_unscheduled;
+    homa_flow.requset_bytes = ch.udp.homa_simple_requset;
+    homa_flow.token_bucket = ch.udp.homa_simple_unscheduled;
     homa_flow.pg = ch.udp.pg;
-    homa_flow.bdp = ch.udp.bdp;
-    homa_scheduler.AddHomaFlow(homa_flow, p, ch);
+    homa_flow.bdp = ch.udp.homa_simple_bdp;
+    homa_simple_scheduler.AddHomaSimpleFlow(homa_flow, p, ch);
 }
 
-void RdmaHw::ReceiveHomaData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch) {
-    auto it = homa_scheduler.flow_hash.find(PeekPointer(qp));
-    if (it == homa_scheduler.flow_hash.end()) return;
+void RdmaHw::ReceiveHomaSimpleData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch) {
+    auto it = homa_simple_scheduler.flow_hash.find(PeekPointer(qp));
+    if (it == homa_simple_scheduler.flow_hash.end()) return;
 
-    HomaFlow* p_flow = it->second.get();
-    if (p_flow->token_bucket >= homa_scheduler.rdma_hw->m_mtu) {
-        p_flow->token_bucket -= homa_scheduler.rdma_hw->m_mtu;
+    HomaSimpleFlow* p_flow = it->second.get();
+    if (p_flow->token_bucket >= homa_simple_scheduler.rdma_hw->m_mtu) {
+        p_flow->token_bucket -= homa_simple_scheduler.rdma_hw->m_mtu;
     } else {
         p_flow->token_bucket = 0;
     }
 
-    if (p_flow->state == HOMA_FLOW_WAITING) {
+    if (p_flow->state == HOMA_SIMPLE_FLOW_WAITING) {
         if (p_flow->token_bucket < p_flow->bdp) {
-            homa_scheduler.wait_flow.erase(p_flow);
-            p_flow->state = HOMA_FLOW_ACTIVE;
-            homa_scheduler.active_flow.insert(p_flow);
-            if (!homa_scheduler.is_scheduled) {
-                homa_scheduler.is_scheduled = true;
-                homa_scheduler.SetPacingInterval(p);
+            homa_simple_scheduler.wait_flow.erase(p_flow);
+            p_flow->state = HOMA_SIMPLE_FLOW_ACTIVE;
+            homa_simple_scheduler.active_flow.insert(p_flow);
+            if (!homa_simple_scheduler.is_scheduled) {
+                homa_simple_scheduler.is_scheduled = true;
+                homa_simple_scheduler.SetPacingInterval(p);
                 Simulator::Schedule(NanoSeconds(0),
-                                    &RdmaHw::HomaScheduler::ScheduleHoma, &this->homa_scheduler);
+                                    &RdmaHw::HomaSimpleScheduler::ScheduleHomaSimple, &this->homa_simple_scheduler);
             }
         }
     }
 }
 
-int RdmaHw::ReceiveHomaCredit(Ptr<Packet> p, CustomHeader &ch) {
+int RdmaHw::ReceiveHomaSimpleCredit(Ptr<Packet> p, CustomHeader &ch) {
     uint16_t qIndex = ch.ack.pg;
     uint16_t port = ch.ack.dport;
     uint16_t sport = ch.ack.sport;
@@ -1421,14 +1421,14 @@ int RdmaHw::ReceiveHomaCredit(Ptr<Packet> p, CustomHeader &ch) {
         // sender QP is being torn down. Drop silently like ReceiveAck.
         return 1;
     }
-    qp->homa.m_credit_package++;
+    qp->homa_simple.m_credit_package++;
     uint32_t nic_idx = GetNicIdxOfQp(qp);
     Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
     dev->TriggerTransmit();
     return 0;
 }
 
-Ptr<Packet> RdmaHw::GetNxtPacketHoma(Ptr<RdmaQueuePair> qp) {
+Ptr<Packet> RdmaHw::GetNxtPacketHomaSimple(Ptr<RdmaQueuePair> qp) {
     uint32_t payload_size = qp->GetBytesLeft();
     if (m_mtu < payload_size) payload_size = m_mtu;
     uint32_t seq = (uint32_t)qp->snd_nxt;
@@ -1436,21 +1436,21 @@ Ptr<Packet> RdmaHw::GetNxtPacketHoma(Ptr<RdmaQueuePair> qp) {
     qp->stat.txTotalBytes += payload_size;
 
     Ptr<Packet> p = Create<Packet>(payload_size);
-    if (qp->homa.is_request_package) {
-        HomaHeader homaHeader;
-        homaHeader.SetHomaRequest(qp->homa.m_request_bytes);
-        homaHeader.SetHomaUnscheduled(qp->homa.m_unscheduled_bytes);
-        homaHeader.SetBdp(qp->homa.m_bdp);
+    if (qp->homa_simple.is_request_package) {
+        HomaSimpleHeader homaHeader;
+        homaHeader.SetHomaRequest(qp->homa_simple.m_request_bytes);
+        homaHeader.SetHomaUnscheduled(qp->homa_simple.m_unscheduled_bytes);
+        homaHeader.SetBdp(qp->homa_simple.m_bdp);
         p->AddHeader(homaHeader);
     }
-    qp->homa.m_credit_package--;
+    qp->homa_simple.m_credit_package--;
 
     SeqTsHeader seqTs;
     seqTs.SetSeq(seq);
     seqTs.SetPG(qp->m_pg);
-    seqTs.SetIsRequest(qp->homa.is_request_package ? 1 : 0);
+    seqTs.SetIsRequest(qp->homa_simple.is_request_package ? 1 : 0);
 
-    if (qp->homa.is_request_package) qp->homa.is_request_package = false;
+    if (qp->homa_simple.is_request_package) qp->homa_simple.is_request_package = false;
 
     p->AddHeader(seqTs);
 
