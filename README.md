@@ -36,6 +36,11 @@
 
 控制包用一个新的 IPv4 协议号 `0xFB`（与 ACK=0xFC、NACK=0xFD、CNP=0xFF 并列），交换机按最高优先级转发。
 
+**v2 借鉴 homa-full 的两点改进**（`guard-borrow-homa` 分支）：
+
+6. **短流走高优先级队列（按 m_size 分桶）**：v1 所有数据包都用 traffic_gen 给的同一个 pg（=3），导致短流和长流挤在 switch 的同一个 priority queue 里。v2 在 `AddQueuePair` 里按 m_size 分四档：`< BDP/4 → pg 1`、`< BDP/2 → pg 2`、`< BDP → pg 3`、`≥ BDP → pg 4`，整条流统一用这个 pg。短流路由到更高优先级队列、不再被长流堵。HPCC 的 INT 反馈、PFC pause 检查、RCC grant 路由全部仍然一致（每条流自己的 pg 是稳定的，跟 homa-full 那种 per-packet 变化不一样）。
+7. **RCC 触发阈值从硬编码 BDP 改成 baseRtt-derived**：v1 在 `ReceiveUdp` 里写死 `bdp = 104000`（按 leaf_spine 100G + 8.32µs RTT 算出来的），换拓扑会误判。v2 用 `FlowStatTag::GetBaseRttSeconds()` × 接收 NIC 线速算每条流自己的 BDP，跨拓扑正确（在 leaf_spine_8 上数值不变，行为不变；在 fat_k8 / 不同 RTT 拓扑下避免错把中等流注册到 RCC 等分集合）。
+
 ### 1.3 Homa Simple（`cc_mode=10`，移植对照算法的简易版）
 
 经典的接收端驱动 credit 调度（[SIGCOMM'18 Homa](https://dl.acm.org/doi/10.1145/3230543.3230564)）：
@@ -203,14 +208,26 @@ python3 traffic_gen/traffic_gen.py \
 
 ## 7. 验证（leaf_spine_8_100G_OS1, simul_time=0.01s, netload=25%）
 
-| 模式          | `--pfc/--irn` | <1BDP 平均/p99   | >1BDP 平均/p99   |
-| ------------- | ------------- | ---------------- | ---------------- |
-| hpcc          | 1 / 0         | 1.135 / 2.28     | 1.892 / 5.42     |
-| guard         | 1 / 0         | 1.131 / 2.22     | 1.817 / **3.68** |
-| homa (simple) | 1 / 0         | 1.190 / 3.43     | 1.667 / 3.88     |
-| **homa-full** | 1 / 0         | **1.120 / 1.88** | 2.176 / 10.18    |
+| 模式            | `--pfc/--irn` | <1BDP 平均/p99   | >1BDP 平均/p99   |
+| --------------- | ------------- | ---------------- | ---------------- |
+| hpcc            | 1 / 0         | 1.135 / 2.28     | 1.892 / 5.42     |
+| guard (v1)      | 1 / 0         | 1.131 / 2.22     | 1.817 / **3.68** |
+| **guard (v2)**  | 1 / 0         | **1.101 / 1.81** | 1.822 / 3.76     |
+| homa (simple)   | 1 / 0         | 1.190 / 3.43     | 1.667 / 3.88     |
+| **homa-full**   | 1 / 0         | **1.120 / 1.88** | 2.176 / 10.18    |
 
 数字是 FCT slowdown（实际 FCT / 理想 FCT）。
+
+### guard v1 → v2 对比（同样 leaf_spine_8_100G_OS1）
+
+| 负载 | 类别 | v1 平均/p99 | v2 平均/p99 | v2 收益 |
+| --- | --- | --- | --- | --- |
+| 25% | <1BDP | 1.131 / 2.221 | 1.101 / 1.805 | p99 -19% ✓ |
+| 25% | >1BDP | 1.817 / 3.676 | 1.822 / 3.757 | 持平（噪声） |
+| 50% | <1BDP | 1.372 / 3.373 | 1.265 / 2.965 | p99 -12% ✓ |
+| 50% | >1BDP | 3.429 / 8.567 | 3.453 / 8.681 | 持平（噪声） |
+
+短消息 p99 显著改善（来自 §1.2 改进 #6 的 8 priority queue 路由），长消息基本不变（guard 已有的等分配额 + Proactive Release 仍然主导长流）。
 
 - guard 在大流尾延迟上比 vanilla HPCC 改进约 32%，符合"接收端公平分配 + 主动释放"的设计意图
 - homa-full 短消息 p99 比 homa-simple 改善 **45%**（3.43 → 1.88），主要来自 8 priority queue 真正路由 + unscheduled cutoffs。长消息 p99 暂时略差于 simple（保守的 overcommit_degree=1 + RESEND 一 MTU/15µs 的恢复节奏），是 PR6 调参的下一步。
