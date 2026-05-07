@@ -482,9 +482,19 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
             exit(1);
         }
 
-        uint64_t bdp = 104000;
         FlowStatTag fst;
         if (p->PeekPacketTag(fst)) {
+            // Derive BDP from this flow's baseRtt + receiver's line rate
+            // instead of the hardcoded 104000 (which assumed leaf_spine 100G/
+            // 8.32µs RTT). On other topologies (different RTT or rate) the
+            // hardcoded value would mis-classify short vs. long flows.
+            uint64_t bdp = 104000;  // fallback if tag has no baseRtt
+            if (fst.HasBaseRtt()) {
+                uint32_t nic_idx = GetNicIdxOfRxQp(rxQp);
+                DataRate rate = m_nic[nic_idx].dev->GetDataRate();
+                bdp = (uint64_t)(fst.GetBaseRttSeconds() * rate.GetBitRate() / 8.0);
+                if (bdp == 0) bdp = 104000;  // safety
+            }
             if (fst.GetType() == FlowStatTag::FLOW_START) {
                 if (flow_size > bdp) {
                     HandleRccRequest(rxQp, p, ch);
