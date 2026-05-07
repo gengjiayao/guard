@@ -1437,6 +1437,15 @@ int main(int argc, char *argv[]) {
             sw->m_mmu->ConfigBufferSize(buffer_size * 1024 *
                                         1024);  // default 0, specify in run.py!!
             sw->m_mmu->node_id = sw->GetId();
+            // homa-full runs lossy on its data queues. Disable PFC on PGs
+            // 1..7 so paused-class detection never marks Homa traffic for
+            // PFC; PG 0 stays lossless because it carries control packets
+            // (ACK / NACK / GRANT / etc.).
+            if (cc_mode == 12) {
+                for (uint32_t pg = 1; pg < 8; pg++) {
+                    sw->m_mmu->SetPFCEnabledForPg(pg, false);
+                }
+            }
             NS_LOG_INFO("Node %u : Broadcom switch (%u ports / %gMB MMU)\n" %
                         (i, sw->GetNDevices() - 1, sw->m_mmu->GetMmuBufferBytes() / 1000000.));
         }

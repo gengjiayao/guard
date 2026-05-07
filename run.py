@@ -212,9 +212,13 @@ def main():
     if (args.cc == "timely" or args.cc == "hpcc") and args.lb == "conweave":
         raise Exception(
             "CONFIG ERROR : ConWeave currently does not support RTT-based protocols. Plz modify its logic accordingly.")
-    if enabled_irn == 1 and enabled_pfc == 1:
+    if enabled_irn == 1 and enabled_pfc == 1 and cc_mode != 12:
         raise Exception(
             "CONFIG ERROR : If IRN is turn-on, then you should turn off PFC (for better perforamnce).")
+    # cc_mode=12 (homa-full) intentionally combines --pfc 1 with --irn 1: PFC
+    # stays on at the NIC for the control queue (pg=0), but the MMU disables
+    # PFC pause for Homa Full's data queues (pg 1-7) so they run lossy; IRN
+    # picks up dropped data packets until PR5 ships native RESEND.
     if enabled_irn == 0 and enabled_pfc == 0:
         raise Exception(
             "CONFIG ERROR : Either IRN or PFC should be true (at least one).")

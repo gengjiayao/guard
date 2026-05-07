@@ -349,15 +349,19 @@ void SwitchMmu::GetPauseClasses(uint32_t port, uint32_t qIndex, bool pClasses[])
             for (uint32_t i = 0; i < qCnt; i++) {
                 pClasses[i] = true;
             }
-            return;
+            // continue to per-PG override below
         } else {
             for (uint32_t i = 0; i < qCnt; i++) {
                 pClasses[i] = false;
             }
+            if (m_usedIngressPGBytes[port][qIndex] > m_pg_shared_limit_cell) {
+                pClasses[qIndex] = true;
+            }
         }
-        if (m_usedIngressPGBytes[port][qIndex] > m_pg_shared_limit_cell) {
-            pClasses[qIndex] = true;
-        }
+    }
+    // Per-PG PFC disable (e.g., homa-full data queues run lossy).
+    for (uint32_t i = 0; i < qCnt; i++) {
+        if (!m_PFCenabledPg[i]) pClasses[i] = false;
     }
     return;
 }
