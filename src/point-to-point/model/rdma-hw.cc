@@ -18,6 +18,7 @@
 #include "ns3/settings.h"
 #include "ns3/switch-node.h"
 #include "ns3/uinteger.h"
+#include "homa-header.h"
 #include "ppp-header.h"
 #include "qbb-header.h"
 
@@ -131,7 +132,7 @@ TypeId RdmaHw::GetTypeId(void) {
     return tid;
 }
 
-RdmaHw::RdmaHw() {
+RdmaHw::RdmaHw() : homa_scheduler(this) {
     cnp_total = 0;
     cnp_by_ecn = 0;
     cnp_by_ooo = 0;
@@ -150,7 +151,11 @@ void RdmaHw::Setup(QpCompleteCallback cb) {
         dev->m_rdmaPktSent = MakeCallback(&RdmaHw::PktSent, this);
         // config NIC
         dev->m_rdmaEQ->m_mtu = m_mtu;
-        dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacket, this);
+        if (m_cc_mode == 10) {  // homa
+            dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacketHoma, this);
+        } else {
+            dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacket, this);
+        }
     }
     // setup qp complete callback
     m_qpCompleteCallback = cb;
@@ -223,15 +228,27 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
     qp->m_max_rate = m_bps;
     if (m_cc_mode == 1) {
         qp->mlx.m_targetRate = m_bps;
-    } else if (m_cc_mode == 3) {
+    } else if (m_cc_mode == 3 || m_cc_mode == 11) {
         qp->hp.m_curRate = m_bps;
         if (m_multipleRate) {
             for (uint32_t i = 0; i < IntHeader::maxHop; i++) qp->hp.hopState[i].Rc = m_bps;
         }
-        // grantRate initialization
+        // grantRate initialization (only used when guard layer enforces cap)
         qp->hp.m_grantRate = m_bps;
     } else if (m_cc_mode == 7) {
         qp->tmly.m_curRate = m_bps;
+    } else if (m_cc_mode == 10) {
+        qp->homa.m_curRate = m_bps;
+        qp->homa.is_request_package = true;
+        uint64_t bdp_bytes = baseRtt * m_bps.GetBitRate() / 8000000000lu;
+        // unscheduled credit (one credit = one packet)
+        qp->homa.m_credit_package = (std::min(bdp_bytes, size) + m_mtu - 1) / m_mtu;
+        // bytes still need to grant
+        qp->homa.m_request_bytes = size > bdp_bytes ? size - bdp_bytes : 0;
+        // unscheduled bytes (free initial burst)
+        qp->homa.m_unscheduled_bytes =
+            size < bdp_bytes ? std::max(size, (uint64_t)m_mtu) : std::max(bdp_bytes, (uint64_t)m_mtu);
+        qp->homa.m_bdp = bdp_bytes;
     }
     // print_rate(PeekPointer(qp));
 
@@ -352,8 +369,8 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
         seqh.SetSport(ch.udp.dport);
         seqh.SetDport(ch.udp.sport);
 
-        // check nhop, if more than 0, remove the last hop info
-        if (ch.udp.ih.nhop > 0) {
+        // guard: strip last-hop INT info (RCC handles last hop)
+        if (m_cc_mode == 11 && ch.udp.ih.nhop > 0) {
             int last_hop = --ch.udp.ih.nhop;
             memset(&ch.udp.ih.hop[last_hop], 0, sizeof(ch.udp.ih.hop[last_hop]));
         }
@@ -402,57 +419,63 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
         m_nic[nic_idx].dev->TriggerTransmit();
     }
 
-    if (flow_size == 0) {
-        std::cout << "ERROR: flow_size==0 in ReceiveUdp\n";
-        exit(1);
-    }
+    // guard (cc_mode 11): receiver-driven RCC + EWMA-based proactive release
+    if (m_cc_mode == 11) {
+        if (flow_size == 0) {
+            std::cout << "ERROR: flow_size==0 in ReceiveUdp (guard)\n";
+            exit(1);
+        }
 
-    uint64_t bdp = 104000;
-    uint64_t avg = m_rate_flow_ctl_set.empty() ? 1 : m_rate_flow_ctl_set.size();
-    FlowStatTag fst;
-    if (p->PeekPacketTag(fst)) {
-        // just for flow_start, ignore flow_star_end.
-        if (fst.GetType() == FlowStatTag::FLOW_START) {
-            if (flow_size > bdp) {
-                HandleRccRequest(rxQp, p, ch);
+        uint64_t bdp = 104000;
+        FlowStatTag fst;
+        if (p->PeekPacketTag(fst)) {
+            if (fst.GetType() == FlowStatTag::FLOW_START) {
+                if (flow_size > bdp) {
+                    HandleRccRequest(rxQp, p, ch);
+                }
+            }
+            if (rxQp->m_base_rtt_sec == 0 && fst.HasBaseRtt()) {
+                rxQp->m_base_rtt_sec = fst.GetBaseRttSeconds();
+            }
+        } else {
+            std::cout << "ERROR: no FlowStatTag in ReceiveUdp (guard)\n";
+            exit(1);
+        }
+
+        Time now = Simulator::Now();
+        double beta = 0.125;
+
+        if (rxQp->m_last_pkt_time.IsZero()) {
+            rxQp->m_est_rate = 0;
+        } else {
+            double interval = (now - rxQp->m_last_pkt_time).GetSeconds();
+            if (interval > 0) {
+                double inst_rate = (double)payload_size / interval; // Bytes/s
+                rxQp->m_est_rate = beta * rxQp->m_est_rate + (1.0 - beta) * inst_rate;
             }
         }
-        if (rxQp->m_base_rtt_sec == 0 && fst.HasBaseRtt()) {
-            rxQp->m_base_rtt_sec = fst.GetBaseRttSeconds();
-        }
-    } else {
-        std::cout << "ERROR: no FlowStatTag in ReceiveUdp\n";
-        exit(1);
-    }
+        rxQp->m_last_pkt_time = now;
 
-    Time now = Simulator::Now();
-    double beta = 0.125;
-    
-    if (rxQp->m_last_pkt_time.IsZero()) {
-        rxQp->m_est_rate = 0; 
-    } else {
-        double interval = (now - rxQp->m_last_pkt_time).GetSeconds();
-        if (interval > 0) {
-            double inst_rate = (double)payload_size / interval; // Bytes per second
-            rxQp->m_est_rate = beta * rxQp->m_est_rate + (1.0 - beta) * inst_rate;
+        double gamma = 1.0;
+        double v_th_double = rxQp->m_est_rate * rxQp->m_base_rtt_sec * gamma;
+        uint64_t v_th = (uint64_t)v_th_double;
+
+        uint32_t currentSeq = rxQp->ReceiverNextExpectedSeq;
+        uint64_t v_remain = (flow_size > currentSeq) ? (flow_size - currentSeq) : 0;
+
+        if (v_remain < v_th && !rxQp->m_proactive_released) {
+            HandleRccRemove(rxQp, p, ch);
+            rxQp->m_proactive_released = true;
         }
     }
-    rxQp->m_last_pkt_time = now;
 
-    double gamma = 1.0;
-    double v_th_double = rxQp->m_est_rate * rxQp->m_base_rtt_sec * gamma;
-    uint64_t v_th = (uint64_t)v_th_double;
-
-    uint32_t currentSeq = rxQp->ReceiverNextExpectedSeq;
-    uint64_t v_remain = 0;
-    
-    if (flow_size > currentSeq) {
-        v_remain = flow_size - currentSeq;
-    }
-    
-    if (v_remain < v_th && !rxQp->m_proactive_released) {
-        HandleRccRemove(rxQp, p, ch);
-        rxQp->m_proactive_released = true;
+    // homa (cc_mode 10): receiver-driven credit scheduling
+    if (m_cc_mode == 10) {
+        if (ch.udp.is_request_package) {
+            ReceiveHomaRequest(rxQp, p, ch);
+        } else {
+            ReceiveHomaData(rxQp, p, ch);
+        }
     }
 
     return 0;
@@ -501,7 +524,7 @@ int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch) {
         qp->m_rate = dev->GetDataRate();
         if (m_cc_mode == 1) {
             qp->mlx.m_targetRate = dev->GetDataRate();
-        } else if (m_cc_mode == 3) {
+        } else if (m_cc_mode == 3 || m_cc_mode == 11) {
             qp->hp.m_curRate = dev->GetDataRate();
             if (m_multipleRate) {
                 for (uint32_t i = 0; i < IntHeader::maxHop; i++)
@@ -509,6 +532,8 @@ int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch) {
             }
         } else if (m_cc_mode == 7) {
             qp->tmly.m_curRate = dev->GetDataRate();
+        } else if (m_cc_mode == 10) {
+            qp->homa.m_curRate = dev->GetDataRate();
         }
     }
     return 0;
@@ -692,8 +717,13 @@ int RdmaHw::Receive(Ptr<Packet> p, CustomHeader &ch) {
         return ReceiveAck(p, ch);
     } else if (ch.l3Prot == 0xFC) {  // ACK
         return ReceiveAck(p, ch);
-    } else if (ch.l3Prot == 0xFB) {  // Rate
-        return ReceiveRate(p, ch);
+    } else if (ch.l3Prot == 0xFB) {  // guard rate grant or homa credit
+        if (m_cc_mode == 11) {
+            return ReceiveRate(p, ch);
+        } else if (m_cc_mode == 10) {
+            return ReceiveHomaCredit(p, ch);
+        }
+        return 0;
     }
     return 0;
 }
@@ -1219,7 +1249,7 @@ void RdmaHw::SendRateControlPacket(Ptr<RdmaRxQueuePair> rx_qp, CustomHeader &ch,
     Ipv4Header head;  // Prepare IPv4 header
     head.SetDestination(Ipv4Address(rx_qp->dip));
     head.SetSource(Ipv4Address(rx_qp->sip));
-    head.SetProtocol(0xFB);  // 0xFB rate grant
+    head.SetProtocol(0xFB);  // 0xFB rate grant (guard)
     head.SetTtl(64);
     head.SetPayloadSize(newp->GetSize());
     head.SetIdentification(rx_qp->m_ipid++);
@@ -1231,6 +1261,250 @@ void RdmaHw::SendRateControlPacket(Ptr<RdmaRxQueuePair> rx_qp, CustomHeader &ch,
     uint32_t nic_idx = GetNicIdxOfRxQp(rx_qp);
     m_nic[nic_idx].dev->RdmaEnqueueHighPrioQ(newp);
     m_nic[nic_idx].dev->TriggerTransmit();
+}
+
+/***********************
+ * Homa CC
+ ***********************/
+RdmaHw::HomaScheduler::HomaScheduler(RdmaHw* hw): rdma_hw(hw) {
+    is_scheduled = false;
+    pacing_interval = 0;
+}
+
+RdmaHw::HomaScheduler::~HomaScheduler() {}
+
+void RdmaHw::HomaScheduler::SetPacingInterval(Ptr<Packet> p) {
+    // pacing interval ≈ time to put one MTU on the wire at line rate
+    uint64_t interval_bytes = rdma_hw->m_mtu;
+    uint32_t nic_idx = 0;
+    if (!active_flow.empty()) {
+        nic_idx = rdma_hw->GetNicIdxOfRxQp(active_flow.top()->rx_qp);
+    } else if (!flow_hash.empty()) {
+        nic_idx = rdma_hw->GetNicIdxOfRxQp(flow_hash.begin()->second->rx_qp);
+    }
+    Ptr<QbbNetDevice> dev = rdma_hw->m_nic[nic_idx].dev;
+    DataRate qp_rate = dev->GetDataRate();
+    this->pacing_interval = (uint64_t)(1e9 * 8 * interval_bytes / qp_rate.GetBitRate());
+}
+
+void RdmaHw::HomaScheduler::SendHomaCreditPackage(HomaFlow &flow) {
+    qbbHeader seqh;
+    seqh.SetSeq(flow.rx_qp->ReceiverNextExpectedSeq);
+    seqh.SetPG(flow.pg);
+    seqh.SetSport(flow.rx_qp->sport);
+    seqh.SetDport(flow.rx_qp->dport);
+    seqh.SetCnp();
+
+    Ptr<Packet> newp = Create<Packet>(std::max(60 - 14 - 20 - (int)seqh.GetSerializedSize(), 0));
+    newp->AddHeader(seqh);
+
+    Ipv4Header head;
+    head.SetDestination(Ipv4Address(flow.rx_qp->dip));
+    head.SetSource(Ipv4Address(flow.rx_qp->sip));
+    head.SetProtocol(0xFB);  // homa credit (decoded by cc_mode)
+    head.SetTtl(64);
+    head.SetPayloadSize(newp->GetSize());
+    head.SetIdentification(flow.rx_qp->m_ipid++);
+
+    newp->AddHeader(head);
+    rdma_hw->AddHeader(newp, 0x800);
+
+    uint32_t nic_idx = rdma_hw->GetNicIdxOfRxQp(flow.rx_qp);
+    rdma_hw->m_nic[nic_idx].dev->RdmaEnqueueHighPrioQ(newp);
+    rdma_hw->m_nic[nic_idx].dev->TriggerTransmit();
+}
+
+void RdmaHw::HomaScheduler::UpdateFlowState(HomaFlow* flow) {
+    flow->token_bucket += rdma_hw->m_mtu;
+    if (flow->requset_bytes >= rdma_hw->m_mtu) {
+        flow->requset_bytes -= rdma_hw->m_mtu;
+    } else {
+        flow->requset_bytes = 0;
+    }
+
+    if (flow->requset_bytes > 0 && flow->token_bucket < flow->bdp) {
+        flow->state = HOMA_FLOW_ACTIVE;
+        active_flow.insert(flow);
+    } else if (flow->requset_bytes > 0 && flow->token_bucket >= flow->bdp) {
+        flow->state = HOMA_FLOW_WAITING;
+        wait_flow.insert(flow);
+    } else if (flow->requset_bytes == 0) {
+        flow_hash.erase(PeekPointer(flow->rx_qp));
+    }
+}
+
+void RdmaHw::HomaScheduler::ScheduleHoma() {
+    if (flow_hash.size() == 0) {
+        is_scheduled = false;
+        return;
+    }
+    if (!active_flow.empty()) {
+        HomaFlow* priority_flow = active_flow.pop();
+        SendHomaCreditPackage(*priority_flow);
+        UpdateFlowState(priority_flow);
+        Simulator::Schedule(NanoSeconds(this->pacing_interval),
+                            &RdmaHw::HomaScheduler::ScheduleHoma, this);
+    } else {
+        is_scheduled = false;
+    }
+}
+
+void RdmaHw::HomaScheduler::AddHomaFlow(HomaFlow &flow_template, Ptr<Packet> p, CustomHeader &ch) {
+    std::unique_ptr<HomaFlow> new_flow_ptr(new HomaFlow(flow_template));
+    HomaFlow* p_flow = new_flow_ptr.get();
+
+    if (p_flow->token_bucket >= p_flow->bdp) {
+        p_flow->state = HOMA_FLOW_WAITING;
+        wait_flow.insert(p_flow);
+    } else {
+        p_flow->state = HOMA_FLOW_ACTIVE;
+        active_flow.insert(p_flow);
+    }
+
+    flow_hash[PeekPointer(p_flow->rx_qp)] = std::move(new_flow_ptr);
+
+    // only kick off the pacing loop if we now have an active flow.
+    // a pure-waiting flow will be promoted to active by ReceiveHomaData,
+    // which schedules then.
+    if (!is_scheduled && !active_flow.empty()) {
+        is_scheduled = true;
+        SetPacingInterval(p);
+        ScheduleHoma();
+    }
+}
+
+void RdmaHw::ReceiveHomaRequest(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch) {
+    HomaFlow homa_flow;
+    homa_flow.state = HOMA_FLOW_IDLE;
+    homa_flow.rx_qp = qp;
+    homa_flow.requset_bytes = ch.udp.homa_requset;
+    homa_flow.token_bucket = ch.udp.homa_unscheduled;
+    homa_flow.pg = ch.udp.pg;
+    homa_flow.bdp = ch.udp.bdp;
+    homa_scheduler.AddHomaFlow(homa_flow, p, ch);
+}
+
+void RdmaHw::ReceiveHomaData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch) {
+    auto it = homa_scheduler.flow_hash.find(PeekPointer(qp));
+    if (it == homa_scheduler.flow_hash.end()) return;
+
+    HomaFlow* p_flow = it->second.get();
+    if (p_flow->token_bucket >= homa_scheduler.rdma_hw->m_mtu) {
+        p_flow->token_bucket -= homa_scheduler.rdma_hw->m_mtu;
+    } else {
+        p_flow->token_bucket = 0;
+    }
+
+    if (p_flow->state == HOMA_FLOW_WAITING) {
+        if (p_flow->token_bucket < p_flow->bdp) {
+            homa_scheduler.wait_flow.erase(p_flow);
+            p_flow->state = HOMA_FLOW_ACTIVE;
+            homa_scheduler.active_flow.insert(p_flow);
+            if (!homa_scheduler.is_scheduled) {
+                homa_scheduler.is_scheduled = true;
+                homa_scheduler.SetPacingInterval(p);
+                Simulator::Schedule(NanoSeconds(0),
+                                    &RdmaHw::HomaScheduler::ScheduleHoma, &this->homa_scheduler);
+            }
+        }
+    }
+}
+
+int RdmaHw::ReceiveHomaCredit(Ptr<Packet> p, CustomHeader &ch) {
+    uint16_t qIndex = ch.ack.pg;
+    uint16_t port = ch.ack.dport;
+    uint16_t sport = ch.ack.sport;
+    uint64_t key = GetQpKey(ch.sip, port, sport, qIndex);
+    Ptr<RdmaQueuePair> qp = GetQp(key);
+    if (qp == NULL) {
+        if (akashic_Qp.find(key) != akashic_Qp.end()) return 1;
+        printf("ERROR: Node: %u Homa Credit - NIC cannot find the flow, key: %lu\n",
+               m_node->GetId(), key);
+        exit(1);
+    }
+    qp->homa.m_credit_package++;
+    uint32_t nic_idx = GetNicIdxOfQp(qp);
+    Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
+    dev->TriggerTransmit();
+    return 0;
+}
+
+Ptr<Packet> RdmaHw::GetNxtPacketHoma(Ptr<RdmaQueuePair> qp) {
+    uint32_t payload_size = qp->GetBytesLeft();
+    if (m_mtu < payload_size) payload_size = m_mtu;
+    uint32_t seq = (uint32_t)qp->snd_nxt;
+    qp->stat.txTotalPkts += 1;
+    qp->stat.txTotalBytes += payload_size;
+
+    Ptr<Packet> p = Create<Packet>(payload_size);
+    if (qp->homa.is_request_package) {
+        HomaHeader homaHeader;
+        homaHeader.SetHomaRequest(qp->homa.m_request_bytes);
+        homaHeader.SetHomaUnscheduled(qp->homa.m_unscheduled_bytes);
+        homaHeader.SetBdp(qp->homa.m_bdp);
+        p->AddHeader(homaHeader);
+    }
+    qp->homa.m_credit_package--;
+
+    SeqTsHeader seqTs;
+    seqTs.SetSeq(seq);
+    seqTs.SetPG(qp->m_pg);
+    seqTs.SetIsRequest(qp->homa.is_request_package ? 1 : 0);
+
+    if (qp->homa.is_request_package) qp->homa.is_request_package = false;
+
+    p->AddHeader(seqTs);
+
+    UdpHeader udpHeader;
+    udpHeader.SetDestinationPort(qp->dport);
+    udpHeader.SetSourcePort(qp->sport);
+    p->AddHeader(udpHeader);
+
+    Ipv4Header ipHeader;
+    ipHeader.SetSource(qp->sip);
+    ipHeader.SetDestination(qp->dip);
+    ipHeader.SetProtocol(0x11);
+    ipHeader.SetPayloadSize(p->GetSize());
+    ipHeader.SetTtl(64);
+    ipHeader.SetTos(0);
+    ipHeader.SetIdentification(qp->m_ipid);
+    p->AddHeader(ipHeader);
+
+    PppHeader ppp;
+    ppp.SetProtocol(0x0021);
+    p->AddHeader(ppp);
+
+    // attach Stat tags
+    {
+        FlowIDNUMTag fint;
+        if (!p->PeekPacketTag(fint)) {
+            fint.SetId(qp->m_flow_id);
+            fint.SetFlowSize(qp->m_size);
+            p->AddPacketTag(fint);
+        }
+        FlowStatTag fst;
+        uint64_t size = qp->m_size;
+        if (!p->PeekPacketTag(fst)) {
+            if (size < m_mtu && qp->snd_nxt + payload_size >= qp->m_size) {
+                fst.SetType(FlowStatTag::FLOW_START_AND_END);
+            } else if (qp->snd_nxt + payload_size >= qp->m_size) {
+                fst.SetType(FlowStatTag::FLOW_END);
+            } else if (qp->snd_nxt == 0) {
+                fst.SetType(FlowStatTag::FLOW_START);
+            } else {
+                fst.SetType(FlowStatTag::FLOW_NOTEND);
+            }
+            fst.setInitiatedTime(Simulator::Now().GetSeconds());
+            p->AddPacketTag(fst);
+        }
+    }
+
+    if (qp->irn.m_enabled) {
+        if (qp->irn.m_max_seq < seq) qp->irn.m_max_seq = seq;
+    }
+    qp->snd_nxt += payload_size;
+    qp->m_ipid++;
+    return p;
 }
 
 /***********************
@@ -1399,7 +1673,11 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
                         }
                     }
                 }
-                SyncHwRate(qp, new_rate);
+                if (m_cc_mode == 11) {
+                    SyncHwRate(qp, new_rate);  // guard: cap by grant rate
+                } else {
+                    ChangeRate(qp, new_rate);  // vanilla HPCC
+                }
             }
         }
         if (!fast_react) {

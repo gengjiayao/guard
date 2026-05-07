@@ -133,9 +133,12 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
                     current_pause_time[flowid] = Simulator::Now();
             }
         } else if (cond1 && cond2) {
-            if (m_qpGrp->Get((qIndex + m_rrlast) % fcount)->m_nextAvail.GetTimeStep() >
-                Simulator::Now().GetTimeStep())  // not available now
+            bool time_ok = m_qpGrp->Get((qIndex + m_rrlast) % fcount)->m_nextAvail.GetTimeStep() <=
+                           Simulator::Now().GetTimeStep();
+            // Homa: must also have a credit packet to send
+            if (!time_ok || (IntHeader::mode == 2 && qp->homa.m_credit_package == 0)) {
                 continue;
+            }
             // Check if the flow has been blocked by PFC
             {
                 int32_t flowid = m_qpGrp->Get((qIndex + m_rrlast) % fcount)->m_flow_id;

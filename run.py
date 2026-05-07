@@ -98,9 +98,11 @@ RANDOM_SEED 1
 # LB/CC mode matching
 cc_modes = {
     "dcqcn": 1,
-    "rhcc": 3,
+    "hpcc": 3,
     "timely": 7,
     "dctcp": 8,
+    "homa": 10,
+    "guard": 11,
 }
 
 lb_modes = {
@@ -310,7 +312,7 @@ def main():
     # By default, DCQCN uses no window (rate-based).
     has_win = 0
     var_win = 0
-    if (cc_mode == 3 or cc_mode == 8 or enforce_win == 1):  # HPCC or DCTCP or enforcement
+    if (cc_mode == 3 or cc_mode == 8 or cc_mode == 11 or enforce_win == 1):  # HPCC, DCTCP, GUARD, or enforce
         has_win = 1
         var_win = 1
         if enforce_win == 1:

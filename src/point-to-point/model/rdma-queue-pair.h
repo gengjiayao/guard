@@ -29,6 +29,8 @@ enum CcMode {
     CC_MODE_HPCC = 3,
     CC_MODE_TIMELY = 7,
     CC_MODE_DCTCP = 8,
+    CC_MODE_HOMA = 10,
+    CC_MODE_GUARD = 11,
     CC_MODE_UNDEFINED = 0,
 };
 
@@ -100,6 +102,14 @@ class RdmaQueuePair : public Object {
             uint32_t incStage;
         } hopState[IntHeader::maxHop];
     } hp;
+    struct {
+        bool is_request_package;
+        DataRate m_curRate;
+        uint64_t m_bdp;
+        uint64_t m_request_bytes;
+        uint64_t m_unscheduled_bytes;
+        uint64_t m_credit_package;
+    } homa;
     struct {
         uint32_t m_lastUpdateSeq;
         DataRate m_curRate;
