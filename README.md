@@ -1,259 +1,193 @@
-# NS-3 Simulator for RDMA Network Load Balancing
+# NS-3 RDMA 拥塞控制对比实验平台
 
-This is a Github repository for the SIGCOMM'23 paper "[Network Load Balancing with In-network Reordering Support for RDMA](https://doi.org/10.1145/3603269.3604849)".
+本仓库基于 [ConWeave (SIGCOMM'23)](https://doi.org/10.1145/3603269.3604849) 的 NS-3 仿真器扩展而来，目标是 **在同一份仿真代码内对比多种 RDMA 拥塞控制 (CC) 算法**。
 
-We describe how to run this repository either on docker or using your local machine with `ubuntu:20.04`. 
+`guard` 分支已经把以下三种独立的 CC 实现整合到同一棵代码树里，可以通过 `--cc` 参数一键切换：
 
+| `--cc`    | `cc_mode` | 算法                                                        |
+| --------- | --------- | ----------------------------------------------------------- |
+| `dcqcn`   | 1         | Mellanox 版 DCQCN（原仓库自带）                              |
+| `hpcc`    | 3         | 原版 HPCC（in-network INT 反馈），无任何接收端干预          |
+| `timely` | 7         | TIMELY（基于 RTT）                                          |
+| `dctcp`   | 8         | DCTCP（原仓库自带）                                         |
+| **`homa`**  | **10**    | Homa 风格的接收端 credit 调度器（per-packet pacing）        |
+| **`guard`** | **11**    | HPCC + 接收端 max-min 速率分配 + EWMA 主动配额释放          |
 
-## Run with Docker
-
-#### Docker Engine
-For Ubuntu, following the installation guide [here](https://docs.docker.com/engine/install/ubuntu/) and make sure to apply the necessary post-install [steps](https://docs.docker.com/engine/install/linux-postinstall/).
-Eventually, you should be able to launch the `hello-world` Docker container without the `sudo` command: `docker run hello-world`.
-
-#### 0. Prerequisites
-First, you do all these:
-
-```shell
-wget https://www.nsnam.org/releases/ns-allinone-3.19.tar.bz2
-tar -xvf ns-allinone-3.19.tar.bz2
-cd ns-allinone-3.19
-rm -rf ns-3.19
-git clone https://github.com/conweave-project/conweave-ns3.git ns-3.19
-```
-
-#### 1. Create a Dockerfile
-Here, `ns-allinone-3.19` will be your root directory.
-
-Create a Dockerfile at the root directory with the following:
-```shell
-FROM ubuntu:20.04
-ARG DEBIAN_FRONTEND=noninteractive
-
-RUN apt update && apt install -y gnuplot python python3 python3-pip build-essential libgtk-3-0 bzip2 wget git && rm -rf /var/lib/apt/lists/* && pip3 install numpy matplotlib cycler
-WORKDIR /root
-```
-
-Then, you do this: 
-```shell
-docker build -t cw-sim:sigcomm23ae .
-```
-
-Once the container is built, do this from the root directory:
-```shell
-docker run -it -v $(pwd):/root cw-sim:sigcomm23ae bash -c "cd ns-3.19; ./waf configure --build-profile=optimized; ./waf"
-```
-
-This should build everything necessary for the simulator.
-
-#### 2. Run
-One can always just run the container: 
-```shell
-docker run -it --name cw-sim -v $(pwd):/root cw-sim:sigcomm23ae 
-cd ns-3.19;
-./autorun.sh
-```
-
-That will run `0.1 second` simulation of 8 experiments which are a part of Figure 12 and 13 in the paper.
-In the script, you can easily change the network load (e.g., `50%`), runtime (e.g., `0.1s`), or topology (e.g., `leaf-spine`).
-To plot the FCT graph, see below or refer to the script `./analysis/plot_fct.py`.
-To plot the Queue Usage graph, see below or refer to the script `./analysis/plot_queue.py`.
-
-:exclamation: **To run processes in background**, use the commands:
-```shell
-docker run -dit --name cw-sim -v $(pwd):/root cw-sim:sigcomm23ae 
-docker exec -it cw-sim /bin/bash
-
-root@252578ceff68:~# cd ns-3.19/
-root@252578ceff68:~/ns-3.19# ./autorun.sh
-Running RDMA Network Load Balancing Simulations (leaf-spine topology)
-
-----------------------------------
-TOPOLOGY: leaf_spine_128_100G_OS2
-NETWORK LOAD: 50
-TIME: 0.1
-----------------------------------
-
-Run Lossless RDMA experiments...
-Run IRN RDMA experiments...
-Runing all in parallel. Check the processors running on background!
-root@252578ceff68:~/ns-3.19# exit
-exit
-```
-
-#### 3. Plot
-You can easily plot the results using the following command:
-```shell
-python3 ./analysis/plot_fct.py
-python3 ./analysis/plot_queue.py
-python3 ./analysis/plot_uplink.py
-```
-
-See below for details of output results.
-
-
-
+> "guard" 是本仓库提出的算法，目标是在保留 HPCC in-network 反馈的同时，在接收端再加一层公平速率分配 + 主动尾部释放，主要改善大流的尾延迟。
 
 ---
 
-## Run NS-3 on Ubuntu 20.04
-#### 0. Prerequisites
-We tested the simulator on Ubuntu 20.04, but latest versions of Ubuntu should also work.
-```shell
-sudo apt install build-essential python3 libgtk-3-0 bzip2
+## 1. 三种重点算法的设计
+
+### 1.1 HPCC（`cc_mode=3`，对照基线）
+
+完全保持 HPCC 原始逻辑：交换机在数据包内附 INT (qlen / txBytes / ts)，接收端把 INT 透传回 ACK，发送端按公式更新速率。本分支没有对 HPCC 做任何修改，作为基线对照。
+
+### 1.2 Guard（`cc_mode=11`，本分支提出的算法）
+
+在 HPCC 之上叠加一层 **接收端驱动的速率配额 (rate grant)**：
+
+1. **接收端速率请求**：当一条流的第一个数据包（带 `FlowStatTag::FLOW_START`）到达，且总流大小 > 1 BDP，接收端把它登记到本 NIC 的活跃流集合 `m_rate_flow_ctl_set`。
+2. **公平分配**：接收端把"线速 / 集合大小"作为速率上限，给集合内 *所有* 流广播一个 `0xFB` Rate Grant 包。
+3. **发送端处理**：发送端把 grant 速率写进 `qp->hp.m_grantRate`，最终发送速率取 `min(HPCC 算出的速率, m_grantRate)`，由新增的 `SyncHwRate()` 统一下发。
+4. **主动配额释放（Proactive Release）**：接收端用 EWMA（`β=0.125`）实时估算每条流的瞬时接收速率，当 *剩余字节* < `est_rate × baseRTT × γ`（`γ=1.0`）时，认为这条流的剩余流量已经全部在飞行中，主动把它从集合里移除并广播新一轮 grant。
+5. **INT hop 截断**：guard 模式下，接收端在回 ACK 前 *删掉最后一跳的 INT 信息*——因为最后一跳（接收端 NIC）的拥塞已经由 RCC 直接接管了，HPCC 不需要再为这一跳算速率。
+
+控制包用一个新的 IPv4 协议号 `0xFB`（与 ACK=0xFC、NACK=0xFD、CNP=0xFF 并列），交换机按最高优先级转发。
+
+### 1.3 Homa（`cc_mode=10`，移植对照算法）
+
+经典的接收端驱动 credit 调度（[SIGCOMM'18 Homa](https://dl.acm.org/doi/10.1145/3230543.3230564)）：
+
+1. **HomaHeader**：每条流第一个数据包带额外字段 `bdp / homa_request / homa_unscheduled`，告诉接收端流的大小和初始 unscheduled 字节数（≈1 BDP 免 grant 的初始 burst）。
+2. **HomaScheduler**：接收端为每个 NIC 维护一个 `HomaPriorityQueue`（自实现二叉堆 + map）+ `wait_flow` 集合，按 `(pg, 剩余字节升序)` 即 **SRPT** 排序。
+3. **Per-packet credit**：调度器周期性 pop 出最高优先级流，发一个 `0xFB` Homa Credit 包，发送端每收到一个 credit 才能多发一个 MTU。
+4. **状态切换**：流要么 `ACTIVE`（可拿 credit）要么 `WAITING`（已发出去的 credit 还没消化完），`ReceiveHomaData` 在每个 MTU 到达时按 token bucket 状态决定切换。
+
+`0xFB` 包在 guard 和 homa 模式下语义不同（grant 速率 vs. credit 颗粒），由 `RdmaHw::Receive()` 根据 `m_cc_mode` 分发。
+
+---
+
+## 2. 关键文件
+
 ```
-For plotting, we use `numpy`, `matplotlib`, and `cycler` for python3:
-```shell
-python3 -m pip install numpy matplotlib cycler
+src/point-to-point/model/
+├── rdma-hw.{h,cc}          # 三种算法的 RdmaHw 主体逻辑：ReceiveUdp 分支、UpdateRateHp、HomaScheduler、SyncHwRate
+├── rdma-queue-pair.{h,cc}  # QP 结构：hp.m_grantRate（guard）、homa.{is_request_package,m_credit_package,...}
+├── homa-header.{h,cc}      # Homa 首包 header：bdp / homa_request / homa_unscheduled
+├── flow-stat-tag.{h,cc}    # 在 packet tag 里透传 baseRTT，给 guard 的 EWMA 阈值使用
+└── switch-node.cc          # 0xFB 走 ECMP + 高优先级队列
+
+src/network/utils/
+├── custom-header.{h,cc}    # 反序列化时按 IntHeader::mode 解析 Homa 字段；接受 0xFB 协议号
+└── int-header.h            # IntHeader::mode：0=INT (HPCC/Guard) / 1=TS (Timely) / 2=Homa / 5=none
+
+src/internet/model/
+└── seq-ts-header.{h,cc}    # 在 mode==2 时多塞一个 m_is_request 字段
+
+src/point-to-point/model/qbb-net-device.cc
+                            # 发送侧：mode==2 (homa) 时无 credit 不发包
+
+scratch/network-load-balance.cc
+                            # cc_mode → IntHeader::mode 映射；BW / qlen / flow-bw 监控
+
+run.py                      # 入口脚本：cc_modes 字典、配置模板、调度仿真+分析
 ```
 
+---
 
-#### 1. Configure & Build
-```shell
-wget https://www.nsnam.org/releases/ns-allinone-3.19.tar.bz2
-tar -xvf ns-allinone-3.19.tar.bz2
-cd ns-allinone-3.19
-rm -rf ns-3.19
-git clone https://github.com/conweave-project/conweave-ns3.git ns-3.19
-cd ns-3.19
+## 3. 编译
+
+`waf 1.7.11` 是 ns-3.19 自带的，**只能用 Python 2** 引导（脚本里嵌了 bz2 二进制 archive，Python 3 无法解析含空字节的源码）。Debian 13 / Ubuntu 22.04+ 默认没有 Python 2，需要用 pyenv 装一个：
+
+```bash
+# 1. 安装 pyenv
+curl -L https://pyenv.run | bash
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init - bash)"
+
+# 2. 装 python 2.7.18 并锁定到当前仓库
+pyenv install 2.7.18
+cd /path/to/this/repo
+pyenv local 2.7.18
+
+# 3. 配置 + 编译
 ./waf configure --build-profile=optimized
-./waf
+./waf build
 ```
 
+> 仿真本身、`run.py`、`fctAnalysis.py` 等运行时脚本仍然用 **Python 3**，只有 `./waf` 这个引导器需要 Python 2。
 
-#### 2. Simulation
-##### Run
-You can reproduce the simulation results of Figure 12 and 13 (FCT slowdown), Figure 16 (Queue usage per switch) by running the script:
-```shell
-./autorun.sh
+---
+
+## 4. 跑仿真
+
+```bash
+python3 run.py --cc <hpcc|guard|homa|...> \
+               --lb fecmp \
+               --pfc 1 --irn 0 \
+               --simul_time 0.01 \
+               --netload 25 \
+               --topo leaf_spine_8_100G_OS1
 ```
 
-In the script, you can easily change the network load (e.g., `50%`), runtime (e.g., `0.1s`), or topology (e.g., `leaf-spine`).
-This takes a few hours, and requires 8 CPU cores and 10G RAM.
-Note that we do not run `DRILL` since it takes too much time due to many out-of-order packets.
+参数说明：
 
+| 参数             | 含义                                        |
+| ---------------- | ------------------------------------------- |
+| `--cc`           | 拥塞控制算法（见上表），决定 `cc_mode`      |
+| `--lb`           | 负载均衡：`fecmp/drill/conga/letflow/conweave` |
+| `--pfc / --irn`  | 丢包恢复机制（恰好二选一）                  |
+| `--simul_time`   | 仿真时长（秒），≥ 0.005                      |
+| `--netload`      | 网卡负载百分比（25 表示 25%）                |
+| `--topo`         | 拓扑名（见 `config/leaf_spine_*` 等）         |
+| `--bw`           | 网卡带宽（Gbps，默认 100）                   |
+| `--cdf`          | 流大小 CDF：默认 `AliStorage2019`，可选 `WebSearch` 等 |
 
-If you want to run the simulation individually, try this command:
-```shell
-python3 ./run.py --h
-```
+每次仿真创建 `mix/output/<10位ID>/`，里面包含：
 
-It first calls a traffic generator `./traffic_gen/traffic_gen.py` to create an input trace.
-Then, it runs NS-3 simulation script `./scratch/network-load-balance.cc`. 
-Lastly, it runs FCT analyzer `./fctAnalysis.py` and switch resource analyzer `./queueAnalysis.py`. 
+- `<id>_in.txt`：原始流输入
+- `<id>_out_fct.txt` / `<id>_out_fct_summary.txt`：FCT 结果（slowdown 和绝对值的 P50/P95/P99/P99.9）
+- `<id>_out_qlen.txt`：交换机出端口队列长度采样（每 1µs，guard 默认开）
+- `<id>_out_bw.txt`：节点级吞吐采样（每 100µs）
+- `<id>_flow_bw.txt`：每条流的吞吐采样
+- `<id>_out_pfc.txt`：PFC 触发记录
+- `config.txt` / `config.log`：本次仿真的输入配置和 stdout 输出
 
+---
 
-##### Plot
-You can easily plot the results using the following command:
-```shell
-python3 ./analysis/plot_fct.py
-python3 ./analysis/plot_queue.py
-python3 ./analysis/plot_uplink.py
-```
+## 5. 内置拓扑
 
-The outcome figures are located at `./analysis/figures`. 
-1. The script requires input parameters such as `-sT` and `-fT` which indicate the time window to analyze the fct result. 
-By default, it assuems to use `0.1 second` runtime. 
-2. `plot_fct.py` plots the Average and 99-percentile FCT result and give comparisons between frameworks. It excludes `5ms` of warm-up and `50ms` of cool-down period in measurements. You can control these numbers in `run.py`:
-```python
-fct_analysis_time_limit_begin = int(flowgen_start_time * 1e9) + int(0.005 * 1e9)  # warmup
-fct_analysistime_limit_end = int(flowgen_stop_time * 1e9) + int(0.05 * 1e9)  # extra term
-```
-or, directly put parameters into `plot_fct.py`. Use `-h` for details. 
-3. `plot_queue.py` plots the CDF of queue volume usage per switch for ConWeave. It excludes `5ms` of warm-up period, and cool-down period is not used as it would _underestimate_ the overhead. Similarly, you can control this number in `run.py`:
-```python
-queue_analysis_time_limit_begin = int(flowgen_start_time * 1e9) + int(0.005 * 1e9)  # warmup
-queue_analysistime_limit_end = int(flowgen_stop_time * 1e9) # no extra term!!
-```
-or, directly put parameters into `plot_queue.py`. Use `-h` for details. 
-4. `plot_uplink.py` plots the load balance efficiency with ToR uplink utility. By default, it captures uplink throughputs for every `100µs` and measure the variations. It excludes `5ms` of warm-up and `50ms` of cool-down period in measurements. 
-Or, directly put parameters into `plot_uplink.py`. Use `-h` for details. 
-
-##### Output
-As well as above figures, other results are located at `./mix/output`, such as uplink usage (Figure 14), queue number usage per port (Figure 15), etc.
-
-* At `./mix/output`, several raw data is stored such as 
-  * Flow Completion Time (`XXX_out_fct.txt`), - Figure 12, 13
-  * PFC generation (`XXX_out_pfc.txt`), 
-  * Uplink's utility (`XXX_out_uplink.txt`), - Figure 14
-  * Number of connections (`XXX_out_conn.txt`), 
-  * Congestion Notification Packet (`XXX_out_cnp.txt`).
-  * CDF of number of queues usage per egress port (`XXX_out_voq_per_dst_cdf.txt`). - Figure 15 
-  * CDF of total queue memory overhead per switch (`XXX_out_voq_cdf.txt`). - Figure 16
-  
-* Each run of simulation creates a repository in `./mix/output` with simulation ID (10-digit number).
-* Inside the folder, you can check the simulation config `config.txt` and output log `config.log`. 
-* The output files include post-processed files such as CDF results.
-* The history of simulations will be recorded in `./mix/.history`. 
-
-##### Topology
-To evaluate on fat-tree (K=8) topology, you can simply change the `TOPOLOGY` variable in `autorun.sh` to `fat_k8_100G_OS2`:
-```shell
-TOPOLOGY="leaf_spine_128_100G_OS2" # or, fat_k8_100G_OS2
-```
-
-##### Clean up
-To clean all data of previous simulation results, you can run the command:
-```shell
-./cleanup.sh
-```
-
-#### ConWeave Parameters
-We include ConWeave's parameter values into `./run.py` based on flow control model and topology.  
-
-
-### Simulator Structure
-Most implementations of network load balancing are located in the directory `./src/point-to-point/model`.
-
-* `switch-node.h/cc`: Switching logic that includes a default multi-path routing protocol (e.g., ECMP) and DRILL.
-* `switch-mmu.h/cc`: Ingress/egress admission control and PFC.
-* `conga-routing.h/cc`: Conga routing protocol.
-* `letflow-routing.h/cc`: Letflow routing protocol.
-* `conweave-routing.h/cc`: ConWeave routing protocol.
-* `conweave-voq.h/cc`: ConWeave in-network reordering buffer.
-* `settings.h/cc`: Global variables for logging and debugging.
-* `rdma-hw.h/cc`: RDMA-enable NIC behavior model.
-
-<b> RNIC behavior model to out-of-order packet arrival </b>
-As disussed in the paper, we observe that RNIC reacts to even a single out-of-order packet sensitively by sending CNP packet.
-However, existing RDMA-NS3 simulator (HPCC, DCQCN, TLT-RDMA, etc) did not account for this.
-In this simulator, we implemented that behavior in `rdma-hw.cc`.
-
-
-## Citation
-If you find this repository useful in your research, please consider citing:
-```
-@inproceedings{song2023conweave,
-  title={Network Load Balancing with In-network Reordering Support for RDMA},
-  author={Song, Cha Hwan and Khooi, Xin Zhe and Joshi, Raj and Choi, Inho and Li, Jialin and Chan, Mun Choon},
-  booktitle={Proceedings of SIGCOMM},
-  year={2023}
-}
-```
-
-## Credit
-This code repository is based on [https://github.com/alibaba-edu/High-Precision-Congestion-Control](https://github.com/alibaba-edu/High-Precision-Congestion-Control) for Mellanox Connect-X based RDMA-enabled NIC implementation, and [https://github.com/kaist-ina/ns3-tlt-rdma-public.git](https://github.com/kaist-ina/ns3-tlt-rdma-public.git) for Broadcom switch's shared buffer model and IRN implementation.
+`config/` 下提供了多种 leaf-spine 拓扑（`leaf_spine_<N>_100G_OS<K>` 表示 N 个 host，oversubscription K:1）：
 
 ```
-MIT License
-
-Copyright (c) 2023 National University of Singapore
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+leaf_spine_8_100G_OS1     leaf_spine_8_100G_OS2     leaf_spine_8_100G_OS4
+leaf_spine_12_100G_OS4
+leaf_spine_16_100G_OS1    leaf_spine_16_100G_OS4
+leaf_spine_64_100G_OS1
+leaf_spine_128_100G_OS1   leaf_spine_128_100G_OS2
+fat_k8_100G_OS2           # 3-tier
 ```
+
+`netload` 必须能被 oversub 整除。
+
+---
+
+## 6. 流量发生器
+
+`traffic_gen/traffic_gen.py` 在原版 Poisson 流之上加了可选的 incast 模式：
+
+```bash
+python3 traffic_gen/traffic_gen.py \
+        -c traffic_gen/AliStorage2019.txt \
+        -n 16 -l 0.25 -b 100G -t 0.01 \
+        -i \                  # 启用 incast：仿真时间 20% 处 60→1 同时打 500KB
+        -o config/L_25_..._flow.txt
+```
+
+`run.py` 会按 `(load, cdf, n_host, time, bw)` 自动构造文件名，已存在则跳过生成。
+
+---
+
+## 7. 验证（leaf_spine_8_100G_OS1, simul_time=0.01s, netload=25%, pfc=1）
+
+| 模式  | <1BDP 平均/p99   | >1BDP 平均/p99   |
+| ----- | ----------------| ----------------|
+| hpcc  | 1.135 / 2.28    | 1.892 / 5.42    |
+| guard | 1.131 / 2.22    | 1.817 / **3.68** |
+| homa  | 1.190 / 3.43    | 1.667 / 3.88    |
+
+数字是 FCT slowdown（实际 FCT / 理想 FCT）。guard 在大流尾延迟上比 vanilla HPCC 改进约 32%，符合"接收端公平分配 + 主动释放"的设计意图。
+
+---
+
+## 8. 致谢与许可
+
+本仓库基于：
+
+- [ConWeave (NUS, SIGCOMM'23)](https://github.com/conweave-project/conweave-ns3)
+- [HPCC (Alibaba, SIGCOMM'19)](https://github.com/alibaba-edu/High-Precision-Congestion-Control)
+- [TLT-RDMA (KAIST INA)](https://github.com/kaist-ina/ns3-tlt-rdma-public)
+
+许可：MIT License。
