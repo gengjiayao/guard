@@ -96,6 +96,14 @@ uint32_t CustomHeader::GetSerializedSize (void) const{
 			len += GetUdpHeaderSize();
 		else if (l3Prot == 0xFC || l3Prot == 0xFD || l3Prot == 0xFB)
 			len += GetAckSerializedSize();
+		else if (l3Prot == 0xFA)
+			len += GetAckSerializedSize() + sizeof(udp.homa_full_type)
+			     + sizeof(udp.homa_full_message_id) + sizeof(udp.homa_full_msg_total_length)
+			     + sizeof(udp.homa_full_pkt_offset) + sizeof(udp.homa_full_pkt_length)
+			     + sizeof(udp.homa_full_unscheduled_bytes) + sizeof(udp.homa_full_priority)
+			     + sizeof(udp.homa_full_granted_offset) + sizeof(udp.homa_full_grant_priority)
+			     + sizeof(udp.homa_full_resend_offset) + sizeof(udp.homa_full_resend_length)
+			     + sizeof(udp.homa_full_restart_priority);
 		else if (l3Prot == 0xFF)
 			len += 8;
 		else if (l3Prot == 0xFE)
@@ -202,6 +210,29 @@ void CustomHeader::Serialize (Buffer::Iterator start) const{
 		  i.WriteU32(ack.irnNack);
 		  i.WriteU16(ack.irnNackSize);
 		  udp.ih.Serialize(i);
+	  }else if (l3Prot == 0xFA){ // homa-full control (GRANT/RESEND/BUSY/NEED_ACK/ACK/UNKNOWN)
+		  // qbbHeader-shaped wrapper for QP lookup
+		  i.WriteU16(ack.sport);
+		  i.WriteU16(ack.dport);
+		  i.WriteU16(ack.flags);
+		  i.WriteU16(ack.pg);
+		  i.WriteU32(ack.seq);
+		  i.WriteU32(ack.irnNack);
+		  i.WriteU16(ack.irnNackSize);
+		  udp.ih.Serialize(i);
+		  // HomaFullHeader inline (carries type-specific fields)
+		  i.WriteU8 (udp.homa_full_type);
+		  i.WriteHtonU64 (udp.homa_full_message_id);
+		  i.WriteHtonU64 (udp.homa_full_msg_total_length);
+		  i.WriteHtonU64 (udp.homa_full_pkt_offset);
+		  i.WriteHtonU32 (udp.homa_full_pkt_length);
+		  i.WriteHtonU64 (udp.homa_full_unscheduled_bytes);
+		  i.WriteU8 (udp.homa_full_priority);
+		  i.WriteHtonU64 (udp.homa_full_granted_offset);
+		  i.WriteU8 (udp.homa_full_grant_priority);
+		  i.WriteHtonU64 (udp.homa_full_resend_offset);
+		  i.WriteHtonU64 (udp.homa_full_resend_length);
+		  i.WriteU8 (udp.homa_full_restart_priority);
 	  }else if (l3Prot == 0xFE){ // PFC
 		  i.WriteU32 (pfc.time);
 		  i.WriteU32 (pfc.qlen);
@@ -380,6 +411,36 @@ CustomHeader::Deserialize (Buffer::Iterator start)
 		  if (getInt)
 			  ack.ih.Deserialize(i);
 		  l4Size = GetAckSerializedSize();
+	  }else if (l3Prot == 0xFA){ // homa-full control
+		  ack.sport = i.ReadU16();
+		  ack.dport = i.ReadU16();
+		  ack.flags = i.ReadU16();
+		  ack.pg = i.ReadU16();
+		  ack.seq = i.ReadU32();
+		  ack.irnNack = i.ReadU32();
+		  ack.irnNackSize = i.ReadU16();
+		  if (getInt)
+			  ack.ih.Deserialize(i);
+		  // HomaFullHeader fields
+		  udp.homa_full_type = i.ReadU8();
+		  udp.homa_full_message_id = i.ReadNtohU64();
+		  udp.homa_full_msg_total_length = i.ReadNtohU64();
+		  udp.homa_full_pkt_offset = i.ReadNtohU64();
+		  udp.homa_full_pkt_length = i.ReadNtohU32();
+		  udp.homa_full_unscheduled_bytes = i.ReadNtohU64();
+		  udp.homa_full_priority = i.ReadU8();
+		  udp.homa_full_granted_offset = i.ReadNtohU64();
+		  udp.homa_full_grant_priority = i.ReadU8();
+		  udp.homa_full_resend_offset = i.ReadNtohU64();
+		  udp.homa_full_resend_length = i.ReadNtohU64();
+		  udp.homa_full_restart_priority = i.ReadU8();
+		  l4Size = GetAckSerializedSize() + sizeof(udp.homa_full_type)
+		         + sizeof(udp.homa_full_message_id) + sizeof(udp.homa_full_msg_total_length)
+		         + sizeof(udp.homa_full_pkt_offset) + sizeof(udp.homa_full_pkt_length)
+		         + sizeof(udp.homa_full_unscheduled_bytes) + sizeof(udp.homa_full_priority)
+		         + sizeof(udp.homa_full_granted_offset) + sizeof(udp.homa_full_grant_priority)
+		         + sizeof(udp.homa_full_resend_offset) + sizeof(udp.homa_full_resend_length)
+		         + sizeof(udp.homa_full_restart_priority);
 	  }else if (l3Prot == 0xFE){ // PFC
 		  pfc.time = i.ReadU32 ();
 		  pfc.qlen = i.ReadU32 ();

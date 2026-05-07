@@ -135,8 +135,13 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
         } else if (cond1 && cond2) {
             bool time_ok = m_qpGrp->Get((qIndex + m_rrlast) % fcount)->m_nextAvail.GetTimeStep() <=
                            Simulator::Now().GetTimeStep();
-            // Homa Simple: must also have a credit packet to send
-            if (!time_ok || (IntHeader::mode == 2 && qp->homa_simple.m_credit_package == 0)) {
+            // Homa Simple: must also have a credit packet to send.
+            // Homa Full: gate by max(unscheduled_bytes, granted_offset).
+            if (!time_ok
+                || (IntHeader::mode == 2 && qp->homa_simple.m_credit_package == 0)
+                || (IntHeader::mode == 3 &&
+                    qp->snd_nxt >= std::max(qp->homa_full.m_unscheduled_bytes,
+                                            qp->homa_full.m_granted_offset))) {
                 continue;
             }
             // Check if the flow has been blocked by PFC
