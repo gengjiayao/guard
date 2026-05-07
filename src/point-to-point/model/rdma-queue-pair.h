@@ -11,6 +11,8 @@
 #include <ns3/selective-packet-queue.h>
 
 #include <climits> /* for CHAR_BIT */
+#include <deque>
+#include <utility>
 #include <vector>
 
 #define BITMASK(b) (1 << ((b) % CHAR_BIT))
@@ -120,6 +122,10 @@ class RdmaQueuePair : public Object {
         uint8_t  m_grant_priority;       // priority slot from latest GRANT
         // bookkeeping
         uint8_t  m_unscheduled_priority; // priority used for unscheduled bytes (PR3 sets per-cutoff)
+        // PR5: receiver-driven retransmit. RESEND control packets push (offset,
+        // length) ranges here; GetNxtPacketHomaFull pops one entry per call
+        // (preempting normal forward progress).
+        std::deque<std::pair<uint64_t, uint32_t>> m_retransmit_queue;
     } homa_full;
     struct {
         uint32_t m_lastUpdateSeq;

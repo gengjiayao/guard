@@ -300,9 +300,11 @@ class RdmaHw : public Object {
     struct HomaFullFlow {
         uint64_t msg_total_length;
         uint64_t bytes_received;
-        uint64_t granted_offset_sent;  // cumulative bytes we've granted to sender
+        uint64_t granted_offset_sent;    // cumulative bytes we've granted to sender
+        uint64_t next_expected_offset;   // first byte not yet received contiguously
+        Time     last_progress_time;     // last time next_expected_offset advanced
         uint64_t bdp;
-        uint16_t pg;                   // sender QP's m_pg (used for control routing)
+        uint16_t pg;                     // sender QP's m_pg (used for control routing)
         Ptr<RdmaRxQueuePair> rx_qp;
 
         uint64_t bytes_remaining_to_grant() const {
@@ -386,11 +388,15 @@ class RdmaHw : public Object {
         void OnDataArrival(Ptr<RdmaRxQueuePair> rx_qp, Ptr<Packet> p, CustomHeader &ch);
         void Schedule();
         void SendGrant(HomaFullFlow* flow, uint8_t grant_priority);
+        void StallCheck();
+        void SendResend(HomaFullFlow* flow, uint64_t offset, uint64_t length);
 
         RdmaHw* rdma_hw;
         bool is_scheduled;
+        bool is_stall_scheduled;
         uint64_t pacing_interval;
         uint32_t overcommit_degree;
+        Time stall_rto;
         HomaFullPriorityQueue active;
         std::unordered_map<RdmaRxQueuePair*, std::unique_ptr<HomaFullFlow>> flow_hash;
     };
