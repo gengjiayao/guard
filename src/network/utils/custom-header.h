@@ -113,6 +113,19 @@ public:
 		  uint64_t homa_simple_bdp;
 		  uint64_t homa_simple_requset;
 		  uint64_t homa_simple_unscheduled;
+		  // HomaFullHeader (present on every packet when IntHeader::mode == 3)
+		  uint8_t  homa_full_type;
+		  uint64_t homa_full_message_id;
+		  uint64_t homa_full_msg_total_length;
+		  uint64_t homa_full_pkt_offset;
+		  uint32_t homa_full_pkt_length;
+		  uint64_t homa_full_unscheduled_bytes;
+		  uint8_t  homa_full_priority;
+		  uint64_t homa_full_granted_offset;
+		  uint8_t  homa_full_grant_priority;
+		  uint64_t homa_full_resend_offset;
+		  uint64_t homa_full_resend_length;
+		  uint8_t  homa_full_restart_priority;
 	  } udp;
 	  // CnHeader
 	  struct {

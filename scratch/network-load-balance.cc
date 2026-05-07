@@ -1245,6 +1245,8 @@ int main(int argc, char *argv[]) {
         IntHeader::mode = 0;
     else if (cc_mode == 10)  // homa-simple, custom request flag
         IntHeader::mode = 2;
+    else if (cc_mode == 12)  // homa-full, per-packet HomaFullHeader
+        IntHeader::mode = 3;
     else  // others, no extra header
         IntHeader::mode = 5;
 

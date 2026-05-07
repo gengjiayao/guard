@@ -31,6 +31,7 @@ enum CcMode {
     CC_MODE_DCTCP = 8,
     CC_MODE_HOMA_SIMPLE = 10,
     CC_MODE_GUARD = 11,
+    CC_MODE_HOMA_FULL = 12,
     CC_MODE_UNDEFINED = 0,
 };
 
@@ -110,6 +111,16 @@ class RdmaQueuePair : public Object {
         uint64_t m_unscheduled_bytes;
         uint64_t m_credit_package;
     } homa_simple;
+    struct {
+        // unscheduled phase
+        uint64_t m_bdp;                  // bdp_bytes cached at QP creation
+        uint64_t m_unscheduled_bytes;    // bytes the sender may emit without a GRANT (≤ m_bdp)
+        // scheduled phase (filled by receiver GRANTs in PR2)
+        uint64_t m_granted_offset;       // cumulative bytes the receiver has authorized
+        uint8_t  m_grant_priority;       // priority slot from latest GRANT
+        // bookkeeping
+        uint8_t  m_unscheduled_priority; // priority used for unscheduled bytes (PR3 sets per-cutoff)
+    } homa_full;
     struct {
         uint32_t m_lastUpdateSeq;
         DataRate m_curRate;

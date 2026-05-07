@@ -277,6 +277,18 @@ class RdmaHw : public Object {
     void ReceiveHomaSimpleData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
 
     /***********************
+     * Homa Full CC (cc_mode 12)
+     *
+     * PR1 skeleton: every DATA packet carries a HomaFullHeader; sender
+     * blasts at line rate (no credit / GRANT / RESEND yet). Receiver
+     * just observes the header and lets the regular ACK path complete
+     * the flow. PR2+ fills in receiver-driven scheduling, priority
+     * cutoffs, and loss recovery.
+     ***********************/
+    Ptr<Packet> GetNxtPacketHomaFull(Ptr<RdmaQueuePair> qp);  // homa-full sender path
+    void ReceiveHomaFullData(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
+
+    /***********************
      * High Precision CC
      ***********************/
     double m_targetUtil;

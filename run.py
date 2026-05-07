@@ -103,6 +103,7 @@ cc_modes = {
     "dctcp": 8,
     "homa": 10,
     "guard": 11,
+    "homa-full": 12,
 }
 
 lb_modes = {

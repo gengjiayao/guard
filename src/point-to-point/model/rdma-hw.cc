@@ -19,6 +19,7 @@
 #include "ns3/switch-node.h"
 #include "ns3/uinteger.h"
 #include "homa-simple-header.h"
+#include "homa-full-header.h"
 #include "ppp-header.h"
 #include "qbb-header.h"
 
@@ -153,6 +154,8 @@ void RdmaHw::Setup(QpCompleteCallback cb) {
         dev->m_rdmaEQ->m_mtu = m_mtu;
         if (m_cc_mode == 10) {  // homa-simple
             dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacketHomaSimple, this);
+        } else if (m_cc_mode == 12) {  // homa-full (PR1: line-rate sender, HomaFullHeader on every pkt)
+            dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacketHomaFull, this);
         } else {
             dev->m_rdmaEQ->m_rdmaGetNxtPkt = MakeCallback(&RdmaHw::GetNxtPacket, this);
         }
@@ -249,6 +252,17 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
         qp->homa_simple.m_unscheduled_bytes =
             size < bdp_bytes ? std::max(size, (uint64_t)m_mtu) : std::max(bdp_bytes, (uint64_t)m_mtu);
         qp->homa_simple.m_bdp = bdp_bytes;
+    } else if (m_cc_mode == 12) {
+        // Homa Full per-QP init. PR1 has no scheduler so we pretend the
+        // entire message is granted and let the QP send at line rate.
+        // PR2 will replace m_granted_offset with receiver-driven values.
+        uint64_t bdp_bytes = baseRtt * m_bps.GetBitRate() / 8000000000lu;
+        qp->homa_full.m_bdp = bdp_bytes;
+        qp->homa_full.m_unscheduled_bytes =
+            size < bdp_bytes ? std::max(size, (uint64_t)m_mtu) : std::max(bdp_bytes, (uint64_t)m_mtu);
+        qp->homa_full.m_granted_offset = size;     // PR1 only — pretend fully granted
+        qp->homa_full.m_grant_priority = 0;
+        qp->homa_full.m_unscheduled_priority = (uint8_t)qp->m_pg;  // PR3 sets per-cutoff
     }
     // print_rate(PeekPointer(qp));
 
@@ -476,6 +490,11 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
         } else {
             ReceiveHomaSimpleData(rxQp, p, ch);
         }
+    }
+
+    // homa-full (cc_mode 12): PR1 just observes; ACK path is unchanged.
+    if (m_cc_mode == 12) {
+        ReceiveHomaFullData(rxQp, p, ch);
     }
 
     return 0;
@@ -1504,6 +1523,95 @@ Ptr<Packet> RdmaHw::GetNxtPacketHomaSimple(Ptr<RdmaQueuePair> qp) {
     qp->snd_nxt += payload_size;
     qp->m_ipid++;
     return p;
+}
+
+/***********************
+ * Homa Full CC (cc_mode 12)
+ *
+ * PR1: minimal sender that emits one DATA packet at a time at line rate
+ * with a HomaFullHeader{type=DATA} attached. No credit gating, no
+ * receiver scheduling, no loss recovery. PR2+ adds those.
+ ***********************/
+Ptr<Packet> RdmaHw::GetNxtPacketHomaFull(Ptr<RdmaQueuePair> qp) {
+    uint32_t payload_size = qp->GetBytesLeft();
+    if (m_mtu < payload_size) payload_size = m_mtu;
+    uint32_t seq = (uint32_t)qp->snd_nxt;
+    qp->stat.txTotalPkts += 1;
+    qp->stat.txTotalBytes += payload_size;
+
+    Ptr<Packet> p = Create<Packet>(payload_size);
+
+    HomaFullHeader hfh;
+    hfh.SetType(HomaFullHeader::DATA);
+    hfh.SetMessageId((uint64_t)qp->m_flow_id);
+    hfh.SetMsgTotalLength(qp->m_size);
+    hfh.SetPktOffset(qp->snd_nxt);
+    hfh.SetPktLength(payload_size);
+    hfh.SetUnscheduledBytes(qp->homa_full.m_unscheduled_bytes);
+    hfh.SetPriority(qp->homa_full.m_unscheduled_priority);
+    p->AddHeader(hfh);
+
+    SeqTsHeader seqTs;
+    seqTs.SetSeq(seq);
+    seqTs.SetPG(qp->m_pg);
+    p->AddHeader(seqTs);
+
+    UdpHeader udpHeader;
+    udpHeader.SetDestinationPort(qp->dport);
+    udpHeader.SetSourcePort(qp->sport);
+    p->AddHeader(udpHeader);
+
+    Ipv4Header ipHeader;
+    ipHeader.SetSource(qp->sip);
+    ipHeader.SetDestination(qp->dip);
+    ipHeader.SetProtocol(0x11);
+    ipHeader.SetPayloadSize(p->GetSize());
+    ipHeader.SetTtl(64);
+    ipHeader.SetTos(0);
+    ipHeader.SetIdentification(qp->m_ipid);
+    p->AddHeader(ipHeader);
+
+    PppHeader ppp;
+    ppp.SetProtocol(0x0021);
+    p->AddHeader(ppp);
+
+    // attach Stat tags (same shape as the other GetNxtPacket* paths)
+    {
+        FlowIDNUMTag fint;
+        if (!p->PeekPacketTag(fint)) {
+            fint.SetId(qp->m_flow_id);
+            fint.SetFlowSize(qp->m_size);
+            p->AddPacketTag(fint);
+        }
+        FlowStatTag fst;
+        uint64_t size = qp->m_size;
+        if (!p->PeekPacketTag(fst)) {
+            if (size < m_mtu && qp->snd_nxt + payload_size >= qp->m_size) {
+                fst.SetType(FlowStatTag::FLOW_START_AND_END);
+            } else if (qp->snd_nxt + payload_size >= qp->m_size) {
+                fst.SetType(FlowStatTag::FLOW_END);
+            } else if (qp->snd_nxt == 0) {
+                fst.SetType(FlowStatTag::FLOW_START);
+            } else {
+                fst.SetType(FlowStatTag::FLOW_NOTEND);
+            }
+            fst.setInitiatedTime(Simulator::Now().GetSeconds());
+            p->AddPacketTag(fst);
+        }
+    }
+
+    if (qp->irn.m_enabled) {
+        if (qp->irn.m_max_seq < seq) qp->irn.m_max_seq = seq;
+    }
+    qp->snd_nxt += payload_size;
+    qp->m_ipid++;
+    return p;
+}
+
+void RdmaHw::ReceiveHomaFullData(Ptr<RdmaRxQueuePair> /*qp*/, Ptr<Packet> /*p*/, CustomHeader & /*ch*/) {
+    // PR1 stub: parsing already happened in CustomHeader; the regular ACK
+    // path in ReceiveUdp will deliver bytes back to the sender. PR2 will
+    // add SRPT bookkeeping + GRANT issuance here.
 }
 
 /***********************
