@@ -10,7 +10,6 @@
 | `hpcc`        | 3         | 原版 HPCC（in-network INT 反馈），无任何接收端干预          |
 | `timely`      | 7         | TIMELY（基于 RTT）                                          |
 | `dctcp`       | 8         | DCTCP（原仓库自带）                                         |
-| **`homa`**      | **10**    | Homa 简易版：接收端 credit 调度器（per-packet pacing），需配 PFC |
 | **`guard`**     | **11**    | HPCC + 接收端等分配额上限 + EWMA 主动配额释放                |
 | **`homa-full`** | **12**    | Homa 标准版：SRPT + overcommit + per-packet 优先级 + RESEND 自恢复 |
 
@@ -41,22 +40,9 @@
 6. **短流走高优先级队列（按 m_size 分桶）**：v1 所有数据包都用 traffic_gen 给的同一个 pg（=3），导致短流和长流挤在 switch 的同一个 priority queue 里。v2 在 `AddQueuePair` 里按 m_size 分四档：`< BDP/4 → pg 1`、`< BDP/2 → pg 2`、`< BDP → pg 3`、`≥ BDP → pg 4`，整条流统一用这个 pg。短流路由到更高优先级队列、不再被长流堵。HPCC 的 INT 反馈、PFC pause 检查、RCC grant 路由全部仍然一致（每条流自己的 pg 是稳定的，跟 homa-full 那种 per-packet 变化不一样）。
 7. **RCC 触发阈值从硬编码 BDP 改成 baseRtt-derived**：v1 在 `ReceiveUdp` 里写死 `bdp = 104000`（按 leaf_spine 100G + 8.32µs RTT 算出来的），换拓扑会误判。v2 用 `FlowStatTag::GetBaseRttSeconds()` × 接收 NIC 线速算每条流自己的 BDP，跨拓扑正确（在 leaf_spine_8 上数值不变，行为不变；在 fat_k8 / 不同 RTT 拓扑下避免错把中等流注册到 RCC 等分集合）。
 
-### 1.3 Homa Simple（`cc_mode=10`，移植对照算法的简易版）
+### 1.3 Homa Full（`cc_mode=12`，按 SIGCOMM'18 论文 + PlatformLab packet format 复刻）
 
-经典的接收端驱动 credit 调度（[SIGCOMM'18 Homa](https://dl.acm.org/doi/10.1145/3230543.3230564)）：
-
-1. **HomaSimpleHeader**：每条流第一个数据包带额外字段 `bdp / homa_request / homa_unscheduled`，告诉接收端流的大小和初始 unscheduled 字节数（≈1 BDP 免 grant 的初始 burst）。
-2. **HomaSimpleScheduler**：接收端为每个 NIC 维护一个 `HomaSimplePriorityQueue`（自实现二叉堆 + map）+ `wait_flow` 集合，按 `(pg, 剩余字节升序)` 即 **SRPT** 排序。
-3. **Per-packet credit**：调度器周期性 pop 出最高优先级流，发一个 `0xFB` Homa Simple Credit 包，发送端每收到一个 credit 才能多发一个 MTU。
-4. **状态切换**：流要么 `ACTIVE`（可拿 credit）要么 `WAITING`（已发出去的 credit 还没消化完），`ReceiveHomaSimpleData` 在每个 MTU 到达时按 token bucket 状态决定切换。
-
-`0xFB` 包在 guard 和 homa-simple 模式下语义不同（grant 速率 vs. credit 颗粒），由 `RdmaHw::Receive()` 根据 `m_cc_mode` 分发。
-
-> **⚠️ 当前 homa-simple 实现需配 `--pfc 1`（lossless）使用。** 第一个数据包携带 `HomaSimpleHeader`，丢失后接收端拿不到流大小信息、永远不下发 credit；发送端在用完初始 unscheduled credit 之后会停摆。要在 `--irn 1` 下使用需要补上请求包重发逻辑。
-
-### 1.4 Homa Full（`cc_mode=12`，按 SIGCOMM'18 论文 + PlatformLab packet format 复刻）
-
-跟 homa-simple 的核心差异是**真正的 8 priority queue 路由 + 自带 RESEND 恢复**，使其不依赖 PFC 也能跑：
+经典的接收端驱动调度（[SIGCOMM'18 Homa](https://dl.acm.org/doi/10.1145/3230543.3230564)），具备**8 priority queue 路由 + 自带 RESEND 恢复**，不依赖 PFC 也能跑：
 
 1. **HomaFullHeader（每个数据包都携带）**：64 字节，含 `type`（DATA/GRANT/RESEND/BUSY/NEED_ACK/ACK/UNKNOWN）+ 该 type 用得到的字段联合（DATA 段：`msg_total_length / pkt_offset / pkt_length / unscheduled_bytes / priority`；GRANT 段：`granted_offset / grant_priority`；RESEND 段：`resend_offset / resend_length / restart_priority`）。
 2. **HomaFullScheduler（接收端，per-NIC）**：SRPT 二叉堆按 `bytes_remaining_to_grant` 排序；定时器每 `pacing_interval`（=MTU/线速）pop 出 top-N（`overcommit_degree`）流，给每个发一个 GRANT 推进 1 MTU。GRANT 包用 `0xFA` 协议号。
@@ -84,23 +70,19 @@ python3 run.py --cc homa-full --pfc 1 --irn 1 ...
 
 ```
 src/point-to-point/model/
-├── rdma-hw.{h,cc}          # 主体逻辑：ReceiveUdp 分支、UpdateRateHp、HomaSimpleScheduler、HomaFullScheduler、SyncHwRate
-├── rdma-queue-pair.{h,cc}  # QP 结构：hp.m_grantRate（guard）、homa_simple.{...}、homa_full.{m_unscheduled_bytes,m_granted_offset,m_retransmit_queue,...}
-├── homa-simple-header.{h,cc}  # Homa Simple 首包 header（24B）
-├── homa-full-header.{h,cc}    # Homa Full 每包 header（64B）：type + DATA/GRANT/RESEND 联合字段
+├── rdma-hw.{h,cc}          # 主体逻辑：ReceiveUdp 分支、UpdateRateHp、HomaFullScheduler、SyncHwRate
+├── rdma-queue-pair.{h,cc}  # QP 结构：hp.m_grantRate（guard）、homa_full.{m_unscheduled_bytes,m_granted_offset,m_retransmit_queue,...}
+├── homa-full-header.{h,cc} # Homa Full 每包 header（64B）：type + DATA/GRANT/RESEND 联合字段
 ├── flow-stat-tag.{h,cc}    # 在 packet tag 里透传 baseRTT，给 guard 的 EWMA 阈值使用
 ├── switch-node.cc          # 0xFB / 0xFA 走 ECMP + 高优先级（qIndex=0）
 └── switch-mmu.{h,cc}       # 加 m_PFCenabledPg[qCnt]：homa-full 关掉数据 PG 的 PFC
 
 src/network/utils/
-├── custom-header.{h,cc}    # 按 IntHeader::mode 解析 Homa Simple/Full 字段；接受 0xFB / 0xFA
-└── int-header.h            # IntHeader::mode：0=INT (HPCC/Guard) / 1=TS (Timely) / 2=Homa Simple / 3=Homa Full / 5=none
-
-src/internet/model/
-└── seq-ts-header.{h,cc}    # 在 mode==2 时多塞一个 m_is_request 字段
+├── custom-header.{h,cc}    # 按 IntHeader::mode 解析 Homa Full 字段；接受 0xFB / 0xFA
+└── int-header.h            # IntHeader::mode：0=INT (HPCC/Guard) / 1=TS (Timely) / 3=Homa Full / 5=none
 
 src/point-to-point/model/qbb-net-device.cc
-                            # 发送侧：mode==2 (homa-simple) 无 credit 不发；mode==3 (homa-full) 按 unsched/granted 上限 + retransmit queue 决定可发
+                            # 发送侧：mode==3 (homa-full) 按 unsched/granted 上限 + retransmit queue 决定可发
 
 scratch/network-load-balance.cc
                             # cc_mode → IntHeader::mode 映射；cc_mode=12 时关数据 PG 的 PFC；BW / qlen / flow-bw 监控
@@ -213,7 +195,6 @@ python3 traffic_gen/traffic_gen.py \
 | hpcc            | 1 / 0         | 1.135 / 2.28     | 1.892 / 5.42     |
 | guard (v1)      | 1 / 0         | 1.131 / 2.22     | 1.817 / **3.68** |
 | **guard (v2)**  | 1 / 0         | **1.101 / 1.81** | 1.822 / 3.76     |
-| homa (simple)   | 1 / 0         | 1.190 / 3.43     | 1.667 / 3.88     |
 | **homa-full**   | 1 / 0         | **1.120 / 1.88** | 2.176 / 10.18    |
 
 数字是 FCT slowdown（实际 FCT / 理想 FCT）。
@@ -230,7 +211,7 @@ python3 traffic_gen/traffic_gen.py \
 短消息 p99 显著改善（来自 §1.2 改进 #6 的 8 priority queue 路由），长消息基本不变（guard 已有的等分配额 + Proactive Release 仍然主导长流）。
 
 - guard 在大流尾延迟上比 vanilla HPCC 改进约 32%，符合"接收端公平分配 + 主动释放"的设计意图
-- homa-full 短消息 p99 比 homa-simple 改善 **45%**（3.43 → 1.88），主要来自 8 priority queue 真正路由 + unscheduled cutoffs。长消息 p99 暂时略差于 simple（保守的 overcommit_degree=1 + RESEND 一 MTU/15µs 的恢复节奏），是 PR6 调参的下一步。
+- homa-full 通过 8 priority queue 真正路由 + unscheduled cutoffs，把短消息 p99 压到 1.88（vs vanilla HPCC 的 2.28）；长消息 p99 暂时受限于保守的 overcommit_degree=1 + RESEND 一 MTU/15µs 的恢复节奏，调参留给后续
 
 ---
 
