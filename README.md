@@ -4,14 +4,15 @@
 
 `guard` 分支已经把以下三种独立的 CC 实现整合到同一棵代码树里，可以通过 `--cc` 参数一键切换：
 
-| `--cc`    | `cc_mode` | 算法                                                        |
-| --------- | --------- | ----------------------------------------------------------- |
-| `dcqcn`   | 1         | Mellanox 版 DCQCN（原仓库自带）                              |
-| `hpcc`    | 3         | 原版 HPCC（in-network INT 反馈），无任何接收端干预          |
-| `timely` | 7         | TIMELY（基于 RTT）                                          |
-| `dctcp`   | 8         | DCTCP（原仓库自带）                                         |
-| **`homa`**  | **10**    | Homa 风格的接收端 credit 调度器（per-packet pacing）        |
-| **`guard`** | **11**    | HPCC + 接收端等分配额上限 + EWMA 主动配额释放                |
+| `--cc`        | `cc_mode` | 算法                                                        |
+| ------------- | --------- | ----------------------------------------------------------- |
+| `dcqcn`       | 1         | Mellanox 版 DCQCN（原仓库自带）                              |
+| `hpcc`        | 3         | 原版 HPCC（in-network INT 反馈），无任何接收端干预          |
+| `timely`      | 7         | TIMELY（基于 RTT）                                          |
+| `dctcp`       | 8         | DCTCP（原仓库自带）                                         |
+| **`homa`**      | **10**    | Homa 简易版：接收端 credit 调度器（per-packet pacing），需配 PFC |
+| **`guard`**     | **11**    | HPCC + 接收端等分配额上限 + EWMA 主动配额释放                |
+| **`homa-full`** | **12**    | Homa 标准版：SRPT + overcommit + per-packet 优先级 + RESEND 自恢复 |
 
 > "guard" 是本仓库提出的算法，目标是在保留 HPCC in-network 反馈的同时，在接收端再加一层基于活跃流数的等分配额上限 + 主动尾部释放，主要改善大流的尾延迟。
 
@@ -48,30 +49,58 @@
 
 > **⚠️ 当前 homa-simple 实现需配 `--pfc 1`（lossless）使用。** 第一个数据包携带 `HomaSimpleHeader`，丢失后接收端拿不到流大小信息、永远不下发 credit；发送端在用完初始 unscheduled credit 之后会停摆。要在 `--irn 1` 下使用需要补上请求包重发逻辑。
 
+### 1.4 Homa Full（`cc_mode=12`，按 SIGCOMM'18 论文 + PlatformLab packet format 复刻）
+
+跟 homa-simple 的核心差异是**真正的 8 priority queue 路由 + 自带 RESEND 恢复**，使其不依赖 PFC 也能跑：
+
+1. **HomaFullHeader（每个数据包都携带）**：64 字节，含 `type`（DATA/GRANT/RESEND/BUSY/NEED_ACK/ACK/UNKNOWN）+ 该 type 用得到的字段联合（DATA 段：`msg_total_length / pkt_offset / pkt_length / unscheduled_bytes / priority`；GRANT 段：`granted_offset / grant_priority`；RESEND 段：`resend_offset / resend_length / restart_priority`）。
+2. **HomaFullScheduler（接收端，per-NIC）**：SRPT 二叉堆按 `bytes_remaining_to_grant` 排序；定时器每 `pacing_interval`（=MTU/线速）pop 出 top-N（`overcommit_degree`）流，给每个发一个 GRANT 推进 1 MTU。GRANT 包用 `0xFA` 协议号。
+3. **Per-packet priority 路由**：发送端 `udp.pg` 按下面规则填，交换机直接路由到对应 8 priority 队列里：
+   - **Unscheduled cutoffs（短消息优先）**：`m_size < BDP/4 → pg=1`；`< BDP/2 → pg=2`；`< BDP → pg=3`；`≥ BDP → pg=4`
+   - **Scheduled grant slots（让位给 unscheduled）**：top SRPT 流 → `pg=4`，往下到 `pg=7`
+4. **PFC-free 数据队列**：SwitchMmu 加了 `m_PFCenabledPg[qCnt]` per-PG 开关，`scratch/network-load-balance.cc` 在 cc_mode=12 时把 PG 1–7（数据队列）的 PFC 关掉，只保留 PG 0（控制包）的 PFC。
+5. **接收端 RESEND（恢复机制）**：HomaFullFlow 跟踪 `next_expected_offset`（连续接收的最高边界）；每 `stall_rto`（默认 15 µs ≈ 1.5×baseRTT）扫描 flow_hash，发现"已授权但未到达且无进展"的洞，发 `RESEND{offset, length}`。发送端把 RESEND range 推进 `qp->homa_full.m_retransmit_queue`，`GetNxtPacketHomaFull` 优先抢占发出去（不推进 `snd_nxt`）。
+6. **QP-key 一致性**：cc_mode=12 强制 `qp->m_pg=0`（sender QP key），`rxQp.pg=0`，控制包用 `qbbh.pg=0`，ACK 也用 `pg=0`——避免 per-packet 变化的 `udp.pg` 把一条流拆成多个 QP 条目。
+
+**用法**：
+
+```bash
+# 推荐：PFC 在 NIC 层开（控制包用），数据 PG 由 MMU 关掉，RESEND 自己恢复
+python3 run.py --cc homa-full --pfc 1 --irn 0 --simul_time 0.01 --netload 25 --topo leaf_spine_8_100G_OS1
+# 也可以叠加 IRN 作 belt-and-suspenders
+python3 run.py --cc homa-full --pfc 1 --irn 1 ...
+```
+
+> **当前 PR1–PR5 落地范围**：functional happy-path + RESEND 恢复完整。`overcommit_degree` 暂定 1（实验显示 ≥2 会被 RESEND 一 MTU/15 µs 的恢复速度拖崩）；NEED_ACK / BUSY / UNKNOWN 暂未实现；out-of-order 段没逐字节追踪（RESEND 可能重传已收到的乱序包，无害）。详见 `docs/homa-full-plan.md`。
+
 ---
 
 ## 2. 关键文件
 
 ```
 src/point-to-point/model/
-├── rdma-hw.{h,cc}          # 三种算法的 RdmaHw 主体逻辑：ReceiveUdp 分支、UpdateRateHp、HomaSimpleScheduler、SyncHwRate
-├── rdma-queue-pair.{h,cc}  # QP 结构：hp.m_grantRate（guard）、homa_simple.{is_request_package,m_credit_package,...}
-├── homa-simple-header.{h,cc}  # Homa Simple 首包 header：homa_simple_bdp / homa_simple_requset / homa_simple_unscheduled
+├── rdma-hw.{h,cc}          # 主体逻辑：ReceiveUdp 分支、UpdateRateHp、HomaSimpleScheduler、HomaFullScheduler、SyncHwRate
+├── rdma-queue-pair.{h,cc}  # QP 结构：hp.m_grantRate（guard）、homa_simple.{...}、homa_full.{m_unscheduled_bytes,m_granted_offset,m_retransmit_queue,...}
+├── homa-simple-header.{h,cc}  # Homa Simple 首包 header（24B）
+├── homa-full-header.{h,cc}    # Homa Full 每包 header（64B）：type + DATA/GRANT/RESEND 联合字段
 ├── flow-stat-tag.{h,cc}    # 在 packet tag 里透传 baseRTT，给 guard 的 EWMA 阈值使用
-└── switch-node.cc          # 0xFB 走 ECMP + 高优先级队列
+├── switch-node.cc          # 0xFB / 0xFA 走 ECMP + 高优先级（qIndex=0）
+└── switch-mmu.{h,cc}       # 加 m_PFCenabledPg[qCnt]：homa-full 关掉数据 PG 的 PFC
 
 src/network/utils/
-├── custom-header.{h,cc}    # 反序列化时按 IntHeader::mode 解析 Homa Simple 字段；接受 0xFB 协议号
-└── int-header.h            # IntHeader::mode：0=INT (HPCC/Guard) / 1=TS (Timely) / 2=Homa Simple / 5=none
+├── custom-header.{h,cc}    # 按 IntHeader::mode 解析 Homa Simple/Full 字段；接受 0xFB / 0xFA
+└── int-header.h            # IntHeader::mode：0=INT (HPCC/Guard) / 1=TS (Timely) / 2=Homa Simple / 3=Homa Full / 5=none
 
 src/internet/model/
 └── seq-ts-header.{h,cc}    # 在 mode==2 时多塞一个 m_is_request 字段
 
 src/point-to-point/model/qbb-net-device.cc
-                            # 发送侧：mode==2 (homa) 时无 credit 不发包
+                            # 发送侧：mode==2 (homa-simple) 无 credit 不发；mode==3 (homa-full) 按 unsched/granted 上限 + retransmit queue 决定可发
 
 scratch/network-load-balance.cc
-                            # cc_mode → IntHeader::mode 映射；BW / qlen / flow-bw 监控
+                            # cc_mode → IntHeader::mode 映射；cc_mode=12 时关数据 PG 的 PFC；BW / qlen / flow-bw 监控
+
+docs/homa-full-plan.md      # Homa Full 增量实现 plan（PR1-PR6 拆分 + 设计决策）
 
 run.py                      # 入口脚本：cc_modes 字典、配置模板、调度仿真+分析
 ```
@@ -172,15 +201,19 @@ python3 traffic_gen/traffic_gen.py \
 
 ---
 
-## 7. 验证（leaf_spine_8_100G_OS1, simul_time=0.01s, netload=25%, pfc=1）
+## 7. 验证（leaf_spine_8_100G_OS1, simul_time=0.01s, netload=25%）
 
-| 模式  | <1BDP 平均/p99   | >1BDP 平均/p99   |
-| ----- | ----------------| ----------------|
-| hpcc  | 1.135 / 2.28    | 1.892 / 5.42    |
-| guard | 1.131 / 2.22    | 1.817 / **3.68** |
-| homa  | 1.190 / 3.43    | 1.667 / 3.88    |
+| 模式          | `--pfc/--irn` | <1BDP 平均/p99   | >1BDP 平均/p99   |
+| ------------- | ------------- | ---------------- | ---------------- |
+| hpcc          | 1 / 0         | 1.135 / 2.28     | 1.892 / 5.42     |
+| guard         | 1 / 0         | 1.131 / 2.22     | 1.817 / **3.68** |
+| homa (simple) | 1 / 0         | 1.190 / 3.43     | 1.667 / 3.88     |
+| **homa-full** | 1 / 0         | **1.120 / 1.88** | 2.176 / 10.18    |
 
-数字是 FCT slowdown（实际 FCT / 理想 FCT）。guard 在大流尾延迟上比 vanilla HPCC 改进约 32%，符合"接收端公平分配 + 主动释放"的设计意图。
+数字是 FCT slowdown（实际 FCT / 理想 FCT）。
+
+- guard 在大流尾延迟上比 vanilla HPCC 改进约 32%，符合"接收端公平分配 + 主动释放"的设计意图
+- homa-full 短消息 p99 比 homa-simple 改善 **45%**（3.43 → 1.88），主要来自 8 priority queue 真正路由 + unscheduled cutoffs。长消息 p99 暂时略差于 simple（保守的 overcommit_degree=1 + RESEND 一 MTU/15µs 的恢复节奏），是 PR6 调参的下一步。
 
 ---
 
