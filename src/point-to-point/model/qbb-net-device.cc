@@ -112,7 +112,17 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
     for (qIndex = 1; qIndex <= fcount; qIndex++) {
         if (m_qpGrp->IsQpFinished((qIndex + m_rrlast) % fcount)) continue;
         Ptr<RdmaQueuePair> qp = m_qpGrp->Get((qIndex + m_rrlast) % fcount);
-        bool cond1 = !paused[qp->m_pg];
+        // homa-full's per-packet priority means qp->m_pg (pinned to 0) doesn't
+        // describe the actual queue this packet would land in. Compute the
+        // next packet's priority (unscheduled cutoff vs. grant slot) and use
+        // that for the PFC pause check.
+        uint16_t next_pkt_pg = qp->m_pg;
+        if (IntHeader::mode == 3) {
+            next_pkt_pg = (qp->snd_nxt < qp->homa_full.m_unscheduled_bytes)
+                              ? qp->homa_full.m_unscheduled_priority
+                              : qp->homa_full.m_grant_priority;
+        }
+        bool cond1 = !paused[next_pkt_pg];
         bool cond_window_allowed =
             (!qp->IsWinBound() && (!qp->irn.m_enabled || qp->CanIrnTransmit(m_mtu)));
         bool cond2 = (qp->GetBytesLeft() > 0 && cond_window_allowed);

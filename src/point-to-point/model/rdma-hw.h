@@ -385,7 +385,7 @@ class RdmaHw : public Object {
         void SetPacingInterval();
         void OnDataArrival(Ptr<RdmaRxQueuePair> rx_qp, Ptr<Packet> p, CustomHeader &ch);
         void Schedule();
-        void SendGrant(HomaFullFlow* flow);
+        void SendGrant(HomaFullFlow* flow, uint8_t grant_priority);
 
         RdmaHw* rdma_hw;
         bool is_scheduled;
