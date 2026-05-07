@@ -11,9 +11,9 @@
 | `timely` | 7         | TIMELY（基于 RTT）                                          |
 | `dctcp`   | 8         | DCTCP（原仓库自带）                                         |
 | **`homa`**  | **10**    | Homa 风格的接收端 credit 调度器（per-packet pacing）        |
-| **`guard`** | **11**    | HPCC + 接收端 max-min 速率分配 + EWMA 主动配额释放          |
+| **`guard`** | **11**    | HPCC + 接收端等分配额上限 + EWMA 主动配额释放                |
 
-> "guard" 是本仓库提出的算法，目标是在保留 HPCC in-network 反馈的同时，在接收端再加一层公平速率分配 + 主动尾部释放，主要改善大流的尾延迟。
+> "guard" 是本仓库提出的算法，目标是在保留 HPCC in-network 反馈的同时，在接收端再加一层基于活跃流数的等分配额上限 + 主动尾部释放，主要改善大流的尾延迟。
 
 ---
 
@@ -28,8 +28,8 @@
 在 HPCC 之上叠加一层 **接收端驱动的速率配额 (rate grant)**：
 
 1. **接收端速率请求**：当一条流的第一个数据包（带 `FlowStatTag::FLOW_START`）到达，且总流大小 > 1 BDP，接收端把它登记到本 NIC 的活跃流集合 `m_rate_flow_ctl_set`。
-2. **公平分配**：接收端把"线速 / 集合大小"作为速率上限，给集合内 *所有* 流广播一个 `0xFB` Rate Grant 包。
-3. **发送端处理**：发送端把 grant 速率写进 `qp->hp.m_grantRate`，最终发送速率取 `min(HPCC 算出的速率, m_grantRate)`，由新增的 `SyncHwRate()` 统一下发。
+2. **等分配额**：接收端把 `线速 / 活跃流数 N` 作为速率上限，给集合内 *所有* 流广播一个 `0xFB` Rate Grant 包。这是个**基于当前活跃流数的静态等分**——只在流加入 / 退出集合时重算，且不做"剩余带宽再分配"，所以**不是严格意义上的 max-min fair**；只有在接收 NIC 是唯一瓶颈、所有发送端都能跑满 `线速/N` 时，它才与 max-min 分配等价。
+3. **发送端处理**：发送端把 grant 速率写进 `qp->hp.m_grantRate`，最终发送速率取 `min(HPCC 算出的速率, m_grantRate)`，由新增的 `SyncHwRate()` 统一下发。也就是说 grant 只起**封顶**作用，"用满剩余容量"这件事仍由 HPCC 那一层负责。
 4. **主动配额释放（Proactive Release）**：接收端用 EWMA（`β=0.125`）实时估算每条流的瞬时接收速率，当 *剩余字节* < `est_rate × baseRTT × γ`（`γ=1.0`）时，认为这条流的剩余流量已经全部在飞行中，主动把它从集合里移除并广播新一轮 grant。
 5. **INT hop 截断**：guard 模式下，接收端在回 ACK 前 *删掉最后一跳的 INT 信息*——因为最后一跳（接收端 NIC）的拥塞已经由 RCC 直接接管了，HPCC 不需要再为这一跳算速率。
 
