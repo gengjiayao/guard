@@ -884,6 +884,7 @@ class RdmaHw : public Object {
     void FlushGuardLifecycleTrace();
     void SyncHwRate(Ptr<RdmaQueuePair> qp, DataRate target_cc_rate);
     bool UsesGuardTailBypass(Ptr<RdmaQueuePair> qp) const;
+    bool GuardHasCompetingSenders() const;
     void MaybeSendGuardCapReport(Ptr<RdmaQueuePair> qp);
     void HandleRccRequest(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
     bool HandleRccRemove(Ptr<RdmaRxQueuePair> qp, GuardReleaseReason reason,

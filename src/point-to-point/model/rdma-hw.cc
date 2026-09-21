@@ -6378,6 +6378,19 @@ void RdmaHw::RefreshGuardGrantsForReliability() {
     ResetGuardReliabilityRefresh();
 }
 
+bool RdmaHw::GuardHasCompetingSenders() const {
+    // RxQP addresses are reversed: dip identifies the DATA sender. A single
+    // sending NIC already schedules its own messages; imposing receiver K=1
+    // on that NIC's separate QPs duplicates ordering and can leave its grant
+    // unused. Apply the receiver concurrency limit to actual sender fan-in.
+    if (m_rate_flow_ctl_set.empty()) return false;
+    uint32_t first_sender = (*m_rate_flow_ctl_set.begin())->dip;
+    for (auto *flow : m_rate_flow_ctl_set) {
+        if (flow->dip != first_sender) return true;
+    }
+    return false;
+}
+
 void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation) {
     if (m_rate_flow_ctl_set.empty()) return;
     if (generation == 0 && IsGuardMembershipDirty()) {
@@ -6392,7 +6405,7 @@ void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation)
             ? ComputeGuardCapAwareTargets(line_rate_bps)
             : ComputeGuardBaseTargets(line_rate_bps);
     std::vector<uint64_t> concurrency_remaining;
-    if (m_guardReceiverConcurrency > 0) {
+    if (m_guardReceiverConcurrency > 0 && GuardHasCompetingSenders()) {
         for (auto *flow : m_rate_flow_ctl_set) {
             uint64_t bdp_bytes = flow->m_base_rtt_sec > 0
                                      ? (uint64_t)(flow->m_base_rtt_sec * line_rate_bps / 8.0)
@@ -6492,7 +6505,7 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
     if (count == 0) return targets;
     uint64_t equal_share = line_rate_bps / count;
     std::vector<RdmaRxQueuePair*> concurrency_candidates;
-    if (m_guardReceiverConcurrency > 0) {
+    if (m_guardReceiverConcurrency > 0 && GuardHasCompetingSenders()) {
         for (auto *flow : m_rate_flow_ctl_set) {
             uint64_t bdp_bytes = flow->m_base_rtt_sec > 0
                                      ? (uint64_t)(flow->m_base_rtt_sec * line_rate_bps / 8.0)
