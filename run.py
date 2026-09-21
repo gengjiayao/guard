@@ -480,7 +480,7 @@ def main():
     parser.add_argument('--guard_tail_congestion_gate', type=int, choices=(0, 1), default=0,
                         help="require safe fabric samples before tail bypass (default: 0)")
     parser.add_argument('--guard_tail_safe_ratio', type=float, default=0.9,
-                        help="safe HPCC utilization/target ratio in [0.5,1] (default: 0.9)")
+                        help="safe fraction of the fabric queue budget in [0.5,1] (default: 0.9)")
     parser.add_argument('--guard_tail_safe_samples', type=int, default=2,
                         help="consecutive safe samples before tail bypass in [1,8] (default: 2)")
     parser.add_argument('--guard_adaptive_fabric_target', type=int, choices=(0, 1), default=0,

@@ -8233,9 +8233,11 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
             if (updated_any) {
                 if (m_cc_mode == CC_MODE_GUARD && m_guardTailCongestionGate &&
                     !fast_react) {
-                    // Compare with physical link utilization, not the relaxed
-                    // target (lambda * U_TARGET), which may exceed one.
-                    if (max_c * effective_target <= m_guardTailSafeRatio) {
+                    // Permit a bounded tail while the fabric queue stays below
+                    // the configured budget. A fully utilized but unqueued link
+                    // does not need to stall its tail; a growing queue revokes
+                    // permission even when lambda permits utilization above one.
+                    if (max_queue_bdps <= m_guardTailSafeRatio * m_guardQueueBudgetBdps) {
                         qp->m_guard_tail_safe_samples = std::min<uint32_t>(
                             m_guardTailSafeSamples, qp->m_guard_tail_safe_samples + 1);
                     } else {
