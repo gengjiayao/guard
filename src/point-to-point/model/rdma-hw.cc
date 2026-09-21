@@ -1756,7 +1756,7 @@ int RdmaHw::ReceiveRate(Ptr<Packet> p, CustomHeader &ch) {
             SendGuardGrantAck(qp, generation, phase_tag);
         }
     }
-    const char *binding = (qp->m_guard_tail_bypass ||
+    const char *binding = (UsesGuardTailBypass(qp) ||
                            UsesGuardElephantReceiverAuthority(qp))
                               ? "grant"
                               : qp->hp.m_curRate < qp->hp.m_grantRate
@@ -2133,7 +2133,7 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch) {
         }
     }
 
-    if (m_cc_mode == 11 && qp->m_guard_tail_bypass) {
+    if (m_cc_mode == 11 && qp->m_guard_tail_bypass && !m_guardTailCongestionGate) {
         m_guardTailBypassFeedbacks++;
     } else if (m_cc_mode == 3 || m_cc_mode == 11) {
         HandleAckHp(qp, p, ch);
@@ -2329,7 +2329,7 @@ void RdmaHw::QpComplete(Ptr<RdmaQueuePair> qp) {
     }
     if (qp->m_retransmit.IsRunning()) qp->m_retransmit.Cancel();
 
-    const char *binding = (qp->m_guard_tail_bypass ||
+    const char *binding = (UsesGuardTailBypass(qp) ||
                            UsesGuardElephantReceiverAuthority(qp))
                               ? "grant"
                               : qp->hp.m_curRate < qp->hp.m_grantRate
@@ -2385,7 +2385,8 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
             qp->m_size > qp->snd_una ? qp->m_size - qp->snd_una : 0;
         uint64_t tail_bytes = (uint64_t)(m_guardTailBypassBdps * bdp_bytes);
         bool gate_ready = !m_guardTailCongestionGate ||
-                          qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples;
+                          (qp->snd_una > 0 &&
+                           qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples);
         if (bdp_bytes > 0 && qp->m_size > bdp_bytes &&
             acknowledged_remaining > 0 && acknowledged_remaining <= tail_bytes &&
             gate_ready) {
@@ -2733,12 +2734,21 @@ void RdmaHw::HyperIncreaseMlx(Ptr<RdmaQueuePair> q) {
 /***********************
  * Rate CC
  ***********************/
+bool RdmaHw::UsesGuardTailBypass(Ptr<RdmaQueuePair> qp) const {
+    // Eligibility is latched once per flow, but congestion permission is not.
+    // Continue processing INT while bypassing so a later busy fabric restores
+    // the shared-fabric cap instead of leaving a flow permanently uncontrolled.
+    return m_cc_mode == CC_MODE_GUARD && qp->m_guard_tail_bypass &&
+           (!m_guardTailCongestionGate ||
+            qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples);
+}
+
 void RdmaHw::SyncHwRate(Ptr<RdmaQueuePair> qp, DataRate target_cc_rate) {
     DataRate final_rate = target_cc_rate;
     bool elephant_receiver_authority =
         UsesGuardElephantReceiverAuthority(qp);
 
-    if (m_cc_mode == CC_MODE_GUARD && qp->m_guard_tail_bypass) {
+    if (UsesGuardTailBypass(qp)) {
         final_rate = qp->hp.m_grantRate;
     } else if (m_cc_mode == CC_MODE_GUARD && elephant_receiver_authority) {
         final_rate = qp->hp.m_grantRate;
@@ -2782,7 +2792,7 @@ void RdmaHw::MaybeSendGuardCapReport(Ptr<RdmaQueuePair> qp) {
         return;
     }
 
-    bool fabric_bound = !qp->m_guard_tail_bypass &&
+    bool fabric_bound = !UsesGuardTailBypass(qp) &&
                         qp->hp.m_curRate < qp->hp.m_grantRate;
     uint32_t rate_mbps = std::max<uint32_t>(
         1, static_cast<uint32_t>(qp->m_rate.GetBitRate() / 1000000));
@@ -4198,7 +4208,7 @@ bool RdmaHw::UsesGuardElephantReceiverAuthority(Ptr<RdmaQueuePair> qp) const {
     return qp != NULL && IsGuardElephantReceiverAuthorityEligible(
         m_guardElephantReceiverAuthority,
         !qp->m_guard_wait_first_grant && qp->m_guard_last_grant_generation > 0,
-        qp->m_guard_tail_bypass, qp->m_size, qp->m_win,
+        UsesGuardTailBypass(qp), qp->m_size, qp->m_win,
         m_guardConcurrencyMinBdps, qp->hp.m_grantRate.GetBitRate(),
         m_minRate.GetBitRate());
 }
@@ -8223,7 +8233,9 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
             if (updated_any) {
                 if (m_cc_mode == CC_MODE_GUARD && m_guardTailCongestionGate &&
                     !fast_react) {
-                    if (max_c <= m_guardTailSafeRatio) {
+                    // Compare with physical link utilization, not the relaxed
+                    // target (lambda * U_TARGET), which may exceed one.
+                    if (max_c * effective_target <= m_guardTailSafeRatio) {
                         qp->m_guard_tail_safe_samples = std::min<uint32_t>(
                             m_guardTailSafeSamples, qp->m_guard_tail_safe_samples + 1);
                     } else {
@@ -8252,7 +8264,7 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
                 if (m_cc_mode == 11) {
                     DataRate old_rate = qp->m_rate;
                     const char *binding = "tie";
-                    if (UsesGuardElephantReceiverAuthority(qp)) {
+                    if (UsesGuardTailBypass(qp) || UsesGuardElephantReceiverAuthority(qp)) {
                         m_guardGrantBindingUpdates++;
                         binding = "grant";
                     } else if (new_rate < qp->hp.m_grantRate) {
