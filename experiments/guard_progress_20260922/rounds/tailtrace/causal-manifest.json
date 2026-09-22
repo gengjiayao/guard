@@ -1,0 +1,121 @@
+{
+  "phase": "development on observed seed 301; never independent confirmation",
+  "tasks": [
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "causal_share128_window1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_congestion_gate": 1,
+        "guard_adaptive_fabric_target": 1,
+        "guard_queue_budget_bdps": 4,
+        "guard_adaptive_target_max_bdps": 8,
+        "guard_receiver_concurrency": 1,
+        "guard_concurrency_min_bdps": 12,
+        "guard_scheduling_horizon_bdps": 128,
+        "guard_single_sender_shared_cap_bdps": 128,
+        "guard_post_grant_window_bdps": 1
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-causal_share128_window1",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "causal_shared_trace",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_congestion_gate": 1,
+        "guard_adaptive_fabric_target": 1,
+        "guard_queue_budget_bdps": 4,
+        "guard_adaptive_target_max_bdps": 8,
+        "guard_receiver_concurrency": 1,
+        "guard_concurrency_min_bdps": 12,
+        "guard_scheduling_horizon_bdps": 128,
+        "guard_single_sender_shared_cap_bdps": 128,
+        "guard_post_grant_window_bdps": 1,
+        "guard_controller_trace": 1,
+        "guard_controller_max_lines": 300000,
+        "guard_controller_sample_ns": 100000
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-causal_shared_trace",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "causal_shared_nofabric_trace",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_congestion_gate": 1,
+        "guard_adaptive_fabric_target": 1,
+        "guard_queue_budget_bdps": 4,
+        "guard_adaptive_target_max_bdps": 8,
+        "guard_receiver_concurrency": 1,
+        "guard_concurrency_min_bdps": 12,
+        "guard_scheduling_horizon_bdps": 128,
+        "guard_single_sender_shared_cap_bdps": 128,
+        "guard_post_grant_window_bdps": 1,
+        "guard_controller_trace": 1,
+        "guard_controller_max_lines": 300000,
+        "guard_controller_sample_ns": 100000,
+        "guard_fabric_control": 0
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-causal_shared_nofabric_trace",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    }
+  ],
+  "hashes": {
+    "build/scratch/network-load-balance": "1e45c3483471fdf5ab46256a78639f596aa8cc177666817e6848464413438f55",
+    "build/libns3.19-applications-optimized.so": "197eefe09cd5fc346560f10162b5d3d21a5a07ed9d37448bd0e3fe84beb85746",
+    "build/libns3.19-bridge-optimized.so": "79a2aa86b9fc1402b77b80e0cf49b98f316448c1420da9c6d09003d434fb82b7",
+    "build/libns3.19-config-store-optimized.so": "0ffa8e9fd1e3db2aeb44e911775c0610aedd03eefd0eede48b4810bd068f0748",
+    "build/libns3.19-core-optimized.so": "b963d518c44103a8e3bf2264c34c5a159510229d357db9ea967f8bda34887212",
+    "build/libns3.19-internet-optimized.so": "69b5cdc8fad6e4268f1c464ae70b0c2210de00bb1fd23378f2eb724affe6103a",
+    "build/libns3.19-mpi-optimized.so": "35c11b84514fdcf296918b05e6d9d448d2af905dee950270139d0bbaa60f5c0d",
+    "build/libns3.19-network-optimized.so": "f1f571fc2cdbd793d8365ab0ce6fe005b1724a48bcf0f6258a8da3f878d4ec64",
+    "build/libns3.19-point-to-point-optimized.so": "0368736ac93922af9684670f3574e278f4eb294053ed4c042571b93e36fe11da",
+    "build/libns3.19-stats-optimized.so": "d37529076208460f720b443a7caa247ba6a1c2b5ee849dc9bf9f07aaa5f8877e",
+    "build/libns3.19-tools-optimized.so": "1749c8fe66a7189c7bdcdb4426cf9314f00b5791f3da17c65a4def545322b516"
+  },
+  "source_commit": "bab07197b1d182aebcc3cd9ffdf263de6e919544",
+  "harness_hashes": {
+    "scripts/summarize.py": "8a88ca42797372ca6a88c27a7692b787aea121743390b52d7f246f7619d3425e",
+    "scripts/archive.py": "84a6e691247ddba89d51aadb78da2e99219e7ff7a7444083f1b21adcd0526638",
+    "scripts/develop.py": "c4e2453e053e96762a036e9bf67af0657c74cec2fc58290a5c52b1d39443a060",
+    "scripts/config_only.py": "c262676a38357281ae8f553beb73a0a3bcefb011188d88882adfbc8eb9d55510",
+    "scripts/upstream/analyze.py": "c265ebec8a4ef7a477e09d991097f2e35259538f94856d4c6456d4e8a3b16be3",
+    "scripts/upstream/campaign.py": "52928645782bd1e1fd57fb9f51cf621aaa83717c01c928618a3b6d4597d516e3"
+  },
+  "topology_hashes": {
+    "leaf_spine_16_100G_OS1": "d31f2aca3a1e1da2451af2f31d02abdc41c5a1a46abb42662f15793ba5fd58b0"
+  }
+}

@@ -1,0 +1,134 @@
+{
+  "status": "15 PNG figures visually inspected; corresponding vector PDFs generated from same figures",
+  "fixes": [
+    "rescue_events: increased symlog headroom to keep 3873 annotation below frame",
+    "current_baseline_gaps: explicit 1/2/5 log ticks and suppressed minor tick labels removed overlap"
+  ],
+  "limitations": [
+    "Development seed 301 only; no independent performance confirmation",
+    "Control selection fractions are means of per-flow sampled fractions, not time fractions",
+    "Generic aggregate audit does not replace original fairness, Ring, ablation and supplementary metrics"
+  ],
+  "figures": [
+    {
+      "name": "current_baseline_gaps",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "f4c2eb3cb51949c6f370aa99bfa4acb31bee61e5d75400f27e2202ba70ea078f",
+        "pdf": "406497ab78b2c39de4dac2945ef2d7a8b8f24a4f2d059990eee405e3f7977132"
+      }
+    },
+    {
+      "name": "original_fairness",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "2e50c45b989bc289ff8f5a5fafbc6390948fda411977cdbd5858b5890bd588a8",
+        "pdf": "182d81afe3912e1380fb0419ddd3d8e4dc49e728cdda567dd7336920bfba28b9"
+      }
+    },
+    {
+      "name": "original_ring",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "05e1e2dc8e809ccb390ad83644dfb58b80e0e90ce4887c3621ee4b9804c0ac6c",
+        "pdf": "37c4a16fd9129e2fb0094ccc6573dd6776e56e42a1347a191f630e380754bcc2"
+      }
+    },
+    {
+      "name": "queue_ranks",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "a018162a993777ea18dc1782aa15778945c780e7b7421453f950887934dbbeae",
+        "pdf": "3b7867a0ebbb63878ab139028121e909c9ae633648406c38f456f1fccaca3e66"
+      }
+    },
+    {
+      "name": "rescue_activity",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "d610497674c491b7459f11a5ebdcf48b493419edcbf4bfee80c4ddf7843771b3",
+        "pdf": "348d6a749d33635d1cd1cae024ba0a35225e33bd16bd0d574336ee7598395876"
+      }
+    },
+    {
+      "name": "rescue_baselines",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "ad9abf9bddefd63c8aef41d8a08220fb9269150a619ddaa3b6573aefa0ec0135",
+        "pdf": "0ed6611ff7e8c52bdf2f08974298b6932903d3fdf747afbd8aec75f585712276"
+      }
+    },
+    {
+      "name": "rescue_cdf",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "f75ccf87fa105633c262d567fd1b22c4df36f239f57e5a430e66501846a3f1a4",
+        "pdf": "cdbdf7bb60e5ebedf8f0099732848218d810b5c1a241f2f053d975b521889718"
+      }
+    },
+    {
+      "name": "rescue_controls",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "327982463fb844984c698a55266c6272fb7fe2d7c99e9a6f4a39925397b02167",
+        "pdf": "71dda6e7a9e00291817784ebf7cc562ad92e5512cb19a2862f9ce40d4ed4babc"
+      }
+    },
+    {
+      "name": "rescue_events",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "d3edda0f19c8c6d57a8baa34269cd6369ef9c10101a598ac721b8530865b0540",
+        "pdf": "57b0a1c9c18507f5b47cbcc97ef4134b68c94919271a7e90f9198866094b11f7"
+      }
+    },
+    {
+      "name": "rescue_regression",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "cb0142327e424113036c84c3c0ec3312fa3e3daa33de846546d92c135166ed5b",
+        "pdf": "212f1c22dbe41d2cb01ae7207b38cc024fa5e616ff9ce2f4b75e68d0edd13ce9"
+      }
+    },
+    {
+      "name": "storage_baselines",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "5edc152974713dbe7ba45dfea5b507ba7d1e2391f4da5c20e54d610221d5c532",
+        "pdf": "794cf0ea3ae610653b79c5ac742e038196347f1040ae41ea6d36efc7c3b7b065"
+      }
+    },
+    {
+      "name": "storage_bins",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "c6a9194d9986366fc149f092a7b0284f9c3984e5616d68fb7708dd11b695bd4d",
+        "pdf": "5c4befe63ac950f7f4fed124bc25587e693c809f69fbd5da6ed97871be731f76"
+      }
+    },
+    {
+      "name": "storage_cap_diagnosis",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "2b02ea70e099df5fe74f975952c7e8131eb02c222c5835c837b45d104dcb6fb0",
+        "pdf": "8e544ba13b814f78ea7a9fead41f3ae3797dd24840ac8038cb97d1c894a8f6ef"
+      }
+    },
+    {
+      "name": "storage_gap_contributions",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "32c1124cc5d08d2161e2a2a61643b642227ba6661ff4d4b1f8fc22aaa41c42a5",
+        "pdf": "25a3e27c9bfe72c3c5cee9e6f3099e7dc5af8099fa787105fe3b43f7947c3617"
+      }
+    },
+    {
+      "name": "workload_baseline_cdfs",
+      "visual_status": "legible, no canvas clipping; measured regressions retained",
+      "sha256": {
+        "png": "06b7693d47407cddfc6f65ef321a0bc387e7e02c05bee24d4d55782a6951b890",
+        "pdf": "d85043b6b957e1675f486d8e270444950fbc734d052cd266332e38dbe622a276"
+      }
+    }
+  ]
+}

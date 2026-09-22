@@ -1,0 +1,34 @@
+{
+  "status": "all recorded evidence and stable-build trace-neutrality verified; goal remains active",
+  "attempts": 26,
+  "source_commits": {
+    "stable-manifest.json": "992cc57980b9ef138a22fd3a169ebd9af93b7880",
+    "regressions-manifest.json": "992cc57980b9ef138a22fd3a169ebd9af93b7880",
+    "scheduler-manifest.json": "bab07197b1d182aebcc3cd9ffdf263de6e919544",
+    "causal-manifest.json": "bab07197b1d182aebcc3cd9ffdf263de6e919544",
+    "target-manifest.json": "992cc57980b9ef138a22fd3a169ebd9af93b7880"
+  },
+  "trace_sets": 5,
+  "complete_events_per_trace": 1280,
+  "no_row_cap_omissions": true,
+  "trace_neutral_pairs": [
+    {
+      "profiles": [
+        "share128_window1",
+        "shared_trace"
+      ],
+      "fct_sha256": "4863fbc0bf7857cb466e95f61185b9de49712503e3f5916538a79567baa08001",
+      "identical_all_metrics": true
+    },
+    {
+      "profiles": [
+        "startup",
+        "startup_trace"
+      ],
+      "fct_sha256": "dbec978c39450053619b5ed8fece496d9424a2ddc3f63b1fcc562cd5607d9e83",
+      "identical_all_metrics": true
+    }
+  ],
+  "verified_archives": 26,
+  "independent_confirmation": false
+}

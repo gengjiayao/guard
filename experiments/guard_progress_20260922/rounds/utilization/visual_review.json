@@ -1,0 +1,25 @@
+{
+  "figures": 9,
+  "reviewed_all_png": true,
+  "review": "All nine PNGs inspected. Feedback legend moved outside data area, Hybrid title revised to avoid causal overclaim. Native PDF counterparts preserved. Original ranges/zero results and unfavorable effects visible.",
+  "sha256": {
+    "figures/arrival_intervals.pdf": "e6649a0c1e673951ba62f83358889417b38415159bc3de3f18df05f103265eb0",
+    "figures/arrival_intervals.png": "13b8715629a2ca7ec44ef4a23c4f43ec61d1b08a33b847f1dba66240965a48df",
+    "figures/feedback_changes.pdf": "553aec35d5922c6b61e36bd3833455b1533910cfc741c83f8c0d617ebbab8a85",
+    "figures/feedback_changes.png": "2bf31b803e842c3c65119ef1c8ea4c7fd9b8eb728d229d2a6eca5b082cadfbcb",
+    "figures/feedback_cost.pdf": "778471f7639a31b522f14b7bd5cd268d75076170e68c5ed090ffdfd222b3bc63",
+    "figures/feedback_cost.png": "74ec04beea8bc4712736cb3b29f8f3e27b8f0fccc963e1508e715d33740c21a2",
+    "figures/hybrid_flows.pdf": "d6cae97526c37eeef74d8ef259626f51b4dd09349be38a7457b0ed2bb1844a57",
+    "figures/hybrid_flows.png": "5a1b4af6a6ce06f1793728fcb29e3c0602c2ceb96d48734f9fefd5ce68b7786e",
+    "figures/hybrid_timeline.pdf": "05e51fcbfd755621aa4f8e856c89260ab6affefe6bf7c740d74d104d0cceab7e",
+    "figures/hybrid_timeline.png": "31e84d9ff84bd33b6b55bac7c0492b67bc68417c8b1279e611e5aa7f1333a297",
+    "figures/sender_observations.pdf": "eda2a9691591c9edec3c87ba99389d99e337b9a85dba60e717df4f778a6e5206",
+    "figures/sender_observations.png": "eff94b6d1aef9755da23a09a9f1f8dffb9517bf6f869cecae0ee07530234ee33",
+    "figures/width_changes.pdf": "767b3af8bfe63160554511c53fe69f0535f56c3349b6cb738904b1a1b0308740",
+    "figures/width_changes.png": "3ac50520b0db4206486c04fe7a50a13715e8cac8a61342ca399596605745ecb9",
+    "figures/width_dp2.pdf": "31fb25f20d74e189f23c1d7e889d940e2f372d3fec255d4fbd321cf1b4075d52",
+    "figures/width_dp2.png": "268e8ab30e5b5ba889cb39ed506d6121711d7305809e670e302543b56d734b3d",
+    "figures/width_original_metrics.pdf": "70093cb619abb14c5439f8b1cd02cdde5e3f227225794e11f9dbc44d1e5108cf",
+    "figures/width_original_metrics.png": "2d9cc2760ffb170158ed0c9e1c22a0902cef1b562f988008728789a7e3787b4f"
+  }
+}

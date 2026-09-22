@@ -1,0 +1,86 @@
+{
+  "fairness": {
+    "GUARD": {
+      "jain_10_12ms": 0.9999999943056737,
+      "mean_sender_rates_gbps": [
+        22.951999999999998,
+        22.955999999999996,
+        22.951999999999998,
+        22.951999999999998
+      ],
+      "flow_bw_file": "/home/gengjiayao/ict/guard-ackrescue/mix/output/294358168/294358168_flow_bw.txt"
+    },
+    "HPCC": {
+      "jain_10_12ms": 0.6262640200043762,
+      "mean_sender_rates_gbps": [
+        8.931999999999999,
+        13.060000000000002,
+        14.392,
+        50.68
+      ],
+      "flow_bw_file": "/home/gengjiayao/ict/guard-ackrescue/mix/output/549932929/549932929_flow_bw.txt"
+    },
+    "Homa": {
+      "jain_10_12ms": 0.25,
+      "mean_sender_rates_gbps": [
+        89.924,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "flow_bw_file": "/home/gengjiayao/ict/guard-ackrescue/mix/output/762343721/762343721_flow_bw.txt"
+    },
+    "DCQCN": {
+      "jain_10_12ms": 0.9288689547699776,
+      "mean_sender_rates_gbps": [
+        20.563999999999997,
+        17.484,
+        20.811999999999998,
+        34.172000000000004
+      ],
+      "flow_bw_file": "/home/gengjiayao/ict/guard-ackrescue/mix/output/826752163/826752163_flow_bw.txt"
+    },
+    "TIMELY": {
+      "jain_10_12ms": 0.9951165299450022,
+      "mean_sender_rates_gbps": [
+        17.244,
+        14.540000000000001,
+        15.567999999999998,
+        14.636
+      ],
+      "flow_bw_file": "/home/gengjiayao/ict/guard-ackrescue/mix/output/961270910/961270910_flow_bw.txt"
+    }
+  },
+  "ring": {
+    "GUARD": {
+      "span_ms": 11.709459,
+      "homa_native_resends": 0,
+      "drops": 0,
+      "timeout_recoveries": 0
+    },
+    "HPCC": {
+      "span_ms": 12.27975,
+      "homa_native_resends": 0,
+      "drops": 0,
+      "timeout_recoveries": 0
+    },
+    "Homa": {
+      "span_ms": 12.185071,
+      "homa_native_resends": 840,
+      "drops": 0,
+      "timeout_recoveries": 0
+    },
+    "DCQCN": {
+      "span_ms": 35.426546,
+      "homa_native_resends": 0,
+      "drops": 556532,
+      "timeout_recoveries": 0
+    },
+    "TIMELY": {
+      "span_ms": 115.550788,
+      "homa_native_resends": 0,
+      "drops": 3089198,
+      "timeout_recoveries": 13
+    }
+  }
+}

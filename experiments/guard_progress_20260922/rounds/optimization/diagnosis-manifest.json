@@ -1,0 +1,273 @@
+{
+  "phase": "development, not held-out validation",
+  "old_manifest_sha256": "9ac9db75f2ec9289d602313ecee181e771f0bafe9df8f34462cecf34cc04ae63",
+  "binary_sha256": "66bd49556ba090d1a9288f8b50b0c2d45804c3485fc7186bcd517ac3593c1398",
+  "profiles": {
+    "default": {},
+    "tail_gate": {
+      "guard_tail_congestion_gate": 1
+    },
+    "tail1": {
+      "guard_tail_bypass_bdps": 1
+    },
+    "lambda1_gate": {
+      "guard_lambda": 1,
+      "guard_tail_congestion_gate": 1
+    },
+    "adaptive_gate": {
+      "guard_adaptive_fabric_target": 1,
+      "guard_tail_congestion_gate": 1
+    },
+    "adaptive_gate_k1": {
+      "guard_adaptive_fabric_target": 1,
+      "guard_tail_congestion_gate": 1,
+      "guard_receiver_concurrency": 1
+    }
+  },
+  "tasks": [
+    {
+      "study": "hybrid",
+      "seed": 301,
+      "arm": "default",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/hybrid-s301.txt",
+      "topo": "leaf_spine_8_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {},
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "hybrid-s301-default",
+      "flow_sha256": "d14acd91f5001eece0d198234ccb6880db3e580c0bd57373682aa1778525bd59",
+      "flow_count": 5
+    },
+    {
+      "study": "hybrid",
+      "seed": 301,
+      "arm": "tail_gate",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/hybrid-s301.txt",
+      "topo": "leaf_spine_8_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_congestion_gate": 1
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "hybrid-s301-tail_gate",
+      "flow_sha256": "d14acd91f5001eece0d198234ccb6880db3e580c0bd57373682aa1778525bd59",
+      "flow_count": 5
+    },
+    {
+      "study": "hybrid",
+      "seed": 301,
+      "arm": "tail1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/hybrid-s301.txt",
+      "topo": "leaf_spine_8_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_bypass_bdps": 1
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "hybrid-s301-tail1",
+      "flow_sha256": "d14acd91f5001eece0d198234ccb6880db3e580c0bd57373682aa1778525bd59",
+      "flow_count": 5
+    },
+    {
+      "study": "hybrid",
+      "seed": 301,
+      "arm": "lambda1_gate",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/hybrid-s301.txt",
+      "topo": "leaf_spine_8_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_lambda": 1,
+        "guard_tail_congestion_gate": 1
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "hybrid-s301-lambda1_gate",
+      "flow_sha256": "d14acd91f5001eece0d198234ccb6880db3e580c0bd57373682aa1778525bd59",
+      "flow_count": 5
+    },
+    {
+      "study": "hybrid",
+      "seed": 301,
+      "arm": "adaptive_gate",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/hybrid-s301.txt",
+      "topo": "leaf_spine_8_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_adaptive_fabric_target": 1,
+        "guard_tail_congestion_gate": 1
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "hybrid-s301-adaptive_gate",
+      "flow_sha256": "d14acd91f5001eece0d198234ccb6880db3e580c0bd57373682aa1778525bd59",
+      "flow_count": 5
+    },
+    {
+      "study": "hybrid",
+      "seed": 301,
+      "arm": "adaptive_gate_k1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/hybrid-s301.txt",
+      "topo": "leaf_spine_8_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_adaptive_fabric_target": 1,
+        "guard_tail_congestion_gate": 1,
+        "guard_receiver_concurrency": 1
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "hybrid-s301-adaptive_gate_k1",
+      "flow_sha256": "d14acd91f5001eece0d198234ccb6880db3e580c0bd57373682aa1778525bd59",
+      "flow_count": 5
+    },
+    {
+      "study": "ring",
+      "seed": 301,
+      "arm": "default",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ring-s301.txt",
+      "topo": "leaf_spine_16_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {},
+      "monitor": "bulk",
+      "buffer": 32,
+      "key": "ring-s301-default",
+      "flow_sha256": "5c43a1ebc0593e2b1fef6decff55c654138d061e28375a8acc4614c38b701cbe",
+      "flow_count": 480
+    },
+    {
+      "study": "ring",
+      "seed": 301,
+      "arm": "tail_gate",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ring-s301.txt",
+      "topo": "leaf_spine_16_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_congestion_gate": 1
+      },
+      "monitor": "bulk",
+      "buffer": 32,
+      "key": "ring-s301-tail_gate",
+      "flow_sha256": "5c43a1ebc0593e2b1fef6decff55c654138d061e28375a8acc4614c38b701cbe",
+      "flow_count": 480
+    },
+    {
+      "study": "ring",
+      "seed": 301,
+      "arm": "tail1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ring-s301.txt",
+      "topo": "leaf_spine_16_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_bypass_bdps": 1
+      },
+      "monitor": "bulk",
+      "buffer": 32,
+      "key": "ring-s301-tail1",
+      "flow_sha256": "5c43a1ebc0593e2b1fef6decff55c654138d061e28375a8acc4614c38b701cbe",
+      "flow_count": 480
+    },
+    {
+      "study": "ring",
+      "seed": 301,
+      "arm": "lambda1_gate",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ring-s301.txt",
+      "topo": "leaf_spine_16_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_lambda": 1,
+        "guard_tail_congestion_gate": 1
+      },
+      "monitor": "bulk",
+      "buffer": 32,
+      "key": "ring-s301-lambda1_gate",
+      "flow_sha256": "5c43a1ebc0593e2b1fef6decff55c654138d061e28375a8acc4614c38b701cbe",
+      "flow_count": 480
+    },
+    {
+      "study": "ring",
+      "seed": 301,
+      "arm": "adaptive_gate",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ring-s301.txt",
+      "topo": "leaf_spine_16_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_adaptive_fabric_target": 1,
+        "guard_tail_congestion_gate": 1
+      },
+      "monitor": "bulk",
+      "buffer": 32,
+      "key": "ring-s301-adaptive_gate",
+      "flow_sha256": "5c43a1ebc0593e2b1fef6decff55c654138d061e28375a8acc4614c38b701cbe",
+      "flow_count": 480
+    },
+    {
+      "study": "ring",
+      "seed": 301,
+      "arm": "adaptive_gate_k1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ring-s301.txt",
+      "topo": "leaf_spine_16_100G_OS4",
+      "duration": 0.02,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_adaptive_fabric_target": 1,
+        "guard_tail_congestion_gate": 1,
+        "guard_receiver_concurrency": 1
+      },
+      "monitor": "bulk",
+      "buffer": 32,
+      "key": "ring-s301-adaptive_gate_k1",
+      "flow_sha256": "5c43a1ebc0593e2b1fef6decff55c654138d061e28375a8acc4614c38b701cbe",
+      "flow_count": 480
+    }
+  ]
+}

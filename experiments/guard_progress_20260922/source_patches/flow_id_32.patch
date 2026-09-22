@@ -1,0 +1,3003 @@
+diff --git a/docs/guard-balanced-cohort.md b/docs/guard-balanced-cohort.md
+new file mode 100644
+index 0000000..c9ee491
+--- /dev/null
++++ b/docs/guard-balanced-cohort.md
+@@ -0,0 +1,42 @@
++# Receiver cohort experiment
++
++This branch remains experimental. Defaults retain the previous allocator.
++The candidate uses the same configuration in every workload:
++
++```
++--guard_tail_congestion_gate 1 --guard_adaptive_fabric_target 1
++--guard_queue_budget_bdps 4 --guard_adaptive_target_max_bdps 8
++--guard_receiver_concurrency 1 --guard_concurrency_min_bdps 12
++--guard_scheduling_horizon_bdps 128
++```
++
++The receiver defines one service horizon using the largest active path BDP.
++When every competing message has more than that horizon remaining, it gives
++equal weights. When a short message is present, it retains inverse-remaining
++weights. Concurrent messages from one source retain their local remaining-size
++ordering for long transfers. Bounded messages from one source can receive
++ordered grants; this avoids spreading one sender's grant across short messages
++that compete for the same fabric path.
++
++The legacy K bound applies to a bounded receiver cohort. A mixed set with short
++messages outside the concurrency class retains weighted simultaneous service.
++Equal-size ties use a stable endpoint-and-flow hash. Any configured minimum
++share applies to deferred as well as selected flows, without exceeding receiver
++capacity. The horizon option is unsupported with the optional serialized vector
++allocator; the CLI rejects that combination.
++
++`--guard_fabric_control 0` disables only the fabric feedback component of GUARD.
++It retains ACK coalescing, sender scheduling, receiver grants and the fixed
++window. The older `guard-active-only` mode remains available, but also changes
++those sender/ACK behaviors, so it is not a single-component ablation.
++
++Behavioral allocator checks are in `tests/guard_scheduling_horizon.cc`.
++`tests/test_output_reservation.py` exercises a concurrent output-directory
++collision observed during development. The driver now reserves each directory
++atomically and retries a conflicting identifier without overwriting outputs.
++
++Development attempts, negative results, frozen confirmation manifests, input
++identities and raw archives live in
++`/home/gengjiayao/ict/work/guard_balanced_20260921`.
++No universal performance advantage is assumed. Promotion requires the complete
++confirmation results, including storage, DP2, fairness and matched ablations.
+diff --git a/docs/guard-scope-safety.md b/docs/guard-scope-safety.md
+new file mode 100644
+index 0000000..16a1653
+--- /dev/null
++++ b/docs/guard-scope-safety.md
+@@ -0,0 +1,47 @@
++# Scope-safety experiment, September 2026
++
++This branch evaluates an experimental profile. It does not change the default
++GUARD profile and does not establish superiority on every workload or metric.
++The fixed confirmation profile is:
++
++```text
++--guard_tail_congestion_gate 1
++--guard_adaptive_fabric_target 1
++--guard_queue_budget_bdps 4
++--guard_receiver_concurrency 1
++--guard_concurrency_min_bdps 12
++```
++
++All other parameters retain the defaults of source commit 17df579. In
++particular, lambda is 1.8, ACK spacing is eight packets, and the tail threshold
++is eight exact path BDPs. The profile is shared across workloads.
++
++The changes address three hypotheses:
++
++1. Guarded tail bypass continues processing INT. Eligibility can remain
++   latched, while the latest congestion samples revoke permission to bypass
++   the shared-fabric cap. An acknowledged prefix is required before entering
++   the guarded tail phase.
++2. Tail permission depends on queued work, rather than utilization divided by
++   a relaxed target above one. The safe threshold is the configured queue
++   budget times `guard_tail_safe_ratio`; the default ratio is 0.9. Feedback
++   delay can overshoot this threshold: it is not a hard queue bound.
++3. The legacy receiver scheduler applies its concurrency limit when multiple
++   source NICs compete. A single source already schedules its own messages;
++   duplicating that ordering at the receiver hurt the DP2 development trace.
++   This change applies to the legacy allocator and its counters. It does not
++   modify the optional serialized V14/V18 allocator.
++
++The original unguarded tail mode remains available for matched controls.
++HPCC, Homa, DCQCN, and TIMELY receive no algorithm changes. The experiment
++records all configurations, input hashes, shared-library hashes, and completed
++flow identities. Development uses seed 301; independent confirmation freezes
++seeds 401–405 before outcomes are inspected. Rejected configurations, runtime
++errors, and adverse results remain in the evidence directory.
++
++Evidence and runners:
++`/home/gengjiayao/ict/work/guard_optimization_20260921`.
++The confirmation manifest records the exact tested source commit; this
++documentation may be committed after that freeze without changing the tested
++implementation. A broad release requires reviewing the storage, DP2, and
++fairness regressions, not merely the Ring loss improvement.
+diff --git a/run.py b/run.py
+index b6affc1..394c0b1 100644
+--- a/run.py
++++ b/run.py
+@@ -18,6 +18,17 @@ from datetime import date
+ random.seed(datetime.now().timestamp())
+ MAX_RAND_RANGE = 1000000000
+ 
++def reserve_output_directory(parent, config_id):
++    """Reserve a private directory atomically, including concurrent collisions."""
++    os.makedirs(parent, exist_ok=True)
++    while True:
++        output = os.path.join(parent, str(config_id))
++        try:
++            os.mkdir(output)
++            return str(config_id), output
++        except FileExistsError:
++            config_id = random.SystemRandom().randrange(MAX_RAND_RANGE)
++
+ # config template
+ config_template = """TOPOLOGY_FILE config/{topo}.txt
+ FLOW_FILE {flow_file}
+@@ -111,7 +122,13 @@ GUARD_TARGET_FLOOR {guard_target_floor}
+ GUARD_QUEUE_BUDGET_BDPS {guard_queue_budget_bdps}
+ GUARD_ADAPTIVE_TARGET_MAX_BDPS {guard_adaptive_target_max_bdps}
+ GUARD_ACK_INTERVAL_PACKETS {guard_ack_interval_packets}
++GUARD_ACK_MAX_DELAY_RTTS {guard_ack_max_delay_rtts}
++GUARD_SENDER_FAIR_CURSOR {guard_sender_fair_cursor}
++GUARD_SENDER_ACK_BATCH {guard_sender_ack_batch}
++GUARD_SENDER_SERVICE_BUDGET {guard_sender_service_budget}
++GUARD_SENDER_ACK_RESCUE {guard_sender_ack_rescue}
+ GUARD_FIXED_WINDOW {guard_fixed_window}
++GUARD_FABRIC_CONTROL {guard_fabric_control}
+ GUARD_REMAINING_AWARE {guard_remaining_aware}
+ GUARD_MIN_SHARE_FRACTION {guard_min_share_fraction}
+ GUARD_REMAINING_EXPONENT {guard_remaining_exponent}
+@@ -128,6 +145,14 @@ GUARD_ELEPHANT_FABRIC_TARGET {guard_elephant_fabric_target}
+ GUARD_ELEPHANT_FABRIC_TARGET_SCALE {guard_elephant_fabric_target_scale}
+ GUARD_ELEPHANT_RECEIVER_AUTHORITY {guard_elephant_receiver_authority}
+ GUARD_CONCURRENCY_MIN_BDPS {guard_concurrency_min_bdps}
++GUARD_SCHEDULING_HORIZON_BDPS {guard_scheduling_horizon_bdps}
++GUARD_SINGLE_SENDER_ORDER {guard_single_sender_order}
++GUARD_POST_GRANT_WINDOW_BDPS {guard_post_grant_window_bdps}
++GUARD_SINGLE_SENDER_SHARED_CAP_BDPS {guard_single_sender_shared_cap_bdps}
++GUARD_SINGLE_SENDER_SHARED_SLOTS {guard_single_sender_shared_slots}
++GUARD_STARTUP_FAIRSHARE_BDPS {guard_startup_fairshare_bdps}
++GUARD_RECOVERY_MAX_RTTS {guard_recovery_max_rtts}
++GUARD_STARTUP_SAME_PEER {guard_startup_same_peer}
+ GUARD_GRANT_REFRESH_BDPS {guard_grant_refresh_bdps}
+ GUARD_MEMBERSHIP_COALESCE_NS {guard_membership_coalesce_ns}
+ GUARD_MEMBERSHIP_COALESCE_MAX_WINDOWS {guard_membership_coalesce_max_windows}
+@@ -148,10 +173,16 @@ GUARD_LIFECYCLE_TRACE {guard_lifecycle_trace}
+ GUARD_LIFECYCLE_TRACE_MAX_LINES {guard_lifecycle_max_lines}
+ GUARD_CONTROLLER_TRACE {guard_controller_trace}
+ GUARD_CONTROLLER_TRACE_MAX_LINES {guard_controller_max_lines}
++GUARD_CONTROLLER_TRACE_SAMPLE_NS {guard_controller_sample_ns}
++GUARD_CONTROLLER_TRACE_MIN_FLOW_BYTES {guard_controller_min_flow_bytes}
+ GUARD_GRANT_TRACE {guard_grant_trace}
+ GUARD_GRANT_TRACE_MAX_LINES {guard_grant_max_lines}
++GUARD_GRANT_TRACE_MIN_FLOW_BYTES {guard_grant_min_flow_bytes}
++GUARD_GRANT_ALLOCATION_DETAILS {guard_grant_allocation_details}
+ {guard_transition_audit_config}HOMA_OVERCOMMIT {homa_overcommit}
+ HOMA_RESEND_TIMEOUT_US {homa_resend_timeout_us}
++HOMA_STABLE_RESEND_ORDER {homa_stable_resend_order}
++HOMA_DIAGNOSTIC_HASH_BUCKETS {homa_diagnostic_hash_buckets}
+ HOMA_UNSCHEDULED_LEVELS {homa_unscheduled_levels}
+ HOMA_UNSCHEDULED_CUTOFFS 5 {homa_unscheduled_cutoffs}
+ MULTI_RATE 0
+@@ -214,7 +245,7 @@ HARD_GUARD_LIFECYCLE_MAX_LINES = 10000
+ DEFAULT_GUARD_CONTROLLER_MAX_LINES = 10000
+ HARD_GUARD_CONTROLLER_MAX_LINES = 300000
+ DEFAULT_GUARD_GRANT_MAX_LINES = 1000
+-HARD_GUARD_GRANT_MAX_LINES = 10000
++HARD_GUARD_GRANT_MAX_LINES = 1000000
+ DEFAULT_GUARD_TRANSITION_AUDIT_MAX_RECORDS = 10000
+ HARD_GUARD_TRANSITION_AUDIT_MAX_RECORDS = 10000
+ HOMA_DATA_PRIORITY_LEVELS = 7
+@@ -384,11 +415,9 @@ def validate_guard_transition_audit_output_path(enabled, output,
+ 
+ 
+ def main():
+-    # make directory if not exists
+-    isExist = os.path.exists(os.getcwd() + "/mix/output/")
+-    if not isExist:
+-        os.makedirs(os.getcwd() + "/mix/output/")
+-        print("The new directory is created - {}".format(os.getcwd() + "/mix/output/"))
++    # Independent campaign workers may all start in a new worktree at once.
++    # Parent creation must be atomic as well as each private run reservation.
++    os.makedirs(os.path.join(os.getcwd(), 'mix', 'output'), exist_ok=True)
+ 
+     parser = argparse.ArgumentParser(description='run simulation')
+     parser.add_argument('--cc', dest='cc', action='store',
+@@ -476,7 +505,7 @@ def main():
+     parser.add_argument('--guard_tail_congestion_gate', type=int, choices=(0, 1), default=0,
+                         help="require safe fabric samples before tail bypass (default: 0)")
+     parser.add_argument('--guard_tail_safe_ratio', type=float, default=0.9,
+-                        help="safe HPCC utilization/target ratio in [0.5,1] (default: 0.9)")
++                        help="safe fraction of the fabric queue budget in [0.5,1] (default: 0.9)")
+     parser.add_argument('--guard_tail_safe_samples', type=int, default=2,
+                         help="consecutive safe samples before tail bypass in [1,8] (default: 2)")
+     parser.add_argument('--guard_adaptive_fabric_target', type=int, choices=(0, 1), default=0,
+@@ -487,8 +516,17 @@ def main():
+                         help="queued BDPs for full target rollback in [0.01,4] (default: 0.5)")
+     parser.add_argument('--guard_adaptive_target_max_bdps', type=float, default=0.0,
+                         help="largest flow using adaptive targets in BDPs; 0 means all")
++    parser.add_argument('--guard_sender_ack_rescue', type=int, choices=(0,1), default=0)
++    parser.add_argument('--guard_sender_service_budget', type=int, choices=(0,1), default=0)
++    parser.add_argument('--guard_sender_ack_batch', type=int, choices=(0,1), default=0)
++    parser.add_argument('--guard_sender_fair_cursor', type=int, choices=(0,1), default=0,
++                        help='Rotate fairness turns independently of the SRPT cursor')
++    parser.add_argument('--guard_ack_max_delay_rtts', type=float, default=0,
++                        help='Maximum partial ACK-batch wait in base RTTs; 0 disables')
+     parser.add_argument('--guard_ack_interval_packets', type=int, default=8,
+                         help="cumulative ACK interval for registered GUARD flows (default: 8)")
++    parser.add_argument('--guard_fabric_control', type=int, choices=(0, 1), default=1,
++                        help='disable fabric feedback for a matched component ablation')
+     parser.add_argument('--guard_fixed_window', type=int, choices=(0, 1), default=1,
+                         help="use a fixed BDP safety window under GUARD rate pacing (default: 1)")
+     parser.add_argument('--guard_remaining_aware', type=int, choices=(0, 1), default=1,
+@@ -533,6 +571,22 @@ def main():
+                         help="let a selected >threshold elephant follow its receiver cap")
+     parser.add_argument('--guard_concurrency_min_bdps', type=float, default=8.0,
+                         help="apply receiver concurrency bound only above this many BDPs (default: 8)")
++    parser.add_argument('--guard_scheduling_horizon_bdps', type=float, default=0.0,
++                        help='cap size discrimination and serialized flow size at this many BDPs; 0 disables')
++    parser.add_argument('--guard_single_sender_order', type=int, choices=(0, 1), default=0,
++                        help='order registered messages sharing one source NIC regardless of total size')
++    parser.add_argument('--guard_post_grant_window_bdps', type=float, default=1.0,
++                        help='GUARD outstanding-data window after first receiver grant, in original BDPs')
++    parser.add_argument('--guard_single_sender_shared_cap_bdps', type=float, default=0.0,
++                        help='share a NIC-sized cap across one sender when all messages exceed this BDP threshold; 0 disables')
++    parser.add_argument('--guard_recovery_max_rtts', type=int, default=0, choices=range(65),
++                        help='maximum full-feedback RTTs credited for additive recovery; zero disables')
++    parser.add_argument('--guard_startup_same_peer', type=int, default=0, choices=(0,1),
++                        help='share startup rate only with long messages to the same peer')
++    parser.add_argument('--guard_startup_fairshare_bdps', type=float, default=0,
++                        help='large-message startup sharing threshold in original BDPs; zero disables')
++    parser.add_argument('--guard_single_sender_shared_slots', type=int, default=0,
++                        help='number of ready messages sharing a single sender cap; 0 means all')
+     parser.add_argument('--guard_grant_refresh_bdps', type=float, default=1.0,
+                         help="receiver progress between grant refreshes in BDPs; 0 disables (default: 1)")
+     parser.add_argument('--guard_membership_coalesce_ns', type=int, default=0,
+@@ -597,6 +651,9 @@ def main():
+                         help="maximum lifecycle data rows (default: 1024; hard maximum: 10000)")
+     parser.add_argument('--guard_controller_trace', type=int, choices=(0, 1), default=0,
+                         help="write a bounded valid-update GUARD controller CSV (default: 0)")
++    parser.add_argument('--guard_controller_min_flow_bytes', type=int, default=0, help='Filter observation only by original message size; traffic is unchanged')
++    parser.add_argument('--guard_controller_sample_ns', type=int, default=0,
++                        choices=(0, 1000, 10000, 100000, 1000000), help='per-flow event sample spacing; completion always retained until row cap')
+     parser.add_argument('--guard_controller_output', type=str,
+                         help="controller CSV path (default: the run output directory)")
+     parser.add_argument('--guard_controller_max_lines', type=int,
+@@ -604,11 +661,13 @@ def main():
+                         help="maximum controller rows (default: 10000; hard maximum: 300000)")
+     parser.add_argument('--guard_grant_trace', type=int, choices=(0, 1), default=0,
+                         help="write a bounded GUARD grant send/receive audit CSV (default: 0)")
++    parser.add_argument('--guard_grant_min_flow_bytes', type=int, default=0, help='Filter grant observations only by original flow size')
++    parser.add_argument('--guard_grant_allocation_details', type=int, choices=(0,1), default=0, help='Append receiver allocation observations')
+     parser.add_argument('--guard_grant_output', type=str,
+                         help="grant audit CSV path (default: the run output directory)")
+     parser.add_argument('--guard_grant_max_lines', type=int,
+                         default=DEFAULT_GUARD_GRANT_MAX_LINES,
+-                        help="maximum grant audit rows (default: 1000; hard maximum: 10000)")
++                        help="maximum grant audit rows (default: 1000; hard maximum: 1000000)")
+     parser.add_argument('--guard_transition_audit', type=int, choices=(0, 1), default=0,
+                         help="write bounded per-transition GUARD audit records (default: 0)")
+     parser.add_argument('--guard_transition_audit_output', type=str,
+@@ -618,6 +677,8 @@ def main():
+                         help="maximum transition records (default/hard maximum: 10000)")
+     parser.add_argument('--homa_overcommit', type=int, choices=range(1, 7), default=None,
+                         help="Homa scheduled messages per receiver; default uses every scheduled priority")
++    parser.add_argument('--homa_stable_resend_order', type=int, choices=(0,1), default=1)
++    parser.add_argument('--homa_diagnostic_hash_buckets', type=int, default=0)
+     parser.add_argument('--homa_resend_timeout_us', type=int, default=1000,
+                         help="Homa receiver no-progress timeout in us (default: 1000)")
+     parser.add_argument('--seed', type=int, default=1,
+@@ -677,6 +738,16 @@ def main():
+         raise Exception("CONFIG ERROR: --guard_cap_min_share_fraction must be in [0, 1].")
+     if args.guard_srpt_quantum_packets <= 0:
+         raise Exception("CONFIG ERROR: --guard_srpt_quantum_packets must be positive.")
++    if not 0 <= args.guard_grant_min_flow_bytes <= 2**63-1:
++        raise ValueError("grant trace minimum flow bytes out of range")
++    if not 0 <= args.guard_controller_min_flow_bytes <= 2**63-1:
++        raise Exception("Controller minimum flow size must be nonnegative and fit int64")
++    if args.guard_sender_service_budget and not args.guard_sender_fair_cursor:
++        raise Exception("Service budget requires fair cursor")
++    if args.guard_sender_ack_batch and not args.guard_sender_fair_cursor:
++        raise Exception("CONFIG ERROR: ACK batch service requires the independent fairness cursor.")
++    if not 0 <= args.guard_ack_max_delay_rtts <= 64:
++        raise Exception("CONFIG ERROR: --guard_ack_max_delay_rtts must be in [0,64].")
+     if args.guard_ack_interval_packets <= 0:
+         raise Exception("CONFIG ERROR: --guard_ack_interval_packets must be positive.")
+     if not 1.0 <= args.guard_tail_bypass_bdps <= 16.0:
+@@ -787,6 +858,26 @@ def main():
+             raise Exception(
+                 "CONFIG ERROR: elephant receiver authority requires K=1 final GUARD, "
+                 "the V18/V14 bundle, and other fabric/elephant adaptations disabled.")
++    if not 0.0 <= args.guard_scheduling_horizon_bdps <= 4096.0:
++        raise Exception('CONFIG ERROR: scheduling horizon must be in [0, 4096].')
++    if not 1.0 <= args.guard_post_grant_window_bdps <= 8.0:
++        raise Exception('CONFIG ERROR: post-grant window must be in [1, 8] BDPs.')
++    if not 0.0 <= args.guard_single_sender_shared_cap_bdps <= 4096.0:
++        raise Exception('CONFIG ERROR: shared single-sender cap threshold must be in [0, 4096] BDPs.')
++    if not 0 <= args.guard_startup_fairshare_bdps <= 4096:
++        raise Exception('CONFIG ERROR: startup fairshare threshold must be in [0,4096].')
++    if not 0 <= args.guard_single_sender_shared_slots <= 64:
++        raise Exception('CONFIG ERROR: shared sender slots must be in [0, 64].')
++    if args.guard_single_sender_shared_slots and not args.guard_single_sender_shared_cap_bdps:
++        raise Exception('CONFIG ERROR: shared sender slots require a shared sender cap.')
++    if args.guard_single_sender_shared_cap_bdps and args.guard_mixed_pg_vector_fastpath:
++        raise Exception('CONFIG ERROR: shared single-sender cap requires the legacy allocator.')
++    if args.guard_post_grant_window_bdps != 1 and (
++            args.cc != 'guard' or not args.guard_fixed_window or
++            args.guard_transport_window_floor_rtt_ns or args.guard_mixed_pg_vector_fastpath):
++        raise Exception('CONFIG ERROR: post-grant window requires fixed-window legacy GUARD without a transport floor.')
++    if (args.guard_scheduling_horizon_bdps or args.guard_single_sender_order) and args.guard_mixed_pg_vector_fastpath:
++        raise Exception('CONFIG ERROR: the scheduling horizon requires the legacy receiver allocator.')
+     if not 0.0 <= args.guard_concurrency_min_bdps <= 64.0:
+         raise Exception("CONFIG ERROR: --guard_concurrency_min_bdps must be in [0, 64].")
+     if not 0.0 <= args.guard_grant_refresh_bdps <= 16.0:
+@@ -948,6 +1039,8 @@ def main():
+         raise Exception("CONFIG ERROR: --guard_receiver_util_threshold must be in (0, 1).")
+     if not 1 <= args.seed <= 2147483647:
+         raise Exception("CONFIG ERROR: --seed must be in [1, 2147483647].")
++    if not 0 <= args.homa_diagnostic_hash_buckets <= 4096:
++        raise Exception("CONFIG ERROR: Homa diagnostic bucket count must be in [0,4096].")
+     if args.homa_resend_timeout_us <= 0:
+         raise Exception("CONFIG ERROR: --homa_resend_timeout_us must be positive.")
+     if qlen_monitoring_interval <= 0:
+@@ -1037,8 +1130,8 @@ def main():
+     output_dir = os.path.join(os.getcwd(), "mix", "output", config_ID)
+ 
+     if args.flow_file:
+-        assert not os.path.exists(output_dir)
+-        os.makedirs(output_dir)
++        config_ID, output_dir = reserve_output_directory(
++            os.path.dirname(output_dir), config_ID)
+         print("The new directory is created  - {}".format(output_dir + "/"))
+         flow_path = os.path.join(output_dir, "{}_input_flow.txt".format(config_ID))
+         shutil.copyfile(custom_flow_source, flow_path)
+@@ -1093,8 +1186,8 @@ def main():
+     print("Preflight flow count: {}/{}".format(flow_count, args.max_flows))
+ 
+     if not args.flow_file:
+-        assert not os.path.exists(output_dir)
+-        os.makedirs(output_dir)
++        config_ID, output_dir = reserve_output_directory(
++            os.path.dirname(output_dir), config_ID)
+         print("The new directory is created  - {}".format(output_dir + "/"))
+ 
+     guard_lifecycle_output = args.guard_lifecycle_output
+@@ -1368,7 +1461,13 @@ def main():
+                                         guard_queue_budget_bdps=args.guard_queue_budget_bdps,
+                                         guard_adaptive_target_max_bdps=args.guard_adaptive_target_max_bdps,
+                                         guard_ack_interval_packets=args.guard_ack_interval_packets,
++                                        guard_ack_max_delay_rtts=args.guard_ack_max_delay_rtts,
++                                        guard_sender_fair_cursor=args.guard_sender_fair_cursor,
++                                        guard_sender_ack_batch=args.guard_sender_ack_batch,
++                                        guard_sender_service_budget=args.guard_sender_service_budget,
++                                        guard_sender_ack_rescue=args.guard_sender_ack_rescue,
+                                         guard_fixed_window=args.guard_fixed_window,
++                                        guard_fabric_control=args.guard_fabric_control,
+                                         guard_remaining_aware=args.guard_remaining_aware,
+                                         guard_min_share_fraction=args.guard_min_share_fraction,
+                                         guard_remaining_exponent=args.guard_remaining_exponent,
+@@ -1388,6 +1487,14 @@ def main():
+                                         guard_elephant_fabric_target_scale=args.guard_elephant_fabric_target_scale,
+                                         guard_elephant_receiver_authority=args.guard_elephant_receiver_authority,
+                                         guard_concurrency_min_bdps=args.guard_concurrency_min_bdps,
++                                        guard_scheduling_horizon_bdps=args.guard_scheduling_horizon_bdps,
++                                        guard_single_sender_order=args.guard_single_sender_order,
++                                        guard_post_grant_window_bdps=args.guard_post_grant_window_bdps,
++                                        guard_single_sender_shared_cap_bdps=args.guard_single_sender_shared_cap_bdps,
++                                        guard_single_sender_shared_slots=args.guard_single_sender_shared_slots,
++                                        guard_startup_fairshare_bdps=args.guard_startup_fairshare_bdps,
++                                        guard_recovery_max_rtts=args.guard_recovery_max_rtts,
++                                        guard_startup_same_peer=args.guard_startup_same_peer,
+                                         guard_grant_refresh_bdps=args.guard_grant_refresh_bdps,
+                                         guard_membership_coalesce_ns=args.guard_membership_coalesce_ns,
+                                         guard_membership_coalesce_max_windows=args.guard_membership_coalesce_max_windows,
+@@ -1429,9 +1536,13 @@ def main():
+                                         guard_lifecycle_output=guard_lifecycle_output,
+                                         guard_lifecycle_max_lines=args.guard_lifecycle_max_lines,
+                                         guard_controller_trace=args.guard_controller_trace,
++                                        guard_controller_sample_ns=args.guard_controller_sample_ns,
++                                        guard_controller_min_flow_bytes=args.guard_controller_min_flow_bytes,
+                                         guard_controller_output=guard_controller_output,
+                                         guard_controller_max_lines=args.guard_controller_max_lines,
+                                         guard_grant_trace=args.guard_grant_trace,
++                                        guard_grant_min_flow_bytes=args.guard_grant_min_flow_bytes,
++                                        guard_grant_allocation_details=args.guard_grant_allocation_details,
+                                         guard_grant_output=guard_grant_output,
+                                         guard_grant_max_lines=args.guard_grant_max_lines,
+                                         guard_transition_audit_output_config=(
+@@ -1445,6 +1556,8 @@ def main():
+                                             if args.guard_transition_audit else ""),
+                                         homa_overcommit=homa_overcommit,
+                                         homa_resend_timeout_us=args.homa_resend_timeout_us,
++                                        homa_stable_resend_order=args.homa_stable_resend_order,
++                                        homa_diagnostic_hash_buckets=args.homa_diagnostic_hash_buckets,
+                                         homa_unscheduled_levels=homa_profile["unscheduled_levels"],
+                                         homa_unscheduled_cutoffs=" ".join(str(value) for value in homa_cutoffs),
+                                         seed=args.seed,
+diff --git a/scratch/network-load-balance.cc b/scratch/network-load-balance.cc
+index e881f2b..1c9ded3 100644
+--- a/scratch/network-load-balance.cc
++++ b/scratch/network-load-balance.cc
+@@ -30,6 +30,7 @@
+ #include <time.h>
+ 
+ #include <fstream>
++#include <array>
+ #include <iostream>
+ #include <limits>
+ #include <map>
+@@ -58,6 +59,24 @@ using namespace std;
+ 
+ NS_LOG_COMPONENT_DEFINE("GENERIC_SIMULATION");
+ 
++// Optional observation of actual host packet serialization. Preallocate before
++// flows start; counting does not create packets or schedule simulator events.
++struct GuardWireCounter {
++    uint64_t packets;
++    uint64_t bytes;
++    GuardWireCounter() : packets(0), bytes(0) {}
++};
++std::vector<std::array<GuardWireCounter, 256> > guard_wire_counters;
++void GuardObserveHostTx(uint32_t node_id, Ptr<const Packet> packet) {
++    CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header |
++                    CustomHeader::L4_Header);
++    packet->PeekHeader(ch);
++    NS_ABORT_MSG_IF(node_id >= guard_wire_counters.size(), "wire counter node out of range");
++    GuardWireCounter &counter = guard_wire_counters[node_id][ch.l3Prot];
++    counter.packets++;
++    counter.bytes += packet->GetSize();
++}
++
+ /*------Load balancing parameters-----*/
+ // mode for load balancer, 0: flow ECMP, 2: DRILL, 3: Conga, 6: Letflow, 9: ConWeave
+ uint32_t lb_mode = 0;
+@@ -213,6 +232,11 @@ double guard_target_floor = 0.95;
+ double guard_queue_budget_bdps = 0.5;
+ double guard_adaptive_target_max_bdps = 0.0;
+ uint32_t guard_ack_interval_packets = 8;
++double guard_ack_max_delay_rtts = 0;
++bool guard_sender_fair_cursor = false;
++bool guard_sender_ack_batch = false;
++bool guard_sender_service_budget = false;
++bool guard_sender_ack_rescue = false;
+ bool guard_fixed_window = true;
+ bool guard_remaining_aware = true;
+ double guard_min_share_fraction = 0.0;
+@@ -230,6 +254,15 @@ bool guard_elephant_fabric_target = false;
+ double guard_elephant_fabric_target_scale = 1.0;
+ bool guard_elephant_receiver_authority = false;
+ double guard_concurrency_min_bdps = 8.0;
++double guard_scheduling_horizon_bdps = 0.0;
++bool guard_single_sender_order = false;
++double guard_post_grant_window_bdps = 1.0;
++double guard_single_sender_shared_cap_bdps = 0.0;
++uint32_t guard_single_sender_shared_slots = 0;
++double guard_startup_fairshare_bdps = 0;
++uint32_t guard_recovery_max_rtts = 0;
++bool guard_startup_same_peer = false;
++bool guard_fabric_control = true;
+ double guard_grant_refresh_bdps = 1.0;
+ uint64_t guard_membership_coalesce_ns = 0;
+ uint32_t guard_membership_coalesce_max_windows = 5;
+@@ -255,6 +288,8 @@ double guard_demand_threshold = 0.75;
+ double guard_receiver_util_threshold = 0.75;
+ uint32_t homa_overcommit = 4;
+ uint64_t homa_resend_timeout_us = 1000;
++bool homa_stable_resend_order = true;
++uint32_t homa_diagnostic_hash_buckets = 0;
+ uint32_t homa_unscheduled_levels = 3;
+ uint64_t homa_unscheduled_cutoffs[5] = {26000, 52000, 0, 0, 0};
+ bool guard_lifecycle_trace = false;
+@@ -262,10 +297,14 @@ uint64_t guard_lifecycle_trace_max_lines = 1024;
+ const uint64_t guard_lifecycle_trace_hard_max_lines = 10000;
+ bool guard_controller_trace = false;
+ uint64_t guard_controller_trace_max_lines = 10000;
++uint64_t guard_controller_trace_sample_ns = 0;
++uint64_t guard_controller_trace_min_flow_bytes = 0;
+ const uint64_t guard_controller_trace_hard_max_lines = 300000;
+ bool guard_grant_trace = false;
+ uint64_t guard_grant_trace_max_lines = 1000;
+-const uint64_t guard_grant_trace_hard_max_lines = 10000;
++const uint64_t guard_grant_trace_hard_max_lines = 1000000;
++uint64_t guard_grant_trace_min_flow_bytes = 0;
++bool guard_grant_allocation_details = false;
+ bool guard_transition_audit = false;
+ uint64_t guard_transition_audit_max_records = 10000;
+ const uint64_t guard_transition_audit_hard_max_records = 10000;
+@@ -1454,6 +1493,16 @@ int main(int argc, char *argv[]) {
+                 conf >> guard_adaptive_target_max_bdps;
+                 std::cerr << "GUARD_ADAPTIVE_TARGET_MAX_BDPS\t"
+                           << guard_adaptive_target_max_bdps << '\n';
++            } else if (key.compare("GUARD_SENDER_ACK_RESCUE") == 0) {
++                conf >> guard_sender_ack_rescue;
++            } else if (key.compare("GUARD_SENDER_SERVICE_BUDGET") == 0) {
++                conf >> guard_sender_service_budget;
++            } else if (key.compare("GUARD_SENDER_ACK_BATCH") == 0) {
++                conf >> guard_sender_ack_batch;
++            } else if (key.compare("GUARD_SENDER_FAIR_CURSOR") == 0) {
++                conf >> guard_sender_fair_cursor;
++            } else if (key.compare("GUARD_ACK_MAX_DELAY_RTTS") == 0) {
++                conf >> guard_ack_max_delay_rtts;
+             } else if (key.compare("GUARD_ACK_INTERVAL_PACKETS") == 0) {
+                 conf >> guard_ack_interval_packets;
+                 std::cerr << "GUARD_ACK_INTERVAL_PACKETS\t"
+@@ -1524,6 +1573,24 @@ int main(int argc, char *argv[]) {
+                 conf >> guard_concurrency_min_bdps;
+                 std::cerr << "GUARD_CONCURRENCY_MIN_BDPS\t"
+                           << guard_concurrency_min_bdps << '\n';
++            } else if (key.compare("GUARD_FABRIC_CONTROL") == 0) {
++                conf >> guard_fabric_control;
++            } else if (key.compare("GUARD_SCHEDULING_HORIZON_BDPS") == 0) {
++                conf >> guard_scheduling_horizon_bdps;
++            } else if (key.compare("GUARD_SINGLE_SENDER_ORDER") == 0) {
++                conf >> guard_single_sender_order;
++            } else if (key.compare("GUARD_POST_GRANT_WINDOW_BDPS") == 0) {
++                conf >> guard_post_grant_window_bdps;
++            } else if (key.compare("GUARD_SINGLE_SENDER_SHARED_CAP_BDPS") == 0) {
++                conf >> guard_single_sender_shared_cap_bdps;
++            } else if (key.compare("GUARD_RECOVERY_MAX_RTTS") == 0) {
++                conf >> guard_recovery_max_rtts;
++            } else if (key.compare("GUARD_STARTUP_SAME_PEER") == 0) {
++                conf >> guard_startup_same_peer;
++            } else if (key.compare("GUARD_STARTUP_FAIRSHARE_BDPS") == 0) {
++                conf >> guard_startup_fairshare_bdps;
++            } else if (key.compare("GUARD_SINGLE_SENDER_SHARED_SLOTS") == 0) {
++                conf >> guard_single_sender_shared_slots;
+             } else if (key.compare("GUARD_GRANT_REFRESH_BDPS") == 0) {
+                 conf >> guard_grant_refresh_bdps;
+                 std::cerr << "GUARD_GRANT_REFRESH_BDPS\t"
+@@ -1670,6 +1737,10 @@ int main(int argc, char *argv[]) {
+             } else if (key.compare("GUARD_CONTROLLER_TRACE") == 0) {
+                 conf >> guard_controller_trace;
+                 std::cerr << "GUARD_CONTROLLER_TRACE\t" << guard_controller_trace << '\n';
++            } else if (key.compare("GUARD_CONTROLLER_TRACE_MIN_FLOW_BYTES") == 0) {
++                conf >> guard_controller_trace_min_flow_bytes;
++            } else if (key.compare("GUARD_CONTROLLER_TRACE_SAMPLE_NS") == 0) {
++                conf >> guard_controller_trace_sample_ns;
+             } else if (key.compare("GUARD_CONTROLLER_TRACE_MAX_LINES") == 0) {
+                 conf >> guard_controller_trace_max_lines;
+                 std::cerr << "GUARD_CONTROLLER_TRACE_MAX_LINES\t"
+@@ -1677,6 +1748,10 @@ int main(int argc, char *argv[]) {
+             } else if (key.compare("GUARD_GRANT_TRACE") == 0) {
+                 conf >> guard_grant_trace;
+                 std::cerr << "GUARD_GRANT_TRACE\t\t" << guard_grant_trace << '\n';
++            } else if (key.compare("GUARD_GRANT_TRACE_MIN_FLOW_BYTES") == 0) {
++                conf >> guard_grant_trace_min_flow_bytes;
++            } else if (key.compare("GUARD_GRANT_ALLOCATION_DETAILS") == 0) {
++                conf >> guard_grant_allocation_details;
+             } else if (key.compare("GUARD_GRANT_TRACE_MAX_LINES") == 0) {
+                 conf >> guard_grant_trace_max_lines;
+                 std::cerr << "GUARD_GRANT_TRACE_MAX_LINES\t"
+@@ -1698,6 +1773,10 @@ int main(int argc, char *argv[]) {
+             } else if (key.compare("HOMA_OVERCOMMIT") == 0) {
+                 conf >> homa_overcommit;
+                 std::cerr << "HOMA_OVERCOMMIT\t\t" << homa_overcommit << '\n';
++            } else if (key.compare("HOMA_STABLE_RESEND_ORDER") == 0) {
++                conf >> homa_stable_resend_order;
++            } else if (key.compare("HOMA_DIAGNOSTIC_HASH_BUCKETS") == 0) {
++                conf >> homa_diagnostic_hash_buckets;
+             } else if (key.compare("HOMA_RESEND_TIMEOUT_US") == 0) {
+                 conf >> homa_resend_timeout_us;
+                 std::cerr << "HOMA_RESEND_TIMEOUT_US\t" << homa_resend_timeout_us << '\n';
+@@ -1919,6 +1998,10 @@ int main(int argc, char *argv[]) {
+         std::cerr << "GUARD_REMAINING_EXPONENT must be in [0, 2]\n";
+         return 1;
+     }
++    if (!(guard_scheduling_horizon_bdps >= 0.0 && guard_scheduling_horizon_bdps <= 4096.0)) {
++        std::cerr << "GUARD_SCHEDULING_HORIZON_BDPS must be in [0, 4096]\n";
++        return 1;
++    }
+     if (guard_concurrency_min_bdps < 0.0 || guard_concurrency_min_bdps > 64.0) {
+         std::cerr << "GUARD_CONCURRENCY_MIN_BDPS must be in [0, 64]\n";
+         return 1;
+@@ -2285,10 +2368,12 @@ int main(int argc, char *argv[]) {
+             return 1;
+         }
+         guard_controller_trace_sink.max_lines = guard_controller_trace_max_lines;
++        guard_controller_trace_sink.sample_ns = guard_controller_trace_sample_ns;
++        guard_controller_trace_sink.min_flow_bytes = guard_controller_trace_min_flow_bytes;
+         fprintf(guard_controller_trace_sink.file,
+                 "time_ns,flow_id,sip,dip,event_type,hpcc_rate_bps,grant_rate_bps,"
+                 "final_rate_bps,binding,rate_changed,fast_react,nhop,next_seq,"
+-                "congestion_metric,effective_target,threshold_ratio\n");
++                "congestion_metric,effective_target,threshold_ratio,snd_nxt,snd_una,window_bytes,next_avail_ns,tx_bytes,last_full_feedback_ns,last_full_gap_ns,last_recovery_ai_bps,stored_congestion_metric\n");
+     }
+     GuardGrantTraceSink guard_grant_trace_sink;
+     if (guard_grant_trace) {
+@@ -2299,6 +2384,8 @@ int main(int argc, char *argv[]) {
+             return 1;
+         }
+         guard_grant_trace_sink.max_lines = guard_grant_trace_max_lines;
++        guard_grant_trace_sink.min_flow_bytes = guard_grant_trace_min_flow_bytes;
++        guard_grant_trace_sink.allocation_details = guard_grant_allocation_details;
+         fprintf(guard_grant_trace_sink.file,
+                 "time_ns,event,set_change,host_node,flow_id,data_source_ip,data_destination_ip,"
+                 "active_flows,line_rate_bps,grant_rate_bps,next_seq,serialized_bytes,"
+@@ -2323,6 +2410,8 @@ int main(int argc, char *argv[]) {
+                     "live_draining_reserved_bps,capacity_recompute_pending,"
+                     "reason_mask");
+         }
++        if (guard_grant_allocation_details) fprintf(guard_grant_trace_sink.file,
++            ",flow_size,distinct_senders,same_sender_flows,min_active_remaining,receiver_seq,total_active_remaining");
+         fprintf(guard_grant_trace_sink.file, "\n");
+     }
+     GuardTransitionAuditSink guard_transition_audit_sink;
+@@ -2411,6 +2500,13 @@ int main(int argc, char *argv[]) {
+     Settings::host_num = node_num - switch_num;
+     Settings::switch_num = switch_num;
+     Settings::lb_mode = lb_mode;
++    Settings::guard_sender_fair_cursor = guard_sender_fair_cursor;
++    NS_ABORT_MSG_IF(guard_sender_service_budget && !guard_sender_fair_cursor, "Service budget requires fair cursor");
++    Settings::guard_sender_service_budget = guard_sender_service_budget;
++    Settings::guard_sender_ack_rescue = guard_sender_ack_rescue;
++    NS_ABORT_MSG_IF(guard_sender_ack_batch && !guard_sender_fair_cursor, "ACK batch service requires fair cursor");
++    Settings::guard_sender_ack_batch = guard_sender_ack_batch;
++    Settings::guard_sender_ack_batch_packets = guard_ack_interval_packets;
+     Settings::packet_payload = packet_payload_size;
+     // Settings::MTU = packet_payload_size + 48;  // for simplicity
+     /*------------------------------------*/
+@@ -2641,6 +2737,24 @@ int main(int argc, char *argv[]) {
+      *new rate can be divided by 2 at maximum)
+      */
+ 
++    // The shared-cap experiment relies on a single physical source NIC to
++    // enforce the aggregate budget. Reject unsupported topologies explicitly.
++    if (guard_single_sender_shared_cap_bdps > 0) {
++        uint64_t common_host_rate = 0;
++        for (uint32_t i = 0; i < node_num; ++i) {
++            if (n.Get(i)->GetNodeType() != 0) continue;
++            uint32_t nics = 0;
++            uint64_t rate = 0;
++            for (uint32_t j = 0; j < n.Get(i)->GetNDevices(); ++j) {
++                Ptr<QbbNetDevice> device = DynamicCast<QbbNetDevice>(n.Get(i)->GetDevice(j));
++                if (device) { ++nics; rate = device->GetDataRate().GetBitRate(); }
++            }
++            NS_ABORT_MSG_IF(nics != 1 || (common_host_rate && rate != common_host_rate),
++                            "Shared sender caps require homogeneous single-NIC hosts");
++            common_host_rate = rate;
++        }
++    }
++
+     // manually type BDP
+     std::map<std::string, uint32_t> topo2bdpMap;
+     topo2bdpMap[std::string("leaf_spine_8_100G_OS1")] = 104000;  // RTT=8320 --> all 100G links
+@@ -2735,6 +2849,7 @@ int main(int argc, char *argv[]) {
+                                  DoubleValue(guard_queue_budget_bdps));
+             rdmaHw->SetAttribute("GuardAdaptiveTargetMaxBdps",
+                                  DoubleValue(guard_adaptive_target_max_bdps));
++            rdmaHw->SetAttribute("GuardAckMaxDelayRtts", DoubleValue(guard_ack_max_delay_rtts));
+             rdmaHw->SetAttribute("GuardAckIntervalPackets",
+                                  UintegerValue(guard_ack_interval_packets));
+             rdmaHw->SetAttribute("GuardFixedWindow", BooleanValue(guard_fixed_window));
+@@ -2770,6 +2885,16 @@ int main(int argc, char *argv[]) {
+                                  DoubleValue(guard_elephant_fabric_target_scale));
+             rdmaHw->SetAttribute("GuardElephantReceiverAuthority",
+                                  BooleanValue(guard_elephant_receiver_authority));
++            rdmaHw->SetAttribute("GuardFabricControl", BooleanValue(guard_fabric_control));
++            rdmaHw->SetAttribute("GuardSchedulingHorizonBdps",
++                                 DoubleValue(guard_scheduling_horizon_bdps));
++            rdmaHw->SetAttribute("GuardSingleSenderOrder", BooleanValue(guard_single_sender_order));
++            rdmaHw->SetAttribute("GuardPostGrantWindowBdps", DoubleValue(guard_post_grant_window_bdps));
++            rdmaHw->SetAttribute("GuardSingleSenderSharedCapBdps", DoubleValue(guard_single_sender_shared_cap_bdps));
++            rdmaHw->SetAttribute("GuardRecoveryMaxRtts", UintegerValue(guard_recovery_max_rtts));
++            rdmaHw->SetAttribute("GuardStartupSamePeer", BooleanValue(guard_startup_same_peer));
++            rdmaHw->SetAttribute("GuardStartupFairshareBdps", DoubleValue(guard_startup_fairshare_bdps));
++            rdmaHw->SetAttribute("GuardSingleSenderSharedSlots", UintegerValue(guard_single_sender_shared_slots));
+             rdmaHw->SetAttribute("GuardConcurrencyMinBdps",
+                                  DoubleValue(guard_concurrency_min_bdps));
+             rdmaHw->SetAttribute("GuardGrantRefreshBdps",
+@@ -2826,6 +2951,8 @@ int main(int argc, char *argv[]) {
+             rdmaHw->SetAttribute("GuardReceiverUtilThreshold",
+                                  DoubleValue(guard_receiver_util_threshold));
+             rdmaHw->SetAttribute("HomaOvercommitDegree", UintegerValue(homa_overcommit));
++            rdmaHw->SetAttribute("HomaStableResendOrder", BooleanValue(homa_stable_resend_order));
++            rdmaHw->SetAttribute("HomaDiagnosticHashBuckets", UintegerValue(homa_diagnostic_hash_buckets));
+             rdmaHw->SetAttribute("HomaResendTimeout",
+                                  TimeValue(MicroSeconds(homa_resend_timeout_us)));
+             rdmaHw->ConfigureHomaPriorities(
+@@ -2862,6 +2989,16 @@ int main(int argc, char *argv[]) {
+             Ptr<RdmaDriver> rdma = CreateObject<RdmaDriver>();
+             Ptr<Node> node = n.Get(i);
+ 
++            if (guard_controller_trace) {
++                if (guard_wire_counters.empty()) guard_wire_counters.resize(n.GetN());
++                for (uint32_t j = 0; j < node->GetNDevices(); ++j) {
++                    Ptr<NetDevice> dev = node->GetDevice(j);
++                    if (DynamicCast<QbbNetDevice>(dev) != NULL)
++                        dev->TraceConnectWithoutContext("PhyTxBegin",
++                            MakeBoundCallback(&GuardObserveHostTx, node->GetId()));
++                }
++            }
++
+             if (detailed_monitoring) {
+                 for (uint32_t j = 0; j < node->GetNDevices(); ++j) {
+                     Ptr<NetDevice> dev = node->GetDevice(j);
+@@ -3279,15 +3416,35 @@ int main(int argc, char *argv[]) {
+         fprintf(guard_controller_trace_sink.file,
+                 "# attempted %lu written %lu truncated %lu\n",
+                 guard_controller_trace_sink.attempted, guard_controller_trace_sink.written,
+-                guard_controller_trace_sink.attempted - guard_controller_trace_sink.written);
++                guard_controller_trace_sink.attempted - guard_controller_trace_sink.written -
++                    guard_controller_trace_sink.sampled_out);
++        fprintf(guard_controller_trace_sink.file, "# sampled_out=%lu sample_ns=%lu\n",
++                guard_controller_trace_sink.sampled_out, guard_controller_trace_sink.sample_ns);
++        fprintf(guard_controller_trace_sink.file, "# size_filtered_out=%lu min_flow_bytes=%lu\n",
++                guard_controller_trace_sink.size_filtered_out, guard_controller_trace_sink.min_flow_bytes);
+         fclose(guard_controller_trace_sink.file);
+         guard_controller_trace_sink.file = NULL;
++        const std::string wire_path = guard_controller_trace_output_file + ".wire.csv";
++        FILE *wire = fopen(wire_path.c_str(), "w");
++        NS_ABORT_MSG_IF(wire == NULL, "cannot open wire counters");
++        fprintf(wire, "node_id,l3_protocol,packets,serialized_bytes\n");
++        for (size_t node = 0; node < guard_wire_counters.size(); ++node) {
++            for (size_t protocol = 0; protocol < 256; ++protocol) {
++                const GuardWireCounter &counter = guard_wire_counters[node][protocol];
++                if (counter.packets != 0)
++                    fprintf(wire, "%lu,%lu,%lu,%lu\n", node, protocol,
++                            counter.packets, counter.bytes);
++            }
++        }
++        fclose(wire);
+     }
+     if (guard_grant_trace) {
+         fprintf(guard_grant_trace_sink.file,
+                 "# attempted %lu written %lu truncated %lu\n",
+                 guard_grant_trace_sink.attempted, guard_grant_trace_sink.written,
+                 guard_grant_trace_sink.attempted - guard_grant_trace_sink.written);
++        fprintf(guard_grant_trace_sink.file, "# filtered_out %lu min_flow_bytes %lu\n",
++            guard_grant_trace_sink.filtered_out, guard_grant_trace_sink.min_flow_bytes);
+         fclose(guard_grant_trace_sink.file);
+         guard_grant_trace_sink.file = NULL;
+     }
+@@ -4106,6 +4263,10 @@ int main(int argc, char *argv[]) {
+             Settings::guard_sender_srpt_selections,
+             Settings::guard_sender_srpt_non_rr_selections,
+             Settings::guard_sender_srpt_forced_rr);
++    fprintf(guard_stats_output,
++            "guard_ack_rescue enabled %u episodes %lu packets %lu\n",
++            guard_sender_ack_rescue ? 1 : 0,
++            Settings::guard_sender_ack_rescue_episodes, Settings::guard_sender_ack_rescue_packets);
+     uint64_t total_guard_one_rtt_bypass_flows = 0;
+     uint64_t total_guard_one_rtt_bypass_feedbacks = 0;
+     uint64_t total_guard_one_rtt_acks_suppressed = 0;
+@@ -4616,6 +4777,15 @@ int main(int argc, char *argv[]) {
+                 stats.cumulative_pause_ns, stats.max_pause_ns, unmatched_pauses[qIndex],
+                 stats.unmatched_resumes);
+     }
++    for (uint32_t node = 0; node < n.GetN(); ++node) {
++        Ptr<RdmaDriver> driver = n.Get(node)->GetObject<RdmaDriver>();
++        if (driver == NULL) continue;
++        Ptr<RdmaHw> hw = driver->m_rdma;
++        fprintf(guard_stats_output,
++                "guard_ack_deadline node %u max_delay_rtts %.6f timers %lu sent %lu max_wait_ns %lu\n",
++                node, guard_ack_max_delay_rtts, hw->m_guardDelayedAckTimers,
++                hw->m_guardDelayedAcksSent, hw->m_guardDelayedAckMaxWaitNs);
++    }
+     fclose(guard_stats_output);
+ 
+     // Dedicated, cumulative DCQCN-like counters stay separate from the
+diff --git a/src/network/model/flow-id-num-tag.cc b/src/network/model/flow-id-num-tag.cc
+index 15dbd80..d55a3b7 100644
+--- a/src/network/model/flow-id-num-tag.cc
++++ b/src/network/model/flow-id-num-tag.cc
+@@ -11,7 +11,7 @@ namespace ns3 {
+ 
+ 	FlowIDNUMTag::FlowIDNUMTag() :
+ 		Tag(),
+-		flow_stat(0)
++		flow_stat(0), flow_size(0)
+ 	{
+ 	}
+ 
+@@ -40,14 +40,14 @@ namespace ns3 {
+ 	void
+ 		FlowIDNUMTag::Serialize(TagBuffer i) const
+ 	{
+-		i.WriteU16(flow_stat);
++		i.WriteU32(static_cast<uint32_t>(flow_stat));
+ 		i.WriteU32(flow_size);
+ 	}
+ 
+ 	void
+ 		FlowIDNUMTag::Deserialize(TagBuffer i)
+ 	{
+-		flow_stat = i.ReadU16();
++		flow_stat = static_cast<int32_t>(i.ReadU32());
+ 		flow_size = i.ReadU32();
+ 	}
+ 
+diff --git a/src/point-to-point/model/qbb-net-device.cc b/src/point-to-point/model/qbb-net-device.cc
+index 04bf28d..294f6db 100644
+--- a/src/point-to-point/model/qbb-net-device.cc
++++ b/src/point-to-point/model/qbb-net-device.cc
+@@ -82,6 +82,14 @@ RdmaEgressQueue::RdmaEgressQueue() {
+     m_rrlast = 0;
+     m_guardSrptLastIndex = -1;
+     m_guardSrptConsecutive = 0;
++    m_guardSrptFairLastIndex = 0;
++    m_guardAckRescueIndex = -1;
++    m_guardAckRescueFlowId = -1;
++    m_guardAckRescueEndSeq = 0;
++    m_guardSrptServiceSinceFair = 0;
++    m_guardSrptBatchIndex = -1;
++    m_guardSrptBatchFlowId = -1;
++    m_guardSrptBatchEndSeq = 0;
+     m_qlast = 0;
+     m_mtu = 1000;
+     m_ackQ = CreateObject<DropTailQueue>();
+@@ -105,6 +113,16 @@ Ptr<Packet> RdmaEgressQueue::DequeueQindex(int qIndex) {
+     }
+     return 0;
+ }
++bool RdmaEgressQueue::GuardAckRescueDue(Ptr<RdmaQueuePair> qp, uint32_t mtu, uint32_t ack_packets) {
++    if (!qp->m_guard_sender_srpt || qp->irn.m_enabled || qp->GetBytesLeft() == 0 ||
++        !qp->m_retransmit.IsRunning()) return false;
++    const uint64_t flight = qp->GetOnTheFly();
++    if (flight == 0 || flight >= (uint64_t)ack_packets * mtu) return false;
++    const int64_t rto = qp->GetRto(mtu).GetNanoSeconds();
++    const int64_t left = Simulator::GetDelayLeft(qp->m_retransmit).GetNanoSeconds();
++    return rto > 0 && left > 0 && left <= rto / 2;
++}
++
+ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
+     bool found = false;
+     uint32_t qIndex;
+@@ -164,6 +182,18 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
+     if (guard_srpt) {
+         int best = -1024;
+         int first_ready = -1024;
++        int rescue_ready = -1, pending_ready = -1;
++        int64_t rescue_delay = std::numeric_limits<int64_t>::max();
++        if (Settings::guard_sender_ack_rescue && m_guardAckRescueIndex >= 0) {
++            if ((uint32_t)m_guardAckRescueIndex >= fcount || m_qpGrp->IsQpFinished(m_guardAckRescueIndex))
++                m_guardAckRescueIndex = -1;
++            else {
++                Ptr<RdmaQueuePair> pending = m_qpGrp->Get(m_guardAckRescueIndex);
++                if (pending->m_flow_id != m_guardAckRescueFlowId || pending->irn.m_enabled ||
++                    pending->snd_nxt >= m_guardAckRescueEndSeq || pending->GetOnTheFly() == 0 ||
++                    !pending->m_retransmit.IsRunning()) m_guardAckRescueIndex = -1;
++            }
++        }
+         uint64_t best_remaining = std::numeric_limits<uint64_t>::max();
+         for (uint32_t step = 1; step <= fcount; step++) {
+             uint32_t index = (step + m_rrlast) % fcount;
+@@ -184,6 +214,17 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
+                 continue;
+             }
+             if (!time_ok) continue;
++            if (Settings::guard_sender_ack_rescue) {
++                if ((int)index == m_guardAckRescueIndex) pending_ready = index;
++                if (GuardAckRescueDue(qp, m_mtu, Settings::guard_sender_ack_batch_packets)) {
++                    const int64_t delay = Simulator::GetDelayLeft(qp->m_retransmit).GetNanoSeconds();
++                    if (delay < rescue_delay || (delay == rescue_delay &&
++                        (rescue_ready < 0 || qp->m_flow_id < m_qpGrp->Get(rescue_ready)->m_flow_id))) {
++                        rescue_ready = index;
++                        rescue_delay = delay;
++                    }
++                }
++            }
+             if (first_ready == -1024) first_ready = (int)index;
+             uint64_t remaining = qp->GetBytesLeft();
+             if (remaining < best_remaining) {
+@@ -192,12 +233,90 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
+             }
+         }
+         if (best != -1024) {
++            const int rescue = pending_ready >= 0 ? pending_ready : rescue_ready;
++            const bool using_rescue = Settings::guard_sender_ack_rescue && rescue >= 0;
++            if (using_rescue) {
++                best = rescue;
++                Ptr<RdmaQueuePair> qp = m_qpGrp->Get(best);
++                if (m_guardAckRescueIndex != best) {
++                    m_guardAckRescueIndex = best;
++                    m_guardAckRescueFlowId = qp->m_flow_id;
++                    m_guardAckRescueEndSeq = std::min<uint64_t>(qp->m_size,
++                        qp->snd_una + (uint64_t)Settings::guard_sender_ack_batch_packets * m_mtu);
++                    ++Settings::guard_sender_ack_rescue_episodes;
++                }
++                ++Settings::guard_sender_ack_rescue_packets;
++                // Sending rearms the existing recovery timer. Keep the target
++                // through that rearm so one intervention completes the batch.
++                if (qp->snd_nxt + std::min<uint64_t>(m_mtu, qp->GetBytesLeft()) >= m_guardAckRescueEndSeq)
++                    m_guardAckRescueIndex = -1;
++            }
+             Ptr<RdmaQueuePair> shortest = m_qpGrp->Get((uint32_t)best);
+             uint32_t quantum = std::max<uint32_t>(1, shortest->m_guard_srpt_quantum_packets);
+-            if (best == m_guardSrptLastIndex && m_guardSrptConsecutive >= quantum &&
+-                first_ready != -1024 && first_ready != best) {
+-                best = first_ready;
+-                Settings::guard_sender_srpt_forced_rr++;
++            // Bound aggregate priority service even when pacing makes the
++            // shortest eligible identity alternate between several flows.
++            const int shortest_index = best;
++            bool used_fair_turn = false;
++            const bool fair_due = Settings::guard_sender_service_budget
++                ? m_guardSrptServiceSinceFair >= quantum
++                : best == m_guardSrptLastIndex && m_guardSrptConsecutive >= quantum &&
++                  first_ready != -1024 && first_ready != best;
++            if (fair_due && !using_rescue) {
++                if (Settings::guard_sender_fair_cursor) {
++                    // Advance a separate cursor only on fairness turns. The
++                    // ordinary cursor returns to the shortest flow after each
++                    // quantum and would repeatedly choose the same neighbor.
++                    auto ready = [&](uint32_t index) {
++                        if (index >= fcount || (int)index == best || m_qpGrp->IsQpFinished(index)) return false;
++                        Ptr<RdmaQueuePair> candidate = m_qpGrp->Get(index);
++                        return candidate->GetBytesLeft() > 0 && !candidate->IsWinBound() &&
++                            (!candidate->irn.m_enabled || candidate->CanIrnTransmit(m_mtu)) &&
++                            !paused[candidate->m_pg] && candidate->m_nextAvail <= Simulator::Now();
++                    };
++                    int selected = -1;
++                    if (Settings::guard_sender_ack_batch && m_guardSrptBatchIndex >= 0 &&
++                        ready((uint32_t)m_guardSrptBatchIndex)) {
++                        Ptr<RdmaQueuePair> pending = m_qpGrp->Get(m_guardSrptBatchIndex);
++                        if (pending->m_flow_id == m_guardSrptBatchFlowId &&
++                            pending->snd_nxt < m_guardSrptBatchEndSeq)
++                            selected = m_guardSrptBatchIndex;
++                    }
++                    if (selected < 0) {
++                        m_guardSrptBatchIndex = -1;
++                        for (uint32_t step = 1; step <= fcount; ++step) {
++                            uint32_t index = (m_guardSrptFairLastIndex + step) % fcount;
++                            if (ready(index)) { selected = (int)index; break; }
++                        }
++                    }
++                    if (selected >= 0) {
++                        best = selected;
++                        m_guardSrptFairLastIndex = selected;
++                        if (Settings::guard_sender_ack_batch) {
++                            Ptr<RdmaQueuePair> selected_qp = m_qpGrp->Get(selected);
++                            if (m_guardSrptBatchIndex < 0) {
++                                m_guardSrptBatchIndex = selected;
++                                m_guardSrptBatchFlowId = selected_qp->m_flow_id;
++                                m_guardSrptBatchEndSeq = std::min<uint64_t>(selected_qp->m_size,
++                                    selected_qp->snd_una + (uint64_t)Settings::guard_sender_ack_batch_packets * m_mtu);
++                            }
++                            // Retain the configured service split. Only the
++                            // recipient of successive fairness turns changes.
++                            // A blocked recipient relinquishes its partial batch.
++                            if (selected_qp->snd_nxt + std::min<uint64_t>(m_mtu, selected_qp->GetBytesLeft()) >=
++                                m_guardSrptBatchEndSeq)
++                                m_guardSrptBatchIndex = -1;
++                        }
++                    }
++                } else {
++                    best = first_ready;
++                }
++                used_fair_turn = best != shortest_index;
++                if (Settings::guard_sender_service_budget ? used_fair_turn : best != m_guardSrptLastIndex)
++                    Settings::guard_sender_srpt_forced_rr++;
++            }
++            if (Settings::guard_sender_service_budget) {
++                if (used_fair_turn) m_guardSrptServiceSinceFair = 0;
++                else if (m_guardSrptServiceSinceFair < quantum) ++m_guardSrptServiceSinceFair;
+             }
+             Ptr<RdmaQueuePair> qp = m_qpGrp->Get((uint32_t)best);
+             if (MAP_KEY_EXISTS(current_pause_time, qp->m_flow_id)) {
+diff --git a/src/point-to-point/model/qbb-net-device.h b/src/point-to-point/model/qbb-net-device.h
+index e6f80d0..a05374d 100644
+--- a/src/point-to-point/model/qbb-net-device.h
++++ b/src/point-to-point/model/qbb-net-device.h
+@@ -46,6 +46,15 @@ public:
+ 	uint32_t m_rrlast;
+ 	int32_t m_guardSrptLastIndex;
+ 	uint32_t m_guardSrptConsecutive;
++	uint32_t m_guardSrptFairLastIndex;
++	int32_t m_guardAckRescueIndex;
++	int32_t m_guardAckRescueFlowId;
++	uint64_t m_guardAckRescueEndSeq;
++	static bool GuardAckRescueDue(Ptr<RdmaQueuePair> qp, uint32_t mtu, uint32_t ack_packets);
++	uint32_t m_guardSrptServiceSinceFair;
++	int32_t m_guardSrptBatchIndex;
++	int32_t m_guardSrptBatchFlowId;
++	uint64_t m_guardSrptBatchEndSeq;
+ 	Ptr<DropTailQueue> m_ackQ; // highest priority queue
+ 	Ptr<RdmaQueuePairGroup> m_qpGrp; // queue pairs
+ 	std::unordered_map<int32_t, Time> current_pause_time;
+diff --git a/src/point-to-point/model/rdma-hw.cc b/src/point-to-point/model/rdma-hw.cc
+index eae4641..91618d9 100644
+--- a/src/point-to-point/model/rdma-hw.cc
++++ b/src/point-to-point/model/rdma-hw.cc
+@@ -6,6 +6,7 @@
+ #include <ns3/udp-header.h>
+ 
+ #include <climits>
++#include <cstring>
+ #include <cmath>
+ #include <tuple>
+ 
+@@ -258,11 +259,19 @@ TypeId RdmaHw::GetTypeId(void) {
+                           DoubleValue(0.0),
+                           MakeDoubleAccessor(&RdmaHw::m_guardAdaptiveTargetMaxBdps),
+                           MakeDoubleChecker<double>(0.0, 64.0))
++            .AddAttribute("GuardAckMaxDelayRtts",
++                          "Maximum wait for a partial GUARD ACK batch in base RTTs; zero disables",
++                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardAckMaxDelayRtts),
++                          MakeDoubleChecker<double>(0.0, 64.0))
+             .AddAttribute("GuardAckIntervalPackets",
+                           "Packets between useful cumulative ACKs for registered GUARD flows",
+                           UintegerValue(8),
+                           MakeUintegerAccessor(&RdmaHw::m_guardAckIntervalPackets),
+                           MakeUintegerChecker<uint32_t>(1))
++            .AddAttribute("GuardFabricControl",
++                          "Enable shared-fabric feedback; disable only for a matched component ablation",
++                          BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardFabricControl),
++                          MakeBooleanChecker())
+             .AddAttribute("GuardFixedWindow",
+                           "Use a fixed one-BDP safety window while GUARD's two rate caps pace data",
+                           BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardFixedWindow),
+@@ -305,6 +314,39 @@ TypeId RdmaHw::GetTypeId(void) {
+                           DoubleValue(0.0),
+                           MakeDoubleAccessor(&RdmaHw::m_guardElephantAgingRtts),
+                           MakeDoubleChecker<double>(0.0, 64.0))
++            .AddAttribute("GuardSchedulingHorizonBdps",
++                          "Cap remaining-size discrimination at this many BDPs; zero disables",
++                          DoubleValue(0.0),
++                          MakeDoubleAccessor(&RdmaHw::m_guardSchedulingHorizonBdps),
++                          MakeDoubleChecker<double>(0.0, 4096.0))
++            .AddAttribute("GuardSingleSenderOrder",
++                          "Order messages sharing one source NIC beyond the multi-sender horizon",
++                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardSingleSenderOrder),
++                          MakeBooleanChecker())
++            .AddAttribute("GuardPostGrantWindowBdps",
++                          "Outstanding-data window after the first grant, in original BDPs",
++                          DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardPostGrantWindowBdps),
++                          MakeDoubleChecker<double>(1.0, 8.0))
++            .AddAttribute("GuardSingleSenderSharedCapBdps",
++                          "Share a NIC-sized cap for a single sender's long cohort; homogeneous single-NIC hosts only",
++                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardSingleSenderSharedCapBdps),
++                          MakeDoubleChecker<double>(0.0, 4096.0))
++            .AddAttribute("GuardRecoveryMaxRtts",
++                          "Bound elapsed-feedback-time scaling of GUARD additive recovery; zero disables",
++                          UintegerValue(0), MakeUintegerAccessor(&RdmaHw::m_guardRecoveryMaxRtts),
++                          MakeUintegerChecker<uint32_t>(0, 64))
++            .AddAttribute("GuardStartupSamePeer",
++                          "Count only active long messages to the same peer for startup sharing",
++                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardStartupSamePeer),
++                          MakeBooleanChecker())
++            .AddAttribute("GuardStartupFairshareBdps",
++                          "Initialize large messages at the NIC rate divided by active large messages; zero disables",
++                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardStartupFairshareBdps),
++                          MakeDoubleChecker<double>(0.0, 4096.0))
++            .AddAttribute("GuardSingleSenderSharedSlots",
++                          "Limit the active messages sharing one physical NIC cap; zero selects all",
++                          UintegerValue(0), MakeUintegerAccessor(&RdmaHw::m_guardSingleSenderSharedSlots),
++                          MakeUintegerChecker<uint32_t>(0, 64))
+             .AddAttribute("GuardConcurrencyMinBdps",
+                           "Apply the receiver concurrency bound only above this many BDPs",
+                           DoubleValue(8.0),
+@@ -499,6 +541,14 @@ TypeId RdmaHw::GetTypeId(void) {
+                           TimeValue(MilliSeconds(1)),
+                           MakeTimeAccessor(&RdmaHw::m_homaResendTimeout),
+                           MakeTimeChecker())
++            .AddAttribute("HomaStableResendOrder",
++                          "Order simultaneous eligible RESENDs by wire identity",
++                          BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_homaStableResendOrder),
++                          MakeBooleanChecker())
++            .AddAttribute("HomaDiagnosticHashBuckets",
++                          "Diagnostic initial receive-map bucket count; zero keeps the default",
++                          UintegerValue(0), MakeUintegerAccessor(&RdmaHw::m_homaDiagnosticHashBuckets),
++                          MakeUintegerChecker<uint32_t>(0, 4096))
+             .AddAttribute("TimelyAlpha", "Alpha of TIMELY", DoubleValue(0.875),
+                           MakeDoubleAccessor(&RdmaHw::m_tmly_alpha), MakeDoubleChecker<double>())
+             .AddAttribute("TimelyBeta", "Beta of TIMELY", DoubleValue(0.8),
+@@ -746,6 +796,9 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
+     m_guardOneRttBypassFeedbacks = 0;
+     m_guardOneRttAcksSuppressed = 0;
+     m_guardLongAcksSuppressed = 0;
++    m_guardDelayedAcksSent = 0;
++    m_guardDelayedAckTimers = 0;
++    m_guardDelayedAckMaxWaitNs = 0;
+     m_guardTailBypassFlows = 0;
+     m_guardTailBypassFeedbacks = 0;
+     m_guardTailGateDeferrals = 0;
+@@ -1002,6 +1055,47 @@ void print_rate(RdmaQueuePair *qp) {
+     Simulator::Schedule(NanoSeconds(time), &print_rate, qp);
+ }
+ 
++bool RdmaHw::ApplyGuardStartupPathFeedback(Ptr<RdmaQueuePair> qp, uint32_t fabric_hops) {
++    if (!qp->m_guard_startup_path_pending) return false;
++    qp->m_guard_startup_path_pending = false;
++    if (fabric_hops != 0) return false;
++    // The first ACK confirms that receiver-hop removal leaves no fabric
++    // controller. An initial estimate would otherwise never be refreshed.
++    // The caller still composes this rate with the receiver grant.
++    qp->hp.m_curRate = qp->m_max_rate;
++    for (uint32_t i = 0; i < IntHeader::maxHop; ++i)
++        qp->hp.hopState[i].Rc = qp->m_max_rate;
++    return true;
++}
++
++uint64_t RdmaHw::ComputeGuardRecoveryIncrementBps(
++    uint64_t base_increment_bps, uint64_t elapsed_ns,
++    uint64_t base_rtt_ns, uint32_t maximum_rtts) {
++    if (maximum_rtts <= 1 || base_rtt_ns == 0 || elapsed_ns <= base_rtt_ns)
++        return base_increment_bps;
++    __uint128_t scaled = static_cast<__uint128_t>(base_increment_bps) * elapsed_ns / base_rtt_ns;
++    __uint128_t bound = static_cast<__uint128_t>(base_increment_bps) * maximum_rtts;
++    return static_cast<uint64_t>(std::min<__uint128_t>(
++        std::numeric_limits<uint64_t>::max(), std::min(scaled, bound)));
++}
++
++uint64_t RdmaHw::ComputeGuardStartupRateBps(
++    Ptr<RdmaQueuePair> qp, Ptr<RdmaQueuePairGroup> group,
++    double minimum_bdps, uint64_t minimum_rate_bps, bool same_peer_only) {
++    uint64_t line = qp->m_max_rate.GetBitRate();
++    if (minimum_bdps <= 0 || qp->m_win == 0 ||
++        qp->m_size <= minimum_bdps * qp->m_win) return line;
++    uint64_t active = 1;
++    for (uint32_t i = 0; i < group->GetN(); ++i) {
++        Ptr<RdmaQueuePair> other = group->Get(i);
++        if (other == qp || (same_peer_only && other->dip != qp->dip) ||
++            other->IsFinishedConst() || other->GetBytesLeft() == 0 ||
++            other->m_win == 0 || other->m_size <= minimum_bdps * other->m_win) continue;
++        ++active;
++    }
++    return std::min(line, std::max(minimum_rate_bps, line / active));
++}
++
+ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip,
+                           uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt,
+                           int32_t flow_id) {
+@@ -1075,6 +1169,17 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
+         qp->m_guard_first_grant_win =
+             (!m_guardTransportWindowFloorAfterFirstGrant || bounded_whole_flow) ?
+                 qp->GetGuardTransportWin() : qp->m_win;
++        if (m_guardPostGrantWindowBdps > 1.0) {
++            NS_ABORT_MSG_IF(!m_guardFixedWindow || !m_guardTransportWindowFloorRtt.IsZero() ||
++                                m_guardMixedPgVectorFastpath,
++                            "Post-grant window requires fixed-window legacy GUARD without a transport floor");
++            // Keep the unscheduled burst and all feedback normalizations at
++            // the original BDP. Only a received grant opens this larger window;
++            // pacing still obeys the smaller of fabric and receiver rate caps.
++            qp->m_guard_first_grant_win = qp->m_win;
++            qp->m_guard_transport_win = static_cast<uint64_t>(
++                m_guardPostGrantWindowBdps * qp->m_win);
++        }
+         if (bounded_whole_flow && qp->GetGuardTransportWin() > qp->m_win) {
+             m_guardTransportWindowWholeFlowFirstGateFlows++;
+         }
+@@ -1115,7 +1220,8 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
+     }
+ 
+     if ((m_cc_mode == 11 || m_cc_mode == 13) &&
+-        !m_guardMembershipCoalesceWindow.IsZero()) {
++        (!m_guardMembershipCoalesceWindow.IsZero() ||
++         (m_cc_mode == CC_MODE_GUARD && m_guardPostGrantWindowBdps > 1.0))) {
+         DataRate line_rate = m_nic[nic_idx].dev->GetDataRate();
+         uint64_t bdp_bytes = baseRtt * line_rate.GetBitRate() / 8000000000lu;
+         bool receiver_will_register = !m_guardSelectiveRegistration ||
+@@ -1157,6 +1263,15 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
+         }
+         // grantRate initialization (only used when the GUARD active layer enforces a cap)
+         qp->hp.m_grantRate = m_bps;
++        if (m_cc_mode == CC_MODE_GUARD && m_guardStartupFairshareBdps > 0) {
++            DataRate initial(ComputeGuardStartupRateBps(qp, m_nic[nic_idx].qpGrp,
++                m_guardStartupFairshareBdps, m_minRate.GetBitRate(), m_guardStartupSamePeer));
++            qp->m_rate = qp->hp.m_curRate = initial;
++            qp->m_guard_startup_path_pending = initial < qp->m_max_rate;
++            if (m_multipleRate)
++                for (uint32_t i = 0; i < IntHeader::maxHop; ++i)
++                    qp->hp.hopState[i].Rc = initial;
++        }
+     } else if (m_cc_mode == 7) {
+         qp->tmly.m_curRate = m_bps;
+     } else if (m_cc_mode == 10) {
+@@ -1294,11 +1409,110 @@ void RdmaHw::DeleteRxQp(uint32_t dip, uint16_t dport, uint16_t sport, uint16_t p
+                     "GUARD RxQP tombstone collision on deletion");
+     m_rxQpTombstoneIdentity[key] = live->second;
+ 
++    // A completed/deleted receive QP must not emit a deferred ACK later.
++    auto rx = m_rxQpMap.find(key);
++    if (rx != m_rxQpMap.end()) CancelGuardDelayedAck(rx->second);
+     // delete
+     m_rxQpMap.erase(key);
+     m_rxQpIdentity.erase(key);
+ }
+ 
++bool RdmaHw::CancelGuardDelayedAck(Ptr<RdmaRxQueuePair> rxQp) {
++    const bool pending = rxQp->m_guard_delayed_ack_event.IsRunning();
++    if (pending) rxQp->m_guard_delayed_ack_event.Cancel();
++    rxQp->m_guard_pending_ack_packet = NULL;
++    return pending;
++}
++
++void RdmaHw::SendGuardDelayedAck(Ptr<RdmaRxQueuePair> rxQp) {
++    Ptr<Packet> packet = rxQp->m_guard_pending_ack_packet;
++    rxQp->m_guard_pending_ack_packet = NULL;
++    if (packet == NULL || rxQp->ReceiverNextExpectedSeq <= rxQp->m_guard_last_ack_seq ||
++        rxQp->ReceiverNextExpectedSeq >= rxQp->m_guard_flow_size) return;
++    CustomHeader ch(CustomHeader::L2_Header | CustomHeader::L3_Header |
++                    CustomHeader::L4_Header);
++    ch.getInt = 1;
++    packet->PeekHeader(ch);
++    rxQp->m_guard_last_ack_seq = rxQp->ReceiverNextExpectedSeq;
++    m_guardDelayedAcksSent++;
++    m_guardDelayedAckMaxWaitNs = std::max(m_guardDelayedAckMaxWaitNs,
++        (uint64_t)Simulator::Now().GetNanoSeconds() - rxQp->m_guard_pending_ack_since_ns);
++    SendAckFromUdp(rxQp, packet, ch, 1, false, ch.GetIpv4EcnBits());
++}
++
++void RdmaHw::SendAckFromUdp(Ptr<RdmaRxQueuePair> rxQp, Ptr<Packet> p,
++                           CustomHeader &ch, int x, bool cnp_check, uint8_t ecnbits) {
++    FlowIDNUMTag fit;
++    const bool has_flow_tag = p->PeekPacketTag(fit);
++    const uint32_t payload_size = p->GetSize() - ch.GetSerializedSize();
++    qbbHeader seqh;
++    seqh.SetSeq(rxQp->ReceiverNextExpectedSeq);
++    // homa: data packets carry varying udp.pg (cutoff/grant slot),
++    // but the sender QP key uses pg=0 (overridden in AddQueuePair). The
++    // ACK must use pg=0 too so the sender can find the QP.
++    seqh.SetPG(m_cc_mode == 12 ? (uint16_t)0 : ch.udp.pg);
++    seqh.SetSport(ch.udp.dport);
++    seqh.SetDport(ch.udp.sport);
++
++    // guard: strip last-hop INT info (the receiver grant handles this link)
++    if (m_cc_mode == 11) {
++        m_guardIntHopsBeforeStrip += ch.udp.ih.nhop;
++        if (!m_guardKeepLastHopInt && ch.udp.ih.nhop > 0) {
++            int last_hop = --ch.udp.ih.nhop;
++            memset(&ch.udp.ih.hop[last_hop], 0, sizeof(ch.udp.ih.hop[last_hop]));
++            m_guardIntRecordsStripped++;
++        }
++        m_guardIntHopsAfterStrip += ch.udp.ih.nhop;
++    }
++    seqh.SetIntHeader(ch.udp.ih);
++
++    if (m_irn) {
++        if (x == 2) {
++            seqh.SetIrnNack(ch.udp.seq);
++            seqh.SetIrnNackSize(payload_size);
++        } else {
++            seqh.SetIrnNack(0);  // NACK without ackSyndrome (ACK) in loss recovery mode
++            seqh.SetIrnNackSize(0);
++        }
++    }
++
++    if (ecnbits || cnp_check) {  // NACK accompanies with CNP packet
++        // XXX monitor CNP generation at sender
++        cnp_total++;
++        if (ecnbits) cnp_by_ecn++;
++        if (cnp_check) cnp_by_ooo++;
++        if (m_cc_mode == CC_MODE_DCQCN) {
++            if (ecnbits) m_dcqcnCnpGeneratedEcn++;
++            if (cnp_check) m_dcqcnCnpGeneratedOoo++;
++        }
++        seqh.SetCnp();
++    }
++
++    Ptr<Packet> newp =
++        Create<Packet>(std::max(60 - 14 - 20 - (int)seqh.GetSerializedSize(), 0));
++    newp->AddHeader(seqh);
++
++    Ipv4Header head;  // Prepare IPv4 header
++    head.SetDestination(Ipv4Address(ch.sip));
++    head.SetSource(Ipv4Address(ch.dip));
++    head.SetProtocol(x == 1 ? 0xFC : 0xFD);  // ack=0xFC nack=0xFD
++    head.SetTtl(64);
++    head.SetPayloadSize(newp->GetSize());
++    head.SetIdentification(rxQp->m_ipid++);
++
++    if (has_flow_tag) {
++        newp->AddPacketTag(fit);
++    }
++
++    newp->AddHeader(head);
++    AddHeader(newp, 0x800);  // Attach PPP header
++
++    // send
++    uint32_t nic_idx = GetNicIdxOfRxQp(rxQp);
++    m_nic[nic_idx].dev->RdmaEnqueueHighPrioQ(newp);
++    m_nic[nic_idx].dev->TriggerTransmit();
++}
++
+ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
+     uint8_t ecnbits = ch.GetIpv4EcnBits();
+ 
+@@ -1388,6 +1602,22 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
+                            (uint64_t)m_guardAckIntervalPackets * m_mtu) {
+             x = 5;
+             m_guardLongAcksSuppressed++;
++            if (m_guardAckMaxDelayRtts > 0) {
++                // Remember the latest in-order telemetry, but keep the deadline
++                // anchored to the first unacknowledged packet in this batch.
++                // The upper network stack removes headers after ReceiveUdp returns.
++                // Retain a copy so deferred feedback preserves addresses and INT.
++                rxQp->m_guard_pending_ack_packet = p->Copy();
++                if (!rxQp->m_guard_delayed_ack_event.IsRunning()) {
++                    const double base_rtt = fst.HasBaseRtt() ? fst.GetBaseRttSeconds() : 0.00000832;
++                    const Time delay = NanoSeconds(std::max<int64_t>(1,
++                        Seconds(base_rtt * m_guardAckMaxDelayRtts).GetNanoSeconds()));
++                    rxQp->m_guard_pending_ack_since_ns = Simulator::Now().GetNanoSeconds();
++                    rxQp->m_guard_delayed_ack_event = Simulator::Schedule(delay,
++                        &RdmaHw::SendGuardDelayedAck, this, rxQp);
++                    m_guardDelayedAckTimers++;
++                }
++            }
+         }
+     }
+     if (m_cc_mode == CC_MODE_GUARD && x == 1) {
+@@ -1402,73 +1632,9 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
+         if (m_irn) m_irnNacksGenerated++;
+     }
+ 
+-    if (x == 1 || x == 2 || x == 6) {  // generate ACK or NACK
+-        qbbHeader seqh;
+-        seqh.SetSeq(rxQp->ReceiverNextExpectedSeq);
+-        // homa: data packets carry varying udp.pg (cutoff/grant slot),
+-        // but the sender QP key uses pg=0 (overridden in AddQueuePair). The
+-        // ACK must use pg=0 too so the sender can find the QP.
+-        seqh.SetPG(m_cc_mode == 12 ? (uint16_t)0 : ch.udp.pg);
+-        seqh.SetSport(ch.udp.dport);
+-        seqh.SetDport(ch.udp.sport);
+-
+-        // guard: strip last-hop INT info (the receiver grant handles this link)
+-        if (m_cc_mode == 11) {
+-            m_guardIntHopsBeforeStrip += ch.udp.ih.nhop;
+-            if (!m_guardKeepLastHopInt && ch.udp.ih.nhop > 0) {
+-                int last_hop = --ch.udp.ih.nhop;
+-                memset(&ch.udp.ih.hop[last_hop], 0, sizeof(ch.udp.ih.hop[last_hop]));
+-                m_guardIntRecordsStripped++;
+-            }
+-            m_guardIntHopsAfterStrip += ch.udp.ih.nhop;
+-        }
+-        seqh.SetIntHeader(ch.udp.ih);
+-
+-        if (m_irn) {
+-            if (x == 2) {
+-                seqh.SetIrnNack(ch.udp.seq);
+-                seqh.SetIrnNackSize(payload_size);
+-            } else {
+-                seqh.SetIrnNack(0);  // NACK without ackSyndrome (ACK) in loss recovery mode
+-                seqh.SetIrnNackSize(0);
+-            }
+-        }
+-
+-        if (ecnbits || cnp_check) {  // NACK accompanies with CNP packet
+-            // XXX monitor CNP generation at sender
+-            cnp_total++;
+-            if (ecnbits) cnp_by_ecn++;
+-            if (cnp_check) cnp_by_ooo++;
+-            if (m_cc_mode == CC_MODE_DCQCN) {
+-                if (ecnbits) m_dcqcnCnpGeneratedEcn++;
+-                if (cnp_check) m_dcqcnCnpGeneratedOoo++;
+-            }
+-            seqh.SetCnp();
+-        }
+-
+-        Ptr<Packet> newp =
+-            Create<Packet>(std::max(60 - 14 - 20 - (int)seqh.GetSerializedSize(), 0));
+-        newp->AddHeader(seqh);
+-
+-        Ipv4Header head;  // Prepare IPv4 header
+-        head.SetDestination(Ipv4Address(ch.sip));
+-        head.SetSource(Ipv4Address(ch.dip));
+-        head.SetProtocol(x == 1 ? 0xFC : 0xFD);  // ack=0xFC nack=0xFD
+-        head.SetTtl(64);
+-        head.SetPayloadSize(newp->GetSize());
+-        head.SetIdentification(rxQp->m_ipid++);
+-
+-        if (has_flow_tag) {
+-            newp->AddPacketTag(fit);
+-        }
+-
+-        newp->AddHeader(head);
+-        AddHeader(newp, 0x800);  // Attach PPP header
+-
+-        // send
+-        uint32_t nic_idx = GetNicIdxOfRxQp(rxQp);
+-        m_nic[nic_idx].dev->RdmaEnqueueHighPrioQ(newp);
+-        m_nic[nic_idx].dev->TriggerTransmit();
++    if (x == 1 || x == 2 || x == 6) {
++        if (m_cc_mode == CC_MODE_GUARD) CancelGuardDelayedAck(rxQp);
++        SendAckFromUdp(rxQp, p, ch, x, cnp_check, ecnbits);
+     }
+ 
+     // GUARD and its active-only ablation: receiver-driven rate cap + proactive release.
+@@ -1756,7 +1922,7 @@ int RdmaHw::ReceiveRate(Ptr<Packet> p, CustomHeader &ch) {
+             SendGuardGrantAck(qp, generation, phase_tag);
+         }
+     }
+-    const char *binding = (qp->m_guard_tail_bypass ||
++    const char *binding = (UsesGuardTailBypass(qp) ||
+                            UsesGuardElephantReceiverAuthority(qp))
+                               ? "grant"
+                               : qp->hp.m_curRate < qp->hp.m_grantRate
+@@ -2014,6 +2180,14 @@ int RdmaHw::ReceiveGuardCapReport(Ptr<Packet> /*p*/, CustomHeader &ch) {
+     return 0;
+ }
+ 
++bool RdmaHw::CancelGuardIdleRetransmit(Ptr<RdmaQueuePair> qp) {
++    // IRN has its own recovery and outstanding-byte accounting.
++    if (qp->irn.m_enabled || qp->GetOnTheFly() != 0 || !qp->m_retransmit.IsRunning())
++        return false;
++    qp->m_retransmit.Cancel();
++    return true;
++}
++
+ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch) {
+     uint16_t qIndex = ch.ack.pg;
+     uint16_t port = ch.ack.dport;   // sport for this host
+@@ -2093,6 +2267,8 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch) {
+         }
+     }
+ 
++    if (m_cc_mode == CC_MODE_GUARD) CancelGuardIdleRetransmit(qp);
++
+     /**
+      * IB Spec Vol. 1 o9-85
+      * The requester need not separately time each request launched into the
+@@ -2133,7 +2309,9 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch) {
+         }
+     }
+ 
+-    if (m_cc_mode == 11 && qp->m_guard_tail_bypass) {
++    if (m_cc_mode == CC_MODE_GUARD && !m_guardFabricControl) {
++        // Retain the same ACK clock, sender scheduler, window and receiver.
++    } else if (m_cc_mode == 11 && qp->m_guard_tail_bypass && !m_guardTailCongestionGate) {
+         m_guardTailBypassFeedbacks++;
+     } else if (m_cc_mode == 3 || m_cc_mode == 11) {
+         HandleAckHp(qp, p, ch);
+@@ -2329,7 +2507,7 @@ void RdmaHw::QpComplete(Ptr<RdmaQueuePair> qp) {
+     }
+     if (qp->m_retransmit.IsRunning()) qp->m_retransmit.Cancel();
+ 
+-    const char *binding = (qp->m_guard_tail_bypass ||
++    const char *binding = (UsesGuardTailBypass(qp) ||
+                            UsesGuardElephantReceiverAuthority(qp))
+                               ? "grant"
+                               : qp->hp.m_curRate < qp->hp.m_grantRate
+@@ -2385,7 +2563,8 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
+             qp->m_size > qp->snd_una ? qp->m_size - qp->snd_una : 0;
+         uint64_t tail_bytes = (uint64_t)(m_guardTailBypassBdps * bdp_bytes);
+         bool gate_ready = !m_guardTailCongestionGate ||
+-                          qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples;
++                          (qp->snd_una > 0 &&
++                           qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples);
+         if (bdp_bytes > 0 && qp->m_size > bdp_bytes &&
+             acknowledged_remaining > 0 && acknowledged_remaining <= tail_bytes &&
+             gate_ready) {
+@@ -2537,6 +2716,14 @@ void RdmaHw::HandleTimeout(Ptr<RdmaQueuePair> qp, Time rto) {
+     if (qp->IsFinished()) {
+         return;
+     }
++    if (m_cc_mode == CC_MODE_GUARD && !qp->irn.m_enabled && qp->GetOnTheFly() == 0)
++        return;  // No transmitted byte is waiting for an acknowledgement.
++
++    if (m_cc_mode == CC_MODE_GUARD) {
++        TraceGuardControllerEvent(qp, "timeout_probe", qp->hp.m_curRate,
++            qp->GetOnTheFly() == 0 ? "empty_flight" : "outstanding",
++            false, false, 0, qp->snd_nxt, -1, m_targetUtil, -1);
++    }
+ 
+     uint32_t nic_idx = GetNicIdxOfQp(qp);
+     Ptr<QbbNetDevice> dev = m_nic[nic_idx].dev;
+@@ -2733,12 +2920,21 @@ void RdmaHw::HyperIncreaseMlx(Ptr<RdmaQueuePair> q) {
+ /***********************
+  * Rate CC
+  ***********************/
++bool RdmaHw::UsesGuardTailBypass(Ptr<RdmaQueuePair> qp) const {
++    // Eligibility is latched once per flow, but congestion permission is not.
++    // Continue processing INT while bypassing so a later busy fabric restores
++    // the shared-fabric cap instead of leaving a flow permanently uncontrolled.
++    return m_cc_mode == CC_MODE_GUARD && qp->m_guard_tail_bypass &&
++           (!m_guardTailCongestionGate ||
++            qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples);
++}
++
+ void RdmaHw::SyncHwRate(Ptr<RdmaQueuePair> qp, DataRate target_cc_rate) {
+     DataRate final_rate = target_cc_rate;
+     bool elephant_receiver_authority =
+         UsesGuardElephantReceiverAuthority(qp);
+ 
+-    if (m_cc_mode == CC_MODE_GUARD && qp->m_guard_tail_bypass) {
++    if ((m_cc_mode == CC_MODE_GUARD && !m_guardFabricControl) || UsesGuardTailBypass(qp)) {
+         final_rate = qp->hp.m_grantRate;
+     } else if (m_cc_mode == CC_MODE_GUARD && elephant_receiver_authority) {
+         final_rate = qp->hp.m_grantRate;
+@@ -2782,7 +2978,7 @@ void RdmaHw::MaybeSendGuardCapReport(Ptr<RdmaQueuePair> qp) {
+         return;
+     }
+ 
+-    bool fabric_bound = !qp->m_guard_tail_bypass &&
++    bool fabric_bound = !UsesGuardTailBypass(qp) &&
+                         qp->hp.m_curRate < qp->hp.m_grantRate;
+     uint32_t rate_mbps = std::max<uint32_t>(
+         1, static_cast<uint32_t>(qp->m_rate.GetBitRate() / 1000000));
+@@ -4198,7 +4394,7 @@ bool RdmaHw::UsesGuardElephantReceiverAuthority(Ptr<RdmaQueuePair> qp) const {
+     return qp != NULL && IsGuardElephantReceiverAuthorityEligible(
+         m_guardElephantReceiverAuthority,
+         !qp->m_guard_wait_first_grant && qp->m_guard_last_grant_generation > 0,
+-        qp->m_guard_tail_bypass, qp->m_size, qp->m_win,
++        UsesGuardTailBypass(qp), qp->m_size, qp->m_win,
+         m_guardConcurrencyMinBdps, qp->hp.m_grantRate.GetBitRate(),
+         m_minRate.GetBitRate());
+ }
+@@ -6368,6 +6564,61 @@ void RdmaHw::RefreshGuardGrantsForReliability() {
+     ResetGuardReliabilityRefresh();
+ }
+ 
++uint64_t RdmaHw::GuardSchedulingBdp(uint64_t line_rate_bps) const {
++    // One receiver service horizon applies to every peer, including peers
++    // with a shorter path. It must not change a message's size class merely
++    // because that sender is in the same rack.
++    uint64_t bdp = 1;
++    for (auto *flow : m_rate_flow_ctl_set) {
++        bdp = std::max<uint64_t>(bdp, flow->m_base_rtt_sec > 0
++            ? flow->m_base_rtt_sec * line_rate_bps / 8.0 : 104000);
++    }
++    return bdp;
++}
++
++uint32_t RdmaHw::GuardDistinctSenders() const {
++    std::unordered_set<uint32_t> senders;
++    for (auto *flow : m_rate_flow_ctl_set) senders.insert(flow->dip);
++    return senders.size();
++}
++
++bool RdmaHw::UsesGuardSingleSenderSharedCap(uint64_t line_rate_bps) const {
++    if (m_guardSingleSenderSharedCapBdps == 0 || GuardDistinctSenders() != 1)
++        return false;
++    const uint64_t bdp = GuardSchedulingBdp(line_rate_bps);
++    for (auto *flow : m_rate_flow_ctl_set) {
++        if (flow->m_guard_flow_size <= m_guardSingleSenderSharedCapBdps * bdp)
++            return false;
++    }
++    return true;
++}
++
++bool RdmaHw::GuardHasCompetingSenders(uint64_t line_rate_bps) const {
++    // RxQP addresses are reversed: dip identifies the DATA sender. A single
++    // sending NIC already schedules its own messages; imposing receiver K=1
++    // on that NIC's separate QPs duplicates ordering and can leave its grant
++    // unused. Apply the receiver concurrency limit to actual sender fan-in.
++    if (m_rate_flow_ctl_set.empty()) return false;
++    if (UsesGuardSingleSenderSharedCap(line_rate_bps)) return false;
++    if (m_guardSingleSenderOrder && GuardDistinctSenders() == 1) return true;
++    const uint64_t receiver_bdp = GuardSchedulingBdp(line_rate_bps);
++    // With a bounded scheduling horizon, short messages from one NIC can
++    // share its grant in completion order. Long transfers retain the old
++    // sender-scope protection against redundant receiver serialization.
++    if (m_guardSchedulingHorizonBdps > 0) {
++        for (auto *flow : m_rate_flow_ctl_set) {
++            uint64_t bdp = receiver_bdp;
++            if (flow->m_guard_flow_size <= m_guardSchedulingHorizonBdps * bdp)
++                return true;
++        }
++    }
++    uint32_t first_sender = (*m_rate_flow_ctl_set.begin())->dip;
++    for (auto *flow : m_rate_flow_ctl_set) {
++        if (flow->dip != first_sender) return true;
++    }
++    return false;
++}
++
+ void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation) {
+     if (m_rate_flow_ctl_set.empty()) return;
+     if (generation == 0 && IsGuardMembershipDirty()) {
+@@ -6377,23 +6628,32 @@ void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation)
+     RdmaRxQueuePair *sample = *m_rate_flow_ctl_set.begin();
+     uint32_t nic_idx = GetNicIdxOfRxQp(sample);
+     uint64_t line_rate_bps = m_nic[nic_idx].dev->GetDataRate().GetBitRate();
++    const uint64_t receiver_bdp = GuardSchedulingBdp(line_rate_bps);
+     std::unordered_map<RdmaRxQueuePair*, uint64_t> targets =
+         m_guardCapAwareReclaim
+             ? ComputeGuardCapAwareTargets(line_rate_bps)
+             : ComputeGuardBaseTargets(line_rate_bps);
++    const bool order_single = m_guardSingleSenderOrder && GuardDistinctSenders() == 1;
++    const double concurrency_min_bdps = (m_guardSchedulingHorizonBdps > 0 || order_single) && GuardDistinctSenders() == 1
++        ? 1.0 : m_guardConcurrencyMinBdps;
+     std::vector<uint64_t> concurrency_remaining;
+-    if (m_guardReceiverConcurrency > 0) {
++    if (m_guardReceiverConcurrency > 0 && GuardHasCompetingSenders(line_rate_bps)) {
+         for (auto *flow : m_rate_flow_ctl_set) {
+             uint64_t bdp_bytes = flow->m_base_rtt_sec > 0
+                                      ? (uint64_t)(flow->m_base_rtt_sec * line_rate_bps / 8.0)
+                                      : 104000;
+-            if (flow->m_guard_flow_size > m_guardConcurrencyMinBdps * bdp_bytes) {
++            if (flow->m_guard_flow_size > concurrency_min_bdps * bdp_bytes &&
++                (order_single || m_guardSchedulingHorizonBdps == 0 ||
++                 flow->m_guard_flow_size <= m_guardSchedulingHorizonBdps * receiver_bdp)) {
+                 concurrency_remaining.push_back(
+                     flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+                         ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq : 1);
+             }
+         }
+     }
++    if (m_guardSchedulingHorizonBdps > 0 && GuardDistinctSenders() > 1 &&
++        concurrency_remaining.size() != m_rate_flow_ctl_set.size())
++        concurrency_remaining.clear();
+     std::sort(concurrency_remaining.begin(), concurrency_remaining.end());
+     size_t concurrency_candidates = concurrency_remaining.size();
+     uint32_t effective_concurrency = ComputeGuardEffectiveElephantConcurrency(
+@@ -6460,7 +6720,15 @@ void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation)
+             }
+         }
+     }
+-    for (auto *flow : m_rate_flow_ctl_set) {
++    // Packet enqueue order must not depend on heap addresses or diagnostic
++    // allocations: each grant can trigger transmission immediately.
++    std::vector<RdmaRxQueuePair*> grant_order(m_rate_flow_ctl_set.begin(),
++                                             m_rate_flow_ctl_set.end());
++    std::sort(grant_order.begin(), grant_order.end(),
++              [](RdmaRxQueuePair *a, RdmaRxQueuePair *b) {
++                  return a->m_flow_id < b->m_flow_id;
++              });
++    for (auto *flow : grant_order) {
+         flow->m_guard_interval_bytes = 0;
+         flow->m_guard_demand_samples = 0;
+         flow->m_guard_below_threshold_samples = 0;
+@@ -6480,19 +6748,67 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+     std::unordered_map<RdmaRxQueuePair*, uint64_t> targets;
+     size_t count = m_rate_flow_ctl_set.size();
+     if (count == 0) return targets;
++    if (UsesGuardSingleSenderSharedCap(line_rate_bps)) {
++        // These per-message caps share one physical source NIC of at most
++        // receiver line rate. They are alternatives, not independent sources
++        // of receiver demand. A second sender restores ordinary allocation.
++        std::vector<RdmaRxQueuePair*> ready(m_rate_flow_ctl_set.begin(), m_rate_flow_ctl_set.end());
++        std::sort(ready.begin(), ready.end(), [](RdmaRxQueuePair *a, RdmaRxQueuePair *b) {
++            uint64_t ar = a->m_guard_flow_size > a->ReceiverNextExpectedSeq
++                ? a->m_guard_flow_size - a->ReceiverNextExpectedSeq : 0;
++            uint64_t br = b->m_guard_flow_size > b->ReceiverNextExpectedSeq
++                ? b->m_guard_flow_size - b->ReceiverNextExpectedSeq : 0;
++            return ar != br ? ar < br : a->m_flow_id < b->m_flow_id;
++        });
++        size_t slots = m_guardSingleSenderSharedSlots == 0 ? ready.size()
++            : std::min<size_t>(m_guardSingleSenderSharedSlots, ready.size());
++        for (size_t i = 0; i < ready.size(); ++i)
++            targets[ready[i]] = i < slots ? line_rate_bps
++                : std::min<uint64_t>(m_minRate.GetBitRate(), line_rate_bps);
++        return targets;
++    }
+     uint64_t equal_share = line_rate_bps / count;
++    const uint64_t receiver_bdp = GuardSchedulingBdp(line_rate_bps);
++    const bool competing_senders = GuardDistinctSenders() > 1;
++    const bool order_single = m_guardSingleSenderOrder && !competing_senders;
++    bool long_cohort = m_guardSchedulingHorizonBdps > 0 && competing_senders;
++    for (auto *flow : m_rate_flow_ctl_set) {
++        uint64_t bdp = receiver_bdp;
++        uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
++            ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq : 1;
++        if (remaining <= m_guardSchedulingHorizonBdps * bdp) long_cohort = false;
++    }
++    auto scheduling_remaining = [&](RdmaRxQueuePair *flow) -> uint64_t {
++        uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
++            ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq : 1;
++        if (long_cohort) {
++            uint64_t bdp = receiver_bdp;
++            remaining = std::min<uint64_t>(remaining,
++                m_guardSchedulingHorizonBdps * bdp);
++        }
++        return std::max<uint64_t>(remaining, m_mtu);
++    };
++    const double concurrency_min_bdps = (m_guardSchedulingHorizonBdps > 0 || order_single) && !competing_senders
++        ? 1.0 : m_guardConcurrencyMinBdps;
+     std::vector<RdmaRxQueuePair*> concurrency_candidates;
+-    if (m_guardReceiverConcurrency > 0) {
++    if (m_guardReceiverConcurrency > 0 && GuardHasCompetingSenders(line_rate_bps)) {
+         for (auto *flow : m_rate_flow_ctl_set) {
+             uint64_t bdp_bytes = flow->m_base_rtt_sec > 0
+                                      ? (uint64_t)(flow->m_base_rtt_sec * line_rate_bps / 8.0)
+                                      : 104000;
+-            if (flow->m_guard_flow_size > m_guardConcurrencyMinBdps * bdp_bytes)
++            if (flow->m_guard_flow_size > concurrency_min_bdps * bdp_bytes &&
++                (order_single || m_guardSchedulingHorizonBdps == 0 ||
++                 flow->m_guard_flow_size <= m_guardSchedulingHorizonBdps * receiver_bdp))
+                 concurrency_candidates.push_back(flow);
+         }
+     }
++    // A mixed priority cohort needs simultaneous service: a receiver cannot
++    // assume its preferred sender is available while that sender serves other
++    // destinations. Preserve the normal weighted allocator in that case.
++    if (m_guardSchedulingHorizonBdps > 0 && competing_senders &&
++        concurrency_candidates.size() != count) concurrency_candidates.clear();
+     std::sort(concurrency_candidates.begin(), concurrency_candidates.end(),
+-              [](RdmaRxQueuePair *left, RdmaRxQueuePair *right) {
++              [this](RdmaRxQueuePair *left, RdmaRxQueuePair *right) {
+                   uint64_t left_remaining =
+                       left->m_guard_flow_size > left->ReceiverNextExpectedSeq
+                           ? left->m_guard_flow_size - left->ReceiverNextExpectedSeq : 0;
+@@ -6501,6 +6817,20 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+                           ? right->m_guard_flow_size - right->ReceiverNextExpectedSeq : 0;
+                   if (left_remaining != right_remaining)
+                       return left_remaining < right_remaining;
++                  if (m_guardSchedulingHorizonBdps > 0) {
++                      // Independent receiver tie orders avoid every receiver
++                      // granting the same source first in equal-size exchanges.
++                      auto rank = [](RdmaRxQueuePair *flow) -> uint32_t {
++                          uint32_t x = flow->dip ^ (flow->sip * 0x9e3779b9u)
++                              ^ (static_cast<uint32_t>(flow->m_flow_id) * 0x85ebca6bu);
++                          x ^= x >> 16;
++                          x *= 0x7feb352du;
++                          x ^= x >> 15;
++                          x *= 0x846ca68bu;
++                          return x ^ (x >> 16);
++                      };
++                      if (rank(left) != rank(right)) return rank(left) < rank(right);
++                  }
+                   return left->m_flow_id < right->m_flow_id;
+               });
+     uint32_t effective_concurrency = ComputeGuardEffectiveElephantConcurrency(
+@@ -6542,23 +6872,22 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+         // share the remaining receiver capacity among all shorter flows and
+         // only the K shortest elephants.
+         size_t deferred_count = concurrency_candidates.size() - service_count;
+-        uint64_t minimum_rate = std::min<uint64_t>(
+-            m_minRate.GetBitRate(), line_rate_bps / count);
+-        uint64_t residual = line_rate_bps - minimum_rate * deferred_count;
++        uint64_t service_floor = m_guardMinShareFraction * equal_share;
++        uint64_t minimum_rate = std::min<uint64_t>(equal_share,
++            std::max<uint64_t>(m_minRate.GetBitRate(),
++                service_floor));
++        uint64_t residual = line_rate_bps - minimum_rate * deferred_count
++            - service_floor * (count - deferred_count);
+         double weight_sum = 0.0;
+         uint64_t min_remaining = std::numeric_limits<uint64_t>::max();
+         for (auto *flow : service_set) {
+-            uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+-                                     ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq
+-                                     : 1;
++            uint64_t remaining = scheduling_remaining(flow);
+             min_remaining = std::min(min_remaining,
+                                      std::max<uint64_t>(remaining, m_mtu));
+         }
+         std::unordered_map<RdmaRxQueuePair*, double> weights;
+         for (auto *flow : service_set) {
+-            uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+-                                     ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq
+-                                     : 1;
++            uint64_t remaining = scheduling_remaining(flow);
+             remaining = std::max<uint64_t>(remaining, m_mtu);
+             double weight = (!m_guardRemainingAware || m_guardRemainingExponent == 0.0)
+                                 ? 1.0
+@@ -6568,9 +6897,9 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+             weight_sum += weight;
+         }
+         for (auto *flow : m_rate_flow_ctl_set) {
+-            targets[flow] = service_set.find(flow) == service_set.end() ? minimum_rate : 0;
++            targets[flow] = service_set.count(flow) ? service_floor : minimum_rate;
+             if (service_set.find(flow) != service_set.end()) {
+-                targets[flow] = (uint64_t)(
++                targets[flow] += (uint64_t)(
+                     residual * weights[flow] / std::max(weight_sum, 1e-12));
+             }
+         }
+@@ -6583,17 +6912,13 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+ 
+     uint64_t min_remaining = std::numeric_limits<uint64_t>::max();
+     for (auto *flow : m_rate_flow_ctl_set) {
+-        uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+-                                 ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq
+-                                 : 1;
++        uint64_t remaining = scheduling_remaining(flow);
+         min_remaining = std::min(min_remaining, std::max<uint64_t>(remaining, m_mtu));
+     }
+     std::unordered_map<RdmaRxQueuePair*, double> weights;
+     double weight_sum = 0.0;
+     for (auto *flow : m_rate_flow_ctl_set) {
+-        uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+-                                 ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq
+-                                 : 1;
++        uint64_t remaining = scheduling_remaining(flow);
+         remaining = std::max<uint64_t>(remaining, m_mtu);
+         double weight = std::pow((double)min_remaining / remaining,
+                                  m_guardRemainingExponent);
+@@ -6880,14 +7205,38 @@ void RdmaHw::TraceGuardControllerEvent(Ptr<RdmaQueuePair> qp, const char *event_
+                                        double effective_target, double threshold_ratio) {
+     GuardControllerTraceSink *sink = m_guardControllerTraceSink;
+     if (sink == NULL || sink->file == NULL) return;
++    if (qp->m_size < sink->min_flow_bytes) {
++        ++sink->size_filtered_out;
++        return;
++    }
+     sink->attempted++;
++    const uint64_t now = Simulator::Now().GetNanoSeconds();
++    const bool complete = std::strcmp(event_type, "complete") == 0;
++    const bool mandatory = complete || std::strcmp(event_type, "startup_path_release") == 0 ||
++                           std::strcmp(event_type, "timeout_probe") == 0;
++    if (sink->sample_ns != 0) {
++        auto previous = sink->last_sample_ns.find(qp->m_flow_id);
++        if (!mandatory && previous != sink->last_sample_ns.end() &&
++            now - previous->second < sink->sample_ns) {
++            sink->sampled_out++;
++            return;
++        }
++        // Never retain more flow identities than the configured row budget.
++        if (previous != sink->last_sample_ns.end() ||
++            sink->last_sample_ns.size() < sink->max_lines)
++            sink->last_sample_ns[qp->m_flow_id] = now;
++        if (complete) sink->last_sample_ns.erase(qp->m_flow_id);
++    }
+     if (sink->written >= sink->max_lines) return;
+     fprintf(sink->file,
+-            "%ld,%d,%u,%u,%s,%lu,%lu,%lu,%s,%u,%u,%u,%u,%.9f,%.9f,%.9f\n",
++            "%ld,%d,%u,%u,%s,%lu,%lu,%lu,%s,%u,%u,%u,%u,%.9f,%.9f,%.9f,%lu,%lu,%lu,%ld,%lu,%lu,%lu,%lu,%.9f\n",
+             Simulator::Now().GetNanoSeconds(), qp->m_flow_id, qp->sip.Get(), qp->dip.Get(),
+             event_type, hpcc_rate.GetBitRate(), qp->hp.m_grantRate.GetBitRate(),
+             qp->m_rate.GetBitRate(), binding, rate_changed ? 1 : 0, fast_react ? 1 : 0,
+-            nhop, next_seq, congestion_metric, effective_target, threshold_ratio);
++            nhop, next_seq, congestion_metric, effective_target, threshold_ratio,
++            qp->snd_nxt, qp->snd_una, qp->GetWin(), qp->m_nextAvail.GetNanoSeconds(),
++            qp->stat.txTotalBytes, qp->m_guard_last_full_feedback_ns,
++            qp->m_guard_last_full_gap_ns, qp->m_guard_last_recovery_ai_bps, qp->hp.u);
+     sink->written++;
+ }
+ 
+@@ -7081,6 +7430,26 @@ void RdmaHw::AppendGuardFastpathTraceFields(
+     }
+ }
+ 
++void RdmaHw::AppendGuardAllocationDetails(FILE *file, RdmaRxQueuePair *qp,
++                                           uint64_t flow_size) {
++    // Observation only. No sorting, allocation updates, or scheduled events.
++    uint64_t same_sender = 0, min_remaining = std::numeric_limits<uint64_t>::max(), total_remaining = 0;
++    uint64_t sequence = qp == NULL ? 0 : qp->ReceiverNextExpectedSeq;
++    if (qp != NULL) {
++        for (auto *flow : m_rate_flow_ctl_set) {
++            uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
++                ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq : 0;
++            min_remaining = std::min(min_remaining, remaining);
++            total_remaining += remaining;
++            if (flow->dip == qp->dip) same_sender++;
++        }
++    }
++    if (min_remaining == std::numeric_limits<uint64_t>::max()) min_remaining = 0;
++    fprintf(file, ",%lu,%u,%lu,%lu,%lu,%lu", flow_size,
++            qp == NULL ? 0 : GuardDistinctSenders(), same_sender,
++            min_remaining, sequence, total_remaining);
++}
++
+ void RdmaHw::TraceGuardGrant(Ptr<RdmaRxQueuePair> qp, const char *event,
+                              const char *set_change, uint64_t active_flows,
+                              uint64_t line_rate_bps, uint64_t grant_rate_bps,
+@@ -7089,6 +7458,10 @@ void RdmaHw::TraceGuardGrant(Ptr<RdmaRxQueuePair> qp, const char *event,
+                              bool ack_required, uint8_t phase_tag) {
+     GuardGrantTraceSink *sink = m_guardGrantTraceSink;
+     if (sink == NULL || sink->file == NULL) return;
++    if (qp->m_guard_flow_size < sink->min_flow_bytes) {
++        sink->filtered_out++;
++        return;
++    }
+     sink->attempted++;
+     if (sink->written >= sink->max_lines) return;
+     fprintf(sink->file, "%ld,%s,%s,%u,%d,%u,%u,%lu,%lu,%lu,%lu,%lu,%u,%lu,%u",
+@@ -7099,6 +7472,7 @@ void RdmaHw::TraceGuardGrant(Ptr<RdmaRxQueuePair> qp, const char *event,
+     AppendGuardFastpathTraceFields(
+         sink->file, event, set_change, PeekPointer(qp),
+         phase_tag, true, grant_rate_bps);
++    if (sink->allocation_details) AppendGuardAllocationDetails(sink->file, PeekPointer(qp), qp->m_guard_flow_size);
+     fprintf(sink->file, "\n");
+     sink->written++;
+ }
+@@ -7109,6 +7483,10 @@ void RdmaHw::TraceGuardGrantReceive(Ptr<RdmaQueuePair> qp, Ptr<Packet> packet,
+                                     uint8_t phase_tag) {
+     GuardGrantTraceSink *sink = m_guardGrantTraceSink;
+     if (sink == NULL || sink->file == NULL) return;
++    if (qp->m_size < sink->min_flow_bytes) {
++        sink->filtered_out++;
++        return;
++    }
+     sink->attempted++;
+     if (sink->written >= sink->max_lines) return;
+     uint64_t line_rate_bps = 0;
+@@ -7122,6 +7500,7 @@ void RdmaHw::TraceGuardGrantReceive(Ptr<RdmaQueuePair> qp, Ptr<Packet> packet,
+             qp->snd_nxt, packet->GetSize(), generation, ack_required ? 1 : 0);
+     AppendGuardFastpathTraceFields(sink->file, event, "none", NULL,
+                                    phase_tag, false, grant_rate_bps);
++    if (sink->allocation_details) AppendGuardAllocationDetails(sink->file, NULL, qp->m_size);
+     fprintf(sink->file, "\n");
+     sink->written++;
+ }
+@@ -7131,6 +7510,10 @@ void RdmaHw::TraceGuardGrantAckReceive(Ptr<RdmaRxQueuePair> qp, CustomHeader &ch
+                                        const GuardRetiredAckRecord *retired) {
+     GuardGrantTraceSink *sink = m_guardGrantTraceSink;
+     if (sink == NULL || sink->file == NULL) return;
++    if ((qp == NULL ? 0 : qp->m_guard_flow_size) < sink->min_flow_bytes) {
++        sink->filtered_out++;
++        return;
++    }
+     sink->attempted++;
+     if (sink->written >= sink->max_lines) return;
+     int32_t flow_id = qp == NULL
+@@ -7161,6 +7544,7 @@ void RdmaHw::TraceGuardGrantAckReceive(Ptr<RdmaRxQueuePair> qp, CustomHeader &ch
+     AppendGuardFastpathTraceFields(sink->file, event, "none",
+                                    PeekPointer(qp), phase_tag,
+                                    authoritative, retired_target_bps, retired);
++    if (sink->allocation_details) AppendGuardAllocationDetails(sink->file, PeekPointer(qp), (qp == NULL ? 0 : qp->m_guard_flow_size));
+     fprintf(sink->file, "\n");
+     sink->written++;
+ }
+@@ -7169,6 +7553,10 @@ void RdmaHw::TraceGuardGrantAckSend(Ptr<RdmaQueuePair> qp, Ptr<Packet> packet,
+                                     uint32_t generation, uint8_t phase_tag) {
+     GuardGrantTraceSink *sink = m_guardGrantTraceSink;
+     if (sink == NULL || sink->file == NULL) return;
++    if (qp->m_size < sink->min_flow_bytes) {
++        sink->filtered_out++;
++        return;
++    }
+     sink->attempted++;
+     if (sink->written >= sink->max_lines) return;
+     uint64_t line_rate_bps = 0;
+@@ -7182,6 +7570,7 @@ void RdmaHw::TraceGuardGrantAckSend(Ptr<RdmaQueuePair> qp, Ptr<Packet> packet,
+             packet->GetSize(), generation);
+     AppendGuardFastpathTraceFields(sink->file, "ack_sent", "none", NULL,
+                                    phase_tag, false, 0);
++    if (sink->allocation_details) AppendGuardAllocationDetails(sink->file, NULL, qp->m_size);
+     fprintf(sink->file, "\n");
+     sink->written++;
+ }
+@@ -7703,6 +8092,8 @@ void RdmaHw::HomaScheduler::SetPacingInterval() {
+ 
+ void RdmaHw::HomaScheduler::OnDataArrival(Ptr<RdmaRxQueuePair> rx_qp,
+                                               Ptr<Packet> /*p*/, CustomHeader &ch) {
++    if (flow_hash.empty() && rdma_hw->m_homaDiagnosticHashBuckets != 0)
++        flow_hash.rehash(rdma_hw->m_homaDiagnosticHashBuckets);
+     uint64_t message_id = ch.udp.homa_message_id;
+     if (completed_message_ids.count(message_id)) {
+         // A RESEND may already be in flight when the original DATA completes.
+@@ -7915,8 +8306,19 @@ void RdmaHw::HomaScheduler::SendGrant(HomaFlow* flow, uint8_t grant_priority) {
+     rdma_hw->m_nic[nic_idx].dev->TriggerTransmit();
+ }
+ 
++void RdmaHw::HomaScheduler::SortResendBatch(std::vector<HomaFlow*>& batch) {
++    std::sort(batch.begin(), batch.end(), [](const HomaFlow* a, const HomaFlow* b) {
++        return std::make_tuple(a->message_id, a->rx_qp->sip, a->rx_qp->dip,
++                              a->rx_qp->sport, a->rx_qp->dport, a->pg) <
++               std::make_tuple(b->message_id, b->rx_qp->sip, b->rx_qp->dip,
++                              b->rx_qp->sport, b->rx_qp->dport, b->pg);
++    });
++}
++
+ void RdmaHw::HomaScheduler::StallCheck() {
+     Time now = Simulator::Now();
++    std::vector<HomaFlow*> batch;
++    batch.reserve(flow_hash.size());
+     for (auto& kv : flow_hash) {
+         HomaFlow* flow = kv.second.get();
+         // Skip flows that have nothing missing to RESEND for.
+@@ -7926,6 +8328,10 @@ void RdmaHw::HomaScheduler::StallCheck() {
+         // receiver timeout
+         // even though the receiver has authorized more bytes than have arrived.
+         if ((now - flow->last_progress_time) < rdma_hw->m_homaResendTimeout) continue;
++        batch.push_back(flow);
++    }
++    if (rdma_hw->m_homaStableResendOrder) SortResendBatch(batch);
++    for (HomaFlow* flow : batch) {
+         uint64_t resend_off = flow->next_expected_offset;
+         uint64_t resend_len = std::min(flow->granted_offset_sent - resend_off,
+                                        (uint64_t)rdma_hw->m_mtu);
+@@ -8015,6 +8421,15 @@ void RdmaHw::HomaScheduler::SendCompletionNotice(HomaFlow* flow) {
+  * High Precision CC
+  ***********************/
+ void RdmaHw::HandleAckHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch) {
++    if (m_cc_mode == CC_MODE_GUARD &&
++        ApplyGuardStartupPathFeedback(qp, ch.ack.ih.nhop)) {
++        DataRate before = qp->m_rate;
++        SyncHwRate(qp, qp->hp.m_curRate);
++        TraceGuardControllerEvent(qp, "startup_path_release", qp->hp.m_curRate,
++            qp->hp.m_grantRate < qp->m_max_rate ? "grant" : "tie",
++            before != qp->m_rate, false, 0, qp->snd_nxt, -1,
++            m_targetUtil, -1);
++    }
+     if (m_cc_mode == CC_MODE_GUARD && qp->m_guard_one_rtt_bypass) {
+         // A flow no larger than one BDP cannot reduce the bytes it injected
+         // before the first feedback RTT.  Applying that delayed sample only
+@@ -8046,6 +8461,8 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
+     bool print = !fast_react || true;
+     if (qp->hp.m_lastUpdateSeq == 0) {  // first RTT
+         qp->hp.m_lastUpdateSeq = next_seq;
++        if (m_cc_mode == CC_MODE_GUARD && !fast_react)
++            qp->m_guard_last_full_feedback_ns = Simulator::Now().GetNanoSeconds();
+         // store INT
+         IntHeader &ih = ch.ack.ih;
+         NS_ASSERT(ih.nhop <= IntHeader::maxHop);
+@@ -8158,6 +8575,18 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
+                         effective_target);
+                 }
+             }
++            DataRate additive_increment = m_rai;
++            if (m_cc_mode == CC_MODE_GUARD && updated_any && !fast_react) {
++                const uint64_t now = Simulator::Now().GetNanoSeconds();
++                const uint64_t elapsed = qp->m_guard_last_full_feedback_ns == 0
++                    ? qp->m_baseRtt : now - qp->m_guard_last_full_feedback_ns;
++                qp->m_guard_last_full_gap_ns = elapsed;
++                qp->m_guard_last_full_feedback_ns = now;
++                additive_increment = DataRate(std::min<uint64_t>(
++                    qp->m_max_rate.GetBitRate(), ComputeGuardRecoveryIncrementBps(
++                        m_rai.GetBitRate(), elapsed, qp->m_baseRtt, m_guardRecoveryMaxRtts)));
++                qp->m_guard_last_recovery_ai_bps = additive_increment.GetBitRate();
++            }
+             if (!m_multipleRate) {
+                 // for aggregate (single R)
+                 if (updated_any) {
+@@ -8166,10 +8595,10 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
+                     max_c = qp->hp.u / effective_target;
+ 
+                     if (max_c >= 1 || qp->hp.m_incStage >= m_miThresh) {
+-                        new_rate = qp->hp.m_curRate / max_c + m_rai;
++                        new_rate = qp->hp.m_curRate / max_c + additive_increment;
+                         new_incStage = 0;
+                     } else {
+-                        new_rate = qp->hp.m_curRate + m_rai;
++                        new_rate = qp->hp.m_curRate + additive_increment;
+                         new_incStage = qp->hp.m_incStage + 1;
+                     }
+                     if (new_rate < m_minRate) new_rate = m_minRate;
+@@ -8191,10 +8620,10 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
+                         double c = qp->hp.hopState[i].u / effective_target;
+                         max_c = std::max(max_c, c);
+                         if (c >= 1 || qp->hp.hopState[i].incStage >= m_miThresh) {
+-                            new_rate_per_hop[i] = qp->hp.hopState[i].Rc / c + m_rai;
++                            new_rate_per_hop[i] = qp->hp.hopState[i].Rc / c + additive_increment;
+                             new_incStage_per_hop[i] = 0;
+                         } else {
+-                            new_rate_per_hop[i] = qp->hp.hopState[i].Rc + m_rai;
++                            new_rate_per_hop[i] = qp->hp.hopState[i].Rc + additive_increment;
+                             new_incStage_per_hop[i] = qp->hp.hopState[i].incStage + 1;
+                         }
+                         // bound rate
+@@ -8223,7 +8652,11 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
+             if (updated_any) {
+                 if (m_cc_mode == CC_MODE_GUARD && m_guardTailCongestionGate &&
+                     !fast_react) {
+-                    if (max_c <= m_guardTailSafeRatio) {
++                    // Permit a bounded tail while the fabric queue stays below
++                    // the configured budget. A fully utilized but unqueued link
++                    // does not need to stall its tail; a growing queue revokes
++                    // permission even when lambda permits utilization above one.
++                    if (max_queue_bdps <= m_guardTailSafeRatio * m_guardQueueBudgetBdps) {
+                         qp->m_guard_tail_safe_samples = std::min<uint32_t>(
+                             m_guardTailSafeSamples, qp->m_guard_tail_safe_samples + 1);
+                     } else {
+@@ -8252,7 +8685,7 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
+                 if (m_cc_mode == 11) {
+                     DataRate old_rate = qp->m_rate;
+                     const char *binding = "tie";
+-                    if (UsesGuardElephantReceiverAuthority(qp)) {
++                    if (UsesGuardTailBypass(qp) || UsesGuardElephantReceiverAuthority(qp)) {
+                         m_guardGrantBindingUpdates++;
+                         binding = "grant";
+                     } else if (new_rate < qp->hp.m_grantRate) {
+diff --git a/src/point-to-point/model/rdma-hw.h b/src/point-to-point/model/rdma-hw.h
+index f34cb2f..d707344 100644
+--- a/src/point-to-point/model/rdma-hw.h
++++ b/src/point-to-point/model/rdma-hw.h
+@@ -47,7 +47,14 @@ struct GuardControllerTraceSink {
+     uint64_t attempted;
+     uint64_t written;
+ 
+-    GuardControllerTraceSink() : file(NULL), max_lines(0), attempted(0), written(0) {}
++    uint64_t min_flow_bytes;
++    uint64_t size_filtered_out;
++    uint64_t sample_ns;
++    uint64_t sampled_out;
++    std::unordered_map<int32_t, uint64_t> last_sample_ns;
++
++    GuardControllerTraceSink() : file(NULL), max_lines(0), attempted(0), written(0),
++                                min_flow_bytes(0), size_filtered_out(0), sample_ns(0), sampled_out(0) {}
+ };
+ 
+ struct GuardGrantTraceSink {
+@@ -56,7 +63,11 @@ struct GuardGrantTraceSink {
+     uint64_t attempted;
+     uint64_t written;
+ 
+-    GuardGrantTraceSink() : file(NULL), max_lines(0), attempted(0), written(0) {}
++    uint64_t min_flow_bytes;
++    uint64_t filtered_out;
++    bool allocation_details;
++    GuardGrantTraceSink() : file(NULL), max_lines(0), attempted(0), written(0),
++        min_flow_bytes(0), filtered_out(0), allocation_details(false) {}
+ };
+ 
+ // One sink is shared by every receiver NIC.  Only the currently open
+@@ -338,8 +349,13 @@ class RdmaHw : public Object {
+     void DeleteRxQp(uint32_t dip, uint16_t dport, uint16_t sport, uint16_t pg);  // delete RxQP
+ 
+     int ReceiveUdp(Ptr<Packet> p, CustomHeader &ch);
++    void SendAckFromUdp(Ptr<RdmaRxQueuePair> rxQp, Ptr<Packet> p, CustomHeader &ch,
++                        int x, bool cnp_check, uint8_t ecnbits);
++    void SendGuardDelayedAck(Ptr<RdmaRxQueuePair> rxQp);
++    static bool CancelGuardDelayedAck(Ptr<RdmaRxQueuePair> rxQp);
+     int ReceiveCnp(Ptr<Packet> p, CustomHeader &ch);
+     int ReceiveAck(Ptr<Packet> p, CustomHeader &ch);  // handle both ACK and NACK
++    static bool CancelGuardIdleRetransmit(Ptr<RdmaQueuePair> qp);
+     int ReceiveRate(Ptr<Packet> p, CustomHeader &ch); // guard rate-grant packet
+     int ReceiveGuardGrantAck(Ptr<Packet> p, CustomHeader &ch);
+     int ReceiveGuardCapReport(Ptr<Packet> p, CustomHeader &ch);
+@@ -453,7 +469,9 @@ class RdmaHw : public Object {
+     double m_guardQueueBudgetBdps;
+     double m_guardAdaptiveTargetMaxBdps;
+     uint32_t m_guardAckIntervalPackets;
++    double m_guardAckMaxDelayRtts;
+     bool m_guardFixedWindow;
++    bool m_guardFabricControl;
+     bool m_guardRemainingAware;
+     double m_guardMinShareFraction;
+     double m_guardRemainingExponent;
+@@ -462,6 +480,14 @@ class RdmaHw : public Object {
+     bool m_guardSizeClassElephantConcurrency;
+     double m_guardElephantAgingRtts;
+     double m_guardConcurrencyMinBdps;
++    double m_guardSchedulingHorizonBdps;
++    bool m_guardSingleSenderOrder;
++    double m_guardPostGrantWindowBdps;
++    double m_guardSingleSenderSharedCapBdps;
++    uint32_t m_guardSingleSenderSharedSlots;
++    double m_guardStartupFairshareBdps;
++    uint32_t m_guardRecoveryMaxRtts;
++    bool m_guardStartupSamePeer;
+     double m_guardGrantRefreshBdps;
+     Time m_guardMembershipCoalesceWindow;
+     Time m_guardInitialCollectionQuietWindow;
+@@ -692,6 +718,9 @@ class RdmaHw : public Object {
+     uint64_t m_guardOneRttBypassFeedbacks;
+     uint64_t m_guardOneRttAcksSuppressed;
+     uint64_t m_guardLongAcksSuppressed;
++    uint64_t m_guardDelayedAcksSent;
++    uint64_t m_guardDelayedAckTimers;
++    uint64_t m_guardDelayedAckMaxWaitNs;
+     uint64_t m_guardTailBypassFlows;
+     uint64_t m_guardTailBypassFeedbacks;
+     uint64_t m_guardTailGateDeferrals;
+@@ -727,6 +756,8 @@ class RdmaHw : public Object {
+     uint64_t m_homaCompletionNoticesReplayed;
+     uint32_t m_homaOvercommitDegree;
+     Time m_homaResendTimeout;
++    bool m_homaStableResendOrder;
++    uint32_t m_homaDiagnosticHashBuckets;
+     uint32_t m_homaUnscheduledLevels;
+     std::vector<uint64_t> m_homaUnscheduledCutoffs;
+     void ConfigureHomaPriorities(uint32_t unscheduled_levels,
+@@ -883,6 +914,11 @@ class RdmaHw : public Object {
+                                    double effective_target, double threshold_ratio);
+     void FlushGuardLifecycleTrace();
+     void SyncHwRate(Ptr<RdmaQueuePair> qp, DataRate target_cc_rate);
++    bool UsesGuardTailBypass(Ptr<RdmaQueuePair> qp) const;
++    bool GuardHasCompetingSenders(uint64_t line_rate_bps) const;
++    uint32_t GuardDistinctSenders() const;
++    uint64_t GuardSchedulingBdp(uint64_t line_rate_bps) const;
++    bool UsesGuardSingleSenderSharedCap(uint64_t line_rate_bps) const;
+     void MaybeSendGuardCapReport(Ptr<RdmaQueuePair> qp);
+     void HandleRccRequest(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
+     bool HandleRccRemove(Ptr<RdmaRxQueuePair> qp, GuardReleaseReason reason,
+@@ -890,6 +926,7 @@ class RdmaHw : public Object {
+     bool RequestGuardProactiveDrain(Ptr<RdmaRxQueuePair> qp,
+                                     uint64_t remaining_bytes);
+     bool ReleaseGuardDrainingOnCompletion(Ptr<RdmaRxQueuePair> qp);
++    void AppendGuardAllocationDetails(FILE *file, RdmaRxQueuePair *qp, uint64_t flow_size);
+     void TraceGuardGrant(Ptr<RdmaRxQueuePair> qp, const char *event,
+                          const char *set_change, uint64_t active_flows,
+                          uint64_t line_rate_bps, uint64_t grant_rate_bps,
+@@ -985,6 +1022,13 @@ class RdmaHw : public Object {
+     bool ComputeGuardFrozenRequestedTargets(
+         uint64_t receiver_capacity_bps, uint64_t allocatable_bps,
+         std::vector<GuardVectorTargetInput> *inputs);
++    static bool ApplyGuardStartupPathFeedback(Ptr<RdmaQueuePair> qp, uint32_t fabric_hops);
++    static uint64_t ComputeGuardRecoveryIncrementBps(
++        uint64_t base_increment_bps, uint64_t elapsed_ns,
++        uint64_t base_rtt_ns, uint32_t maximum_rtts);
++    static uint64_t ComputeGuardStartupRateBps(
++        Ptr<RdmaQueuePair> qp, Ptr<RdmaQueuePairGroup> group,
++        double minimum_bdps, uint64_t minimum_rate_bps, bool same_peer_only = false);
+     static bool ComputeGuardElephantFabricTarget(
+         double base_target, bool enabled, uint64_t flow_size_bytes,
+         uint64_t path_bdp_bytes, double threshold_bdps, double scale,
+@@ -1305,6 +1349,7 @@ class RdmaHw : public Object {
+         void SendGrant(HomaFlow* flow, uint8_t grant_priority);
+         void StallCheck();
+         void SendResend(HomaFlow* flow, uint64_t offset, uint64_t length);
++        static void SortResendBatch(std::vector<HomaFlow*>& batch);
+         void SendCompletionNotice(HomaFlow* flow);
+ 
+         RdmaHw* rdma_hw;
+diff --git a/src/point-to-point/model/rdma-queue-pair.cc b/src/point-to-point/model/rdma-queue-pair.cc
+index dd24a4e..4d921b7 100644
+--- a/src/point-to-point/model/rdma-queue-pair.cc
++++ b/src/point-to-point/model/rdma-queue-pair.cc
+@@ -53,6 +53,10 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
+     m_guard_last_generation_ack_required = false;
+     m_guard_last_generation_phase_tag = 0;
+     m_guard_srpt_quantum_packets = 64;
++    m_guard_startup_path_pending = false;
++    m_guard_last_full_feedback_ns = 0;
++    m_guard_last_full_gap_ns = 0;
++    m_guard_last_recovery_ai_bps = 0;
+     m_guard_last_cap_report_time = Time(0);
+     m_guard_last_cap_report_rate_bps = 0;
+     m_guard_has_cap_report = false;
+@@ -235,6 +239,8 @@ RdmaRxQueuePair::RdmaRxQueuePair() {
+     m_guard_demand_samples = 0;
+     m_guard_below_threshold_samples = 0;
+     m_guard_last_ack_seq = 0;
++    m_guard_pending_ack_packet = NULL;
++    m_guard_pending_ack_since_ns = 0;
+     m_guard_last_schedule_seq = 0;
+     m_guard_pending_progress_seq = 0;
+     m_guard_flow_size = 0;
+@@ -253,6 +259,9 @@ RdmaRxQueuePair::RdmaRxQueuePair() {
+     m_guard_unbound_reports = 0;
+     m_guard_report_fabric_bound = false;
+     m_guard_cap_limited = false;
++    m_guard_last_full_feedback_ns = 0;
++    m_guard_last_full_gap_ns = 0;
++    m_guard_last_recovery_ai_bps = 0;
+     m_guard_last_cap_report_time = Time(0);
+     m_guard_spillover_reported_cap_bps = 0;
+     m_guard_spillover_fabric_reports = 0;
+diff --git a/src/point-to-point/model/rdma-queue-pair.h b/src/point-to-point/model/rdma-queue-pair.h
+index cfb016e..7537cdf 100644
+--- a/src/point-to-point/model/rdma-queue-pair.h
++++ b/src/point-to-point/model/rdma-queue-pair.h
+@@ -84,6 +84,10 @@ class RdmaQueuePair : public Object {
+     bool m_guard_last_generation_ack_required;
+     uint8_t m_guard_last_generation_phase_tag;
+     uint32_t m_guard_srpt_quantum_packets;
++    bool m_guard_startup_path_pending;
++    uint64_t m_guard_last_full_feedback_ns;
++    uint64_t m_guard_last_full_gap_ns;
++    uint64_t m_guard_last_recovery_ai_bps;
+     Time m_guard_last_cap_report_time;
+     uint64_t m_guard_last_cap_report_rate_bps;
+     bool m_guard_has_cap_report;
+@@ -273,6 +277,9 @@ class RdmaRxQueuePair : public Object {  // Rx side queue pair
+     uint32_t m_guard_demand_samples;
+     uint32_t m_guard_below_threshold_samples;
+     uint32_t m_guard_last_ack_seq;
++    EventId m_guard_delayed_ack_event;
++    Ptr<Packet> m_guard_pending_ack_packet;
++    uint64_t m_guard_pending_ack_since_ns;
+     uint64_t m_guard_last_schedule_seq;
+     uint64_t m_guard_pending_progress_seq;
+     uint64_t m_guard_flow_size;
+@@ -291,6 +298,9 @@ class RdmaRxQueuePair : public Object {  // Rx side queue pair
+     uint32_t m_guard_unbound_reports;
+     bool m_guard_report_fabric_bound;
+     bool m_guard_cap_limited;
++    uint64_t m_guard_last_full_feedback_ns;
++    uint64_t m_guard_last_full_gap_ns;
++    uint64_t m_guard_last_recovery_ai_bps;
+     Time m_guard_last_cap_report_time;
+     uint64_t m_guard_spillover_reported_cap_bps;
+     uint32_t m_guard_spillover_fabric_reports;
+diff --git a/src/point-to-point/model/settings.cc b/src/point-to-point/model/settings.cc
+index cb4cb42..6971e08 100644
+--- a/src/point-to-point/model/settings.cc
++++ b/src/point-to-point/model/settings.cc
+@@ -27,6 +27,13 @@ uint32_t Settings::dropped_pkt_sw_egress = 0;
+ uint64_t Settings::guard_sender_srpt_selections = 0;
+ uint64_t Settings::guard_sender_srpt_non_rr_selections = 0;
+ uint64_t Settings::guard_sender_srpt_forced_rr = 0;
++bool Settings::guard_sender_fair_cursor = false;
++bool Settings::guard_sender_ack_batch = false;
++bool Settings::guard_sender_service_budget = false;
++bool Settings::guard_sender_ack_rescue = false;
++uint64_t Settings::guard_sender_ack_rescue_episodes = 0;
++uint64_t Settings::guard_sender_ack_rescue_packets = 0;
++uint32_t Settings::guard_sender_ack_batch_packets = 8;
+ 
+ /* for load balancer */
+ std::map<uint32_t, uint32_t> Settings::hostIp2SwitchId;
+diff --git a/src/point-to-point/model/settings.h b/src/point-to-point/model/settings.h
+index 20850c5..3b5371e 100644
+--- a/src/point-to-point/model/settings.h
++++ b/src/point-to-point/model/settings.h
+@@ -140,6 +140,13 @@ class Settings {
+     static uint64_t guard_sender_srpt_selections;
+     static uint64_t guard_sender_srpt_non_rr_selections;
+     static uint64_t guard_sender_srpt_forced_rr;
++    static bool guard_sender_fair_cursor;
++    static bool guard_sender_ack_batch;
++    static bool guard_sender_service_budget;
++    static bool guard_sender_ack_rescue;
++    static uint64_t guard_sender_ack_rescue_episodes;
++    static uint64_t guard_sender_ack_rescue_packets;
++    static uint32_t guard_sender_ack_batch_packets;
+ };
+ 
+ }  // namespace ns3
+diff --git a/tests/flow_id_tag.cc b/tests/flow_id_tag.cc
+new file mode 100644
+index 0000000..3ae676b
+--- /dev/null
++++ b/tests/flow_id_tag.cc
+@@ -0,0 +1,22 @@
++#include "ns3/packet.h"
++#include "ns3/flow-id-num-tag.h"
++#include <iostream>
++#include <stdint.h>
++using namespace ns3;
++int main() {
++  const int32_t ids[] = {0, 1, 65535, 65536, 65552, 131088, 2147483647};
++  bool ok = true;
++  for (auto id : ids) {
++    Ptr<Packet> p = Create<Packet>(64);
++    FlowIDNUMTag input; input.SetId(id); input.SetFlowSize(951625);
++    p->AddPacketTag(input);
++    Ptr<Packet> copy = p->Copy();
++    FlowIDNUMTag output;
++    if (!copy->PeekPacketTag(output) || output.GetId()!=id ||
++        output.GetFlowSize()!=951625 || copy->GetSize()!=64 || input.GetSerializedSize()!=8) {
++      std::cout << "FAIL id=" << id << " recovered=" << output.GetId() << "\n"; ok=false;
++    }
++  }
++  if(ok) std::cout << "PASS full-width flow IDs and sizes survive actual Packet tag round trips and copies without changing wire size\n";
++  return ok?0:1;
++}
+diff --git a/tests/guard_ack_batch.cc b/tests/guard_ack_batch.cc
+new file mode 100644
+index 0000000..fc2269f
+--- /dev/null
++++ b/tests/guard_ack_batch.cc
+@@ -0,0 +1,52 @@
++#include "ns3/qbb-net-device.h"
++#include "ns3/settings.h"
++#include <array>
++#include <cassert>
++#include <iostream>
++using namespace ns3;
++static Ptr<Packet> Send(Ptr<RdmaQueuePair> q) {
++    q->snd_nxt+=1000;q->snd_una=q->snd_nxt;return Create<Packet>(1000);
++}
++static Ptr<RdmaEgressQueue> Build(bool batch) {
++    IntHeader::mode=0;Settings::guard_sender_fair_cursor=true;
++    Settings::guard_sender_ack_batch=batch;Settings::guard_sender_ack_batch_packets=8;
++    auto e=CreateObject<RdmaEgressQueue>();e->m_qpGrp=CreateObject<RdmaQueuePairGroup>();
++    e->m_rdmaGetNxtPkt=MakeCallback(&Send);
++    for (unsigned i=0;i<4;++i) {
++        auto q=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),100+i,200);
++        q->SetSize(i==0?10000000:100000000);q->m_flow_id=i;
++        q->m_guard_sender_srpt=true;q->m_guard_srpt_quantum_packets=64;
++        q->m_win=0;q->m_nextAvail=NanoSeconds(0);e->m_qpGrp->AddQp(q);
++    }
++    return e;
++}
++static std::array<unsigned,4> Serve(Ptr<RdmaEgressQueue> e,unsigned packets,bool* paused) {
++    std::array<unsigned,4> counts={{0,0,0,0}};
++    for (unsigned n=0;n<packets;++n) {
++        int next=e->GetNextQindex(paused);assert(next>=0&&next<4);
++        ++counts[next];e->DequeueQindex(next);
++    }
++    return counts;
++}
++int main() {
++    bool paused[8]={false};
++    auto legacy=Build(false);assert((Serve(legacy,650,paused)==std::array<unsigned,4>{{640,4,3,3}}));
++    auto batch=Build(true);assert((Serve(batch,1560,paused)==std::array<unsigned,4>{{1536,8,8,8}}));
++    // Four additional packets complete an already-started eight-packet ACK batch.
++    auto partial=Build(true);auto q=partial->m_qpGrp->Get(1);q->snd_nxt=5000;q->snd_una=1000;
++    assert((Serve(partial,260,paused)==std::array<unsigned,4>{{256,4,0,0}}));
++    assert(partial->m_guardSrptBatchIndex==-1);
++    assert((Serve(partial,65,paused)==std::array<unsigned,4>{{64,0,1,0}}));
++    // A reserved recipient must never stall eligible competitors.
++    for (unsigned cause=0;cause<5;++cause) {
++        auto blocked=Build(true);Serve(blocked,130,paused);q=blocked->m_qpGrp->Get(1);
++        if(cause==0) {q->m_pg=4;paused[4]=true;}
++        if(cause==1) q->m_nextAvail=NanoSeconds(1);
++        if(cause==2) {q->m_win=1000;q->snd_nxt=q->snd_una+1000;}
++        if(cause==3) blocked->m_qpGrp->SetQpFinished(1);
++        if(cause==4) q->m_flow_id=9001;
++        assert((Serve(blocked,65,paused)==std::array<unsigned,4>{{64,0,1,0}}));
++        paused[4]=false;
++    }
++    std::cout<<"PASS: actual scheduler preserves64:1 service, completes existing ACK batch, rotates all ready peers, and releases blocked/finished/reused recipients\n";
++}
+diff --git a/tests/guard_ack_deadline.cc b/tests/guard_ack_deadline.cc
+new file mode 100644
+index 0000000..8299590
+--- /dev/null
++++ b/tests/guard_ack_deadline.cc
+@@ -0,0 +1,37 @@
++#include "ns3/rdma-hw.h"
++#include "ns3/simulator.h"
++#include <cassert>
++#include <iostream>
++using namespace ns3;
++static unsigned fired = 0;
++static void Fire() { ++fired; }
++int main() {
++    auto q = CreateObject<RdmaRxQueuePair>();
++    auto other = CreateObject<RdmaRxQueuePair>();
++    q->m_guard_pending_ack_packet = Create<Packet>(1000);
++    q->m_guard_delayed_ack_event = Simulator::Schedule(NanoSeconds(10), &Fire);
++    other->m_guard_delayed_ack_event = Simulator::Schedule(NanoSeconds(20), &Fire);
++    q->ReceiverNextExpectedSeq = 3000;
++    q->m_guard_last_ack_seq = 1000;
++    assert(RdmaHw::CancelGuardDelayedAck(q));
++    assert(q->m_guard_pending_ack_packet == NULL);
++    assert(!RdmaHw::CancelGuardDelayedAck(q));
++    assert(q->ReceiverNextExpectedSeq == 3000 && q->m_guard_last_ack_seq == 1000);
++    assert(other->m_guard_delayed_ack_event.IsRunning());
++    Simulator::Run();
++    assert(fired == 1);
++    Simulator::Destroy();
++    auto hw = CreateObject<RdmaHw>();
++    // A completed message and an already-acknowledged batch never emit a
++    // stale timer ACK, even if an old callback is invoked defensively.
++    q->m_guard_pending_ack_packet = Create<Packet>(1000);
++    q->m_guard_flow_size = q->ReceiverNextExpectedSeq;
++    hw->SendGuardDelayedAck(q);
++    assert(hw->m_guardDelayedAcksSent == 0 && q->m_guard_pending_ack_packet == NULL);
++    q->m_guard_pending_ack_packet = Create<Packet>(1000);
++    q->m_guard_flow_size += 1000;
++    q->m_guard_last_ack_seq = q->ReceiverNextExpectedSeq;
++    hw->SendGuardDelayedAck(q);
++    assert(hw->m_guardDelayedAcksSent == 0 && q->m_guard_pending_ack_packet == NULL);
++    std::cout << "PASS: cancellation suppresses stale event, preserves progress and other flow timer; completed/acknowledged batches cannot emit stale ACKs\n";
++}
+diff --git a/tests/guard_ack_rescue.cc b/tests/guard_ack_rescue.cc
+new file mode 100644
+index 0000000..fccb486
+--- /dev/null
++++ b/tests/guard_ack_rescue.cc
+@@ -0,0 +1,83 @@
++#include "ns3/qbb-net-device.h"
++#include "ns3/settings.h"
++#include <cassert>
++#include <iostream>
++using namespace ns3;
++static void Expire() { assert(false && "test must finish before existing recovery expires"); }
++static void Arm(Ptr<RdmaQueuePair> q) {
++ if(q->m_retransmit.IsRunning())q->m_retransmit.Cancel();
++ q->m_retransmit=Simulator::Schedule(MilliSeconds(4),&Expire);
++}
++static Ptr<Packet> Send(Ptr<RdmaQueuePair> q) {
++ q->snd_nxt+=1000;Arm(q);
++ if(q->m_flow_id==0 || q->GetOnTheFly()>=8000) {
++  q->snd_una=q->snd_nxt;q->m_retransmit.Cancel();
++ }
++ return Create<Packet>(1000);
++}
++static Ptr<RdmaEgressQueue> Build() {
++ IntHeader::mode=0;Settings::guard_sender_ack_rescue=true;
++ Settings::guard_sender_fair_cursor=true;Settings::guard_sender_service_budget=false;
++ Settings::guard_sender_ack_batch=false;Settings::guard_sender_ack_batch_packets=8;
++ Settings::guard_sender_ack_rescue_episodes=Settings::guard_sender_ack_rescue_packets=0;
++ auto e=CreateObject<RdmaEgressQueue>();e->m_qpGrp=CreateObject<RdmaQueuePairGroup>();e->m_rdmaGetNxtPkt=MakeCallback(&Send);
++ for(unsigned i=0;i<3;++i) {
++  auto q=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),100+i,200);
++  q->SetSize((i+1)*10000000);q->m_flow_id=i;q->m_guard_sender_srpt=true;
++  q->m_guard_srpt_quantum_packets=64;q->m_win=0;q->m_nextAvail=NanoSeconds(0);q->SetTimeout(MilliSeconds(4));
++  e->m_qpGrp->AddQp(q);
++ }
++ auto q=e->m_qpGrp->Get(1);q->snd_nxt=5000;q->snd_una=1000;Arm(q);return e;
++}
++static bool paused[8]={false};
++static void Selected(Ptr<RdmaEgressQueue> e,int expected) {
++ int next=e->GetNextQindex(paused);assert(next==expected);e->DequeueQindex(next);
++}
++static void Before(Ptr<RdmaEgressQueue> e) {
++ assert(!RdmaEgressQueue::GuardAckRescueDue(e->m_qpGrp->Get(1),1000,8));Selected(e,0);
++ assert(Settings::guard_sender_ack_rescue_episodes==0);
++}
++static void Batch(Ptr<RdmaEgressQueue> e) {
++ assert(RdmaEgressQueue::GuardAckRescueDue(e->m_qpGrp->Get(1),1000,8));
++ for(unsigned i=0;i<4;++i) {
++  Selected(e,1);
++  // Sending restarts the recovery timer, but the latched batch must continue.
++  assert(!RdmaEgressQueue::GuardAckRescueDue(e->m_qpGrp->Get(1),1000,8));
++ }
++ assert(e->m_guardAckRescueIndex==-1);Selected(e,0);
++ assert(Settings::guard_sender_ack_rescue_episodes==1&&Settings::guard_sender_ack_rescue_packets==4);
++}
++static void Exclude(Ptr<RdmaEgressQueue> e,unsigned cause) {
++ Selected(e,1);Selected(e,1);auto q=e->m_qpGrp->Get(1);
++ if(cause==0){q->m_pg=4;paused[4]=true;}
++ if(cause==1)q->m_nextAvail=Simulator::Now()+NanoSeconds(1);
++ if(cause==2){q->m_win=1000;}
++ if(cause==3)e->m_qpGrp->SetQpFinished(1);
++ if(cause==4)q->m_flow_id=9001;
++ if(cause==5)q->m_retransmit.Cancel();
++ if(cause==6)q->snd_una=q->snd_nxt;
++ if(cause==7)q->irn.m_enabled=true;
++ Selected(e,0);
++ if(cause<3){paused[4]=false;q->m_nextAvail=Simulator::Now();q->m_win=0;Selected(e,1);}
++ paused[4]=false;
++}
++static void Ineligible(Ptr<RdmaEgressQueue> e) {
++ auto q=e->m_qpGrp->Get(1);
++ q->snd_nxt=q->snd_una;assert(!RdmaEgressQueue::GuardAckRescueDue(q,1000,8));
++ q->snd_nxt=q->snd_una+8000;assert(!RdmaEgressQueue::GuardAckRescueDue(q,1000,8));
++ q->snd_nxt=q->snd_una+4000;q->irn.m_enabled=true;assert(!RdmaEgressQueue::GuardAckRescueDue(q,1000,8));
++ q->irn.m_enabled=false;q->m_retransmit.Cancel();assert(!RdmaEgressQueue::GuardAckRescueDue(q,1000,8));
++}
++static void Earliest(Ptr<RdmaEgressQueue> e){Selected(e,2);}
++int main() {
++ {auto e=Build();Simulator::Schedule(NanoSeconds(1999999),&Before,e);Simulator::Schedule(MilliSeconds(2),&Batch,e);
++  Simulator::Stop(MilliSeconds(2));Simulator::Run();Simulator::Destroy();}
++ for(unsigned cause=0;cause<8;++cause){auto e=Build();Simulator::Schedule(MilliSeconds(2),&Exclude,e,cause);
++  Simulator::Stop(MilliSeconds(2));Simulator::Run();Simulator::Destroy();}
++ {auto e=Build();Simulator::Schedule(MilliSeconds(2),&Ineligible,e);
++  Simulator::Stop(MilliSeconds(2));Simulator::Run();Simulator::Destroy();}
++ {auto e=Build();auto q=e->m_qpGrp->Get(2);q->snd_nxt=4000;q->snd_una=0;Arm(q);
++  Simulator::Schedule(MilliSeconds(1),&Arm,e->m_qpGrp->Get(1));Simulator::Schedule(MilliSeconds(3),&Earliest,e);
++  Simulator::Stop(MilliSeconds(3));Simulator::Run();Simulator::Destroy();}
++ std::cout<<"PASS: actual scheduler is neutral before half-RTO, rescues only partial batches, completes latch across timer resets, honors eight exclusions and earliest deadline\n";
++}
+diff --git a/tests/guard_fair_cursor.cc b/tests/guard_fair_cursor.cc
+new file mode 100644
+index 0000000..7967eac
+--- /dev/null
++++ b/tests/guard_fair_cursor.cc
+@@ -0,0 +1,44 @@
++#include "ns3/qbb-net-device.h"
++#include "ns3/settings.h"
++#include <cassert>
++#include <iostream>
++#include <array>
++using namespace ns3;
++static Ptr<Packet> Send(Ptr<RdmaQueuePair> q) {
++    q->snd_nxt+=1000;q->snd_una=q->snd_nxt;return Create<Packet>(1000);
++}
++static std::array<unsigned,4> Run(bool enabled, unsigned blocked=0) {
++    IntHeader::mode=0;Settings::guard_sender_fair_cursor=enabled;
++    auto e=CreateObject<RdmaEgressQueue>();
++    e->m_qpGrp=CreateObject<RdmaQueuePairGroup>();e->m_rdmaGetNxtPkt=MakeCallback(&Send);
++    bool paused[8]={false};
++    for (unsigned i=0;i<4;++i) {
++        auto q=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),100+i,200);
++        q->SetSize(i==0?10000000:100000000);
++        q->m_flow_id=i;q->m_guard_sender_srpt=true;q->m_guard_srpt_quantum_packets=64;
++        q->m_win=0;q->m_nextAvail=NanoSeconds(0);
++        if (i==1) {
++            if (blocked==1) {q->m_pg=4;paused[4]=true;}
++            if (blocked==2) q->m_nextAvail=NanoSeconds(1);
++            if (blocked==3) {q->m_win=1000;q->snd_nxt=1000;}
++        }
++        e->m_qpGrp->AddQp(q);
++        if (i==1 && blocked==4) e->m_qpGrp->SetQpFinished(i);
++    }
++    std::array<unsigned,4> count={{0,0,0,0}};
++    for (unsigned i=0;i<650;++i) {
++        int next=e->GetNextQindex(paused);assert(next>=0&&next<4);
++        ++count[next];e->DequeueQindex(next);
++    }
++    return count;
++}
++int main() {
++    auto legacy=Run(false),fair=Run(true);
++    assert((legacy==std::array<unsigned,4>{{640,10,0,0}}));
++    assert((fair==std::array<unsigned,4>{{640,4,3,3}}));
++    for (unsigned blocked=1;blocked<=4;++blocked) {
++        auto count=Run(true,blocked);
++        assert((count==std::array<unsigned,4>{{640,0,5,5}}));
++    }
++    std::cout<<"PASS: actual scheduler legacy640/10/0/0 becomes640/4/3/3; shortest-flow quantum retained; paused, pacing-blocked, window-blocked and finished flows excluded\n";
++}
+diff --git a/tests/guard_idle_retransmit.cc b/tests/guard_idle_retransmit.cc
+new file mode 100644
+index 0000000..bf53c05
+--- /dev/null
++++ b/tests/guard_idle_retransmit.cc
+@@ -0,0 +1,25 @@
++#include "ns3/rdma-hw.h"
++#include "ns3/simulator.h"
++#include <cassert>
++#include <iostream>
++using namespace ns3;
++static unsigned fired = 0;
++static void Fire() { ++fired; }
++int main() {
++    auto q=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),100,101);
++    q->SetSize(100000);q->snd_nxt=q->snd_una=1000;
++    q->m_retransmit=Simulator::Schedule(NanoSeconds(10),&Fire);
++    assert(!q->IsFinished());
++    assert(RdmaHw::CancelGuardIdleRetransmit(q));
++    assert(!RdmaHw::CancelGuardIdleRetransmit(q));
++    q->snd_nxt=2000;
++    q->m_retransmit=Simulator::Schedule(NanoSeconds(20),&Fire);
++    assert(!RdmaHw::CancelGuardIdleRetransmit(q));
++    Simulator::Run();assert(fired==1);Simulator::Destroy();
++    q->snd_una=q->snd_nxt;q->irn.m_enabled=true;
++    q->m_retransmit=Simulator::Schedule(NanoSeconds(10),&Fire);
++    assert(!RdmaHw::CancelGuardIdleRetransmit(q));
++    Simulator::Run();assert(fired==2);Simulator::Destroy();
++    assert(q->snd_nxt==2000 && q->snd_una==2000);
++    std::cout<<"PASS: unfinished idle flow timer canceled; outstanding-data and IRN timers preserved; sequence state unchanged\n";
++}
+diff --git a/tests/guard_recovery_increment.cc b/tests/guard_recovery_increment.cc
+new file mode 100644
+index 0000000..9f73c8d
+--- /dev/null
++++ b/tests/guard_recovery_increment.cc
+@@ -0,0 +1,30 @@
++#include "ns3/rdma-hw.h"
++#include <cassert>
++#include <cstdint>
++#include <limits>
++#include <random>
++#include <iostream>
++using namespace ns3;
++int main() {
++    const uint64_t base=40000000, rtt=8320;
++    auto f=[](uint64_t a,uint64_t d,uint64_t r,uint32_t n){return RdmaHw::ComputeGuardRecoveryIncrementBps(a,d,r,n);};
++    assert(f(base,0,rtt,8)==base);
++    assert(f(base,rtt/2,rtt,8)==base);
++    assert(f(base,rtt*3/2,rtt,8)==60000000);
++    assert(f(base,rtt*64,rtt,8)==base*8);
++    assert(f(base,rtt*64,rtt,0)==base);
++    assert(f(base,rtt*64,rtt,1)==base);
++    assert(f(base,rtt*64,0,8)==base);
++    assert(f(0,rtt*64,rtt,8)==0);
++    uint64_t big=std::numeric_limits<uint64_t>::max();
++    assert(f(big,big,1,64)==big);
++    std::mt19937_64 rng(4721);
++    for (unsigned i=0;i<10000;++i) {
++        uint64_t a=rng()%100000000001ULL,r=1+rng()%1000000,d=rng()%100000000;
++        uint32_t n=2+rng()%63;
++        uint64_t x=f(a,d,r,n),y=f(a,d+1,r,n);
++        assert(x>=a && x<=a*n && y>=x);
++        assert(f(a,d,r,0)==a);
++    }
++    std::cout<<"PASS: recovery scaling, no elapsed-time credit below one RTT, disabled/zero RTT, saturation, 10000 monotonic bounded states\n";
++}
+diff --git a/tests/guard_scheduling_horizon.cc b/tests/guard_scheduling_horizon.cc
+new file mode 100644
+index 0000000..bfeb37e
+--- /dev/null
++++ b/tests/guard_scheduling_horizon.cc
+@@ -0,0 +1,138 @@
++// Behavioral checks against the actual receiver allocator, not a model copy.
++#include "ns3/rdma-hw.h"
++#include <algorithm>
++#include <cassert>
++#include <iostream>
++#include <random>
++
++using namespace ns3;
++
++int main() {
++    Ptr<RdmaHw> hw = CreateObject<RdmaHw>();
++    const uint64_t capacity = 100000000000ULL;
++    const uint64_t bdp = 100000;
++    hw->m_guardReceiverConcurrency = 1;
++    hw->m_guardConcurrencyMinBdps = 1;
++    hw->m_guardSchedulingHorizonBdps = 128;
++    hw->m_guardMinShareFraction = .25;
++    hw->m_guardAdaptiveElephantConcurrency = false;
++    hw->m_guardSizeClassElephantConcurrency = false;
++    hw->m_guardRemainingAware = true;
++    hw->m_guardRemainingExponent = 1;
++    hw->m_mtu = 1000;
++    hw->m_minRate = DataRate(100000000);
++    std::mt19937 rng(7249);
++    std::vector<Ptr<RdmaRxQueuePair> > flows;
++    for (unsigned trial = 0; trial < 1000; ++trial) {
++        hw->m_rate_flow_ctl_set.clear();
++        flows.clear();
++        unsigned count = 2 + rng() % 30;
++        for (unsigned i = 0; i < count; ++i) {
++            Ptr<RdmaRxQueuePair> f = Create<RdmaRxQueuePair>();
++            f->m_base_rtt_sec = .000008;
++            f->dip = trial % 2 ? i + 1 : 1;
++            f->m_flow_id = i;
++            f->m_guard_flow_size = (2 + rng() % 2000) * bdp;
++            f->ReceiverNextExpectedSeq = rng() % f->m_guard_flow_size;
++            flows.push_back(f);
++            hw->m_rate_flow_ctl_set.insert(PeekPointer(f));
++        }
++        hw->m_guardMinShareFraction = (trial % 5) * .25;
++        auto targets = hw->ComputeGuardBaseTargets(capacity);
++        uint64_t sum = 0;
++        uint64_t floor = hw->m_guardMinShareFraction * (capacity / count);
++        for (auto &entry : targets) {
++            assert(entry.second >= floor);
++            sum += entry.second;
++        }
++        assert(sum <= capacity);
++        assert(capacity - sum <= count);
++        std::reverse(flows.begin(), flows.end());
++        hw->m_rate_flow_ctl_set.clear();
++        for (auto f : flows) hw->m_rate_flow_ctl_set.insert(PeekPointer(f));
++        auto reversed = hw->ComputeGuardBaseTargets(capacity);
++        for (auto &entry : targets) {
++            // Floating-point summation may move a rounded target by one bit/s.
++            assert(std::abs((int64_t)entry.second - (int64_t)reversed[entry.first]) <= 1);
++        }
++    }
++    // Equal long flows remain equal despite very different attained service.
++    hw->m_guardMinShareFraction = 0;
++    for (unsigned i = 0; i < flows.size(); ++i) {
++        flows[i]->dip = i + 1;
++        flows[i]->m_guard_flow_size = 2000 * bdp;
++        flows[i]->ReceiverNextExpectedSeq = i * bdp;
++    }
++    auto equal = hw->ComputeGuardBaseTargets(capacity);
++    for (auto &entry : equal) assert(entry.second == capacity / flows.size());
++    // A single NIC keeps its remaining-size scheduler for long messages.
++    for (auto f : flows) f->dip = 1;
++    auto single = hw->ComputeGuardBaseTargets(capacity);
++    hw->m_guardSchedulingHorizonBdps = 0;
++    auto legacy = hw->ComputeGuardBaseTargets(capacity);
++    for (auto &entry : single) assert(entry.second == legacy[entry.first]);
++    // Opt-in ordering concentrates a single NIC's long-message grant on its
++    // smallest remaining message, while other sources still share fairly.
++    hw->m_guardSingleSenderOrder = true;
++    auto ordered = hw->ComputeGuardBaseTargets(capacity);
++    auto shortest = *std::min_element(flows.begin(), flows.end(),
++        [](Ptr<RdmaRxQueuePair> a, Ptr<RdmaRxQueuePair> b) {
++            return a->m_guard_flow_size - a->ReceiverNextExpectedSeq <
++                   b->m_guard_flow_size - b->ReceiverNextExpectedSeq;
++        });
++    assert(ordered[PeekPointer(shortest)] > .95 * capacity);
++    hw->m_guardSchedulingHorizonBdps = 128;
++    for (unsigned i = 0; i < flows.size(); ++i) flows[i]->dip = i + 1;
++    auto still_equal = hw->ComputeGuardBaseTargets(capacity);
++    for (auto &entry : still_equal) assert(entry.second == capacity / flows.size());
++    hw->m_guardSingleSenderOrder = false;
++    // The shared-cap experiment uses one physical NIC budget, not the sum
++    // of its alternative per-message caps. It must close on a second sender
++    // or a mixed short/long cohort.
++    hw->m_guardSingleSenderSharedCapBdps = 128;
++    for (auto f : flows) f->dip = 1;
++    auto shared = hw->ComputeGuardBaseTargets(capacity);
++    for (auto &entry : shared) assert(entry.second == capacity);
++    assert(!hw->GuardHasCompetingSenders(capacity));
++    hw->m_guardSingleSenderSharedSlots = 2;
++    auto slotted = hw->ComputeGuardBaseTargets(capacity);
++    unsigned selected = 0;
++    for (auto &entry : slotted) {
++        if (entry.second == capacity) ++selected;
++        else assert(entry.second == hw->m_minRate.GetBitRate());
++    }
++    assert(selected == std::min<size_t>(2, flows.size()));
++    hw->m_guardSingleSenderSharedSlots = 0;
++    flows[0]->dip = 2;
++    auto multiple = hw->ComputeGuardBaseTargets(capacity);
++    uint64_t total = 0;
++    for (auto &entry : multiple) total += entry.second;
++    assert(total <= capacity);
++    flows[0]->dip = 1;
++    flows[0]->m_guard_flow_size = 2 * bdp;
++    flows[0]->ReceiverNextExpectedSeq = 0;
++    assert(!hw->UsesGuardSingleSenderSharedCap(capacity));
++    hw->m_guardSingleSenderSharedCapBdps = 0;
++    hw->m_guardSchedulingHorizonBdps = 128;
++    hw->m_guardConcurrencyMinBdps = 12;
++    hw->m_rate_flow_ctl_set.clear();
++    flows.resize(2);
++    for (unsigned i = 0; i < 2; ++i) {
++        flows[i]->dip = i + 1;
++        flows[i]->m_guard_flow_size = (6 + 2*i) * 1048576;
++        flows[i]->ReceiverNextExpectedSeq = 0;
++        flows[i]->m_base_rtt_sec = i ? .000008 : .000002;
++        hw->m_rate_flow_ctl_set.insert(PeekPointer(flows[i]));
++    }
++    auto different_paths = hw->ComputeGuardBaseTargets(capacity);
++    assert(different_paths[PeekPointer(flows[0])] > .99 * capacity);
++    // Mixing a short class into receiver fan-in restores weighted service.
++    flows[0]->m_guard_flow_size = 200000;
++    auto mixed = hw->ComputeGuardBaseTargets(capacity);
++    hw->m_guardReceiverConcurrency = 0;
++    auto weighted = hw->ComputeGuardBaseTargets(capacity);
++    for (auto &entry : mixed) assert(entry.second == weighted[entry.first]);
++    hw->m_rate_flow_ctl_set.clear();
++    Simulator::Destroy();
++    std::cout << "PASS: 1000 allocator states; capacity, floor, order, equality, sender scope, mixed classes, unequal RTTs\n";
++}
+diff --git a/tests/guard_service_budget_alternating.cc b/tests/guard_service_budget_alternating.cc
+new file mode 100644
+index 0000000..3dd575d
+--- /dev/null
++++ b/tests/guard_service_budget_alternating.cc
+@@ -0,0 +1,29 @@
++#include "ns3/qbb-net-device.h"
++#include "ns3/settings.h"
++#include <array>
++#include <cassert>
++#include <iostream>
++using namespace ns3;
++static Ptr<Packet> Send(Ptr<RdmaQueuePair> q) {
++ q->snd_nxt+=1000;q->snd_una=q->snd_nxt;return Create<Packet>(1000);
++}
++static void Check(bool batch) {
++ Settings::guard_sender_service_budget=true;
++ IntHeader::mode=0;Settings::guard_sender_fair_cursor=true;Settings::guard_sender_ack_batch=batch;
++ auto e=CreateObject<RdmaEgressQueue>();e->m_qpGrp=CreateObject<RdmaQueuePairGroup>();e->m_rdmaGetNxtPkt=MakeCallback(&Send);
++ for(unsigned i=0;i<3;++i) {
++  auto q=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),100+i,200);
++  q->SetSize(i<2?10000000:100000000);q->m_flow_id=i;q->m_guard_sender_srpt=true;
++  q->m_guard_srpt_quantum_packets=64;q->m_win=0;e->m_qpGrp->AddQp(q);
++ }
++ bool paused[8]={false};std::array<unsigned,3> count={{0,0,0}};
++ for(unsigned i=0;i<650;++i) {
++  e->m_qpGrp->Get(i%2)->m_nextAvail=NanoSeconds(0);
++  e->m_qpGrp->Get(1-i%2)->m_nextAvail=NanoSeconds(1);
++  int next=e->GetNextQindex(paused);assert(next>=0&&next<3);++count[next];e->DequeueQindex(next);
++ }
++ std::cout<<"650 dequeues with two alternating ready short flows and one always-ready long flow: "<<count[0]<<"/"<<count[1]<<"/"<<count[2]<<"\n";
++ assert((count==std::array<unsigned,3>{{320,320,10}}));
++}
++
++int main() { Check(false); Check(true); }
+diff --git a/tests/guard_service_budget_batch.cc b/tests/guard_service_budget_batch.cc
+new file mode 100644
+index 0000000..9964da4
+--- /dev/null
++++ b/tests/guard_service_budget_batch.cc
+@@ -0,0 +1,53 @@
++#include "ns3/qbb-net-device.h"
++#include "ns3/settings.h"
++#include <array>
++#include <cassert>
++#include <iostream>
++using namespace ns3;
++static Ptr<Packet> Send(Ptr<RdmaQueuePair> q) {
++    q->snd_nxt+=1000;q->snd_una=q->snd_nxt;return Create<Packet>(1000);
++}
++static Ptr<RdmaEgressQueue> Build(bool batch) {
++    IntHeader::mode=0;Settings::guard_sender_fair_cursor=true;
++    Settings::guard_sender_ack_batch=batch;Settings::guard_sender_ack_batch_packets=8;
++    auto e=CreateObject<RdmaEgressQueue>();e->m_qpGrp=CreateObject<RdmaQueuePairGroup>();
++    e->m_rdmaGetNxtPkt=MakeCallback(&Send);
++    for (unsigned i=0;i<4;++i) {
++        auto q=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),100+i,200);
++        q->SetSize(i==0?10000000:100000000);q->m_flow_id=i;
++        q->m_guard_sender_srpt=true;q->m_guard_srpt_quantum_packets=64;
++        q->m_win=0;q->m_nextAvail=NanoSeconds(0);e->m_qpGrp->AddQp(q);
++    }
++    return e;
++}
++static std::array<unsigned,4> Serve(Ptr<RdmaEgressQueue> e,unsigned packets,bool* paused) {
++    std::array<unsigned,4> counts={{0,0,0,0}};
++    for (unsigned n=0;n<packets;++n) {
++        int next=e->GetNextQindex(paused);assert(next>=0&&next<4);
++        ++counts[next];e->DequeueQindex(next);
++    }
++    return counts;
++}
++int main() {
++    Settings::guard_sender_service_budget=true;
++    bool paused[8]={false};
++    auto legacy=Build(false);assert((Serve(legacy,650,paused)==std::array<unsigned,4>{{640,4,3,3}}));
++    auto batch=Build(true);assert((Serve(batch,1560,paused)==std::array<unsigned,4>{{1536,8,8,8}}));
++    // Four additional packets complete an already-started eight-packet ACK batch.
++    auto partial=Build(true);auto q=partial->m_qpGrp->Get(1);q->snd_nxt=5000;q->snd_una=1000;
++    assert((Serve(partial,260,paused)==std::array<unsigned,4>{{256,4,0,0}}));
++    assert(partial->m_guardSrptBatchIndex==-1);
++    assert((Serve(partial,65,paused)==std::array<unsigned,4>{{64,0,1,0}}));
++    // A reserved recipient must never stall eligible competitors.
++    for (unsigned cause=0;cause<5;++cause) {
++        auto blocked=Build(true);Serve(blocked,130,paused);q=blocked->m_qpGrp->Get(1);
++        if(cause==0) {q->m_pg=4;paused[4]=true;}
++        if(cause==1) q->m_nextAvail=NanoSeconds(1);
++        if(cause==2) {q->m_win=1000;q->snd_nxt=q->snd_una+1000;}
++        if(cause==3) blocked->m_qpGrp->SetQpFinished(1);
++        if(cause==4) q->m_flow_id=9001;
++        assert((Serve(blocked,65,paused)==std::array<unsigned,4>{{64,0,1,0}}));
++        paused[4]=false;
++    }
++    std::cout<<"PASS: actual scheduler preserves64:1 service, completes existing ACK batch, rotates all ready peers, and releases blocked/finished/reused recipients\n";
++}
+diff --git a/tests/guard_startup_path.cc b/tests/guard_startup_path.cc
+new file mode 100644
+index 0000000..0d35f20
+--- /dev/null
++++ b/tests/guard_startup_path.cc
+@@ -0,0 +1,20 @@
++#include "ns3/rdma-hw.h"
++#include <cassert>
++#include <iostream>
++using namespace ns3;
++int main() {
++ auto q=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),100,101);
++ q->m_max_rate=DataRate(100000000000ULL);q->hp.m_curRate=DataRate(50000000000ULL);
++ q->hp.m_grantRate=DataRate(100000000);q->m_guard_startup_path_pending=true;
++ assert(RdmaHw::ApplyGuardStartupPathFeedback(q,0));
++ assert(q->hp.m_curRate==q->m_max_rate);
++ assert(q->hp.m_grantRate.GetBitRate()==100000000); // receiver authority untouched
++ for(unsigned i=0;i<IntHeader::maxHop;i++)assert(q->hp.hopState[i].Rc==q->m_max_rate);
++ q->hp.m_curRate=DataRate(1000000000); // a subsequent estimate must never be reset
++ assert(!RdmaHw::ApplyGuardStartupPathFeedback(q,0));assert(q->hp.m_curRate.GetBitRate()==1000000000);
++ q->m_guard_startup_path_pending=true;
++ assert(!RdmaHw::ApplyGuardStartupPathFeedback(q,2));assert(!q->m_guard_startup_path_pending);
++ assert(q->hp.m_curRate.GetBitRate()==1000000000);
++ assert(!RdmaHw::ApplyGuardStartupPathFeedback(q,0));
++ std::cout<<"PASS: first no-fabric ACK releases only initial cap; receiver grant preserved; valid fabric and repeated ACKs do not reset learned rates\n";
++}
+diff --git a/tests/guard_startup_share.cc b/tests/guard_startup_share.cc
+new file mode 100644
+index 0000000..f774464
+--- /dev/null
++++ b/tests/guard_startup_share.cc
+@@ -0,0 +1,30 @@
++#include "ns3/rdma-hw.h"
++#include <cassert>
++#include <iostream>
++using namespace ns3;
++static Ptr<RdmaQueuePair> Make(uint64_t size) {
++    auto q=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),100,101);
++    q->SetSize(size);q->SetWin(100000);q->m_max_rate=DataRate(100000000000ULL);
++    return q;
++}
++int main() {
++    auto g=CreateObject<RdmaQueuePairGroup>();auto q=Make(25000000);g->AddQp(q);
++    auto rate=[&](double bdp){return RdmaHw::ComputeGuardStartupRateBps(q,g,bdp,100000000);};
++    assert(rate(128)==100000000000ULL);
++    auto p=Make(25000000);g->AddQp(p);assert(rate(128)==50000000000ULL);
++    auto shortq=Make(12800000);g->AddQp(shortq);assert(rate(128)==50000000000ULL);
++    auto waitingAck=Make(25000000);waitingAck->snd_nxt=waitingAck->m_size;g->AddQp(waitingAck);
++    assert(rate(128)==50000000000ULL);
++    p->snd_una=p->m_size;assert(rate(128)==100000000000ULL);
++    assert(rate(0)==100000000000ULL);
++    p->snd_una=0;q->m_size=12800000;assert(rate(128)==100000000000ULL);
++    q->m_size=25000000;
++    assert(RdmaHw::ComputeGuardStartupRateBps(q,g,128,60000000000ULL)==60000000000ULL);
++    assert(RdmaHw::ComputeGuardStartupRateBps(q,g,128,200000000000ULL)==100000000000ULL);
++    auto elsewhere=Make(25000000);elsewhere->dip=Ipv4Address(3);g->AddQp(elsewhere);
++    assert(RdmaHw::ComputeGuardStartupRateBps(q,g,128,100000000,false)==33333333333ULL);
++    assert(RdmaHw::ComputeGuardStartupRateBps(q,g,128,100000000,true)==50000000000ULL);
++    p->snd_nxt=p->m_size;
++    assert(RdmaHw::ComputeGuardStartupRateBps(q,g,128,100000000,true)==100000000000ULL);
++    std::cout<<"PASS: same-peer isolation;  active demand, completion, ACK-only, threshold, disabled, min/max bounds\n";
++}
+diff --git a/tests/homa_resend_order.cc b/tests/homa_resend_order.cc
+new file mode 100644
+index 0000000..15c09c9
+--- /dev/null
++++ b/tests/homa_resend_order.cc
+@@ -0,0 +1,30 @@
++#include "ns3/rdma-hw.h"
++#include <algorithm>
++#include <cassert>
++#include <iostream>
++#include <memory>
++#include <random>
++using namespace ns3;
++int main() {
++    std::vector<std::unique_ptr<RdmaHw::HomaFlow>> owned;
++    std::vector<RdmaHw::HomaFlow*> batch;
++    for (unsigned i=0;i<64;++i) {
++        owned.emplace_back(new RdmaHw::HomaFlow());
++        auto* f=owned.back().get();f->message_id=i/2;
++        f->rx_qp=CreateObject<RdmaRxQueuePair>();
++        f->rx_qp->sip=i;f->rx_qp->dip=100;f->rx_qp->sport=200;f->rx_qp->dport=300;f->pg=0;
++        f->last_progress_time=NanoSeconds(i+1);f->granted_offset_sent=1000+i;
++        batch.push_back(f);
++    }
++    auto expected=batch;std::mt19937 rng(301);
++    for (unsigned n=0;n<1000;++n) {
++        std::shuffle(batch.begin(),batch.end(),rng);
++        RdmaHw::HomaScheduler::SortResendBatch(batch);
++        assert(batch==expected);
++        for (unsigned i=0;i<64;++i) {
++            assert(batch[i]->last_progress_time==NanoSeconds(i+1));
++            assert(batch[i]->granted_offset_sent==1000+i);
++        }
++    }
++    std::cout<<"PASS: actual RESEND batch sorter is independent of 1000 input permutations; wire identity breaks ties; timer and authorization state preserved\n";
++}
+diff --git a/tests/test_output_reservation.py b/tests/test_output_reservation.py
+new file mode 100644
+index 0000000..76d832e
+--- /dev/null
++++ b/tests/test_output_reservation.py
+@@ -0,0 +1,39 @@
++import importlib.util
++from concurrent.futures import ThreadPoolExecutor
++from pathlib import Path
++import tempfile
++import subprocess
++import sys
++import unittest
++
++spec = importlib.util.spec_from_file_location('guard_driver', Path(__file__).resolve().parents[1]/'run.py')
++driver = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(driver)
++
++
++class OutputReservationTest(unittest.TestCase):
++    def test_concurrent_first_startup(self):
++        with tempfile.TemporaryDirectory() as parent:
++            command = [sys.executable, str(Path(driver.__file__).resolve()), '--help']
++            with ThreadPoolExecutor(max_workers=16) as pool:
++                results = list(pool.map(lambda _: subprocess.run(command, cwd=parent,
++                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True), range(32)))
++            self.assertTrue(all(r.returncode==0 for r in results),
++                            [r.stderr for r in results if r.returncode])
++            self.assertTrue((Path(parent)/'mix/output').is_dir())
++
++    def test_concurrent_identical_ids_do_not_overwrite(self):
++        with tempfile.TemporaryDirectory() as parent:
++            existing = Path(parent)/'42'
++            existing.mkdir()
++            marker = existing/'marker'
++            marker.write_text('preserve')
++            with ThreadPoolExecutor(max_workers=16) as pool:
++                outputs = list(pool.map(lambda _: driver.reserve_output_directory(parent, 42), range(64)))
++            self.assertEqual(len(set(path for _, path in outputs)), 64)
++            self.assertEqual(marker.read_text(), 'preserve')
++            self.assertTrue(all(Path(path).is_dir() for _, path in outputs))
++
++
++if __name__ == '__main__':
++    unittest.main()

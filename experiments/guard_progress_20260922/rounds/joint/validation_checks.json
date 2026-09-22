@@ -1,0 +1,56 @@
+{
+  "status": "development evidence verified; performance goal remains active",
+  "attempts": 61,
+  "completed": 61,
+  "identity_pairs": [
+    {
+      "study": "allreduce_dp2",
+      "arms": [
+        "dp2_joint32",
+        "dp2_joint32_trace"
+      ],
+      "fct_sha256": "04e5e6fb51c092cf1112e881694d860f86a472bf1418481f9131b3c3376ab979",
+      "all_metrics_identical": true
+    },
+    {
+      "study": "fb40",
+      "arms": [
+        "diagnose_startup_peer",
+        "diagnose_peer_trace"
+      ],
+      "fct_sha256": "d22849438900415e676a5a5d34cefd7ac19cd9b50d38bdc41cc4e966abab4a71",
+      "all_metrics_identical": true
+    },
+    {
+      "study": "fb40",
+      "arms": [
+        "regression_startup_peer",
+        "fixed_trace_peer_trace"
+      ],
+      "fct_sha256": "2399f7e0a2c71950d6a82aa11950c3ed3e71623873776029185cb2be532644ae",
+      "all_metrics_identical": true
+    },
+    {
+      "study": "fb40",
+      "arms": [
+        "regression_joint8",
+        "fixed_trace_joint8_fb_trace"
+      ],
+      "fct_sha256": "a403df6ac497d46bfedc79bcbbd89c92af99766011516d3715c16385d3284715",
+      "all_metrics_identical": true
+    }
+  ],
+  "complete_DP2_trace_events": 1280,
+  "complete_Analytics_traces": 4,
+  "archived_attempts": 61,
+  "harness_snapshots": "all original hashes verified",
+  "source_build_topology_hashes": "verified",
+  "independent_confirmation": false,
+  "source_commits": {
+    "feedback-manifest.json": "5a14a820e56b025fb49b34da5d40ee0717ffc334",
+    "dp2-manifest.json": "5a14a820e56b025fb49b34da5d40ee0717ffc334",
+    "regression-manifest.json": "5a14a820e56b025fb49b34da5d40ee0717ffc334",
+    "fixed_trace-manifest.json": "5a14a820e56b025fb49b34da5d40ee0717ffc334",
+    "diagnose-manifest.json": "7e6a10dabfee3e59c56c49df2b1a1fa6cac79889"
+  }
+}

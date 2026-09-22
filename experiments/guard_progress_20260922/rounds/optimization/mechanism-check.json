@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "checks": [
+    "Matched ring input/completions; old zero feedback and loss reproduced",
+    "Candidate ring has active feedback and zero loss across five fresh seeds",
+    "Sender-scope correction removes redundant DP2 concurrency limiting",
+    "The same correction retains concurrency limiting for actual incast",
+    "All analyzed candidate flows complete and pass identity validation"
+  ],
+  "guard_runs_checked": 62,
+  "limitation": "These checks establish mechanism behavior and completion integrity, not universal performance superiority."
+}

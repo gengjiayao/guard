@@ -1,0 +1,773 @@
+diff --git a/docs/guard-balanced-cohort.md b/docs/guard-balanced-cohort.md
+new file mode 100644
+index 0000000..c9ee491
+--- /dev/null
++++ b/docs/guard-balanced-cohort.md
+@@ -0,0 +1,42 @@
++# Receiver cohort experiment
++
++This branch remains experimental. Defaults retain the previous allocator.
++The candidate uses the same configuration in every workload:
++
++```
++--guard_tail_congestion_gate 1 --guard_adaptive_fabric_target 1
++--guard_queue_budget_bdps 4 --guard_adaptive_target_max_bdps 8
++--guard_receiver_concurrency 1 --guard_concurrency_min_bdps 12
++--guard_scheduling_horizon_bdps 128
++```
++
++The receiver defines one service horizon using the largest active path BDP.
++When every competing message has more than that horizon remaining, it gives
++equal weights. When a short message is present, it retains inverse-remaining
++weights. Concurrent messages from one source retain their local remaining-size
++ordering for long transfers. Bounded messages from one source can receive
++ordered grants; this avoids spreading one sender's grant across short messages
++that compete for the same fabric path.
++
++The legacy K bound applies to a bounded receiver cohort. A mixed set with short
++messages outside the concurrency class retains weighted simultaneous service.
++Equal-size ties use a stable endpoint-and-flow hash. Any configured minimum
++share applies to deferred as well as selected flows, without exceeding receiver
++capacity. The horizon option is unsupported with the optional serialized vector
++allocator; the CLI rejects that combination.
++
++`--guard_fabric_control 0` disables only the fabric feedback component of GUARD.
++It retains ACK coalescing, sender scheduling, receiver grants and the fixed
++window. The older `guard-active-only` mode remains available, but also changes
++those sender/ACK behaviors, so it is not a single-component ablation.
++
++Behavioral allocator checks are in `tests/guard_scheduling_horizon.cc`.
++`tests/test_output_reservation.py` exercises a concurrent output-directory
++collision observed during development. The driver now reserves each directory
++atomically and retries a conflicting identifier without overwriting outputs.
++
++Development attempts, negative results, frozen confirmation manifests, input
++identities and raw archives live in
++`/home/gengjiayao/ict/work/guard_balanced_20260921`.
++No universal performance advantage is assumed. Promotion requires the complete
++confirmation results, including storage, DP2, fairness and matched ablations.
+diff --git a/docs/guard-scope-safety.md b/docs/guard-scope-safety.md
+new file mode 100644
+index 0000000..16a1653
+--- /dev/null
++++ b/docs/guard-scope-safety.md
+@@ -0,0 +1,47 @@
++# Scope-safety experiment, September 2026
++
++This branch evaluates an experimental profile. It does not change the default
++GUARD profile and does not establish superiority on every workload or metric.
++The fixed confirmation profile is:
++
++```text
++--guard_tail_congestion_gate 1
++--guard_adaptive_fabric_target 1
++--guard_queue_budget_bdps 4
++--guard_receiver_concurrency 1
++--guard_concurrency_min_bdps 12
++```
++
++All other parameters retain the defaults of source commit 17df579. In
++particular, lambda is 1.8, ACK spacing is eight packets, and the tail threshold
++is eight exact path BDPs. The profile is shared across workloads.
++
++The changes address three hypotheses:
++
++1. Guarded tail bypass continues processing INT. Eligibility can remain
++   latched, while the latest congestion samples revoke permission to bypass
++   the shared-fabric cap. An acknowledged prefix is required before entering
++   the guarded tail phase.
++2. Tail permission depends on queued work, rather than utilization divided by
++   a relaxed target above one. The safe threshold is the configured queue
++   budget times `guard_tail_safe_ratio`; the default ratio is 0.9. Feedback
++   delay can overshoot this threshold: it is not a hard queue bound.
++3. The legacy receiver scheduler applies its concurrency limit when multiple
++   source NICs compete. A single source already schedules its own messages;
++   duplicating that ordering at the receiver hurt the DP2 development trace.
++   This change applies to the legacy allocator and its counters. It does not
++   modify the optional serialized V14/V18 allocator.
++
++The original unguarded tail mode remains available for matched controls.
++HPCC, Homa, DCQCN, and TIMELY receive no algorithm changes. The experiment
++records all configurations, input hashes, shared-library hashes, and completed
++flow identities. Development uses seed 301; independent confirmation freezes
++seeds 401–405 before outcomes are inspected. Rejected configurations, runtime
++errors, and adverse results remain in the evidence directory.
++
++Evidence and runners:
++`/home/gengjiayao/ict/work/guard_optimization_20260921`.
++The confirmation manifest records the exact tested source commit; this
++documentation may be committed after that freeze without changing the tested
++implementation. A broad release requires reviewing the storage, DP2, and
++fairness regressions, not merely the Ring loss improvement.
+diff --git a/run.py b/run.py
+index b6affc1..806bebb 100644
+--- a/run.py
++++ b/run.py
+@@ -18,6 +18,17 @@ from datetime import date
+ random.seed(datetime.now().timestamp())
+ MAX_RAND_RANGE = 1000000000
+ 
++def reserve_output_directory(parent, config_id):
++    """Reserve a private directory atomically, including concurrent collisions."""
++    os.makedirs(parent, exist_ok=True)
++    while True:
++        output = os.path.join(parent, str(config_id))
++        try:
++            os.mkdir(output)
++            return str(config_id), output
++        except FileExistsError:
++            config_id = random.SystemRandom().randrange(MAX_RAND_RANGE)
++
+ # config template
+ config_template = """TOPOLOGY_FILE config/{topo}.txt
+ FLOW_FILE {flow_file}
+@@ -112,6 +123,7 @@ GUARD_QUEUE_BUDGET_BDPS {guard_queue_budget_bdps}
+ GUARD_ADAPTIVE_TARGET_MAX_BDPS {guard_adaptive_target_max_bdps}
+ GUARD_ACK_INTERVAL_PACKETS {guard_ack_interval_packets}
+ GUARD_FIXED_WINDOW {guard_fixed_window}
++GUARD_FABRIC_CONTROL {guard_fabric_control}
+ GUARD_REMAINING_AWARE {guard_remaining_aware}
+ GUARD_MIN_SHARE_FRACTION {guard_min_share_fraction}
+ GUARD_REMAINING_EXPONENT {guard_remaining_exponent}
+@@ -128,6 +140,7 @@ GUARD_ELEPHANT_FABRIC_TARGET {guard_elephant_fabric_target}
+ GUARD_ELEPHANT_FABRIC_TARGET_SCALE {guard_elephant_fabric_target_scale}
+ GUARD_ELEPHANT_RECEIVER_AUTHORITY {guard_elephant_receiver_authority}
+ GUARD_CONCURRENCY_MIN_BDPS {guard_concurrency_min_bdps}
++GUARD_SCHEDULING_HORIZON_BDPS {guard_scheduling_horizon_bdps}
+ GUARD_GRANT_REFRESH_BDPS {guard_grant_refresh_bdps}
+ GUARD_MEMBERSHIP_COALESCE_NS {guard_membership_coalesce_ns}
+ GUARD_MEMBERSHIP_COALESCE_MAX_WINDOWS {guard_membership_coalesce_max_windows}
+@@ -476,7 +489,7 @@ def main():
+     parser.add_argument('--guard_tail_congestion_gate', type=int, choices=(0, 1), default=0,
+                         help="require safe fabric samples before tail bypass (default: 0)")
+     parser.add_argument('--guard_tail_safe_ratio', type=float, default=0.9,
+-                        help="safe HPCC utilization/target ratio in [0.5,1] (default: 0.9)")
++                        help="safe fraction of the fabric queue budget in [0.5,1] (default: 0.9)")
+     parser.add_argument('--guard_tail_safe_samples', type=int, default=2,
+                         help="consecutive safe samples before tail bypass in [1,8] (default: 2)")
+     parser.add_argument('--guard_adaptive_fabric_target', type=int, choices=(0, 1), default=0,
+@@ -489,6 +502,8 @@ def main():
+                         help="largest flow using adaptive targets in BDPs; 0 means all")
+     parser.add_argument('--guard_ack_interval_packets', type=int, default=8,
+                         help="cumulative ACK interval for registered GUARD flows (default: 8)")
++    parser.add_argument('--guard_fabric_control', type=int, choices=(0, 1), default=1,
++                        help='disable fabric feedback for a matched component ablation')
+     parser.add_argument('--guard_fixed_window', type=int, choices=(0, 1), default=1,
+                         help="use a fixed BDP safety window under GUARD rate pacing (default: 1)")
+     parser.add_argument('--guard_remaining_aware', type=int, choices=(0, 1), default=1,
+@@ -533,6 +548,8 @@ def main():
+                         help="let a selected >threshold elephant follow its receiver cap")
+     parser.add_argument('--guard_concurrency_min_bdps', type=float, default=8.0,
+                         help="apply receiver concurrency bound only above this many BDPs (default: 8)")
++    parser.add_argument('--guard_scheduling_horizon_bdps', type=float, default=0.0,
++                        help='cap size discrimination and serialized flow size at this many BDPs; 0 disables')
+     parser.add_argument('--guard_grant_refresh_bdps', type=float, default=1.0,
+                         help="receiver progress between grant refreshes in BDPs; 0 disables (default: 1)")
+     parser.add_argument('--guard_membership_coalesce_ns', type=int, default=0,
+@@ -787,6 +804,10 @@ def main():
+             raise Exception(
+                 "CONFIG ERROR: elephant receiver authority requires K=1 final GUARD, "
+                 "the V18/V14 bundle, and other fabric/elephant adaptations disabled.")
++    if not 0.0 <= args.guard_scheduling_horizon_bdps <= 4096.0:
++        raise Exception('CONFIG ERROR: scheduling horizon must be in [0, 4096].')
++    if args.guard_scheduling_horizon_bdps and args.guard_mixed_pg_vector_fastpath:
++        raise Exception('CONFIG ERROR: the scheduling horizon requires the legacy receiver allocator.')
+     if not 0.0 <= args.guard_concurrency_min_bdps <= 64.0:
+         raise Exception("CONFIG ERROR: --guard_concurrency_min_bdps must be in [0, 64].")
+     if not 0.0 <= args.guard_grant_refresh_bdps <= 16.0:
+@@ -1037,8 +1058,8 @@ def main():
+     output_dir = os.path.join(os.getcwd(), "mix", "output", config_ID)
+ 
+     if args.flow_file:
+-        assert not os.path.exists(output_dir)
+-        os.makedirs(output_dir)
++        config_ID, output_dir = reserve_output_directory(
++            os.path.dirname(output_dir), config_ID)
+         print("The new directory is created  - {}".format(output_dir + "/"))
+         flow_path = os.path.join(output_dir, "{}_input_flow.txt".format(config_ID))
+         shutil.copyfile(custom_flow_source, flow_path)
+@@ -1093,8 +1114,8 @@ def main():
+     print("Preflight flow count: {}/{}".format(flow_count, args.max_flows))
+ 
+     if not args.flow_file:
+-        assert not os.path.exists(output_dir)
+-        os.makedirs(output_dir)
++        config_ID, output_dir = reserve_output_directory(
++            os.path.dirname(output_dir), config_ID)
+         print("The new directory is created  - {}".format(output_dir + "/"))
+ 
+     guard_lifecycle_output = args.guard_lifecycle_output
+@@ -1369,6 +1390,7 @@ def main():
+                                         guard_adaptive_target_max_bdps=args.guard_adaptive_target_max_bdps,
+                                         guard_ack_interval_packets=args.guard_ack_interval_packets,
+                                         guard_fixed_window=args.guard_fixed_window,
++                                        guard_fabric_control=args.guard_fabric_control,
+                                         guard_remaining_aware=args.guard_remaining_aware,
+                                         guard_min_share_fraction=args.guard_min_share_fraction,
+                                         guard_remaining_exponent=args.guard_remaining_exponent,
+@@ -1388,6 +1410,7 @@ def main():
+                                         guard_elephant_fabric_target_scale=args.guard_elephant_fabric_target_scale,
+                                         guard_elephant_receiver_authority=args.guard_elephant_receiver_authority,
+                                         guard_concurrency_min_bdps=args.guard_concurrency_min_bdps,
++                                        guard_scheduling_horizon_bdps=args.guard_scheduling_horizon_bdps,
+                                         guard_grant_refresh_bdps=args.guard_grant_refresh_bdps,
+                                         guard_membership_coalesce_ns=args.guard_membership_coalesce_ns,
+                                         guard_membership_coalesce_max_windows=args.guard_membership_coalesce_max_windows,
+diff --git a/scratch/network-load-balance.cc b/scratch/network-load-balance.cc
+index e881f2b..a80ec58 100644
+--- a/scratch/network-load-balance.cc
++++ b/scratch/network-load-balance.cc
+@@ -230,6 +230,8 @@ bool guard_elephant_fabric_target = false;
+ double guard_elephant_fabric_target_scale = 1.0;
+ bool guard_elephant_receiver_authority = false;
+ double guard_concurrency_min_bdps = 8.0;
++double guard_scheduling_horizon_bdps = 0.0;
++bool guard_fabric_control = true;
+ double guard_grant_refresh_bdps = 1.0;
+ uint64_t guard_membership_coalesce_ns = 0;
+ uint32_t guard_membership_coalesce_max_windows = 5;
+@@ -1524,6 +1526,10 @@ int main(int argc, char *argv[]) {
+                 conf >> guard_concurrency_min_bdps;
+                 std::cerr << "GUARD_CONCURRENCY_MIN_BDPS\t"
+                           << guard_concurrency_min_bdps << '\n';
++            } else if (key.compare("GUARD_FABRIC_CONTROL") == 0) {
++                conf >> guard_fabric_control;
++            } else if (key.compare("GUARD_SCHEDULING_HORIZON_BDPS") == 0) {
++                conf >> guard_scheduling_horizon_bdps;
+             } else if (key.compare("GUARD_GRANT_REFRESH_BDPS") == 0) {
+                 conf >> guard_grant_refresh_bdps;
+                 std::cerr << "GUARD_GRANT_REFRESH_BDPS\t"
+@@ -1919,6 +1925,10 @@ int main(int argc, char *argv[]) {
+         std::cerr << "GUARD_REMAINING_EXPONENT must be in [0, 2]\n";
+         return 1;
+     }
++    if (!(guard_scheduling_horizon_bdps >= 0.0 && guard_scheduling_horizon_bdps <= 4096.0)) {
++        std::cerr << "GUARD_SCHEDULING_HORIZON_BDPS must be in [0, 4096]\n";
++        return 1;
++    }
+     if (guard_concurrency_min_bdps < 0.0 || guard_concurrency_min_bdps > 64.0) {
+         std::cerr << "GUARD_CONCURRENCY_MIN_BDPS must be in [0, 64]\n";
+         return 1;
+@@ -2770,6 +2780,9 @@ int main(int argc, char *argv[]) {
+                                  DoubleValue(guard_elephant_fabric_target_scale));
+             rdmaHw->SetAttribute("GuardElephantReceiverAuthority",
+                                  BooleanValue(guard_elephant_receiver_authority));
++            rdmaHw->SetAttribute("GuardFabricControl", BooleanValue(guard_fabric_control));
++            rdmaHw->SetAttribute("GuardSchedulingHorizonBdps",
++                                 DoubleValue(guard_scheduling_horizon_bdps));
+             rdmaHw->SetAttribute("GuardConcurrencyMinBdps",
+                                  DoubleValue(guard_concurrency_min_bdps));
+             rdmaHw->SetAttribute("GuardGrantRefreshBdps",
+diff --git a/src/point-to-point/model/rdma-hw.cc b/src/point-to-point/model/rdma-hw.cc
+index eae4641..c9daac3 100644
+--- a/src/point-to-point/model/rdma-hw.cc
++++ b/src/point-to-point/model/rdma-hw.cc
+@@ -263,6 +263,10 @@ TypeId RdmaHw::GetTypeId(void) {
+                           UintegerValue(8),
+                           MakeUintegerAccessor(&RdmaHw::m_guardAckIntervalPackets),
+                           MakeUintegerChecker<uint32_t>(1))
++            .AddAttribute("GuardFabricControl",
++                          "Enable shared-fabric feedback; disable only for a matched component ablation",
++                          BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardFabricControl),
++                          MakeBooleanChecker())
+             .AddAttribute("GuardFixedWindow",
+                           "Use a fixed one-BDP safety window while GUARD's two rate caps pace data",
+                           BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardFixedWindow),
+@@ -305,6 +309,11 @@ TypeId RdmaHw::GetTypeId(void) {
+                           DoubleValue(0.0),
+                           MakeDoubleAccessor(&RdmaHw::m_guardElephantAgingRtts),
+                           MakeDoubleChecker<double>(0.0, 64.0))
++            .AddAttribute("GuardSchedulingHorizonBdps",
++                          "Cap remaining-size discrimination at this many BDPs; zero disables",
++                          DoubleValue(0.0),
++                          MakeDoubleAccessor(&RdmaHw::m_guardSchedulingHorizonBdps),
++                          MakeDoubleChecker<double>(0.0, 4096.0))
+             .AddAttribute("GuardConcurrencyMinBdps",
+                           "Apply the receiver concurrency bound only above this many BDPs",
+                           DoubleValue(8.0),
+@@ -1756,7 +1765,7 @@ int RdmaHw::ReceiveRate(Ptr<Packet> p, CustomHeader &ch) {
+             SendGuardGrantAck(qp, generation, phase_tag);
+         }
+     }
+-    const char *binding = (qp->m_guard_tail_bypass ||
++    const char *binding = (UsesGuardTailBypass(qp) ||
+                            UsesGuardElephantReceiverAuthority(qp))
+                               ? "grant"
+                               : qp->hp.m_curRate < qp->hp.m_grantRate
+@@ -2133,7 +2142,9 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch) {
+         }
+     }
+ 
+-    if (m_cc_mode == 11 && qp->m_guard_tail_bypass) {
++    if (m_cc_mode == CC_MODE_GUARD && !m_guardFabricControl) {
++        // Retain the same ACK clock, sender scheduler, window and receiver.
++    } else if (m_cc_mode == 11 && qp->m_guard_tail_bypass && !m_guardTailCongestionGate) {
+         m_guardTailBypassFeedbacks++;
+     } else if (m_cc_mode == 3 || m_cc_mode == 11) {
+         HandleAckHp(qp, p, ch);
+@@ -2329,7 +2340,7 @@ void RdmaHw::QpComplete(Ptr<RdmaQueuePair> qp) {
+     }
+     if (qp->m_retransmit.IsRunning()) qp->m_retransmit.Cancel();
+ 
+-    const char *binding = (qp->m_guard_tail_bypass ||
++    const char *binding = (UsesGuardTailBypass(qp) ||
+                            UsesGuardElephantReceiverAuthority(qp))
+                               ? "grant"
+                               : qp->hp.m_curRate < qp->hp.m_grantRate
+@@ -2385,7 +2396,8 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
+             qp->m_size > qp->snd_una ? qp->m_size - qp->snd_una : 0;
+         uint64_t tail_bytes = (uint64_t)(m_guardTailBypassBdps * bdp_bytes);
+         bool gate_ready = !m_guardTailCongestionGate ||
+-                          qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples;
++                          (qp->snd_una > 0 &&
++                           qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples);
+         if (bdp_bytes > 0 && qp->m_size > bdp_bytes &&
+             acknowledged_remaining > 0 && acknowledged_remaining <= tail_bytes &&
+             gate_ready) {
+@@ -2733,12 +2745,21 @@ void RdmaHw::HyperIncreaseMlx(Ptr<RdmaQueuePair> q) {
+ /***********************
+  * Rate CC
+  ***********************/
++bool RdmaHw::UsesGuardTailBypass(Ptr<RdmaQueuePair> qp) const {
++    // Eligibility is latched once per flow, but congestion permission is not.
++    // Continue processing INT while bypassing so a later busy fabric restores
++    // the shared-fabric cap instead of leaving a flow permanently uncontrolled.
++    return m_cc_mode == CC_MODE_GUARD && qp->m_guard_tail_bypass &&
++           (!m_guardTailCongestionGate ||
++            qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples);
++}
++
+ void RdmaHw::SyncHwRate(Ptr<RdmaQueuePair> qp, DataRate target_cc_rate) {
+     DataRate final_rate = target_cc_rate;
+     bool elephant_receiver_authority =
+         UsesGuardElephantReceiverAuthority(qp);
+ 
+-    if (m_cc_mode == CC_MODE_GUARD && qp->m_guard_tail_bypass) {
++    if ((m_cc_mode == CC_MODE_GUARD && !m_guardFabricControl) || UsesGuardTailBypass(qp)) {
+         final_rate = qp->hp.m_grantRate;
+     } else if (m_cc_mode == CC_MODE_GUARD && elephant_receiver_authority) {
+         final_rate = qp->hp.m_grantRate;
+@@ -2782,7 +2803,7 @@ void RdmaHw::MaybeSendGuardCapReport(Ptr<RdmaQueuePair> qp) {
+         return;
+     }
+ 
+-    bool fabric_bound = !qp->m_guard_tail_bypass &&
++    bool fabric_bound = !UsesGuardTailBypass(qp) &&
+                         qp->hp.m_curRate < qp->hp.m_grantRate;
+     uint32_t rate_mbps = std::max<uint32_t>(
+         1, static_cast<uint32_t>(qp->m_rate.GetBitRate() / 1000000));
+@@ -4198,7 +4219,7 @@ bool RdmaHw::UsesGuardElephantReceiverAuthority(Ptr<RdmaQueuePair> qp) const {
+     return qp != NULL && IsGuardElephantReceiverAuthorityEligible(
+         m_guardElephantReceiverAuthority,
+         !qp->m_guard_wait_first_grant && qp->m_guard_last_grant_generation > 0,
+-        qp->m_guard_tail_bypass, qp->m_size, qp->m_win,
++        UsesGuardTailBypass(qp), qp->m_size, qp->m_win,
+         m_guardConcurrencyMinBdps, qp->hp.m_grantRate.GetBitRate(),
+         m_minRate.GetBitRate());
+ }
+@@ -6368,6 +6389,48 @@ void RdmaHw::RefreshGuardGrantsForReliability() {
+     ResetGuardReliabilityRefresh();
+ }
+ 
++uint64_t RdmaHw::GuardSchedulingBdp(uint64_t line_rate_bps) const {
++    // One receiver service horizon applies to every peer, including peers
++    // with a shorter path. It must not change a message's size class merely
++    // because that sender is in the same rack.
++    uint64_t bdp = 1;
++    for (auto *flow : m_rate_flow_ctl_set) {
++        bdp = std::max<uint64_t>(bdp, flow->m_base_rtt_sec > 0
++            ? flow->m_base_rtt_sec * line_rate_bps / 8.0 : 104000);
++    }
++    return bdp;
++}
++
++uint32_t RdmaHw::GuardDistinctSenders() const {
++    std::unordered_set<uint32_t> senders;
++    for (auto *flow : m_rate_flow_ctl_set) senders.insert(flow->dip);
++    return senders.size();
++}
++
++bool RdmaHw::GuardHasCompetingSenders(uint64_t line_rate_bps) const {
++    // RxQP addresses are reversed: dip identifies the DATA sender. A single
++    // sending NIC already schedules its own messages; imposing receiver K=1
++    // on that NIC's separate QPs duplicates ordering and can leave its grant
++    // unused. Apply the receiver concurrency limit to actual sender fan-in.
++    if (m_rate_flow_ctl_set.empty()) return false;
++    const uint64_t receiver_bdp = GuardSchedulingBdp(line_rate_bps);
++    // With a bounded scheduling horizon, short messages from one NIC can
++    // share its grant in completion order. Long transfers retain the old
++    // sender-scope protection against redundant receiver serialization.
++    if (m_guardSchedulingHorizonBdps > 0) {
++        for (auto *flow : m_rate_flow_ctl_set) {
++            uint64_t bdp = receiver_bdp;
++            if (flow->m_guard_flow_size <= m_guardSchedulingHorizonBdps * bdp)
++                return true;
++        }
++    }
++    uint32_t first_sender = (*m_rate_flow_ctl_set.begin())->dip;
++    for (auto *flow : m_rate_flow_ctl_set) {
++        if (flow->dip != first_sender) return true;
++    }
++    return false;
++}
++
+ void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation) {
+     if (m_rate_flow_ctl_set.empty()) return;
+     if (generation == 0 && IsGuardMembershipDirty()) {
+@@ -6377,23 +6440,31 @@ void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation)
+     RdmaRxQueuePair *sample = *m_rate_flow_ctl_set.begin();
+     uint32_t nic_idx = GetNicIdxOfRxQp(sample);
+     uint64_t line_rate_bps = m_nic[nic_idx].dev->GetDataRate().GetBitRate();
++    const uint64_t receiver_bdp = GuardSchedulingBdp(line_rate_bps);
+     std::unordered_map<RdmaRxQueuePair*, uint64_t> targets =
+         m_guardCapAwareReclaim
+             ? ComputeGuardCapAwareTargets(line_rate_bps)
+             : ComputeGuardBaseTargets(line_rate_bps);
++    const double concurrency_min_bdps = m_guardSchedulingHorizonBdps > 0 && GuardDistinctSenders() == 1
++        ? 1.0 : m_guardConcurrencyMinBdps;
+     std::vector<uint64_t> concurrency_remaining;
+-    if (m_guardReceiverConcurrency > 0) {
++    if (m_guardReceiverConcurrency > 0 && GuardHasCompetingSenders(line_rate_bps)) {
+         for (auto *flow : m_rate_flow_ctl_set) {
+             uint64_t bdp_bytes = flow->m_base_rtt_sec > 0
+                                      ? (uint64_t)(flow->m_base_rtt_sec * line_rate_bps / 8.0)
+                                      : 104000;
+-            if (flow->m_guard_flow_size > m_guardConcurrencyMinBdps * bdp_bytes) {
++            if (flow->m_guard_flow_size > concurrency_min_bdps * bdp_bytes &&
++                (m_guardSchedulingHorizonBdps == 0 ||
++                 flow->m_guard_flow_size <= m_guardSchedulingHorizonBdps * receiver_bdp)) {
+                 concurrency_remaining.push_back(
+                     flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+                         ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq : 1);
+             }
+         }
+     }
++    if (m_guardSchedulingHorizonBdps > 0 && GuardDistinctSenders() > 1 &&
++        concurrency_remaining.size() != m_rate_flow_ctl_set.size())
++        concurrency_remaining.clear();
+     std::sort(concurrency_remaining.begin(), concurrency_remaining.end());
+     size_t concurrency_candidates = concurrency_remaining.size();
+     uint32_t effective_concurrency = ComputeGuardEffectiveElephantConcurrency(
+@@ -6481,18 +6552,46 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+     size_t count = m_rate_flow_ctl_set.size();
+     if (count == 0) return targets;
+     uint64_t equal_share = line_rate_bps / count;
++    const uint64_t receiver_bdp = GuardSchedulingBdp(line_rate_bps);
++    const bool competing_senders = GuardDistinctSenders() > 1;
++    bool long_cohort = m_guardSchedulingHorizonBdps > 0 && competing_senders;
++    for (auto *flow : m_rate_flow_ctl_set) {
++        uint64_t bdp = receiver_bdp;
++        uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
++            ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq : 1;
++        if (remaining <= m_guardSchedulingHorizonBdps * bdp) long_cohort = false;
++    }
++    auto scheduling_remaining = [&](RdmaRxQueuePair *flow) -> uint64_t {
++        uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
++            ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq : 1;
++        if (long_cohort) {
++            uint64_t bdp = receiver_bdp;
++            remaining = std::min<uint64_t>(remaining,
++                m_guardSchedulingHorizonBdps * bdp);
++        }
++        return std::max<uint64_t>(remaining, m_mtu);
++    };
++    const double concurrency_min_bdps = m_guardSchedulingHorizonBdps > 0 && !competing_senders
++        ? 1.0 : m_guardConcurrencyMinBdps;
+     std::vector<RdmaRxQueuePair*> concurrency_candidates;
+-    if (m_guardReceiverConcurrency > 0) {
++    if (m_guardReceiverConcurrency > 0 && GuardHasCompetingSenders(line_rate_bps)) {
+         for (auto *flow : m_rate_flow_ctl_set) {
+             uint64_t bdp_bytes = flow->m_base_rtt_sec > 0
+                                      ? (uint64_t)(flow->m_base_rtt_sec * line_rate_bps / 8.0)
+                                      : 104000;
+-            if (flow->m_guard_flow_size > m_guardConcurrencyMinBdps * bdp_bytes)
++            if (flow->m_guard_flow_size > concurrency_min_bdps * bdp_bytes &&
++                (m_guardSchedulingHorizonBdps == 0 ||
++                 flow->m_guard_flow_size <= m_guardSchedulingHorizonBdps * receiver_bdp))
+                 concurrency_candidates.push_back(flow);
+         }
+     }
++    // A mixed priority cohort needs simultaneous service: a receiver cannot
++    // assume its preferred sender is available while that sender serves other
++    // destinations. Preserve the normal weighted allocator in that case.
++    if (m_guardSchedulingHorizonBdps > 0 && competing_senders &&
++        concurrency_candidates.size() != count) concurrency_candidates.clear();
+     std::sort(concurrency_candidates.begin(), concurrency_candidates.end(),
+-              [](RdmaRxQueuePair *left, RdmaRxQueuePair *right) {
++              [this](RdmaRxQueuePair *left, RdmaRxQueuePair *right) {
+                   uint64_t left_remaining =
+                       left->m_guard_flow_size > left->ReceiverNextExpectedSeq
+                           ? left->m_guard_flow_size - left->ReceiverNextExpectedSeq : 0;
+@@ -6501,6 +6600,20 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+                           ? right->m_guard_flow_size - right->ReceiverNextExpectedSeq : 0;
+                   if (left_remaining != right_remaining)
+                       return left_remaining < right_remaining;
++                  if (m_guardSchedulingHorizonBdps > 0) {
++                      // Independent receiver tie orders avoid every receiver
++                      // granting the same source first in equal-size exchanges.
++                      auto rank = [](RdmaRxQueuePair *flow) -> uint32_t {
++                          uint32_t x = flow->dip ^ (flow->sip * 0x9e3779b9u)
++                              ^ (static_cast<uint32_t>(flow->m_flow_id) * 0x85ebca6bu);
++                          x ^= x >> 16;
++                          x *= 0x7feb352du;
++                          x ^= x >> 15;
++                          x *= 0x846ca68bu;
++                          return x ^ (x >> 16);
++                      };
++                      if (rank(left) != rank(right)) return rank(left) < rank(right);
++                  }
+                   return left->m_flow_id < right->m_flow_id;
+               });
+     uint32_t effective_concurrency = ComputeGuardEffectiveElephantConcurrency(
+@@ -6542,23 +6655,22 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+         // share the remaining receiver capacity among all shorter flows and
+         // only the K shortest elephants.
+         size_t deferred_count = concurrency_candidates.size() - service_count;
+-        uint64_t minimum_rate = std::min<uint64_t>(
+-            m_minRate.GetBitRate(), line_rate_bps / count);
+-        uint64_t residual = line_rate_bps - minimum_rate * deferred_count;
++        uint64_t service_floor = m_guardMinShareFraction * equal_share;
++        uint64_t minimum_rate = std::min<uint64_t>(equal_share,
++            std::max<uint64_t>(m_minRate.GetBitRate(),
++                service_floor));
++        uint64_t residual = line_rate_bps - minimum_rate * deferred_count
++            - service_floor * (count - deferred_count);
+         double weight_sum = 0.0;
+         uint64_t min_remaining = std::numeric_limits<uint64_t>::max();
+         for (auto *flow : service_set) {
+-            uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+-                                     ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq
+-                                     : 1;
++            uint64_t remaining = scheduling_remaining(flow);
+             min_remaining = std::min(min_remaining,
+                                      std::max<uint64_t>(remaining, m_mtu));
+         }
+         std::unordered_map<RdmaRxQueuePair*, double> weights;
+         for (auto *flow : service_set) {
+-            uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+-                                     ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq
+-                                     : 1;
++            uint64_t remaining = scheduling_remaining(flow);
+             remaining = std::max<uint64_t>(remaining, m_mtu);
+             double weight = (!m_guardRemainingAware || m_guardRemainingExponent == 0.0)
+                                 ? 1.0
+@@ -6568,9 +6680,9 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+             weight_sum += weight;
+         }
+         for (auto *flow : m_rate_flow_ctl_set) {
+-            targets[flow] = service_set.find(flow) == service_set.end() ? minimum_rate : 0;
++            targets[flow] = service_set.count(flow) ? service_floor : minimum_rate;
+             if (service_set.find(flow) != service_set.end()) {
+-                targets[flow] = (uint64_t)(
++                targets[flow] += (uint64_t)(
+                     residual * weights[flow] / std::max(weight_sum, 1e-12));
+             }
+         }
+@@ -6583,17 +6695,13 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+ 
+     uint64_t min_remaining = std::numeric_limits<uint64_t>::max();
+     for (auto *flow : m_rate_flow_ctl_set) {
+-        uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+-                                 ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq
+-                                 : 1;
++        uint64_t remaining = scheduling_remaining(flow);
+         min_remaining = std::min(min_remaining, std::max<uint64_t>(remaining, m_mtu));
+     }
+     std::unordered_map<RdmaRxQueuePair*, double> weights;
+     double weight_sum = 0.0;
+     for (auto *flow : m_rate_flow_ctl_set) {
+-        uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+-                                 ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq
+-                                 : 1;
++        uint64_t remaining = scheduling_remaining(flow);
+         remaining = std::max<uint64_t>(remaining, m_mtu);
+         double weight = std::pow((double)min_remaining / remaining,
+                                  m_guardRemainingExponent);
+@@ -8223,7 +8331,11 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
+             if (updated_any) {
+                 if (m_cc_mode == CC_MODE_GUARD && m_guardTailCongestionGate &&
+                     !fast_react) {
+-                    if (max_c <= m_guardTailSafeRatio) {
++                    // Permit a bounded tail while the fabric queue stays below
++                    // the configured budget. A fully utilized but unqueued link
++                    // does not need to stall its tail; a growing queue revokes
++                    // permission even when lambda permits utilization above one.
++                    if (max_queue_bdps <= m_guardTailSafeRatio * m_guardQueueBudgetBdps) {
+                         qp->m_guard_tail_safe_samples = std::min<uint32_t>(
+                             m_guardTailSafeSamples, qp->m_guard_tail_safe_samples + 1);
+                     } else {
+@@ -8252,7 +8364,7 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
+                 if (m_cc_mode == 11) {
+                     DataRate old_rate = qp->m_rate;
+                     const char *binding = "tie";
+-                    if (UsesGuardElephantReceiverAuthority(qp)) {
++                    if (UsesGuardTailBypass(qp) || UsesGuardElephantReceiverAuthority(qp)) {
+                         m_guardGrantBindingUpdates++;
+                         binding = "grant";
+                     } else if (new_rate < qp->hp.m_grantRate) {
+diff --git a/src/point-to-point/model/rdma-hw.h b/src/point-to-point/model/rdma-hw.h
+index f34cb2f..8738699 100644
+--- a/src/point-to-point/model/rdma-hw.h
++++ b/src/point-to-point/model/rdma-hw.h
+@@ -454,6 +454,7 @@ class RdmaHw : public Object {
+     double m_guardAdaptiveTargetMaxBdps;
+     uint32_t m_guardAckIntervalPackets;
+     bool m_guardFixedWindow;
++    bool m_guardFabricControl;
+     bool m_guardRemainingAware;
+     double m_guardMinShareFraction;
+     double m_guardRemainingExponent;
+@@ -462,6 +463,7 @@ class RdmaHw : public Object {
+     bool m_guardSizeClassElephantConcurrency;
+     double m_guardElephantAgingRtts;
+     double m_guardConcurrencyMinBdps;
++    double m_guardSchedulingHorizonBdps;
+     double m_guardGrantRefreshBdps;
+     Time m_guardMembershipCoalesceWindow;
+     Time m_guardInitialCollectionQuietWindow;
+@@ -883,6 +885,10 @@ class RdmaHw : public Object {
+                                    double effective_target, double threshold_ratio);
+     void FlushGuardLifecycleTrace();
+     void SyncHwRate(Ptr<RdmaQueuePair> qp, DataRate target_cc_rate);
++    bool UsesGuardTailBypass(Ptr<RdmaQueuePair> qp) const;
++    bool GuardHasCompetingSenders(uint64_t line_rate_bps) const;
++    uint32_t GuardDistinctSenders() const;
++    uint64_t GuardSchedulingBdp(uint64_t line_rate_bps) const;
+     void MaybeSendGuardCapReport(Ptr<RdmaQueuePair> qp);
+     void HandleRccRequest(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
+     bool HandleRccRemove(Ptr<RdmaRxQueuePair> qp, GuardReleaseReason reason,
+diff --git a/tests/guard_scheduling_horizon.cc b/tests/guard_scheduling_horizon.cc
+new file mode 100644
+index 0000000..5b6df19
+--- /dev/null
++++ b/tests/guard_scheduling_horizon.cc
+@@ -0,0 +1,96 @@
++// Behavioral checks against the actual receiver allocator, not a model copy.
++#include "ns3/rdma-hw.h"
++#include <algorithm>
++#include <cassert>
++#include <iostream>
++#include <random>
++
++using namespace ns3;
++
++int main() {
++    Ptr<RdmaHw> hw = CreateObject<RdmaHw>();
++    const uint64_t capacity = 100000000000ULL;
++    const uint64_t bdp = 100000;
++    hw->m_guardReceiverConcurrency = 1;
++    hw->m_guardConcurrencyMinBdps = 1;
++    hw->m_guardSchedulingHorizonBdps = 128;
++    hw->m_guardMinShareFraction = .25;
++    hw->m_guardAdaptiveElephantConcurrency = false;
++    hw->m_guardSizeClassElephantConcurrency = false;
++    hw->m_guardRemainingAware = true;
++    hw->m_guardRemainingExponent = 1;
++    hw->m_mtu = 1000;
++    hw->m_minRate = DataRate(100000000);
++    std::mt19937 rng(7249);
++    std::vector<Ptr<RdmaRxQueuePair> > flows;
++    for (unsigned trial = 0; trial < 1000; ++trial) {
++        hw->m_rate_flow_ctl_set.clear();
++        flows.clear();
++        unsigned count = 2 + rng() % 30;
++        for (unsigned i = 0; i < count; ++i) {
++            Ptr<RdmaRxQueuePair> f = Create<RdmaRxQueuePair>();
++            f->m_base_rtt_sec = .000008;
++            f->dip = trial % 2 ? i + 1 : 1;
++            f->m_flow_id = i;
++            f->m_guard_flow_size = (2 + rng() % 2000) * bdp;
++            f->ReceiverNextExpectedSeq = rng() % f->m_guard_flow_size;
++            flows.push_back(f);
++            hw->m_rate_flow_ctl_set.insert(PeekPointer(f));
++        }
++        hw->m_guardMinShareFraction = (trial % 5) * .25;
++        auto targets = hw->ComputeGuardBaseTargets(capacity);
++        uint64_t sum = 0;
++        uint64_t floor = hw->m_guardMinShareFraction * (capacity / count);
++        for (auto &entry : targets) {
++            assert(entry.second >= floor);
++            sum += entry.second;
++        }
++        assert(sum <= capacity);
++        assert(capacity - sum <= count);
++        std::reverse(flows.begin(), flows.end());
++        hw->m_rate_flow_ctl_set.clear();
++        for (auto f : flows) hw->m_rate_flow_ctl_set.insert(PeekPointer(f));
++        auto reversed = hw->ComputeGuardBaseTargets(capacity);
++        for (auto &entry : targets) {
++            // Floating-point summation may move a rounded target by one bit/s.
++            assert(std::abs((int64_t)entry.second - (int64_t)reversed[entry.first]) <= 1);
++        }
++    }
++    // Equal long flows remain equal despite very different attained service.
++    hw->m_guardMinShareFraction = 0;
++    for (unsigned i = 0; i < flows.size(); ++i) {
++        flows[i]->dip = i + 1;
++        flows[i]->m_guard_flow_size = 2000 * bdp;
++        flows[i]->ReceiverNextExpectedSeq = i * bdp;
++    }
++    auto equal = hw->ComputeGuardBaseTargets(capacity);
++    for (auto &entry : equal) assert(entry.second == capacity / flows.size());
++    // A single NIC keeps its remaining-size scheduler for long messages.
++    for (auto f : flows) f->dip = 1;
++    auto single = hw->ComputeGuardBaseTargets(capacity);
++    hw->m_guardSchedulingHorizonBdps = 0;
++    auto legacy = hw->ComputeGuardBaseTargets(capacity);
++    for (auto &entry : single) assert(entry.second == legacy[entry.first]);
++    hw->m_guardSchedulingHorizonBdps = 128;
++    hw->m_guardConcurrencyMinBdps = 12;
++    hw->m_rate_flow_ctl_set.clear();
++    flows.resize(2);
++    for (unsigned i = 0; i < 2; ++i) {
++        flows[i]->dip = i + 1;
++        flows[i]->m_guard_flow_size = (6 + 2*i) * 1048576;
++        flows[i]->ReceiverNextExpectedSeq = 0;
++        flows[i]->m_base_rtt_sec = i ? .000008 : .000002;
++        hw->m_rate_flow_ctl_set.insert(PeekPointer(flows[i]));
++    }
++    auto different_paths = hw->ComputeGuardBaseTargets(capacity);
++    assert(different_paths[PeekPointer(flows[0])] > .99 * capacity);
++    // Mixing a short class into receiver fan-in restores weighted service.
++    flows[0]->m_guard_flow_size = 200000;
++    auto mixed = hw->ComputeGuardBaseTargets(capacity);
++    hw->m_guardReceiverConcurrency = 0;
++    auto weighted = hw->ComputeGuardBaseTargets(capacity);
++    for (auto &entry : mixed) assert(entry.second == weighted[entry.first]);
++    hw->m_rate_flow_ctl_set.clear();
++    Simulator::Destroy();
++    std::cout << "PASS: 1000 allocator states; capacity, floor, order, equality, sender scope, mixed classes, unequal RTTs\n";
++}
+diff --git a/tests/test_output_reservation.py b/tests/test_output_reservation.py
+new file mode 100644
+index 0000000..6b31233
+--- /dev/null
++++ b/tests/test_output_reservation.py
+@@ -0,0 +1,27 @@
++import importlib.util
++from concurrent.futures import ThreadPoolExecutor
++from pathlib import Path
++import tempfile
++import unittest
++
++spec = importlib.util.spec_from_file_location('guard_driver', Path(__file__).resolve().parents[1]/'run.py')
++driver = importlib.util.module_from_spec(spec)
++spec.loader.exec_module(driver)
++
++
++class OutputReservationTest(unittest.TestCase):
++    def test_concurrent_identical_ids_do_not_overwrite(self):
++        with tempfile.TemporaryDirectory() as parent:
++            existing = Path(parent)/'42'
++            existing.mkdir()
++            marker = existing/'marker'
++            marker.write_text('preserve')
++            with ThreadPoolExecutor(max_workers=16) as pool:
++                outputs = list(pool.map(lambda _: driver.reserve_output_directory(parent, 42), range(64)))
++            self.assertEqual(len(set(path for _, path in outputs)), 64)
++            self.assertEqual(marker.read_text(), 'preserve')
++            self.assertTrue(all(Path(path).is_dir() for _, path in outputs))
++
++
++if __name__ == '__main__':
++    unittest.main()

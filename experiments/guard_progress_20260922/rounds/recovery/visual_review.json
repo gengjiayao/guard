@@ -1,0 +1,19 @@
+{
+  "reviewer": "primary agent",
+  "scope": "five development plots; not a manuscript review",
+  "figures": [
+    "figures/dp2_cdf.png",
+    "figures/dp2_metrics.png",
+    "figures/feedback_gaps.png",
+    "figures/peer_cases.png",
+    "figures/recovery_cases.png"
+  ],
+  "checks": [
+    "legible labels and no clipping",
+    "four external baselines retained",
+    "full CDF crossings and adverse tails retained",
+    "observed single seed and sampling caveats explicit",
+    "regression signs and queue increases visible"
+  ],
+  "result": "pass"
+}

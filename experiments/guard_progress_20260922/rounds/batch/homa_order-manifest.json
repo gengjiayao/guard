@@ -1,0 +1,198 @@
+{
+  "phase": "development on observed seed 301; never independent confirmation",
+  "tasks": [
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "homa_order_homa_legacy_a",
+      "cc": "homa",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "homa_stable_resend_order": 0,
+        "homa_diagnostic_hash_buckets": 0
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-homa_order_homa_legacy_a",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "homa_order_homa_legacy_b",
+      "cc": "homa",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "homa_stable_resend_order": 0,
+        "homa_diagnostic_hash_buckets": 0
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-homa_order_homa_legacy_b",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "homa_order_homa_legacy_small",
+      "cc": "homa",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "homa_stable_resend_order": 0,
+        "homa_diagnostic_hash_buckets": 11
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-homa_order_homa_legacy_small",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "homa_order_homa_legacy_large",
+      "cc": "homa",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "homa_stable_resend_order": 0,
+        "homa_diagnostic_hash_buckets": 257
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-homa_order_homa_legacy_large",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "homa_order_homa_stable_a",
+      "cc": "homa",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "homa_stable_resend_order": 1,
+        "homa_diagnostic_hash_buckets": 0
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-homa_order_homa_stable_a",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "homa_order_homa_stable_b",
+      "cc": "homa",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "homa_stable_resend_order": 1,
+        "homa_diagnostic_hash_buckets": 0
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-homa_order_homa_stable_b",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "homa_order_homa_stable_small",
+      "cc": "homa",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "homa_stable_resend_order": 1,
+        "homa_diagnostic_hash_buckets": 11
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-homa_order_homa_stable_small",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "homa_order_homa_stable_large",
+      "cc": "homa",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "homa_stable_resend_order": 1,
+        "homa_diagnostic_hash_buckets": 257
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-homa_order_homa_stable_large",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    }
+  ],
+  "hashes": {
+    "build/scratch/network-load-balance": "a04d8dc67c93fd7d295e3c823e8269deb236da21456076c899d83bf3e673e00c",
+    "build/libns3.19-applications-optimized.so": "c779e0e063eef77223d6ba55879a8cc0971a51f027cc18a7696210c192cde39f",
+    "build/libns3.19-bridge-optimized.so": "79a2aa86b9fc1402b77b80e0cf49b98f316448c1420da9c6d09003d434fb82b7",
+    "build/libns3.19-config-store-optimized.so": "0ffa8e9fd1e3db2aeb44e911775c0610aedd03eefd0eede48b4810bd068f0748",
+    "build/libns3.19-core-optimized.so": "b963d518c44103a8e3bf2264c34c5a159510229d357db9ea967f8bda34887212",
+    "build/libns3.19-internet-optimized.so": "69b5cdc8fad6e4268f1c464ae70b0c2210de00bb1fd23378f2eb724affe6103a",
+    "build/libns3.19-mpi-optimized.so": "35c11b84514fdcf296918b05e6d9d448d2af905dee950270139d0bbaa60f5c0d",
+    "build/libns3.19-network-optimized.so": "f1f571fc2cdbd793d8365ab0ce6fe005b1724a48bcf0f6258a8da3f878d4ec64",
+    "build/libns3.19-point-to-point-optimized.so": "baaa0a54d6478c19f4218e1c232b4dbfa8494ca2cea38f5922a8d4fb56d9bb12",
+    "build/libns3.19-stats-optimized.so": "d37529076208460f720b443a7caa247ba6a1c2b5ee849dc9bf9f07aaa5f8877e",
+    "build/libns3.19-tools-optimized.so": "1749c8fe66a7189c7bdcdb4426cf9314f00b5791f3da17c65a4def545322b516"
+  },
+  "source_commit": "d6d646f05c9686c6d8aca357bcf62da29a7adf48",
+  "harness_hashes": {
+    "scripts/summarize.py": "8a88ca42797372ca6a88c27a7692b787aea121743390b52d7f246f7619d3425e",
+    "scripts/archive.py": "84a6e691247ddba89d51aadb78da2e99219e7ff7a7444083f1b21adcd0526638",
+    "scripts/develop.py": "ee27da00a132e9e821dac31acb05abab1876f154369b06b8a23a26d4b21c7c46",
+    "scripts/config_only.py": "c262676a38357281ae8f553beb73a0a3bcefb011188d88882adfbc8eb9d55510",
+    "scripts/upstream/analyze.py": "c265ebec8a4ef7a477e09d991097f2e35259538f94856d4c6456d4e8a3b16be3",
+    "scripts/upstream/campaign.py": "52928645782bd1e1fd57fb9f51cf621aaa83717c01c928618a3b6d4597d516e3"
+  },
+  "topology_hashes": {
+    "leaf_spine_16_100G_OS1": "d31f2aca3a1e1da2451af2f31d02abdc41c5a1a46abb42662f15793ba5fd58b0"
+  }
+}

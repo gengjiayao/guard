@@ -1,0 +1,100 @@
+{
+  "status": "recorded evidence verified; full performance goal remains active",
+  "attempts": 90,
+  "completed": 75,
+  "preserved_failures": 15,
+  "trace_pairs": [
+    {
+      "arms": [
+        "diagnosis_retry_joint32_l10",
+        "diagnosis_retry_joint32_l10_trace"
+      ],
+      "fct_sha256": "2fe115b84cbb214c3b57e61d02efb5081e1cb99959e4f424b8aebb31a3eb03e6",
+      "all_metrics_identical": true
+    },
+    {
+      "arms": [
+        "diagnosis_retry_shared_l10",
+        "diagnosis_retry_shared_l10_trace"
+      ],
+      "fct_sha256": "9bc0fcbdb90550a0f91b61d11fb4ea47db284504eacdd9d21048fe3a196269f5",
+      "all_metrics_identical": true
+    },
+    {
+      "arms": [
+        "diagnosis_retry_l10_ack1",
+        "diagnosis_retry_l10_ack1_trace"
+      ],
+      "fct_sha256": "cfb594f3ce2e81512cb362284d88dadfd6d8903f704e52dcd7b56795650801c8",
+      "all_metrics_identical": true
+    },
+    {
+      "arms": [
+        "diagnosis_retry_l10_last",
+        "diagnosis_retry_l10_last_trace"
+      ],
+      "fct_sha256": "a19cd6d7e618a54c779a25cb73b87fa55f3c53288db23f577da705404faf6c5c",
+      "all_metrics_identical": true
+    },
+    {
+      "arms": [
+        "diagnosis_retry_l10_ack1_last",
+        "diagnosis_retry_l10_ack1_last_trace"
+      ],
+      "fct_sha256": "f7edfc84f3709ca00ad35178d8e0a8cfc6bc335209a2d86bc9b89a689621ce98",
+      "all_metrics_identical": true
+    },
+    {
+      "arms": [
+        "diagnosis_retry_l10_ack1",
+        "trace_sparse_l10_ack1_trace_full"
+      ],
+      "fct_sha256": "cfb594f3ce2e81512cb362284d88dadfd6d8903f704e52dcd7b56795650801c8",
+      "all_metrics_identical": true
+    },
+    {
+      "arms": [
+        "diagnosis_retry_l10_ack1_last",
+        "trace_sparse_l10_ack1_last_trace_full"
+      ],
+      "fct_sha256": "f7edfc84f3709ca00ad35178d8e0a8cfc6bc335209a2d86bc9b89a689621ce98",
+      "all_metrics_identical": true
+    },
+    {
+      "arms": [
+        "bounded_joint32_l10_deadline",
+        "bounded_joint32_l10_deadline_trace"
+      ],
+      "fct_sha256": "1b58e3c7e823068c9cc94b237b7d222ac9e3e8d6f7e30232a3688acf10b9a98c",
+      "all_metrics_identical": true
+    },
+    {
+      "arms": [
+        "idle_joint32_l10_deadline",
+        "idle_joint32_l10_deadline_trace"
+      ],
+      "fct_sha256": "1b58e3c7e823068c9cc94b237b7d222ac9e3e8d6f7e30232a3688acf10b9a98c",
+      "all_metrics_identical": true
+    }
+  ],
+  "complete_diagnostic_traces": 5,
+  "original_truncated_traces_preserved": 2,
+  "timeout_events_classified": 18,
+  "empty_flight_timeouts": 1,
+  "actual_ack_timer_bound_runs": 63,
+  "source_build_input_harness_archive_hashes": "verified",
+  "independent_confirmation": false,
+  "source_commits": {
+    "smoke-manifest.json": "b2ecf0411588a52b12efc6d0a90ef57fcf3bb60c",
+    "cursor-manifest.json": "6febd7d8d51cb6518042c8390f05270df6cb2e06",
+    "cursor_cases-manifest.json": "6febd7d8d51cb6518042c8390f05270df6cb2e06",
+    "bounded-manifest.json": "4e35d7c89e760bf7ee97fc807bbb6abd33706be4",
+    "diagnosis-manifest.json": "968b0b0266955855ddce63304f89a14208226812",
+    "idle-manifest.json": "8ed9d68d971a404fa9542bb3fa9e1d0aa02ee3e9",
+    "trace_sparse-manifest.json": "968b0b0266955855ddce63304f89a14208226812",
+    "trace_retry-manifest.json": "968b0b0266955855ddce63304f89a14208226812",
+    "regression-manifest.json": "4e35d7c89e760bf7ee97fc807bbb6abd33706be4",
+    "smoke_fixed-manifest.json": "4e35d7c89e760bf7ee97fc807bbb6abd33706be4",
+    "diagnosis_retry-manifest.json": "968b0b0266955855ddce63304f89a14208226812"
+  }
+}

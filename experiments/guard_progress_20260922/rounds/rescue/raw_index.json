@@ -1,0 +1,500 @@
+{
+  "raw/ali30-s301-baselines_dcqcn.tar.gz": {
+    "sha256": "9a288fdc86768cfed617f353699a49a4643c3481c6799d88b4cf1cbde5e09506",
+    "status": "completed",
+    "key": "ali30-s301-baselines_dcqcn",
+    "bytes": 3491680
+  },
+  "raw/ali30-s301-baselines_homa.tar.gz": {
+    "sha256": "63b384ed985e228cd510828607d132c486c8bf9f485faa2def58281de4b8e7ac",
+    "status": "completed",
+    "key": "ali30-s301-baselines_homa",
+    "bytes": 3428971
+  },
+  "raw/ali30-s301-baselines_hpcc.tar.gz": {
+    "sha256": "6f27ab85f01f46457e5eb218ddbeaa0a52e85b454982e4387b5b0d52d7c331e3",
+    "status": "completed",
+    "key": "ali30-s301-baselines_hpcc",
+    "bytes": 3451941
+  },
+  "raw/ali30-s301-baselines_timely.tar.gz": {
+    "sha256": "d36a182714297d28cf665454bace1ef3819e7638b95cffa38067cf423ea9aafa",
+    "status": "completed",
+    "key": "ali30-s301-baselines_timely",
+    "bytes": 4248314
+  },
+  "raw/ali30-s301-scenes_shared_cursor.tar.gz": {
+    "sha256": "4ae1cf1bacafc16ffc6368449ea84ac69130a1ba91afbdad8b14c1ef9276490b",
+    "status": "completed",
+    "key": "ali30-s301-scenes_shared_cursor",
+    "bytes": 3427092
+  },
+  "raw/ali30-s301-scenes_shared_rescue.tar.gz": {
+    "sha256": "483baccf760c633e86abe5060c9b541215d5009ab27b2747280c8b37242af3f4",
+    "status": "completed",
+    "key": "ali30-s301-scenes_shared_rescue",
+    "bytes": 3427121
+  },
+  "raw/ali30-s301-size_trace_shared_large_trace.tar.gz": {
+    "sha256": "0978797f1dc272c0fc83763c9fa8fb18dc2217e4cc5c9ce348c688c1d5340f07",
+    "status": "completed",
+    "key": "ali30-s301-size_trace_shared_large_trace",
+    "bytes": 5735898
+  },
+  "raw/ali30-s301-size_trace_shared_rescue.tar.gz": {
+    "sha256": "a40b131211b2719f68ecc2b02a43bd7e2a0b2e6c702d461ac7df8058fddbfdfc",
+    "status": "completed",
+    "key": "ali30-s301-size_trace_shared_rescue",
+    "bytes": 3427125
+  },
+  "raw/ali50-s301-baselines_dcqcn.tar.gz": {
+    "sha256": "fe361e5ab786de7ee307947a8bb20960a6bdc714cdd81c25f7e195d757b3f420",
+    "status": "completed",
+    "key": "ali50-s301-baselines_dcqcn",
+    "bytes": 5935117
+  },
+  "raw/ali50-s301-baselines_homa.tar.gz": {
+    "sha256": "cc08ea335e22170d835ba79633c456e271422524fa4710358b18d85f39334d8f",
+    "status": "completed",
+    "key": "ali50-s301-baselines_homa",
+    "bytes": 5679740
+  },
+  "raw/ali50-s301-baselines_hpcc.tar.gz": {
+    "sha256": "d2e5a070113ba607313e98e3dd12eedae90a89c5352abf70d1bbc68b91d848c1",
+    "status": "completed",
+    "key": "ali50-s301-baselines_hpcc",
+    "bytes": 5748225
+  },
+  "raw/ali50-s301-baselines_timely.tar.gz": {
+    "sha256": "c640ed4eab7d0da860f0778f6d625f5fcddefa094cbd9e22569162597a39e588",
+    "status": "completed",
+    "key": "ali50-s301-baselines_timely",
+    "bytes": 9153660
+  },
+  "raw/ali50-s301-scenes_shared_cursor.tar.gz": {
+    "sha256": "44c977b14c4b8f2d57f91d847472264157adf92d9109e5646a7d2a459ca8d089",
+    "status": "completed",
+    "key": "ali50-s301-scenes_shared_cursor",
+    "bytes": 5676220
+  },
+  "raw/ali50-s301-scenes_shared_rescue.tar.gz": {
+    "sha256": "9261017977c1880330602cf912ad32755baa0fdbc7a006e49110ef7f6a36d9d9",
+    "status": "completed",
+    "key": "ali50-s301-scenes_shared_rescue",
+    "bytes": 5676234
+  },
+  "raw/ali50-s301-size_trace_shared_large_trace.tar.gz": {
+    "sha256": "b17c24e1cb39a733dd2617e1bda20c406e21959e06b6448aa3b7b357a29dae42",
+    "status": "completed",
+    "key": "ali50-s301-size_trace_shared_large_trace",
+    "bytes": 13700155
+  },
+  "raw/ali50-s301-size_trace_shared_rescue.tar.gz": {
+    "sha256": "d97c46a01f5ed348b5e68ec63dd2f87481fecc0d4001b5403b6f454c37dc134e",
+    "status": "completed",
+    "key": "ali50-s301-size_trace_shared_rescue",
+    "bytes": 5676260
+  },
+  "raw/allreduce_dp2-s301-dp2_dcqcn.tar.gz": {
+    "sha256": "6be8507687330091d78d689f3ca8b98b717ae407c2a205cfd48026b983db5faf",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_dcqcn",
+    "bytes": 154452
+  },
+  "raw/allreduce_dp2-s301-dp2_homa.tar.gz": {
+    "sha256": "ba7cfecfe5cb57b6d000166b7a168517f00b9f5f07022003e80f31658209cf3c",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_homa",
+    "bytes": 39249
+  },
+  "raw/allreduce_dp2-s301-dp2_hpcc.tar.gz": {
+    "sha256": "67a1f171e37b3ebf1cd1bed58467cef76334362fc06d5d56c8eb8fd44cf96065",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_hpcc",
+    "bytes": 38508
+  },
+  "raw/allreduce_dp2-s301-dp2_joint32_cursor.tar.gz": {
+    "sha256": "3369f63f984fc3b3b7068b661d338166fd75d1b9b54c183c37e8310007ffe851",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_joint32_cursor",
+    "bytes": 40055
+  },
+  "raw/allreduce_dp2-s301-dp2_joint32_rescue.tar.gz": {
+    "sha256": "913ba58186af8388cd95ec2266ba22df8c6dfd2c2c58670383c6eebb02b738b5",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_joint32_rescue",
+    "bytes": 40083
+  },
+  "raw/allreduce_dp2-s301-dp2_shared_cursor.tar.gz": {
+    "sha256": "8efe13fd17c5f5ae5fbf0466ef1471611eb0326970d4d050855417f2f11e1e69",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_shared_cursor",
+    "bytes": 39786
+  },
+  "raw/allreduce_dp2-s301-dp2_shared_l10_cursor.tar.gz": {
+    "sha256": "aef3a475dbdedfe27165bc685a71ee532c9fd7b89cf4cccc9a21f4ba5b7d2cfd",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_shared_l10_cursor",
+    "bytes": 39970
+  },
+  "raw/allreduce_dp2-s301-dp2_shared_l10_rescue.tar.gz": {
+    "sha256": "97a40cfe7c6f00bb367d3e848b0322238794c8c9c457eabedfdc0e5eef93b332",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_shared_l10_rescue",
+    "bytes": 39891
+  },
+  "raw/allreduce_dp2-s301-dp2_shared_l10_rescue_trace.tar.gz": {
+    "sha256": "224c014dd29d26fdf277e8f50c5cb6b664275a6134ef01b91ee1642e15341bb9",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_shared_l10_rescue_trace",
+    "bytes": 1963088
+  },
+  "raw/allreduce_dp2-s301-dp2_shared_rescue.tar.gz": {
+    "sha256": "03eed8396b65601aa135a28c83cd92d345866ace1cbb8fdc092e972a4c1db440",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_shared_rescue",
+    "bytes": 39809
+  },
+  "raw/allreduce_dp2-s301-dp2_timely.tar.gz": {
+    "sha256": "0c3014c4add22e3b158cd8adcc6226e932ec2ae641fa4c09427c1d333ed176d9",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_timely",
+    "bytes": 58804
+  },
+  "raw/alltoall-s301-baselines_dcqcn.tar.gz": {
+    "sha256": "7e01c3af128c20e598ba6ee37cc5d692273309ad762fb65b3a14890cb4fa56cd",
+    "status": "completed",
+    "key": "alltoall-s301-baselines_dcqcn",
+    "bytes": 18081
+  },
+  "raw/alltoall-s301-baselines_homa.tar.gz": {
+    "sha256": "ea5407c1d69df03cf40f9b7f0d63e2cfa42a0d539d9b3ab73513048620e0ba76",
+    "status": "completed",
+    "key": "alltoall-s301-baselines_homa",
+    "bytes": 19646
+  },
+  "raw/alltoall-s301-baselines_hpcc.tar.gz": {
+    "sha256": "9c49a042224a1f103a40867f7f667eeae0604174f04c18c64ccceecdd6c61abd",
+    "status": "completed",
+    "key": "alltoall-s301-baselines_hpcc",
+    "bytes": 19177
+  },
+  "raw/alltoall-s301-baselines_timely.tar.gz": {
+    "sha256": "5c0ea1408c55e557e1db600f0a8c259d96c469cee079a5042fb46faf800301cb",
+    "status": "completed",
+    "key": "alltoall-s301-baselines_timely",
+    "bytes": 18085
+  },
+  "raw/alltoall-s301-joint_cases_joint32_cursor.tar.gz": {
+    "sha256": "dbd0e1f82c5da1ce27b7ee0e672339a4a09e01328e6bc984bf08f6958fe59986",
+    "status": "completed",
+    "key": "alltoall-s301-joint_cases_joint32_cursor",
+    "bytes": 20137
+  },
+  "raw/alltoall-s301-joint_cases_joint32_rescue.tar.gz": {
+    "sha256": "8c17035fa1486c8514c12519349fb98e4702d56075b9d9f1a33aa5ceea49976b",
+    "status": "completed",
+    "key": "alltoall-s301-joint_cases_joint32_rescue",
+    "bytes": 20175
+  },
+  "raw/alltoall-s301-scenes_shared_cursor.tar.gz": {
+    "sha256": "bdb3acd21c8dfcd826da171f4c14027257391cc6ff16df3af2f00af5763b7678",
+    "status": "completed",
+    "key": "alltoall-s301-scenes_shared_cursor",
+    "bytes": 20190
+  },
+  "raw/alltoall-s301-scenes_shared_rescue.tar.gz": {
+    "sha256": "095ee29d771576324e6a46022bbd25ae91c924abfffb8d9df1f77052865d96fc",
+    "status": "completed",
+    "key": "alltoall-s301-scenes_shared_rescue",
+    "bytes": 20172
+  },
+  "raw/fabric-s301-baselines_dcqcn.tar.gz": {
+    "sha256": "d5632ba825d33426dd153b1c2eda423808b159bff074080c5c95b1a795b4fc11",
+    "status": "completed",
+    "key": "fabric-s301-baselines_dcqcn",
+    "bytes": 10402
+  },
+  "raw/fabric-s301-baselines_homa.tar.gz": {
+    "sha256": "b0523f9a7aecb348614ca73c904b81c84d1a6eb9e1026425c7527ecc42c9affb",
+    "status": "completed",
+    "key": "fabric-s301-baselines_homa",
+    "bytes": 10176
+  },
+  "raw/fabric-s301-baselines_hpcc.tar.gz": {
+    "sha256": "4e4ce35e8a5145c87726ef7e0447d0dbac71265207f1763b2a9cb63f9a44ceb4",
+    "status": "completed",
+    "key": "fabric-s301-baselines_hpcc",
+    "bytes": 10217
+  },
+  "raw/fabric-s301-baselines_timely.tar.gz": {
+    "sha256": "71223a751a569ea2a803c5d1b14fe0f39730d47a4d399482c5d787de18bf2c53",
+    "status": "completed",
+    "key": "fabric-s301-baselines_timely",
+    "bytes": 15579
+  },
+  "raw/fabric-s301-scenes_shared_cursor.tar.gz": {
+    "sha256": "b2cd1163fffccfec9ecc877a23f917980eb6af30370851270c64e9a995fc35db",
+    "status": "completed",
+    "key": "fabric-s301-scenes_shared_cursor",
+    "bytes": 10574
+  },
+  "raw/fabric-s301-scenes_shared_rescue.tar.gz": {
+    "sha256": "125d0942e683320316283f04aab95054c8c57be040e658b515c30ebf83b1cbaf",
+    "status": "completed",
+    "key": "fabric-s301-scenes_shared_rescue",
+    "bytes": 10601
+  },
+  "raw/fairness-s301-baselines_dcqcn.tar.gz": {
+    "sha256": "674a46236ea355791ba6cf8d3d6d0f27b3f36e66a9b323d35fee168eff35ae30",
+    "status": "completed",
+    "key": "fairness-s301-baselines_dcqcn",
+    "bytes": 778786
+  },
+  "raw/fairness-s301-baselines_homa.tar.gz": {
+    "sha256": "d7cf85ab6f69e741deec2ddbb9140178997f8c9433c45b3bc27715be00a30f0e",
+    "status": "completed",
+    "key": "fairness-s301-baselines_homa",
+    "bytes": 601608
+  },
+  "raw/fairness-s301-baselines_hpcc.tar.gz": {
+    "sha256": "dc7a1cff0b6cfffe9cf0f491678e0b4bef97c20c8937c6d82bd850f4ce87a1d8",
+    "status": "completed",
+    "key": "fairness-s301-baselines_hpcc",
+    "bytes": 722217
+  },
+  "raw/fairness-s301-baselines_timely.tar.gz": {
+    "sha256": "19e68ad4c30220932a0b26add3f402aacae6124394323154c744af8ee049e697",
+    "status": "completed",
+    "key": "fairness-s301-baselines_timely",
+    "bytes": 782698
+  },
+  "raw/fairness-s301-scenes_shared_cursor.tar.gz": {
+    "sha256": "035280ea270b8848618c5ed46d05ea78f57c9fd04556664faa8e8e91bebb9e78",
+    "status": "completed",
+    "key": "fairness-s301-scenes_shared_cursor",
+    "bytes": 676871
+  },
+  "raw/fairness-s301-scenes_shared_rescue.tar.gz": {
+    "sha256": "5ce685f072ff5c53df27baeff793b1e1e11ccc61e5fe18e9463d0e2a75736a10",
+    "status": "completed",
+    "key": "fairness-s301-scenes_shared_rescue",
+    "bytes": 676878
+  },
+  "raw/fb40-s301-baselines_dcqcn.tar.gz": {
+    "sha256": "dbdcf2477aaefbfadc015d2112339835e119ce817ab605f7a69b518e22e82d44",
+    "status": "completed",
+    "key": "fb40-s301-baselines_dcqcn",
+    "bytes": 196209
+  },
+  "raw/fb40-s301-baselines_homa.tar.gz": {
+    "sha256": "33cc97626886c6a6212ad3a950eb4f1d33d3522121ff04bb9e17188b27d6c7dc",
+    "status": "completed",
+    "key": "fb40-s301-baselines_homa",
+    "bytes": 193048
+  },
+  "raw/fb40-s301-baselines_hpcc.tar.gz": {
+    "sha256": "be4f397e7dcf784b956bb26651887c97c2ce287897f53e3bdad809897bbd8507",
+    "status": "completed",
+    "key": "fb40-s301-baselines_hpcc",
+    "bytes": 193479
+  },
+  "raw/fb40-s301-baselines_timely.tar.gz": {
+    "sha256": "59aa29dcadbd135e128cf6de1e1bbb90cca377a0d34e225ea0cc923d747d556d",
+    "status": "completed",
+    "key": "fb40-s301-baselines_timely",
+    "bytes": 256175
+  },
+  "raw/fb40-s301-joint_cases_joint32_cursor.tar.gz": {
+    "sha256": "597ab84d417208d2f038f1317cd4ba659e7c77b812b3ccfe4194cf473b9c2c02",
+    "status": "completed",
+    "key": "fb40-s301-joint_cases_joint32_cursor",
+    "bytes": 193321
+  },
+  "raw/fb40-s301-joint_cases_joint32_rescue.tar.gz": {
+    "sha256": "5ff3343da46c375779f354d95492ee1036b2d8c5863fda1ad3da025487430ccc",
+    "status": "completed",
+    "key": "fb40-s301-joint_cases_joint32_rescue",
+    "bytes": 193314
+  },
+  "raw/fb40-s301-scenes_shared_cursor.tar.gz": {
+    "sha256": "2709ddc14838bd2fe6400bcf9a2e8b999072a28cfab32e151fb85735e60d5475",
+    "status": "completed",
+    "key": "fb40-s301-scenes_shared_cursor",
+    "bytes": 193271
+  },
+  "raw/fb40-s301-scenes_shared_rescue.tar.gz": {
+    "sha256": "a82d3402fd4879c77ccb137557523f97fbdcced83beb2eb8abb46a274e89cf13",
+    "status": "completed",
+    "key": "fb40-s301-scenes_shared_rescue",
+    "bytes": 193261
+  },
+  "raw/hybrid-s301-baselines_dcqcn.tar.gz": {
+    "sha256": "a03db205dc7d6b50177aa5054b4a813b073bdcc6987876fcfb26e4dbf9e6ef27",
+    "status": "completed",
+    "key": "hybrid-s301-baselines_dcqcn",
+    "bytes": 10542
+  },
+  "raw/hybrid-s301-baselines_homa.tar.gz": {
+    "sha256": "5f838dd71969ba98fde72b7b438afdf011d37f9c6bb521ba5e0ab84a8b27a676",
+    "status": "completed",
+    "key": "hybrid-s301-baselines_homa",
+    "bytes": 10388
+  },
+  "raw/hybrid-s301-baselines_hpcc.tar.gz": {
+    "sha256": "9c4a5a0015cc5c2193516b4706d437b8041d1b15c8652de0854082de0e6a0da7",
+    "status": "completed",
+    "key": "hybrid-s301-baselines_hpcc",
+    "bytes": 10314
+  },
+  "raw/hybrid-s301-baselines_timely.tar.gz": {
+    "sha256": "9eef2adc721d29d0df54ed297b82f0c26cc1ed14c004682d52fa5b8106042dbb",
+    "status": "completed",
+    "key": "hybrid-s301-baselines_timely",
+    "bytes": 12797
+  },
+  "raw/hybrid-s301-scenes_shared_cursor.tar.gz": {
+    "sha256": "d87a86c7641e164480356f8e3d5fb46ba85a7ee8e2a8101cc6ab70e297872260",
+    "status": "completed",
+    "key": "hybrid-s301-scenes_shared_cursor",
+    "bytes": 10810
+  },
+  "raw/hybrid-s301-scenes_shared_rescue.tar.gz": {
+    "sha256": "39da0fc1f7d2acdab4e28e4cf48939d9d2cc99834289a7880ee1832b158e2292",
+    "status": "completed",
+    "key": "hybrid-s301-scenes_shared_rescue",
+    "bytes": 10825
+  },
+  "raw/receiver-s301-baselines_dcqcn.tar.gz": {
+    "sha256": "967b8cbe946d908a272b8c6e09db0725141d695825a6abf7fe1c9cdd279edd2c",
+    "status": "completed",
+    "key": "receiver-s301-baselines_dcqcn",
+    "bytes": 12104
+  },
+  "raw/receiver-s301-baselines_homa.tar.gz": {
+    "sha256": "00d3e37657c95a4e02e97b9368f525abb7760c4793f82d617566f9b57da972f3",
+    "status": "completed",
+    "key": "receiver-s301-baselines_homa",
+    "bytes": 12167
+  },
+  "raw/receiver-s301-baselines_hpcc.tar.gz": {
+    "sha256": "0cb150f507410592c5d9196ba0d89b450dbf4a6e235fb8afa0e1f0e0e89a36ad",
+    "status": "completed",
+    "key": "receiver-s301-baselines_hpcc",
+    "bytes": 12010
+  },
+  "raw/receiver-s301-baselines_timely.tar.gz": {
+    "sha256": "02cdcd9bbec38943d3f14eded09c229cdf455ce649c5e898c00a046663296f27",
+    "status": "completed",
+    "key": "receiver-s301-baselines_timely",
+    "bytes": 19809
+  },
+  "raw/receiver-s301-scenes_shared_cursor.tar.gz": {
+    "sha256": "e758defcf9b6d908a2d3ae833a2635d27fad17ff0a5b5e79f8a5acffe1f5f3ce",
+    "status": "completed",
+    "key": "receiver-s301-scenes_shared_cursor",
+    "bytes": 12500
+  },
+  "raw/receiver-s301-scenes_shared_rescue.tar.gz": {
+    "sha256": "2a871b28930a5dd5b61ea951a8dfa17cac5d89dc970520c1470256a4c3178ba7",
+    "status": "completed",
+    "key": "receiver-s301-scenes_shared_rescue",
+    "bytes": 12506
+  },
+  "raw/ring-s301-baselines_dcqcn.tar.gz": {
+    "sha256": "3895844517681266d957b777f4c893d757a4dbb70dbd18de95ddcfb3df5d454d",
+    "status": "completed",
+    "key": "ring-s301-baselines_dcqcn",
+    "bytes": 3052698
+  },
+  "raw/ring-s301-baselines_homa.tar.gz": {
+    "sha256": "86a24c73b86e94300aec7c87be368e32c0cd26c43292653fc7a49551db19a10f",
+    "status": "completed",
+    "key": "ring-s301-baselines_homa",
+    "bytes": 20681
+  },
+  "raw/ring-s301-baselines_hpcc.tar.gz": {
+    "sha256": "78698fc08e6a561249ff78bb4cc5d4bd356282cbd3848546425dbcbd68f94ffc",
+    "status": "completed",
+    "key": "ring-s301-baselines_hpcc",
+    "bytes": 19690
+  },
+  "raw/ring-s301-baselines_timely.tar.gz": {
+    "sha256": "4e354cb772b205361d6ada9486f13d672a07d081adb103626ff43a3761d48a25",
+    "status": "completed",
+    "key": "ring-s301-baselines_timely",
+    "bytes": 11749380
+  },
+  "raw/ring-s301-joint_cases_joint32_cursor.tar.gz": {
+    "sha256": "4d24163afe6e0a2fb1d6e9ba634b90ea178ce5e90de201596e133d80ab43864c",
+    "status": "completed",
+    "key": "ring-s301-joint_cases_joint32_cursor",
+    "bytes": 21599
+  },
+  "raw/ring-s301-joint_cases_joint32_rescue.tar.gz": {
+    "sha256": "7eaa29e73623a15607e05c598cd36c5e1cd527246e37d622edaf0a47f0d6f6ea",
+    "status": "completed",
+    "key": "ring-s301-joint_cases_joint32_rescue",
+    "bytes": 21630
+  },
+  "raw/ring-s301-scenes_shared_cursor.tar.gz": {
+    "sha256": "2c8cb9960e17e0ef03cc178d8706b0a6d5cc8e18b85d1768a739cbf9c4093fd3",
+    "status": "completed",
+    "key": "ring-s301-scenes_shared_cursor",
+    "bytes": 21797
+  },
+  "raw/ring-s301-scenes_shared_rescue.tar.gz": {
+    "sha256": "43198716a889d7ccef075d80885f5a42b498b7221f6236970525d29f62e3ad98",
+    "status": "completed",
+    "key": "ring-s301-scenes_shared_rescue",
+    "bytes": 21834
+  },
+  "raw/web40-s301-baselines_dcqcn.tar.gz": {
+    "sha256": "5952226d1b20c87d494a63b08903cbd21284a3e16503d2b0dc532539e114ad76",
+    "status": "completed",
+    "key": "web40-s301-baselines_dcqcn",
+    "bytes": 31598
+  },
+  "raw/web40-s301-baselines_homa.tar.gz": {
+    "sha256": "fe3e66e4fa63320da3122d49c3e400205929035dfd41162436de7f03d654c550",
+    "status": "completed",
+    "key": "web40-s301-baselines_homa",
+    "bytes": 29870
+  },
+  "raw/web40-s301-baselines_hpcc.tar.gz": {
+    "sha256": "921a9aa6961fd82c2bd1ec60996e696e8f4dd14e8726debffda23851fd865bc1",
+    "status": "completed",
+    "key": "web40-s301-baselines_hpcc",
+    "bytes": 29446
+  },
+  "raw/web40-s301-baselines_timely.tar.gz": {
+    "sha256": "854d5cd837e2e558990294bc8476d0e5bb7df39a5de1f6ba980bdb0b453eadbc",
+    "status": "completed",
+    "key": "web40-s301-baselines_timely",
+    "bytes": 87840
+  },
+  "raw/web40-s301-joint_cases_joint32_cursor.tar.gz": {
+    "sha256": "d394a4fe185cd9b2f6ba39192290aa3463bd552e2ae196e1cba7d2e6f69b7391",
+    "status": "completed",
+    "key": "web40-s301-joint_cases_joint32_cursor",
+    "bytes": 30393
+  },
+  "raw/web40-s301-joint_cases_joint32_rescue.tar.gz": {
+    "sha256": "b4615af6ce8c81ce764b5444ac703a7bc1523788705cad9910001b2eef30b66e",
+    "status": "completed",
+    "key": "web40-s301-joint_cases_joint32_rescue",
+    "bytes": 30382
+  },
+  "raw/web40-s301-scenes_shared_cursor.tar.gz": {
+    "sha256": "efcf7792cab795883f0adc12259f654a8ea07447e606304f5558fea4509b335a",
+    "status": "completed",
+    "key": "web40-s301-scenes_shared_cursor",
+    "bytes": 30404
+  },
+  "raw/web40-s301-scenes_shared_rescue.tar.gz": {
+    "sha256": "e9dc6a50cd131ef21fce016e3c9faab94637639f2e25cf7909a7d5614339b895",
+    "status": "completed",
+    "key": "web40-s301-scenes_shared_rescue",
+    "bytes": 30432
+  }
+}

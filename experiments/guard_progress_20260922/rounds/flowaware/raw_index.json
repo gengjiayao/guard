@@ -1,0 +1,1064 @@
+{
+  "raw/ali30-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "00867643229ab073b0a8ce3ca154fb04815b83d669030b573326323d65966e71",
+    "status": "completed",
+    "key": "ali30-s301-order_single_no_fabric",
+    "bytes": 3424576
+  },
+  "raw/ali30-s301-order_single_order.tar.gz": {
+    "sha256": "8c396c7c7b9cb219489a7f3a664805be74d62a5db07a0a56f9617069d65ebf14",
+    "status": "completed",
+    "key": "ali30-s301-order_single_order",
+    "bytes": 3426412
+  },
+  "raw/ali30-s301-shared_storage_share128_window1.tar.gz": {
+    "sha256": "2f33595c230fea0aada3d6f02218a5fe5a3b2a8d64e9c62ec9416f6f0bf58f1c",
+    "status": "completed",
+    "key": "ali30-s301-shared_storage_share128_window1",
+    "bytes": 3426294
+  },
+  "raw/ali30-s301-shared_storage_share1_window1.tar.gz": {
+    "sha256": "ed4373e2e0e4482699e3d9c8e53058891a5ddac6000f4b0e1fe1da0dbcbb7cef",
+    "status": "completed",
+    "key": "ali30-s301-shared_storage_share1_window1",
+    "bytes": 3426009
+  },
+  "raw/ali50-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "b8e4b2b5ea01bc1276f91b2deb10cec78613007c8a5005a3cbb0ba3afad9b623",
+    "status": "completed",
+    "key": "ali50-s301-order_single_no_fabric",
+    "bytes": 5673686
+  },
+  "raw/ali50-s301-order_single_order.tar.gz": {
+    "sha256": "68f31559fdcf34a774c8b54920635204b7a7816512dac53b2fe9026760bf60ef",
+    "status": "completed",
+    "key": "ali50-s301-order_single_order",
+    "bytes": 5675744
+  },
+  "raw/ali50-s301-reference_reference.tar.gz": {
+    "sha256": "3c5e32cfd8c7886db44105d870394bfb929e39e5a97612ac9e783c7f1aeb872c",
+    "status": "completed",
+    "key": "ali50-s301-reference_reference",
+    "bytes": 5675700
+  },
+  "raw/ali50-s301-service_cases_service.tar.gz": {
+    "sha256": "bf476b2813830ad5ad1e5901847abe8cd39663976f6d6d29999ed1d3a7474530",
+    "status": "completed",
+    "key": "ali50-s301-service_cases_service",
+    "bytes": 5675816
+  },
+  "raw/ali50-s301-service_cases_service_weight5.tar.gz": {
+    "sha256": "0249c4581fc4faf3cee521a78a997529d2d9286babe16e826baf29d4fa27a96c",
+    "status": "completed",
+    "key": "ali50-s301-service_cases_service_weight5",
+    "bytes": 5676371
+  },
+  "raw/ali50-s301-service_cases_service_window2.tar.gz": {
+    "sha256": "aca6b443ff98260fa8080175c728dce8e949317f8ffee3505b994d874b97abc7",
+    "status": "completed",
+    "key": "ali50-s301-service_cases_service_window2",
+    "bytes": 5682670
+  },
+  "raw/ali50-s301-shared_storage_share128_window1.tar.gz": {
+    "sha256": "f0747ddfc6d832acdb02cf40cb59123434a9fa0d2748cae89503c76cd20d5c8a",
+    "status": "completed",
+    "key": "ali50-s301-shared_storage_share128_window1",
+    "bytes": 5675180
+  },
+  "raw/ali50-s301-shared_storage_share1_window1.tar.gz": {
+    "sha256": "32d9e4a8b5a30fcdd037b684f487d831924cda77ce6c8df04791a81c4562f5ae",
+    "status": "completed",
+    "key": "ali50-s301-shared_storage_share1_window1",
+    "bytes": 5675647
+  },
+  "raw/ali50-s301-storage_baselines_homa.tar.gz": {
+    "sha256": "3cd2b9b3f1f025b81795197f0a3ea6df92f64129159326a84110ff005c896221",
+    "status": "completed",
+    "key": "ali50-s301-storage_baselines_homa",
+    "bytes": 5678953
+  },
+  "raw/ali50-s301-storage_baselines_hpcc.tar.gz": {
+    "sha256": "e2ddd1ec93b3f188443345ca1fcdc2ed4f58c4c240ba66d8ffc63c25e4e9a6ec",
+    "status": "completed",
+    "key": "ali50-s301-storage_baselines_hpcc",
+    "bytes": 5747386
+  },
+  "raw/ali50-s301-weights_weight0.tar.gz": {
+    "sha256": "8713b1b1ee0b72d1a610717690644a2faafebaaa190d6076d4cc33bb624fb700",
+    "status": "completed",
+    "key": "ali50-s301-weights_weight0",
+    "bytes": 5676602
+  },
+  "raw/ali50-s301-weights_weight15.tar.gz": {
+    "sha256": "4e3282a0c648aed5d41f61afcb97a7f9f863b9cf765c11fe536ab3bc76d5ca69",
+    "status": "completed",
+    "key": "ali50-s301-weights_weight15",
+    "bytes": 5675826
+  },
+  "raw/ali50-s301-weights_weight20.tar.gz": {
+    "sha256": "b1b02a853fb4b4a773a4e6260b6d36f88f505f4160937f630a6b7bb878b3e66e",
+    "status": "completed",
+    "key": "ali50-s301-weights_weight20",
+    "bytes": 5675810
+  },
+  "raw/ali50-s301-weights_weight5.tar.gz": {
+    "sha256": "99ad07f78aa6e8ca48851be9fcc79fa029e88b9ee862fa4730683cbc5f9aeb4d",
+    "status": "completed",
+    "key": "ali50-s301-weights_weight5",
+    "bytes": 5675707
+  },
+  "raw/ali50-s301-weights_weight5_window2.tar.gz": {
+    "sha256": "60f645060dfd6ad74a4d0cfbe0427dcf2bfdc08af372e90688b5a9750816f636",
+    "status": "completed",
+    "key": "ali50-s301-weights_weight5_window2",
+    "bytes": 5681995
+  },
+  "raw/allreduce_dp2-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "c9b6606967105c790675bb67e4def637d50f43d7469a5f21809c11296cb3f679",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-order_single_no_fabric",
+    "bytes": 38386
+  },
+  "raw/allreduce_dp2-s301-order_single_order.tar.gz": {
+    "sha256": "5017cc0f01df5cce5184a157d0bd989afdc162cdfad2b8a62b46863ecbba8af6",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-order_single_order",
+    "bytes": 39040
+  },
+  "raw/allreduce_dp2-s301-reference_reference.tar.gz": {
+    "sha256": "1e9cb3d66312a1a60dd6fd31e280bd9563edfcd0ec4e0fbe41047c437bec610e",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-reference_reference",
+    "bytes": 39443
+  },
+  "raw/allreduce_dp2-s301-shared_full_homa.tar.gz": {
+    "sha256": "50a15eb0984522aa1129817d0947e4892b3258fcb64e9d728b3c1343a0dae652",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-shared_full_homa",
+    "bytes": 38987
+  },
+  "raw/allreduce_dp2-s301-shared_full_hpcc.tar.gz": {
+    "sha256": "5fa990f2c98c6df5d3b6842ff86914373c6eaa435a7e0e1c45195ba1ff90bc5c",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-shared_full_hpcc",
+    "bytes": 38313
+  },
+  "raw/allreduce_dp2-s301-shared_full_share128_l10_window1.tar.gz": {
+    "sha256": "51b142cf9adaa3c1fe70cb10eac0936cfc2e0c04a9adb2624d63a3e5e62c0bb2",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-shared_full_share128_l10_window1",
+    "bytes": 39785
+  },
+  "raw/allreduce_dp2-s301-shared_full_share128_l10_window2.tar.gz": {
+    "sha256": "fa9d8df721e2626feb8323d5a85164b3bba6b8f08e44dcc119d4499a5a5ea207",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-shared_full_share128_l10_window2",
+    "bytes": 39799
+  },
+  "raw/allreduce_dp2-s301-shared_full_share128_window1.tar.gz": {
+    "sha256": "ee31123dfee99cfe0b3acaa78a97e3a0ee8dfff5fbc269a7deac6b4fbc092764",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-shared_full_share128_window1",
+    "bytes": 39467
+  },
+  "raw/allreduce_dp2-s301-shared_full_share128_window2.tar.gz": {
+    "sha256": "f4a46c466c91e8d03625658ffc601d025dd0011e8f79e1c9f085fe6d782b6324",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-shared_full_share128_window2",
+    "bytes": 39705
+  },
+  "raw/allreduce_dp2-s301-slots_full_slots4.tar.gz": {
+    "sha256": "6b2632f91d16a81c28be2ede82d402efa7d82d3f2f5cffa7fdfb6b634c2e4672",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-slots_full_slots4",
+    "bytes": 39217
+  },
+  "raw/allreduce_dp2-s301-slots_full_slots8.tar.gz": {
+    "sha256": "a38a536f4023b20aeabdda4bc416f96d8db4c00373bebc05563480e27d984d54",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-slots_full_slots8",
+    "bytes": 39501
+  },
+  "raw/allreduce_dp2_prefix8-s301-gain_prefix_share128_l10_window1.tar.gz": {
+    "sha256": "ff99a45189bdf96aa25fb8c735f28b194c4d75f4da340f95b8bf102e4ab29d4e",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-gain_prefix_share128_l10_window1",
+    "bytes": 822730
+  },
+  "raw/allreduce_dp2_prefix8-s301-gain_prefix_share128_l10_window2.tar.gz": {
+    "sha256": "5f35c5d5a810e6166283bcc5cd0f40a4d2e635c02b024d89efabb1229238a5e2",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-gain_prefix_share128_l10_window2",
+    "bytes": 830387
+  },
+  "raw/allreduce_dp2_prefix8-s301-gain_prefix_share128_l12_window1.tar.gz": {
+    "sha256": "1bbb0f6b8f8684580f1ebe2a6d11500ff129ea921611a19b913764bb9c6620f8",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-gain_prefix_share128_l12_window1",
+    "bytes": 811093
+  },
+  "raw/allreduce_dp2_prefix8-s301-gain_prefix_share128_l12_window2.tar.gz": {
+    "sha256": "b925e523ac5c275a626fd294613f9417660f7cc18e32b7f6d4a96f2ca14be795",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-gain_prefix_share128_l12_window2",
+    "bytes": 831491
+  },
+  "raw/allreduce_dp2_prefix8-s301-gain_prefix_share128_l14_window1.tar.gz": {
+    "sha256": "241ab66872032cc119712557cf004a2c9c4c5960b0b063699d271dbf8b60b407",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-gain_prefix_share128_l14_window1",
+    "bytes": 814106
+  },
+  "raw/allreduce_dp2_prefix8-s301-gain_prefix_share128_l14_window2.tar.gz": {
+    "sha256": "29d39f4798db6123977a7f287ceb108d2656fce91d8a155306a6b899c28a7db5",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-gain_prefix_share128_l14_window2",
+    "bytes": 844329
+  },
+  "raw/allreduce_dp2_prefix8-s301-service_prefix_homa.tar.gz": {
+    "sha256": "c61504ff350e779f8535b63d38e321a4131d277ab734e09888549b06c5f00252",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-service_prefix_homa",
+    "bytes": 811876
+  },
+  "raw/allreduce_dp2_prefix8-s301-service_prefix_hpcc.tar.gz": {
+    "sha256": "009db94430d38499503789d50c81c7fda0cb9fe36f95f4e2732dcdf02b383789",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-service_prefix_hpcc",
+    "bytes": 787024
+  },
+  "raw/allreduce_dp2_prefix8-s301-service_prefix_service.tar.gz": {
+    "sha256": "7777b4c8b63bceb9791d87c2d6c3af885ade672a8991ad2745e66d69107fc176",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-service_prefix_service",
+    "bytes": 807044
+  },
+  "raw/allreduce_dp2_prefix8-s301-service_prefix_service_window2.tar.gz": {
+    "sha256": "c63e4e72ed07a6f14686d3efbd34b3cdf4d60ecf4322804a41cf2858aa6750ea",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-service_prefix_service_window2",
+    "bytes": 828977
+  },
+  "raw/allreduce_dp2_prefix8-s301-service_prefix_share128_window1.tar.gz": {
+    "sha256": "e478d2601f457c33f2c999d88b850862e1ddec7af65eb1b5df138e60e211a241",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-service_prefix_share128_window1",
+    "bytes": 813500
+  },
+  "raw/allreduce_dp2_prefix8-s301-shared_prefix_homa.tar.gz": {
+    "sha256": "182a25a615d3c1930972c6b60bfc3f90152cba45d3b72880118c466cd23352d6",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-shared_prefix_homa",
+    "bytes": 812264
+  },
+  "raw/allreduce_dp2_prefix8-s301-shared_prefix_hpcc.tar.gz": {
+    "sha256": "33b8baad00a700853d7fbd9a791a1948210b1a66039af1d4eabb94ee4ac6a007",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-shared_prefix_hpcc",
+    "bytes": 787137
+  },
+  "raw/allreduce_dp2_prefix8-s301-shared_prefix_reference.tar.gz": {
+    "sha256": "8a588b8ba1cc3844e987973b2b1e611fcbffba5070c147e6d8288e6b3c6f657d",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-shared_prefix_reference",
+    "bytes": 781509
+  },
+  "raw/allreduce_dp2_prefix8-s301-shared_prefix_share128_window1.tar.gz": {
+    "sha256": "9e450309508b83d52744d15fb6114834f2c698a985e598a7ab0bd4433d58fd8a",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-shared_prefix_share128_window1",
+    "bytes": 811945
+  },
+  "raw/allreduce_dp2_prefix8-s301-shared_prefix_share128_window2.tar.gz": {
+    "sha256": "f4d1a7b156154c69c48753b7bcb40ae9003fb0ef08369a75061088be52c6486e",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-shared_prefix_share128_window2",
+    "bytes": 830373
+  },
+  "raw/allreduce_dp2_prefix8-s301-shared_prefix_share128_window4.tar.gz": {
+    "sha256": "69bf039c333ab67406deb5f9a931f0ad8810934b814dc87487095a9807d743cf",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-shared_prefix_share128_window4",
+    "bytes": 844036
+  },
+  "raw/allreduce_dp2_prefix8-s301-shared_prefix_share1_window1.tar.gz": {
+    "sha256": "d1d56e4e58891d57006bbcc9fc4542ec402db1872b46ccd36b90c3251fcbabe9",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-shared_prefix_share1_window1",
+    "bytes": 811979
+  },
+  "raw/allreduce_dp2_prefix8-s301-shared_prefix_share1_window2.tar.gz": {
+    "sha256": "5cf45cfe5460a95bedfae25bf4216d6c194c820450e2f0077d98227c142cf11c",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-shared_prefix_share1_window2",
+    "bytes": 829972
+  },
+  "raw/allreduce_dp2_prefix8-s301-slots_prefix_homa.tar.gz": {
+    "sha256": "8b8f3228c5b6f860ac362d729b206cfeb319e20ef82263c5400f1e35f2cc1078",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-slots_prefix_homa",
+    "bytes": 811937
+  },
+  "raw/allreduce_dp2_prefix8-s301-slots_prefix_share128_window1.tar.gz": {
+    "sha256": "42ce6faf80e6ad560c15d63a8abbcd7b9f69b3b73935fcdae83403e9692b6864",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-slots_prefix_share128_window1",
+    "bytes": 806997
+  },
+  "raw/allreduce_dp2_prefix8-s301-slots_prefix_slots16.tar.gz": {
+    "sha256": "1ceb5acbe565f2d4a5f720380ec150f2258b162ac5c4170744a7ba71cc007371",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-slots_prefix_slots16",
+    "bytes": 806935
+  },
+  "raw/allreduce_dp2_prefix8-s301-slots_prefix_slots2.tar.gz": {
+    "sha256": "685eb5a6ae03d6cbeca335024e9630b297ef069b87c44953149babd042bf29c0",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-slots_prefix_slots2",
+    "bytes": 805837
+  },
+  "raw/allreduce_dp2_prefix8-s301-slots_prefix_slots4.tar.gz": {
+    "sha256": "42a6d07d8a8077f239cef2e2857644ebf29a9b888553283d41ee64199c6e334d",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-slots_prefix_slots4",
+    "bytes": 805724
+  },
+  "raw/allreduce_dp2_prefix8-s301-slots_prefix_slots8.tar.gz": {
+    "sha256": "f0917ccaff81e2fcd50185cab02e2e2840e3ff0cd68cd0ad9044cae0dd777911",
+    "status": "error",
+    "key": "allreduce_dp2_prefix8-s301-slots_prefix_slots8",
+    "bytes": 1347
+  },
+  "raw/allreduce_dp2_prefix8-s301-slots_retry_slots8.tar.gz": {
+    "sha256": "ff624133ddbdd2f78a171982d4900ab67d4b93f503e6eaf183f256684a042170",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-slots_retry_slots8",
+    "bytes": 815005
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_dcqcn.tar.gz": {
+    "sha256": "bc917dfac077f79db240d15659ff47dccfa3f511a21afcd86f91cb00f8d0dccb",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_dcqcn",
+    "bytes": 900630
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_homa.tar.gz": {
+    "sha256": "d77206a3a9595f1d4b4949996a7a843d5c6a84963433adde4a16e984d2dbbe7c",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_homa",
+    "bytes": 812255
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_hpcc.tar.gz": {
+    "sha256": "acd3b11a6f75ad5500679de1ce9e98850dcdd3f606f9ed5e3b163d6345af3bee",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_hpcc",
+    "bytes": 787011
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_order_window2.tar.gz": {
+    "sha256": "dc14f1f469c01c5b27bcf604629da0acc0ef3ccd8ee076553d24cd921a8a443d",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_order_window2",
+    "bytes": 902244
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_order_window4.tar.gz": {
+    "sha256": "386bd01fecb910eec99f39f0320d3741a0d55c3698120dc6b9096ca22ed3bf42",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_order_window4",
+    "bytes": 900836
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_order_window4_no_fabric.tar.gz": {
+    "sha256": "d62499769c0fb1d61fe7192192b628c7e9a90f285a8f09cf46a1a708ba8b414d",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_order_window4_no_fabric",
+    "bytes": 891735
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_reference.tar.gz": {
+    "sha256": "012a3b382a9946e2d5c08f8d97c54dea96f273eef07c5aab94049ac495e4e42e",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_reference",
+    "bytes": 785063
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_single_order.tar.gz": {
+    "sha256": "f39ef1a61677c3730f5c32d725be9af974fd725db5c918e092ac4d4abc06b3fc",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_single_order",
+    "bytes": 810119
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_timely.tar.gz": {
+    "sha256": "61afc1c9b10daab409b9a0aaec16bc580b4f804455a147f84c7172613b772bee",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_timely",
+    "bytes": 940269
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_window2.tar.gz": {
+    "sha256": "f58bf9ef7d8a94b707cdf7be2b01018f756637e79c832e27516abc92d196044e",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_window2",
+    "bytes": 801856
+  },
+  "raw/allreduce_dp2_prefix8-s301-window_prefix_window4.tar.gz": {
+    "sha256": "364c6e753e2fa9ebf13afeb83934e5113b9094a6d191333177ef4a7856b80803",
+    "status": "completed",
+    "key": "allreduce_dp2_prefix8-s301-window_prefix_window4",
+    "bytes": 809223
+  },
+  "raw/alltoall-s301-gain_small_share128_l10_window1.tar.gz": {
+    "sha256": "461983e88c21178c2677557c5210726a6f09e2968447a362a33b87785d9b0911",
+    "status": "completed",
+    "key": "alltoall-s301-gain_small_share128_l10_window1",
+    "bytes": 19852
+  },
+  "raw/alltoall-s301-gain_small_share128_l10_window2.tar.gz": {
+    "sha256": "62ff075ec5c38e4c4cbdeaf6f10f879b07afa9d5ef73cc87baee7a5ec722b0aa",
+    "status": "completed",
+    "key": "alltoall-s301-gain_small_share128_l10_window2",
+    "bytes": 19843
+  },
+  "raw/alltoall-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "855d1e50866349ecfadd8a2d069fadc6aa4a17495151224ba66a500087bebd33",
+    "status": "completed",
+    "key": "alltoall-s301-order_single_no_fabric",
+    "bytes": 19597
+  },
+  "raw/alltoall-s301-order_single_order.tar.gz": {
+    "sha256": "0e9ea0cef93f737d58502bf066c8370587816d30ac16ca38267505171ab2426e",
+    "status": "completed",
+    "key": "alltoall-s301-order_single_order",
+    "bytes": 19812
+  },
+  "raw/alltoall-s301-service_cases_service.tar.gz": {
+    "sha256": "d24781c555b5d6428059b3c98447ad62f21d62f5b275660308b23706042c0b9e",
+    "status": "completed",
+    "key": "alltoall-s301-service_cases_service",
+    "bytes": 20063
+  },
+  "raw/alltoall-s301-service_cases_service_weight5.tar.gz": {
+    "sha256": "e2fd3ab5267d6fbabb283e8068ac4c48c8f57a31631c8e92b7a8e39434c068f0",
+    "status": "completed",
+    "key": "alltoall-s301-service_cases_service_weight5",
+    "bytes": 20027
+  },
+  "raw/alltoall-s301-service_cases_service_window2.tar.gz": {
+    "sha256": "c9f0f4ec6d226c8738f50df476e29809499b909f3d37abe5c0acc797feb2a71b",
+    "status": "completed",
+    "key": "alltoall-s301-service_cases_service_window2",
+    "bytes": 20066
+  },
+  "raw/alltoall-s301-shared_small_share128_window1.tar.gz": {
+    "sha256": "650d70a913ab3aa8a375c48c79c25bd3a909ebafff0df036e8b2ff492aede483",
+    "status": "completed",
+    "key": "alltoall-s301-shared_small_share128_window1",
+    "bytes": 19939
+  },
+  "raw/alltoall-s301-shared_small_share1_window1.tar.gz": {
+    "sha256": "9df7865e11a37f0fb1180fddc9fd017ea1d0cced0b95bba6864bac99729e8431",
+    "status": "completed",
+    "key": "alltoall-s301-shared_small_share1_window1",
+    "bytes": 20041
+  },
+  "raw/alltoall-s301-slots_small_slots4.tar.gz": {
+    "sha256": "46973c8f36221a59eb992573dd158aac275b43206352f3bf83d1098d59ca034a",
+    "status": "completed",
+    "key": "alltoall-s301-slots_small_slots4",
+    "bytes": 19945
+  },
+  "raw/alltoall-s301-slots_small_slots8.tar.gz": {
+    "sha256": "35807e9e8e8e731d93db54b0c3ac7a75aef9b49a09ba5bdcf96a57075f7763a1",
+    "status": "completed",
+    "key": "alltoall-s301-slots_small_slots8",
+    "bytes": 19937
+  },
+  "raw/alltoall-s301-weights_weight0.tar.gz": {
+    "sha256": "20c6e26060f205342539e050b77560b484b389b365f9e2a92b258f5da4d18693",
+    "status": "completed",
+    "key": "alltoall-s301-weights_weight0",
+    "bytes": 19878
+  },
+  "raw/alltoall-s301-weights_weight15.tar.gz": {
+    "sha256": "408d7a4074035b3ca47b650195b7f842aa679cfa18274a5eb91486eebde25abe",
+    "status": "completed",
+    "key": "alltoall-s301-weights_weight15",
+    "bytes": 19905
+  },
+  "raw/alltoall-s301-weights_weight20.tar.gz": {
+    "sha256": "284a3b5a95adde0a4528d708fd6a34c1179c98ff8c536d02e0cbfe885f07556e",
+    "status": "completed",
+    "key": "alltoall-s301-weights_weight20",
+    "bytes": 19887
+  },
+  "raw/alltoall-s301-weights_weight5.tar.gz": {
+    "sha256": "0b4ba93adb21fc795e02283c2992e3b1c48c483be52a8a0ea98d5576f902724e",
+    "status": "completed",
+    "key": "alltoall-s301-weights_weight5",
+    "bytes": 19796
+  },
+  "raw/alltoall-s301-weights_weight5_window2.tar.gz": {
+    "sha256": "a24549e1224db14c8a2e8903bb18fd418ac3c9765574b5c41a1b1e5b4cf94274",
+    "status": "completed",
+    "key": "alltoall-s301-weights_weight5_window2",
+    "bytes": 19806
+  },
+  "raw/fabric-s301-gain_small_share128_l10_window1.tar.gz": {
+    "sha256": "7fd918a8eba5ed0d5683a40982398e07d4f4bf222f0300452a68e7a4749ec155",
+    "status": "completed",
+    "key": "fabric-s301-gain_small_share128_l10_window1",
+    "bytes": 10487
+  },
+  "raw/fabric-s301-gain_small_share128_l10_window2.tar.gz": {
+    "sha256": "2eac3ff249171b0b2e910f0ade6a15723639b3d8deee65cfed88b6a45fcf33fa",
+    "status": "completed",
+    "key": "fabric-s301-gain_small_share128_l10_window2",
+    "bytes": 10388
+  },
+  "raw/fabric-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "cf83edf7b494ac7572a3c926636d6b7fab9f2d30a227773c16d70ae794436c62",
+    "status": "completed",
+    "key": "fabric-s301-order_single_no_fabric",
+    "bytes": 10185
+  },
+  "raw/fabric-s301-order_single_order.tar.gz": {
+    "sha256": "cc32bdfc7a5ebf0393dc1f1113f786b293e038dec2aa15502c81c0c417505a65",
+    "status": "completed",
+    "key": "fabric-s301-order_single_order",
+    "bytes": 10331
+  },
+  "raw/fabric-s301-service_cases_service.tar.gz": {
+    "sha256": "8922f8595ba1a9920adbff63d91fce4b375e70df0f216c9e3e7b93477fb5d642",
+    "status": "completed",
+    "key": "fabric-s301-service_cases_service",
+    "bytes": 10421
+  },
+  "raw/fabric-s301-service_cases_service_weight5.tar.gz": {
+    "sha256": "836abba5b5a60abccc47b7540c03d78d8cf55336bb7f6d7ba5bb39a910a843d5",
+    "status": "completed",
+    "key": "fabric-s301-service_cases_service_weight5",
+    "bytes": 10433
+  },
+  "raw/fabric-s301-service_cases_service_window2.tar.gz": {
+    "sha256": "847c5e54e30f972698f0212ab3a135e31094fc184470ff41fd3fdb1c4ca53da5",
+    "status": "completed",
+    "key": "fabric-s301-service_cases_service_window2",
+    "bytes": 10505
+  },
+  "raw/fabric-s301-shared_small_share128_window1.tar.gz": {
+    "sha256": "5093b67e4853ef57072b0fee0050c4d6a2283f6415d3d3cd4944086632520764",
+    "status": "completed",
+    "key": "fabric-s301-shared_small_share128_window1",
+    "bytes": 10378
+  },
+  "raw/fabric-s301-shared_small_share1_window1.tar.gz": {
+    "sha256": "57445c06597441dd4d5afe8ec20f1f384102fd08a9038fbda08b59ef3c9c5f81",
+    "status": "completed",
+    "key": "fabric-s301-shared_small_share1_window1",
+    "bytes": 10374
+  },
+  "raw/fairness-s301-gain_small_share128_l10_window1.tar.gz": {
+    "sha256": "d255b182e21209d149696e0e2b0cfb3e70a569c4b294c2c43ffe58cd13496ef9",
+    "status": "completed",
+    "key": "fairness-s301-gain_small_share128_l10_window1",
+    "bytes": 680393
+  },
+  "raw/fairness-s301-gain_small_share128_l10_window2.tar.gz": {
+    "sha256": "92b178ca31fce9de98b5c3f8e3c2f32498eb4d055368b38aacb131475e5da301",
+    "status": "completed",
+    "key": "fairness-s301-gain_small_share128_l10_window2",
+    "bytes": 681182
+  },
+  "raw/fairness-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "ddc8ea338a478ba3457e0a321ae20e4518048cfa6e28e33c97cb4cf23cc33bd2",
+    "status": "completed",
+    "key": "fairness-s301-order_single_no_fabric",
+    "bytes": 676384
+  },
+  "raw/fairness-s301-order_single_order.tar.gz": {
+    "sha256": "be4e2db40611f9626536fa50d0dc2e11b38929b60620ec321c49362519217af6",
+    "status": "completed",
+    "key": "fairness-s301-order_single_order",
+    "bytes": 676359
+  },
+  "raw/fairness-s301-service_cases_service.tar.gz": {
+    "sha256": "2acfb78c411976c2f3e5567fa0eca6180297207f4e1325408110fc84024f6ef0",
+    "status": "completed",
+    "key": "fairness-s301-service_cases_service",
+    "bytes": 676439
+  },
+  "raw/fairness-s301-service_cases_service_weight5.tar.gz": {
+    "sha256": "21f9b0f8acea43dd34a0ef0baff8580cf350fb29928385037e45760624b742ff",
+    "status": "completed",
+    "key": "fairness-s301-service_cases_service_weight5",
+    "bytes": 678151
+  },
+  "raw/fairness-s301-service_cases_service_window2.tar.gz": {
+    "sha256": "fc6e2012c179b6aaf5777bc813d40e2b5c8911287167d97dcea4a0e7e5aad07d",
+    "status": "completed",
+    "key": "fairness-s301-service_cases_service_window2",
+    "bytes": 678335
+  },
+  "raw/fairness-s301-shared_small_share128_window1.tar.gz": {
+    "sha256": "d1ea49779ba37c9be8b73d810f9a4df75efc98388c664f71809877b12bdbae63",
+    "status": "completed",
+    "key": "fairness-s301-shared_small_share128_window1",
+    "bytes": 676017
+  },
+  "raw/fairness-s301-shared_small_share1_window1.tar.gz": {
+    "sha256": "3bcecb75609eac15fe16cc421c808616ccb2cda570f3c056f2530972b0446365",
+    "status": "completed",
+    "key": "fairness-s301-shared_small_share1_window1",
+    "bytes": 675964
+  },
+  "raw/fairness-s301-slots_small_slots4.tar.gz": {
+    "sha256": "21f04e97947401c23bd08e5752314ed38802e9b9cf0c7fd57cb2e7a792388d9e",
+    "status": "completed",
+    "key": "fairness-s301-slots_small_slots4",
+    "bytes": 676026
+  },
+  "raw/fairness-s301-slots_small_slots8.tar.gz": {
+    "sha256": "cb9816a3104c91b9cb85ed70d0f9a79a213523fc2c51f174fa7b95c2a669cb57",
+    "status": "completed",
+    "key": "fairness-s301-slots_small_slots8",
+    "bytes": 676064
+  },
+  "raw/fairness-s301-weights_weight0.tar.gz": {
+    "sha256": "6cc469fe7bda6848a68a6bb2e08d74e7e0e006035e1146a79349faf206e457bb",
+    "status": "completed",
+    "key": "fairness-s301-weights_weight0",
+    "bytes": 677456
+  },
+  "raw/fairness-s301-weights_weight15.tar.gz": {
+    "sha256": "3e3a882aa49067590e514a671018225b8d55b91ce35e1f6676b8fd0e1290ed28",
+    "status": "completed",
+    "key": "fairness-s301-weights_weight15",
+    "bytes": 676622
+  },
+  "raw/fairness-s301-weights_weight20.tar.gz": {
+    "sha256": "5e96ab3edf9ba0bbf2704cc865c1801cf0488798eb9aa5d3653d64e88657ec8d",
+    "status": "completed",
+    "key": "fairness-s301-weights_weight20",
+    "bytes": 675650
+  },
+  "raw/fairness-s301-weights_weight5.tar.gz": {
+    "sha256": "b50c72d0e2fa5d03984bd3efea10187e45d873a3a1e58093b41d8427d26bc245",
+    "status": "completed",
+    "key": "fairness-s301-weights_weight5",
+    "bytes": 677976
+  },
+  "raw/fairness-s301-weights_weight5_window2.tar.gz": {
+    "sha256": "a8adbe4b89ccb55b2ded36250b3e71c870a3ce085500c5a4bf8ba471f20dde73",
+    "status": "completed",
+    "key": "fairness-s301-weights_weight5_window2",
+    "bytes": 680412
+  },
+  "raw/fb40-s301-gain_small_share128_l10_window1.tar.gz": {
+    "sha256": "6f2b036a05c923a60a996ddd408d73a9b83f600ccbf9da87b5b52c030dedf502",
+    "status": "completed",
+    "key": "fb40-s301-gain_small_share128_l10_window1",
+    "bytes": 193086
+  },
+  "raw/fb40-s301-gain_small_share128_l10_window2.tar.gz": {
+    "sha256": "7b236d97dbb2cde0ff5a61344547ddd74dad410f02e0cd7f165c9ab161a09464",
+    "status": "completed",
+    "key": "fb40-s301-gain_small_share128_l10_window2",
+    "bytes": 193194
+  },
+  "raw/fb40-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "309acaf3c864c20bd45b76bb1950ba1a474c185fe6e7ee5a303043e3d2542581",
+    "status": "completed",
+    "key": "fb40-s301-order_single_no_fabric",
+    "bytes": 192632
+  },
+  "raw/fb40-s301-order_single_order.tar.gz": {
+    "sha256": "716d2c237d9c0fe11ece7cad0e4195a9b6547a6b77504ed9b6597bd9418d2efe",
+    "status": "completed",
+    "key": "fb40-s301-order_single_order",
+    "bytes": 193026
+  },
+  "raw/fb40-s301-service_cases_service.tar.gz": {
+    "sha256": "501569b69dc3d62626be7886b93bad33ffd9cb3960f8bbdaabc96a10e343efa5",
+    "status": "completed",
+    "key": "fb40-s301-service_cases_service",
+    "bytes": 193059
+  },
+  "raw/fb40-s301-service_cases_service_weight5.tar.gz": {
+    "sha256": "cd83bbb272df3c0687e048c19a03bde8061e8ead39a0a07c1d37f78b26b521c7",
+    "status": "completed",
+    "key": "fb40-s301-service_cases_service_weight5",
+    "bytes": 193096
+  },
+  "raw/fb40-s301-service_cases_service_window2.tar.gz": {
+    "sha256": "c9aeb0b832be5a7e48d89b5c235cea8c45a8bee8d7b51451a258a5fb9004563c",
+    "status": "completed",
+    "key": "fb40-s301-service_cases_service_window2",
+    "bytes": 193194
+  },
+  "raw/fb40-s301-shared_small_share128_window1.tar.gz": {
+    "sha256": "26f1c93523d67a19d9855b5c626d9bc8c04f3dcfeacf418f652879d8f8b61560",
+    "status": "completed",
+    "key": "fb40-s301-shared_small_share128_window1",
+    "bytes": 193112
+  },
+  "raw/fb40-s301-shared_small_share1_window1.tar.gz": {
+    "sha256": "48b518dc6aa448a4ffe4aca6324075c021bfc4aaf5bb55366312b651a07f4607",
+    "status": "completed",
+    "key": "fb40-s301-shared_small_share1_window1",
+    "bytes": 192939
+  },
+  "raw/fb40-s301-weights_weight0.tar.gz": {
+    "sha256": "12de05779916998d6ad768a56b4a9f9cbfb173b313607f48e4c5ae0db111cd55",
+    "status": "completed",
+    "key": "fb40-s301-weights_weight0",
+    "bytes": 193011
+  },
+  "raw/fb40-s301-weights_weight15.tar.gz": {
+    "sha256": "d3894f69be91c770ffabe8a94c3a9230981aeb658c5d86c367302b4ce3a6935c",
+    "status": "completed",
+    "key": "fb40-s301-weights_weight15",
+    "bytes": 193028
+  },
+  "raw/fb40-s301-weights_weight20.tar.gz": {
+    "sha256": "82f24643a285502dc5d6aeaa40b938f0718f58554d9e580a9d73283fa004437b",
+    "status": "completed",
+    "key": "fb40-s301-weights_weight20",
+    "bytes": 193093
+  },
+  "raw/fb40-s301-weights_weight5.tar.gz": {
+    "sha256": "6f8b1597ee838422b3483537b5cc453a92a7da714c450d7d3622de0e60dfa8df",
+    "status": "completed",
+    "key": "fb40-s301-weights_weight5",
+    "bytes": 192996
+  },
+  "raw/fb40-s301-weights_weight5_window2.tar.gz": {
+    "sha256": "91764777535b1ddea8ea6f3fbcdcc7cf59ad5f9f70dcb0d2c7b0ad235cb7691f",
+    "status": "completed",
+    "key": "fb40-s301-weights_weight5_window2",
+    "bytes": 193193
+  },
+  "raw/hybrid-s301-gain_small_share128_l10_window1.tar.gz": {
+    "sha256": "7194c418c24873680dec888b8a44fd2a717bb1aea0e4a230887219e68b8fcfdc",
+    "status": "completed",
+    "key": "hybrid-s301-gain_small_share128_l10_window1",
+    "bytes": 10596
+  },
+  "raw/hybrid-s301-gain_small_share128_l10_window2.tar.gz": {
+    "sha256": "b981db69cad04ca39ac18aaa9edadaf6227cc0508a80a4df672ab7dbf1dc1d87",
+    "status": "completed",
+    "key": "hybrid-s301-gain_small_share128_l10_window2",
+    "bytes": 10621
+  },
+  "raw/hybrid-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "f7b130146465ead2a4579a84541272eca85e7207837e9e4bea3377b0923cf18b",
+    "status": "completed",
+    "key": "hybrid-s301-order_single_no_fabric",
+    "bytes": 10461
+  },
+  "raw/hybrid-s301-order_single_order.tar.gz": {
+    "sha256": "26254c463b445079ce1c81fbcf04135daa052be57ca5d18fa7dc21e9c5a8ff53",
+    "status": "completed",
+    "key": "hybrid-s301-order_single_order",
+    "bytes": 10573
+  },
+  "raw/hybrid-s301-service_cases_service.tar.gz": {
+    "sha256": "e6947ce98c4e90bf9b24f3b6ed9dfe9611de67b9835ca97b186bcced4a61f649",
+    "status": "completed",
+    "key": "hybrid-s301-service_cases_service",
+    "bytes": 10664
+  },
+  "raw/hybrid-s301-service_cases_service_weight5.tar.gz": {
+    "sha256": "0ee2dd8e883d07aa3fa736086e2542b6554ff820ef61a93e3927435391b0ef7f",
+    "status": "completed",
+    "key": "hybrid-s301-service_cases_service_weight5",
+    "bytes": 10705
+  },
+  "raw/hybrid-s301-service_cases_service_window2.tar.gz": {
+    "sha256": "aa7de7d36b7688908448ccdf78c5562c0b4c114ff452f6becda9adf294037f0b",
+    "status": "completed",
+    "key": "hybrid-s301-service_cases_service_window2",
+    "bytes": 10681
+  },
+  "raw/hybrid-s301-shared_small_share128_window1.tar.gz": {
+    "sha256": "d7cb389d6b4e61e877d60725f3bd6496867e906048dcb4ec332c21f8c34ded8b",
+    "status": "completed",
+    "key": "hybrid-s301-shared_small_share128_window1",
+    "bytes": 10631
+  },
+  "raw/hybrid-s301-shared_small_share1_window1.tar.gz": {
+    "sha256": "dc3b0fb26fc3922ee4d194ad1d6ecd9cecab8d0c7a80b497c8b6c13178f0c090",
+    "status": "completed",
+    "key": "hybrid-s301-shared_small_share1_window1",
+    "bytes": 10635
+  },
+  "raw/hybrid-s301-slots_small_slots4.tar.gz": {
+    "sha256": "34f8ec1fee16beb52ef1681e5cce29631f2566e6b42f55ae8a9d0b4fcd0a4979",
+    "status": "completed",
+    "key": "hybrid-s301-slots_small_slots4",
+    "bytes": 10669
+  },
+  "raw/hybrid-s301-slots_small_slots8.tar.gz": {
+    "sha256": "11653c3285c52ab38aa9f483a96fe1f2661e59ac8b4bd70bfd1ab05a151727b4",
+    "status": "completed",
+    "key": "hybrid-s301-slots_small_slots8",
+    "bytes": 10673
+  },
+  "raw/hybrid-s301-weights_weight0.tar.gz": {
+    "sha256": "1f47256d2b93086d67035d65febf6c91eaf6429bb2221bef9703ced9ee07d494",
+    "status": "completed",
+    "key": "hybrid-s301-weights_weight0",
+    "bytes": 10646
+  },
+  "raw/hybrid-s301-weights_weight15.tar.gz": {
+    "sha256": "53fa8294c4a30edfe4fdfc2227c6329069de15fdee0d38369dd369e50b7e24f0",
+    "status": "completed",
+    "key": "hybrid-s301-weights_weight15",
+    "bytes": 10634
+  },
+  "raw/hybrid-s301-weights_weight20.tar.gz": {
+    "sha256": "319bf267e1f400a6e8e48d880abf150d8b47a6601042c11fada3b7211cc14158",
+    "status": "completed",
+    "key": "hybrid-s301-weights_weight20",
+    "bytes": 10645
+  },
+  "raw/hybrid-s301-weights_weight5.tar.gz": {
+    "sha256": "af87750b2a9ab5d4dfdbdc89a82c15cf3d6f822cf50a019d030a8a289f28686c",
+    "status": "completed",
+    "key": "hybrid-s301-weights_weight5",
+    "bytes": 10651
+  },
+  "raw/hybrid-s301-weights_weight5_window2.tar.gz": {
+    "sha256": "cef7122776e59a472964a8cc619c729b369be76b81327f23bfb3f1b8c821a517",
+    "status": "completed",
+    "key": "hybrid-s301-weights_weight5_window2",
+    "bytes": 10657
+  },
+  "raw/receiver-s301-gain_small_share128_l10_window1.tar.gz": {
+    "sha256": "aa4d6a576eb511b0a9aa3969560852562938f46ddd326f297c077b838ea12423",
+    "status": "completed",
+    "key": "receiver-s301-gain_small_share128_l10_window1",
+    "bytes": 12230
+  },
+  "raw/receiver-s301-gain_small_share128_l10_window2.tar.gz": {
+    "sha256": "b65f68a9fe1aa660127eec239c2c1f3126e33e3a5aca97f66de8164fe364a456",
+    "status": "completed",
+    "key": "receiver-s301-gain_small_share128_l10_window2",
+    "bytes": 12381
+  },
+  "raw/receiver-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "36daf8abca65eb56a853e5d89aeef8c2fe12179c91da118792434dcc3a0dc9bc",
+    "status": "completed",
+    "key": "receiver-s301-order_single_no_fabric",
+    "bytes": 12177
+  },
+  "raw/receiver-s301-order_single_order.tar.gz": {
+    "sha256": "57e0aefbce378826093367e6c14af3ba416c8327455e72511ff158d7887a1d1c",
+    "status": "completed",
+    "key": "receiver-s301-order_single_order",
+    "bytes": 12195
+  },
+  "raw/receiver-s301-service_cases_service.tar.gz": {
+    "sha256": "310dd10712e1110daa837d02ec91210278ef783c31267766495319c09b4e8ce0",
+    "status": "completed",
+    "key": "receiver-s301-service_cases_service",
+    "bytes": 12310
+  },
+  "raw/receiver-s301-service_cases_service_weight5.tar.gz": {
+    "sha256": "43485885563e5a08d3df095dbff6f11bd7b0965da186027e7ec1176465453c8b",
+    "status": "completed",
+    "key": "receiver-s301-service_cases_service_weight5",
+    "bytes": 12308
+  },
+  "raw/receiver-s301-service_cases_service_window2.tar.gz": {
+    "sha256": "0838eeb83eb424e64bbd5f079cc0e2a28953fd593c1fff0221ea093fb3972b25",
+    "status": "completed",
+    "key": "receiver-s301-service_cases_service_window2",
+    "bytes": 12372
+  },
+  "raw/receiver-s301-shared_small_share128_window1.tar.gz": {
+    "sha256": "da733ee032f7d3c42266edaf03ef62ad73aefbcfc507ca030a73080a411b5107",
+    "status": "completed",
+    "key": "receiver-s301-shared_small_share128_window1",
+    "bytes": 12325
+  },
+  "raw/receiver-s301-shared_small_share1_window1.tar.gz": {
+    "sha256": "c58df83b27c5831c5683a342a72af8d1c2e56a4768df10ab4d5b96f1017500c1",
+    "status": "completed",
+    "key": "receiver-s301-shared_small_share1_window1",
+    "bytes": 12290
+  },
+  "raw/ring-s301-gain_small_share128_l10_window1.tar.gz": {
+    "sha256": "ad74fb71ae58a5fb57b11c27b3da9867a3e388c8e429832aebe8e51ed0c2092c",
+    "status": "completed",
+    "key": "ring-s301-gain_small_share128_l10_window1",
+    "bytes": 21556
+  },
+  "raw/ring-s301-gain_small_share128_l10_window2.tar.gz": {
+    "sha256": "f0c1aaffe5e849e20451b8cd2fc674da7a7956a2fee81de1e051c3a5ba343205",
+    "status": "completed",
+    "key": "ring-s301-gain_small_share128_l10_window2",
+    "bytes": 21538
+  },
+  "raw/ring-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "17df76538e7861d478eeab7f35faef5859722814e6eac9519f4aaddbeb165da5",
+    "status": "completed",
+    "key": "ring-s301-order_single_no_fabric",
+    "bytes": 20638
+  },
+  "raw/ring-s301-order_single_order.tar.gz": {
+    "sha256": "b6f940747ceeee77dd8021dc09d228cf66f9d451e8bc3e5070f1002850db9c0c",
+    "status": "completed",
+    "key": "ring-s301-order_single_order",
+    "bytes": 21540
+  },
+  "raw/ring-s301-service_cases_service.tar.gz": {
+    "sha256": "cf9def16c84c367523b9340ec7d4fe6906d052fdc862d1f2a4c911c0676dc975",
+    "status": "completed",
+    "key": "ring-s301-service_cases_service",
+    "bytes": 21684
+  },
+  "raw/ring-s301-service_cases_service_weight5.tar.gz": {
+    "sha256": "ee7c38d6060c46b76852b659a4382e51c42f594023970483deef64766c524818",
+    "status": "completed",
+    "key": "ring-s301-service_cases_service_weight5",
+    "bytes": 21724
+  },
+  "raw/ring-s301-service_cases_service_window2.tar.gz": {
+    "sha256": "969c9a0b352c880b89e273398e3cc3efecaa0c73b743b26c4042b3dc7f15776b",
+    "status": "completed",
+    "key": "ring-s301-service_cases_service_window2",
+    "bytes": 21581
+  },
+  "raw/ring-s301-shared_small_share128_window1.tar.gz": {
+    "sha256": "2135acaf6ea02573dc3e3903099883f7fe8c2284554afecafd41c5a5c3281d01",
+    "status": "completed",
+    "key": "ring-s301-shared_small_share128_window1",
+    "bytes": 21608
+  },
+  "raw/ring-s301-shared_small_share1_window1.tar.gz": {
+    "sha256": "91c40ad50890fb82b938c14a3bf04fc425f967c05b1b097fe206473b3244df49",
+    "status": "completed",
+    "key": "ring-s301-shared_small_share1_window1",
+    "bytes": 601783
+  },
+  "raw/ring-s301-slots_small_slots4.tar.gz": {
+    "sha256": "5a628447171bc41e9be11b1d75c4e2d4ce764ac42d24aa8be611c71e8e346ba3",
+    "status": "completed",
+    "key": "ring-s301-slots_small_slots4",
+    "bytes": 21645
+  },
+  "raw/ring-s301-slots_small_slots8.tar.gz": {
+    "sha256": "4daf0eb5ce70c06113296c60253da464af493bad099688dfb0b3d25101ab3350",
+    "status": "completed",
+    "key": "ring-s301-slots_small_slots8",
+    "bytes": 21639
+  },
+  "raw/ring-s301-weights_weight0.tar.gz": {
+    "sha256": "746a8097e9bd4311eff2d6ff80217d96891d7d1fe592b46201c89d58addefc04",
+    "status": "completed",
+    "key": "ring-s301-weights_weight0",
+    "bytes": 21552
+  },
+  "raw/ring-s301-weights_weight15.tar.gz": {
+    "sha256": "680d1a4c29ade7f11502f3e4b4a1d2ef2e54b55796d1efe27d318630a8677c17",
+    "status": "completed",
+    "key": "ring-s301-weights_weight15",
+    "bytes": 21625
+  },
+  "raw/ring-s301-weights_weight20.tar.gz": {
+    "sha256": "846f28c55ed854b727b0bd49ac8aee784e9e5caeecca12e03d00b4c573092366",
+    "status": "completed",
+    "key": "ring-s301-weights_weight20",
+    "bytes": 21552
+  },
+  "raw/ring-s301-weights_weight5.tar.gz": {
+    "sha256": "c78e2fd7406c7f39ed0c5877428e40ab368085cbdeb3d1ff943c1bb5198c0e38",
+    "status": "completed",
+    "key": "ring-s301-weights_weight5",
+    "bytes": 21629
+  },
+  "raw/ring-s301-weights_weight5_window2.tar.gz": {
+    "sha256": "daf53156814f8412ab644d5eb8db9c33dd4669893b27c7c8b08287b5a5e4121c",
+    "status": "completed",
+    "key": "ring-s301-weights_weight5_window2",
+    "bytes": 21482
+  },
+  "raw/web40-s301-gain_small_share128_l10_window1.tar.gz": {
+    "sha256": "bd66124d1a1960fa1342e056fa8e613825ee5c0ba3ffd12b737124b1e2bb8aef",
+    "status": "completed",
+    "key": "web40-s301-gain_small_share128_l10_window1",
+    "bytes": 30003
+  },
+  "raw/web40-s301-gain_small_share128_l10_window2.tar.gz": {
+    "sha256": "6b7aaf0d190af98c4c48cb0f81bc8ffe02a3a8faeaabc799bcf5db289b0e8203",
+    "status": "completed",
+    "key": "web40-s301-gain_small_share128_l10_window2",
+    "bytes": 30130
+  },
+  "raw/web40-s301-order_single_no_fabric.tar.gz": {
+    "sha256": "2726e514dac509d0987fae8e29c13f33ee5941ac1747d76ab1bba8c3a8fc2185",
+    "status": "completed",
+    "key": "web40-s301-order_single_no_fabric",
+    "bytes": 29573
+  },
+  "raw/web40-s301-order_single_order.tar.gz": {
+    "sha256": "9f7ee7e788568ba69733c3cbe58466f6225c5a6734924686c3107d213e99aa8b",
+    "status": "completed",
+    "key": "web40-s301-order_single_order",
+    "bytes": 29983
+  },
+  "raw/web40-s301-service_cases_service.tar.gz": {
+    "sha256": "afcfc32676109cdd4f0f79ab32df3225bb7d607a0dde12e7a9c430762a7417af",
+    "status": "completed",
+    "key": "web40-s301-service_cases_service",
+    "bytes": 30077
+  },
+  "raw/web40-s301-service_cases_service_weight5.tar.gz": {
+    "sha256": "62b0ac8869566c1d44ccdbd0c689cd0faf7064cef218ef1defacc8fdfebedf8c",
+    "status": "completed",
+    "key": "web40-s301-service_cases_service_weight5",
+    "bytes": 30103
+  },
+  "raw/web40-s301-service_cases_service_window2.tar.gz": {
+    "sha256": "22b7982dadad82e83cf2927608746f7b5d48ae5b72fa737f3c339c8560a0fabe",
+    "status": "completed",
+    "key": "web40-s301-service_cases_service_window2",
+    "bytes": 30316
+  },
+  "raw/web40-s301-shared_small_share128_window1.tar.gz": {
+    "sha256": "c3f895728868e660e6139da090fa9c7a44487b265faba6f2a12178d44174dc30",
+    "status": "completed",
+    "key": "web40-s301-shared_small_share128_window1",
+    "bytes": 30057
+  },
+  "raw/web40-s301-shared_small_share1_window1.tar.gz": {
+    "sha256": "ed7fb0b932e312827a739466daec151d834d3e16925d31ae270895e2001f968f",
+    "status": "completed",
+    "key": "web40-s301-shared_small_share1_window1",
+    "bytes": 30048
+  },
+  "raw/web40-s301-weights_weight0.tar.gz": {
+    "sha256": "93c0e894de4cb97b5c9a3cb0705609519d19a8ea26ea90a4d7cae0695e0cfe84",
+    "status": "completed",
+    "key": "web40-s301-weights_weight0",
+    "bytes": 30088
+  },
+  "raw/web40-s301-weights_weight15.tar.gz": {
+    "sha256": "033044a4c537d46fd77b516045a38caf3c8571d5ca577999647e3aa4223b91c0",
+    "status": "completed",
+    "key": "web40-s301-weights_weight15",
+    "bytes": 30112
+  },
+  "raw/web40-s301-weights_weight20.tar.gz": {
+    "sha256": "45f74d0f2231e73a04f1524cc83dc659515a876d52a2db8fbceed60d94ef98c6",
+    "status": "completed",
+    "key": "web40-s301-weights_weight20",
+    "bytes": 30078
+  },
+  "raw/web40-s301-weights_weight5.tar.gz": {
+    "sha256": "cb19fd729171c9c09953b7f40723f0e64dc48acd8d58c3ec06f81aebcbc46b54",
+    "status": "completed",
+    "key": "web40-s301-weights_weight5",
+    "bytes": 30073
+  },
+  "raw/web40-s301-weights_weight5_window2.tar.gz": {
+    "sha256": "01a9f72139957f81caabc67c16870018c949341f8d26ac3cad873e7504c3c2b8",
+    "status": "completed",
+    "key": "web40-s301-weights_weight5_window2",
+    "bytes": 30297
+  }
+}

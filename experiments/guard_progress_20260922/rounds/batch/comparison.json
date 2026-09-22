@@ -1,0 +1,96 @@
+{
+  "regression_percent": {
+    "web40": {
+      "shared": {
+        "fct_mean_us": -0.044159094126783316,
+        "slowdown_p99": -0.4359601790044687,
+        "span_ms": -0.09584305723171482,
+        "queue_worst_port_fixed_mean_us": 0.7619136819222438
+      },
+      "joint32": {
+        "fct_mean_us": -0.04592197330546277,
+        "slowdown_p99": 0.06475405541654933,
+        "span_ms": -0.005014241176937162,
+        "queue_worst_port_fixed_mean_us": -0.1708586633832665
+      }
+    },
+    "fb40": {
+      "shared": {
+        "fct_mean_us": 0.010564073136665186,
+        "slowdown_p99": 0.03922289373892163,
+        "span_ms": -0.0154159203260118,
+        "queue_worst_port_fixed_mean_us": 0.31928372841569796
+      },
+      "joint32": {
+        "fct_mean_us": 0.013096734403972299,
+        "slowdown_p99": -0.5864810844890767,
+        "span_ms": -0.005017942959728572,
+        "queue_worst_port_fixed_mean_us": -0.0032893889696627987
+      }
+    },
+    "alltoall": {
+      "shared": {
+        "fct_mean_us": -0.30884107802215954,
+        "slowdown_p99": -0.20597425732113983,
+        "span_ms": 0.07325476063761993,
+        "queue_worst_port_fixed_mean_us": -3.501467323230556
+      },
+      "joint32": {
+        "fct_mean_us": -0.13425817941137286,
+        "slowdown_p99": 0.11736274282263537,
+        "span_ms": 0.8847751549923899,
+        "queue_worst_port_fixed_mean_us": -4.495646099615136
+      }
+    },
+    "ring": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      },
+      "joint32": {
+        "fct_mean_us": 0.005171685754468136,
+        "slowdown_p99": 1.0266709236527172,
+        "span_ms": 0.0540241685383247,
+        "queue_worst_port_fixed_mean_us": -0.4713412897002556
+      }
+    },
+    "ali30": {
+      "shared": {
+        "fct_mean_us": 0.10877551260042306,
+        "slowdown_p99": -0.35803932792487503,
+        "span_ms": -0.02329635717184253,
+        "queue_worst_port_fixed_mean_us": -2.2561111344061135
+      }
+    },
+    "ali50": {
+      "shared": {
+        "fct_mean_us": -0.037684340232957414,
+        "slowdown_p99": 2.6926696782230586,
+        "span_ms": -2.566219297442618,
+        "queue_worst_port_fixed_mean_us": -10.222656727520075
+      }
+    }
+  },
+  "dp2_percent": {
+    "shared": {
+      "fct_mean_us": 2.5755984013640765,
+      "fct_p99_us": 5.4996411285271,
+      "span_ms": -0.3074753672301922,
+      "queue_worst_port_fixed_mean_us": 1.3668666738129387
+    },
+    "joint32": {
+      "fct_mean_us": -1.165327525410098,
+      "fct_p99_us": -5.112876859602,
+      "span_ms": -0.1554446711319324,
+      "queue_worst_port_fixed_mean_us": 9.052110134543256
+    },
+    "shared_l10": {
+      "fct_mean_us": -0.3807577860625355,
+      "fct_p99_us": -3.0982757411449735,
+      "span_ms": -0.8991442096273894,
+      "queue_worst_port_fixed_mean_us": 45.264433646105104
+    }
+  }
+}

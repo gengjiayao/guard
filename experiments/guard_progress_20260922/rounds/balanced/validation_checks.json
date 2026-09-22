@@ -1,0 +1,49 @@
+{
+  "status": "passed",
+  "source_commit": "0e3208af4eb6c15da47cc41ab44a712daa883122",
+  "confirmation_runs": 494,
+  "development_attempts": 312,
+  "completed_development_runs": 311,
+  "preserved_development_failures": [
+    {
+      "key": "fb40-s301-common_h128_min12",
+      "error": "KeyError('output_dir')"
+    }
+  ],
+  "archived_attempts": 806,
+  "complete_simulations": 805,
+  "matched_receiver_only_controls": [
+    "fabric-s501-receiver_only",
+    "receiver-s501-receiver_only",
+    "hybrid-s501-receiver_only",
+    "fabric-s502-receiver_only",
+    "receiver-s502-receiver_only",
+    "hybrid-s502-receiver_only",
+    "fabric-s503-receiver_only",
+    "receiver-s503-receiver_only",
+    "hybrid-s503-receiver_only",
+    "fabric-s504-receiver_only",
+    "receiver-s504-receiver_only",
+    "hybrid-s504-receiver_only",
+    "fabric-s505-receiver_only",
+    "receiver-s505-receiver_only",
+    "hybrid-s505-receiver_only",
+    "receiver2-s501-receiver_only",
+    "receiver2-s502-receiver_only",
+    "receiver2-s503-receiver_only",
+    "receiver2-s504-receiver_only",
+    "receiver2-s505-receiver_only",
+    "ring-s501-receiver_only",
+    "ring-s502-receiver_only",
+    "ring-s503-receiver_only",
+    "ring-s504-receiver_only",
+    "ring-s505-receiver_only",
+    "fabric_series-s501-receiver_only",
+    "hybrid_series-s501-receiver_only",
+    "receiver2_series-s501-receiver_only"
+  ],
+  "source_and_build": "match frozen hashes",
+  "all_flow_identities": "verified within every study and seed",
+  "raw_archives": "all archive, result, FCT, stats and queue hashes verified",
+  "performance": "Correctness checks do not imply universal performance dominance."
+}

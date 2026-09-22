@@ -1,0 +1,3 @@
+# Preserve original whitespace in immutable historical evidence and patch context.
+rounds/** -whitespace
+source_patches/*.patch -whitespace

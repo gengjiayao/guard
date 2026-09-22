@@ -1,0 +1,140 @@
+{
+  "phase": "development on observed seed 301; never independent confirmation",
+  "tasks": [
+    {
+      "study": "ali30",
+      "seed": 301,
+      "arm": "shared_storage_share1_window1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ali30-s301.txt",
+      "topo": "leaf_spine_128_100G_OS1",
+      "duration": 0.01,
+      "warmup": 0.005,
+      "load": 30,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_congestion_gate": 1,
+        "guard_adaptive_fabric_target": 1,
+        "guard_queue_budget_bdps": 4,
+        "guard_adaptive_target_max_bdps": 8,
+        "guard_receiver_concurrency": 1,
+        "guard_concurrency_min_bdps": 12,
+        "guard_scheduling_horizon_bdps": 128,
+        "guard_single_sender_shared_cap_bdps": 1,
+        "guard_post_grant_window_bdps": 1
+      },
+      "monitor": "bulk",
+      "buffer": 9,
+      "key": "ali30-s301-shared_storage_share1_window1",
+      "flow_sha256": "d5b78c617ce6526fefd93f56cf31d54cbbbe69991cb3bda0026bbd5c2bf0cd4c",
+      "flow_count": 117433
+    },
+    {
+      "study": "ali30",
+      "seed": 301,
+      "arm": "shared_storage_share128_window1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ali30-s301.txt",
+      "topo": "leaf_spine_128_100G_OS1",
+      "duration": 0.01,
+      "warmup": 0.005,
+      "load": 30,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_congestion_gate": 1,
+        "guard_adaptive_fabric_target": 1,
+        "guard_queue_budget_bdps": 4,
+        "guard_adaptive_target_max_bdps": 8,
+        "guard_receiver_concurrency": 1,
+        "guard_concurrency_min_bdps": 12,
+        "guard_scheduling_horizon_bdps": 128,
+        "guard_single_sender_shared_cap_bdps": 128,
+        "guard_post_grant_window_bdps": 1
+      },
+      "monitor": "bulk",
+      "buffer": 9,
+      "key": "ali30-s301-shared_storage_share128_window1",
+      "flow_sha256": "d5b78c617ce6526fefd93f56cf31d54cbbbe69991cb3bda0026bbd5c2bf0cd4c",
+      "flow_count": 117433
+    },
+    {
+      "study": "ali50",
+      "seed": 301,
+      "arm": "shared_storage_share1_window1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ali50-s301.txt",
+      "topo": "leaf_spine_128_100G_OS1",
+      "duration": 0.01,
+      "warmup": 0.005,
+      "load": 50,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_congestion_gate": 1,
+        "guard_adaptive_fabric_target": 1,
+        "guard_queue_budget_bdps": 4,
+        "guard_adaptive_target_max_bdps": 8,
+        "guard_receiver_concurrency": 1,
+        "guard_concurrency_min_bdps": 12,
+        "guard_scheduling_horizon_bdps": 128,
+        "guard_single_sender_shared_cap_bdps": 1,
+        "guard_post_grant_window_bdps": 1
+      },
+      "monitor": "bulk",
+      "buffer": 9,
+      "key": "ali50-s301-shared_storage_share1_window1",
+      "flow_sha256": "bae7965ce327c8235df0cd044b06d6acc5d989f7a93146e01da646f651652aa0",
+      "flow_count": 195532
+    },
+    {
+      "study": "ali50",
+      "seed": 301,
+      "arm": "shared_storage_share128_window1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ali50-s301.txt",
+      "topo": "leaf_spine_128_100G_OS1",
+      "duration": 0.01,
+      "warmup": 0.005,
+      "load": 50,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_tail_congestion_gate": 1,
+        "guard_adaptive_fabric_target": 1,
+        "guard_queue_budget_bdps": 4,
+        "guard_adaptive_target_max_bdps": 8,
+        "guard_receiver_concurrency": 1,
+        "guard_concurrency_min_bdps": 12,
+        "guard_scheduling_horizon_bdps": 128,
+        "guard_single_sender_shared_cap_bdps": 128,
+        "guard_post_grant_window_bdps": 1
+      },
+      "monitor": "bulk",
+      "buffer": 9,
+      "key": "ali50-s301-shared_storage_share128_window1",
+      "flow_sha256": "bae7965ce327c8235df0cd044b06d6acc5d989f7a93146e01da646f651652aa0",
+      "flow_count": 195532
+    }
+  ],
+  "hashes": {
+    "build/scratch/network-load-balance": "5d2d5fb41aafa819d023dda9107d1f8a92d2d8d108aa4deae11765e90c609716",
+    "build/libns3.19-applications-optimized.so": "e25f13f2170f5c6c95cd306f7e5d1a9b193f3453af36c0b3e4bf98e30187f22d",
+    "build/libns3.19-bridge-optimized.so": "79a2aa86b9fc1402b77b80e0cf49b98f316448c1420da9c6d09003d434fb82b7",
+    "build/libns3.19-config-store-optimized.so": "0ffa8e9fd1e3db2aeb44e911775c0610aedd03eefd0eede48b4810bd068f0748",
+    "build/libns3.19-core-optimized.so": "b963d518c44103a8e3bf2264c34c5a159510229d357db9ea967f8bda34887212",
+    "build/libns3.19-internet-optimized.so": "69b5cdc8fad6e4268f1c464ae70b0c2210de00bb1fd23378f2eb724affe6103a",
+    "build/libns3.19-mpi-optimized.so": "35c11b84514fdcf296918b05e6d9d448d2af905dee950270139d0bbaa60f5c0d",
+    "build/libns3.19-network-optimized.so": "f1f571fc2cdbd793d8365ab0ce6fe005b1724a48bcf0f6258a8da3f878d4ec64",
+    "build/libns3.19-point-to-point-optimized.so": "734a57297926b1379513c0db8be1c620b249b2598f60c336eebd95f3db4bb314",
+    "build/libns3.19-stats-optimized.so": "d37529076208460f720b443a7caa247ba6a1c2b5ee849dc9bf9f07aaa5f8877e",
+    "build/libns3.19-tools-optimized.so": "1749c8fe66a7189c7bdcdb4426cf9314f00b5791f3da17c65a4def545322b516"
+  },
+  "source_commit": "f6b2145d055b62d80604456d0b3351284715802a",
+  "harness_hashes": {
+    "scripts/develop.py": "4d6a7bea291427bfa84bd8d7e6397fdf3cfe597ebad5dfcfcd1c64cc65a2b36a",
+    "scripts/config_only.py": "c262676a38357281ae8f553beb73a0a3bcefb011188d88882adfbc8eb9d55510",
+    "scripts/upstream/analyze.py": "c265ebec8a4ef7a477e09d991097f2e35259538f94856d4c6456d4e8a3b16be3",
+    "scripts/upstream/campaign.py": "52928645782bd1e1fd57fb9f51cf621aaa83717c01c928618a3b6d4597d516e3"
+  },
+  "topology_hashes": {
+    "leaf_spine_128_100G_OS1": "277574d82b4d709f4122b0ed44ca88c4bf20b5ff2c7fbbd9d67cdefe54386ad3"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "review": "all eight PNG previews inspected after generation; corresponding PDF variants generated from same figures",
+  "artifacts": {
+    "dp2_ablations.pdf": "28aef00bd096edbacbadb9736fd427a61fff674d252008d1d198f830f1449dc0",
+    "dp2_ablations.png": "2f00c04cba7e4b2d97860fc43c3f51cf4b3f400ba4dcfd3b7a7261bc8ca081ad",
+    "dp2_cdf.pdf": "38f7d1a4938eec7e6661bc6103808eef9c7ebad92c49c8fb942d8554904c3b2f",
+    "dp2_cdf.png": "d04e79ada0c4dc381eef14e53f953ce664d803bf12978e526c8cb09cf922a57d",
+    "dp2_events.pdf": "d55e329d7efbd68d45aacf7e68c5477a71a6589f4e794c98a22ab0dc6612930f",
+    "dp2_events.png": "a4317398d23f46e00cdad003ac284da44786867121b8a9a2587e58ed5f82816b",
+    "dp2_metrics.pdf": "f2adb03a5dcf0ee84fdbb333bcd0b14937a486f39688b1663f4f26945a2378aa",
+    "dp2_metrics.png": "d3869341df41d41aba65306b25c9c02568d85e34ed930e37c16a1c14bfd5ce01",
+    "feedback_factorial.pdf": "80b8fa4575262e7d0373e65706e4bdd3b7e57e46cba5079d06161dc3b387874d",
+    "feedback_factorial.png": "59b612707882f44fb33987dbe901bd538838ab632a9cd732cb6e3311ad9287a6",
+    "feedback_gaps.pdf": "78173791d82b6fc98f8434256ea448febd29f3e075a183090734d267fd5fafe5",
+    "feedback_gaps.png": "eb79d150355538140e9f77ebb2b64aa973558ed0b6cbea6bf727f7f90ec6f8b7",
+    "regression.pdf": "3ffa1243ee3c9350bcaacd4fd2866d7a4a53c90364d87f4611b93b3aef8a9ced",
+    "regression.png": "2a1ae5e1b561ef306470a6cd075e71a02311bb9c50506624a5fb0011596e394e",
+    "startup_diagnosis.pdf": "6d4169353c4848b3172edaeb2034eb718b0fdd92b81ed55338e18457e9922652",
+    "startup_diagnosis.png": "769e955be8ee83925657117798165064d07e23d89c3bfdd50c866b8911c1aa20"
+  },
+  "findings": [
+    "Axes, units, full ranges, legends and adverse comparisons visible",
+    "All full-DP2 flows retained in CDF",
+    "Development seed301 and absence of confidence intervals explicit",
+    "Homa labels standardized",
+    "Startup overlapping traces distinguished with line styles",
+    "PFC and timeout event counts retained with zero-inclusive symlog axes"
+  ]
+}

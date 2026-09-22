@@ -1,0 +1,20 @@
+{
+  "scheduler_pid": 3674910,
+  "command": [
+    "python3",
+    "work/guard_balanced_20260921/scripts/confirm.py",
+    "run",
+    "--studies",
+    "ali30",
+    "ali50",
+    "allreduce_dp2",
+    "--arms",
+    "hpcc",
+    "dcqcn",
+    "timely",
+    "--workers",
+    "6"
+  ],
+  "reason": "use spare workers for unstarted frozen cells",
+  "tasks": []
+}

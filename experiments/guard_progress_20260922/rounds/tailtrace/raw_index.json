@@ -1,0 +1,158 @@
+{
+  "raw/ali50-s301-regressions_share128_window1.tar.gz": {
+    "sha256": "bbc6f1c8dbe976eb989fd4460b3b26a4767a8ed44c7563f99d385d8d7a85db30",
+    "status": "completed",
+    "key": "ali50-s301-regressions_share128_window1",
+    "bytes": 5675842
+  },
+  "raw/ali50-s301-regressions_startup.tar.gz": {
+    "sha256": "122fa5009263fd997a4f755075104b97b8800db0bd31546ffb6399808f67fba6",
+    "status": "completed",
+    "key": "ali50-s301-regressions_startup",
+    "bytes": 5675868
+  },
+  "raw/allreduce_dp2-s301-causal_share128_window1.tar.gz": {
+    "sha256": "7e635978aa2faebcc1e792fb7d50d870cd82b7560d696294b6fbf7f042b97cc1",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-causal_share128_window1",
+    "bytes": 39500
+  },
+  "raw/allreduce_dp2-s301-causal_shared_nofabric_trace.tar.gz": {
+    "sha256": "27c51a0607fb23ecd9007b5a686d531cf30b751dc3a9db09950a284e1b468f4d",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-causal_shared_nofabric_trace",
+    "bytes": 6566998
+  },
+  "raw/allreduce_dp2-s301-causal_shared_trace.tar.gz": {
+    "sha256": "c32b3e0f6112a3f7a459872573c8fe024feb5e9e90f6bd63998f0284322b2123",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-causal_shared_trace",
+    "bytes": 7491438
+  },
+  "raw/allreduce_dp2-s301-scheduler_shared_rr_trace.tar.gz": {
+    "sha256": "477009573a51b9c0620f4be7501a9d30dd204412b47f35039ea683d2d05d816d",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-scheduler_shared_rr_trace",
+    "bytes": 8583282
+  },
+  "raw/allreduce_dp2-s301-stable_dcqcn.tar.gz": {
+    "sha256": "6dd8a5b3867fd8b916f7ceb93d8d77b0035cf2c6377b7a7c5cba9a6477882226",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-stable_dcqcn",
+    "bytes": 154351
+  },
+  "raw/allreduce_dp2-s301-stable_homa.tar.gz": {
+    "sha256": "f8fb9a7099299f5c68b98402eebc34bc23e3d3672a9175f6502dc8718fde5704",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-stable_homa",
+    "bytes": 38990
+  },
+  "raw/allreduce_dp2-s301-stable_hpcc.tar.gz": {
+    "sha256": "25d9bd6378702c8b10ade50553cdeeb64717dd289455ea63b84e0ede457dc944",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-stable_hpcc",
+    "bytes": 38308
+  },
+  "raw/allreduce_dp2-s301-stable_share128_window1.tar.gz": {
+    "sha256": "e5acd9669a4edb8b82d403e7b2aa00b0e9a619651d0900adb5ac1e2c57c0aa7e",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-stable_share128_window1",
+    "bytes": 39567
+  },
+  "raw/allreduce_dp2-s301-stable_shared_trace.tar.gz": {
+    "sha256": "818d70d9ec9feab37b9a9c27f7c7d54e09731dac065ae2e977c8cab0a08406c1",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-stable_shared_trace",
+    "bytes": 7581218
+  },
+  "raw/allreduce_dp2-s301-stable_startup.tar.gz": {
+    "sha256": "aa6bd31a49e7bc49ee2b4acdc3226b4f3b8d0c3490b3f6ae03bf2a2ae8097849",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-stable_startup",
+    "bytes": 39493
+  },
+  "raw/allreduce_dp2-s301-stable_startup_trace.tar.gz": {
+    "sha256": "b8d523289ad52fb297413e4c7460a3bd4a9f7c1008d876d07f874f201ad36d9e",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-stable_startup_trace",
+    "bytes": 7127649
+  },
+  "raw/allreduce_dp2-s301-stable_timely.tar.gz": {
+    "sha256": "3fdf127fa124666ff0727ccc507144a4c6e3fc8a11e53fad8a415add53d0c3df",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-stable_timely",
+    "bytes": 58620
+  },
+  "raw/allreduce_dp2-s301-target_shared_alladapt.tar.gz": {
+    "sha256": "e115c8127c855ac51361aaab02c38bacb5ee95032374638c95f4e8c5b94b6aea",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-target_shared_alladapt",
+    "bytes": 39527
+  },
+  "raw/allreduce_dp2-s301-target_startup_alladapt.tar.gz": {
+    "sha256": "166eaa8773741fd00d8036b2396b628b826337b75c1d39a78fcb24ef78620d41",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-target_startup_alladapt",
+    "bytes": 39579
+  },
+  "raw/alltoall-s301-regressions_share128_window1.tar.gz": {
+    "sha256": "0504d358459946ab3e6b3a2ac97b7c1db74c7c34ffdf8136d7ed4a089952f184",
+    "status": "completed",
+    "key": "alltoall-s301-regressions_share128_window1",
+    "bytes": 19929
+  },
+  "raw/alltoall-s301-regressions_startup.tar.gz": {
+    "sha256": "4030e88dc6bca1e5845ecfa32215e46ca2133d51a4fb10709a19728fedf1130a",
+    "status": "completed",
+    "key": "alltoall-s301-regressions_startup",
+    "bytes": 19918
+  },
+  "raw/fairness-s301-regressions_share128_window1.tar.gz": {
+    "sha256": "3950ae835a341a9ef060403301ef17c348530492d31edf1fbd2aa56f78e3efad",
+    "status": "completed",
+    "key": "fairness-s301-regressions_share128_window1",
+    "bytes": 676794
+  },
+  "raw/fairness-s301-regressions_startup.tar.gz": {
+    "sha256": "cfcb6a49dccc2284da5a8512e4036ebbdf2d9f77916b18bd74e08d46a4b6dfde",
+    "status": "completed",
+    "key": "fairness-s301-regressions_startup",
+    "bytes": 676709
+  },
+  "raw/fb40-s301-regressions_share128_window1.tar.gz": {
+    "sha256": "7e4da7c554513e6351fced581a778bc65c40783adf47bec7930fdd08b55b5779",
+    "status": "completed",
+    "key": "fb40-s301-regressions_share128_window1",
+    "bytes": 193118
+  },
+  "raw/fb40-s301-regressions_startup.tar.gz": {
+    "sha256": "307a706ba944231bd93320eaa2f411344c70b24eb40753be0bf52b9a0f2e2e45",
+    "status": "completed",
+    "key": "fb40-s301-regressions_startup",
+    "bytes": 193192
+  },
+  "raw/ring-s301-regressions_share128_window1.tar.gz": {
+    "sha256": "a32c9d208c5399dfc39bfef591a5d6c75e68f3aeb7ba318591fb6d553ee4befb",
+    "status": "completed",
+    "key": "ring-s301-regressions_share128_window1",
+    "bytes": 21622
+  },
+  "raw/ring-s301-regressions_startup.tar.gz": {
+    "sha256": "216deec657fb53711c7a564889a22c592a23cbe92eac6c056eb3000e18975df6",
+    "status": "completed",
+    "key": "ring-s301-regressions_startup",
+    "bytes": 21596
+  },
+  "raw/web40-s301-regressions_share128_window1.tar.gz": {
+    "sha256": "352edb96931856efac43a8c34f92ba7a2f7d6f45375861d29d079ae6c78ae4e4",
+    "status": "completed",
+    "key": "web40-s301-regressions_share128_window1",
+    "bytes": 30113
+  },
+  "raw/web40-s301-regressions_startup.tar.gz": {
+    "sha256": "69c5bcdbec0f007f447b7895962476301c290b4f1979d616ddfbcb1661845621",
+    "status": "completed",
+    "key": "web40-s301-regressions_startup",
+    "bytes": 30052
+  }
+}

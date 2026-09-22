@@ -1,0 +1,56 @@
+{
+  "status": "All six PNG figures inspected; PDFs generated from the same figure objects",
+  "changes": [
+    "Retained small nonzero changes in width annotations with three significant digits",
+    "Annotated exact overlap of full DP2 curves"
+  ],
+  "limitations": [
+    "Single observed development seed 301",
+    "Grant-cap intervals do not establish active bottleneck duration",
+    "K2 rejected as a unified configuration; all regressions retained"
+  ],
+  "figures": {
+    "grant_intervals": {
+      "sha256": {
+        "png": "3f8dfa15ba89f1828fb49da00e4794264525b93a8f44985a788a5e3d630ae556",
+        "pdf": "7dba0d8f4f9fa4e2f45f4acd57726fcfdaa873d40a9cd37e68264083bf353d10"
+      },
+      "visual": "legible, no clipping"
+    },
+    "identity_effects": {
+      "sha256": {
+        "png": "5e5529118aff2589de3b0e8c54d0952bd7d9dddc7d56cd427f9f43a43bfedcfb",
+        "pdf": "d54a919ee64247b5034246be239b597aebbe7ed8de07007565898c4454bee950"
+      },
+      "visual": "legible, no clipping"
+    },
+    "storage_fixed_baselines": {
+      "sha256": {
+        "png": "46738bec7fbab41384042c9cbd09db6a1b9490e0b470bb379606624d6761c563",
+        "pdf": "12d8646825e3c41c639236c1359d35bb78c1f165df48e3221d793f6cf9e51e0b"
+      },
+      "visual": "legible, no clipping"
+    },
+    "width_changes": {
+      "sha256": {
+        "png": "e600c515e20aafc4a2b6a0d6fb15af790de9f9d09330d05d5494fe9e5df8c847",
+        "pdf": "ae7f75da1af142290ef415581a97aa8af8c87702d4fc516c96a7e8a7f74d1f58"
+      },
+      "visual": "legible, no clipping"
+    },
+    "width_dp2": {
+      "sha256": {
+        "png": "a8a47cb2cb5579cae4a608ad5d7fe61c8172e3c43c2472dae224bdcdd06b40da",
+        "pdf": "57dae001465cce7cf9363320b4c2deca8c27711143399e408894388c13795cb7"
+      },
+      "visual": "legible, no clipping"
+    },
+    "width_original_metrics": {
+      "sha256": {
+        "png": "f4f1abf5435415f6da6d17481ef0851a3e65836a700ddfdd4bc60a336a14ff55",
+        "pdf": "55d7bd18474d75d25ad2d8f31a3ecdddf3aa0e736435307f1d9bf889dd83beec"
+      },
+      "visual": "legible, no clipping"
+    }
+  }
+}

@@ -1,0 +1,7 @@
+# NIC service attribution before conditional widening
+
+Previous turn was progress:65 complete preserved tests and receiver feedback provenance checks changed the next hypothesis. Source1181dd9 is frozen and all runs terminal. Universal original-figure objective remains active.
+
+First add observation-only per-NIC actual DATA service counters and sender CAP_REPORT events. Check paired trace neutrality on original Storage30/Storage50/Hybrid K1 and feedback-gated Storage50/Hybrid, all seed301. At sender report emission, compare aggregate NIC and own-flow DATA deltas across actual report intervals. No claim of ready-flow blocking from these counters alone. Verify all host totals against original inputs and sender/receiver report pairs.
+
+If evidence supports it, test a single default-off policy: require at least30% line-rate DATA service to other flows on the same sender NIC during the most recent actual RTT-or-longer measurement window, in addition to the existing fabric/epoch/freshness conditions. The30% corresponds to capacity missing under the fixed70% receiver arrival threshold, and is fixed before results. Measure from high-grant activation and do not reset on every grant refresh. Suppress reports without NIC service evidence, except a negative revocation after a recent positive report. Include report-only controls and all11originalscenes. Existing12/128BDP boundaries and two-low/two-high logic unchanged. Never exclude a scene by name. No manuscript edits or baseline superiority claim until all original comparisons and independent confirmation pass.

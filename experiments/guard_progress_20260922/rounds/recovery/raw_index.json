@@ -1,0 +1,260 @@
+{
+  "raw/ali50-s301-peer_cases_shared.tar.gz": {
+    "sha256": "700e1f5c32a5e09260000349ed1ab458807cda7672d668b3d64668235bfa812a",
+    "status": "completed",
+    "key": "ali50-s301-peer_cases_shared",
+    "bytes": 5675814
+  },
+  "raw/ali50-s301-peer_cases_startup_peer.tar.gz": {
+    "sha256": "d47ee43db6b350c3340fa064613d69fff22fd81a1b99cf79f9bf563dd9f8ad01",
+    "status": "completed",
+    "key": "ali50-s301-peer_cases_startup_peer",
+    "bytes": 5675866
+  },
+  "raw/ali50-s301-peer_cases_startup_wide.tar.gz": {
+    "sha256": "815692453178a0148e1710646cfad1ca45211baff6b40ee2dbf5de145e71922d",
+    "status": "completed",
+    "key": "ali50-s301-peer_cases_startup_wide",
+    "bytes": 5675833
+  },
+  "raw/ali50-s301-recovery_cases_recovery8.tar.gz": {
+    "sha256": "fe4dffcd26ff521267e47db42b7232b143827a2d0db66c84766c71be87d154ed",
+    "status": "completed",
+    "key": "ali50-s301-recovery_cases_recovery8",
+    "bytes": 5675745
+  },
+  "raw/ali50-s301-recovery_cases_shared.tar.gz": {
+    "sha256": "00808cb9cc6dfa96e918c2318998988ce3a21503fb8715a54ac466776dd58d37",
+    "status": "completed",
+    "key": "ali50-s301-recovery_cases_shared",
+    "bytes": 5675817
+  },
+  "raw/allreduce_dp2-s301-dp2_dcqcn.tar.gz": {
+    "sha256": "9d3ba484a3c93e7a16630423b55c6a3c7e22d7e3f2672ffca1765f82b278c48b",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_dcqcn",
+    "bytes": 154230
+  },
+  "raw/allreduce_dp2-s301-dp2_homa.tar.gz": {
+    "sha256": "2ad22c1c95071f8fdc1118191fdaf0784eb89daa666eab1da166e17837492385",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_homa",
+    "bytes": 38940
+  },
+  "raw/allreduce_dp2-s301-dp2_hpcc.tar.gz": {
+    "sha256": "3225dc33823cf9e36d9215be68f37aebdd086a2191d7f3821a289d87f67aed31",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_hpcc",
+    "bytes": 38332
+  },
+  "raw/allreduce_dp2-s301-dp2_recovery32.tar.gz": {
+    "sha256": "ea29bc965445d2c91ea19491b1cdb79c6b627e85200eb0e5054a49a537a735eb",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_recovery32",
+    "bytes": 39793
+  },
+  "raw/allreduce_dp2-s301-dp2_recovery8.tar.gz": {
+    "sha256": "a8c4da85e0836e2860a5f0788433f14e0a44fdf5a1a4013b35a1088b09025dbd",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_recovery8",
+    "bytes": 39574
+  },
+  "raw/allreduce_dp2-s301-dp2_recovery8_l10.tar.gz": {
+    "sha256": "232a63ce57debc5b66d3aa7d7132bd6827d84fe481cfee067186b56623cf24f5",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_recovery8_l10",
+    "bytes": 39705
+  },
+  "raw/allreduce_dp2-s301-dp2_recovery8_trace.tar.gz": {
+    "sha256": "d85cdfdcb6208d534e480a7e9fe912369e4617a6473015cdaccc80a01eb5866d",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_recovery8_trace",
+    "bytes": 12340961
+  },
+  "raw/allreduce_dp2-s301-dp2_shared.tar.gz": {
+    "sha256": "fe4afd95c29cd8a914c6e1a0b556f1e3b7507403036aa00960c53b2112493220",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_shared",
+    "bytes": 39527
+  },
+  "raw/allreduce_dp2-s301-dp2_shared_l10.tar.gz": {
+    "sha256": "4d1792cd939a5eaaf0b9de0bfac8f1c9f615fda5ef61815c057da44e17d9312f",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_shared_l10",
+    "bytes": 39507
+  },
+  "raw/allreduce_dp2-s301-dp2_shared_trace.tar.gz": {
+    "sha256": "e25d17c13ba3bce20cb5d9f8c73132e8aa5e02487369f23aa4ce7156837d51e2",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_shared_trace",
+    "bytes": 10225330
+  },
+  "raw/allreduce_dp2-s301-dp2_timely.tar.gz": {
+    "sha256": "88c4ff20b6ab01c3505a73c72e9bb0ef12634d269a3b6cf4b9bd838eccc917b4",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-dp2_timely",
+    "bytes": 58612
+  },
+  "raw/allreduce_dp2-s301-peer_dp2_startup_peer.tar.gz": {
+    "sha256": "6b954b5b8f7db4a6927755bd3c7d14d3e35b0ddf8d568a9aca2129a8acbb6637",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-peer_dp2_startup_peer",
+    "bytes": 39522
+  },
+  "raw/allreduce_dp2-s301-peer_dp2_startup_wide.tar.gz": {
+    "sha256": "33f998e8226b23e99c6682a5864d461932edf55fa1026e3d534f5b505beca22a",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-peer_dp2_startup_wide",
+    "bytes": 39462
+  },
+  "raw/alltoall-s301-peer_cases_shared.tar.gz": {
+    "sha256": "0fc60369c7aa4007f36dbbe04fae2f68a3ed35a7ae58ebf0e640ccc3f40b4aae",
+    "status": "completed",
+    "key": "alltoall-s301-peer_cases_shared",
+    "bytes": 19814
+  },
+  "raw/alltoall-s301-peer_cases_startup_peer.tar.gz": {
+    "sha256": "d647ba0a4c09fb6de6dee3a80d87dddcca385dfdc26434ef6f612812a28d3741",
+    "status": "completed",
+    "key": "alltoall-s301-peer_cases_startup_peer",
+    "bytes": 19872
+  },
+  "raw/alltoall-s301-peer_cases_startup_wide.tar.gz": {
+    "sha256": "4d6c0210aa1849d4edecd580d702b4af9d20a420af56341eb56a1c6103d1a55f",
+    "status": "completed",
+    "key": "alltoall-s301-peer_cases_startup_wide",
+    "bytes": 19867
+  },
+  "raw/alltoall-s301-recovery_cases_recovery8.tar.gz": {
+    "sha256": "4263bf88f7650031ba057174fa6180a9a8c7c6a08b84f1bf27fec329ade82b04",
+    "status": "completed",
+    "key": "alltoall-s301-recovery_cases_recovery8",
+    "bytes": 19971
+  },
+  "raw/alltoall-s301-recovery_cases_shared.tar.gz": {
+    "sha256": "c232793e5af162c54c1a253edbbe50039ee76a96051dc656289da4d8bc83bc4b",
+    "status": "completed",
+    "key": "alltoall-s301-recovery_cases_shared",
+    "bytes": 19828
+  },
+  "raw/fairness-s301-peer_cases_shared.tar.gz": {
+    "sha256": "8d110508c42ca0a06638956516e2e83936a12fc7abedcd3276b576286af75bfd",
+    "status": "completed",
+    "key": "fairness-s301-peer_cases_shared",
+    "bytes": 676687
+  },
+  "raw/fairness-s301-peer_cases_startup_peer.tar.gz": {
+    "sha256": "19700a61d414d253279e084c939c5ad91713adfe6d9396404fb22e3d79a4ea65",
+    "status": "completed",
+    "key": "fairness-s301-peer_cases_startup_peer",
+    "bytes": 676741
+  },
+  "raw/fairness-s301-peer_cases_startup_wide.tar.gz": {
+    "sha256": "ef89ae43da0e63bf91de61eed3ee49e00d1f0397d66a6c61ec4784c6261ec909",
+    "status": "completed",
+    "key": "fairness-s301-peer_cases_startup_wide",
+    "bytes": 676739
+  },
+  "raw/fairness-s301-recovery_cases_recovery8.tar.gz": {
+    "sha256": "a93f795197e5726f56bfb63e3342476a535d289b2bf6850a5950c5f5df45abe0",
+    "status": "completed",
+    "key": "fairness-s301-recovery_cases_recovery8",
+    "bytes": 676716
+  },
+  "raw/fairness-s301-recovery_cases_shared.tar.gz": {
+    "sha256": "c39881e0447917c028293c0c05887fbaa18bc6e8acac83b755c75b7a83d8e872",
+    "status": "completed",
+    "key": "fairness-s301-recovery_cases_shared",
+    "bytes": 676698
+  },
+  "raw/fb40-s301-peer_cases_shared.tar.gz": {
+    "sha256": "a117a7a6bc1b9a98f8fe3a380d0e5f1848ed1e76791639321edead67be249de4",
+    "status": "completed",
+    "key": "fb40-s301-peer_cases_shared",
+    "bytes": 193115
+  },
+  "raw/fb40-s301-peer_cases_startup_peer.tar.gz": {
+    "sha256": "e4d48ceaf3ec216a69c12b1d5e851f07608fbdf821dc5b3fb2b999f7a4f4ef7e",
+    "status": "completed",
+    "key": "fb40-s301-peer_cases_startup_peer",
+    "bytes": 193213
+  },
+  "raw/fb40-s301-peer_cases_startup_wide.tar.gz": {
+    "sha256": "8618b50ebb8630a238a04873bb8a21230e60bd2e657b74cca70fb2d93ce5726b",
+    "status": "completed",
+    "key": "fb40-s301-peer_cases_startup_wide",
+    "bytes": 193136
+  },
+  "raw/fb40-s301-recovery_cases_recovery8.tar.gz": {
+    "sha256": "60f18b0a3cdb3638b21380fc5d2fbbed778489f2888ff57c08ea194b2c7336a1",
+    "status": "completed",
+    "key": "fb40-s301-recovery_cases_recovery8",
+    "bytes": 193067
+  },
+  "raw/fb40-s301-recovery_cases_shared.tar.gz": {
+    "sha256": "db80e0a99a0e752eb6a7d8f839760a845fe4f6e458fe08e05d56863d09251d3e",
+    "status": "completed",
+    "key": "fb40-s301-recovery_cases_shared",
+    "bytes": 193104
+  },
+  "raw/ring-s301-peer_cases_shared.tar.gz": {
+    "sha256": "e4b46154a7acc65c2a4354eb017e3a740f0dc8794e2c1941d0ce2cf7eae5ebfc",
+    "status": "completed",
+    "key": "ring-s301-peer_cases_shared",
+    "bytes": 21537
+  },
+  "raw/ring-s301-peer_cases_startup_peer.tar.gz": {
+    "sha256": "354b14dae62ea32fc398c2ac4ee9c7ad0337603f7933e062e44c90f1b3b758aa",
+    "status": "completed",
+    "key": "ring-s301-peer_cases_startup_peer",
+    "bytes": 21603
+  },
+  "raw/ring-s301-peer_cases_startup_wide.tar.gz": {
+    "sha256": "00e91cea39e1b6806e2e42b2af60c47227a776b87c2ff86e64e46d087e38ef3f",
+    "status": "completed",
+    "key": "ring-s301-peer_cases_startup_wide",
+    "bytes": 21583
+  },
+  "raw/ring-s301-recovery_cases_recovery8.tar.gz": {
+    "sha256": "aeee9be00d53decb933f7f62a1f575a281f50b5d774eedce7250e425436afe7b",
+    "status": "completed",
+    "key": "ring-s301-recovery_cases_recovery8",
+    "bytes": 21525
+  },
+  "raw/ring-s301-recovery_cases_shared.tar.gz": {
+    "sha256": "5f31693600f8869e768c0da9d37f6c9f9fcd047f36819b706c0a6e58534c9a2a",
+    "status": "completed",
+    "key": "ring-s301-recovery_cases_shared",
+    "bytes": 21548
+  },
+  "raw/web40-s301-peer_cases_shared.tar.gz": {
+    "sha256": "f3d18dfd6cc9000fdffa37cb7cdd2abda3d87096a15c961af3a3bc7f01536596",
+    "status": "completed",
+    "key": "web40-s301-peer_cases_shared",
+    "bytes": 30062
+  },
+  "raw/web40-s301-peer_cases_startup_peer.tar.gz": {
+    "sha256": "711bb3fe838d2ceae2dac45af59c90ec2ef8ad1d4e18a41d2b7a41fffc5ff1a6",
+    "status": "completed",
+    "key": "web40-s301-peer_cases_startup_peer",
+    "bytes": 30189
+  },
+  "raw/web40-s301-peer_cases_startup_wide.tar.gz": {
+    "sha256": "7be605c9e620ca9abe4b9bb42486e1cd3f1714f0c187ecfdfa04ab237c1807b4",
+    "status": "completed",
+    "key": "web40-s301-peer_cases_startup_wide",
+    "bytes": 30023
+  },
+  "raw/web40-s301-recovery_cases_recovery8.tar.gz": {
+    "sha256": "f6bd8513f84d9bedc576903048b897feabedd8a148c912d80841f93141e55487",
+    "status": "completed",
+    "key": "web40-s301-recovery_cases_recovery8",
+    "bytes": 29981
+  },
+  "raw/web40-s301-recovery_cases_shared.tar.gz": {
+    "sha256": "aafdd9a9b6889407767e74cc3702ffc4983f927a2d476515b155505111fd2056",
+    "status": "completed",
+    "key": "web40-s301-recovery_cases_shared",
+    "bytes": 30043
+  }
+}

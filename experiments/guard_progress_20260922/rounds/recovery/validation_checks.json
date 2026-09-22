@@ -1,0 +1,42 @@
+{
+  "status": "all recorded development evidence verified; full goal remains active",
+  "attempts": 43,
+  "complete": 43,
+  "identity_pairs": [
+    {
+      "arms": [
+        "dp2_shared",
+        "dp2_shared_trace"
+      ],
+      "fct_sha256": "4863fbc0bf7857cb466e95f61185b9de49712503e3f5916538a79567baa08001",
+      "all_metrics_identical": true
+    },
+    {
+      "arms": [
+        "dp2_recovery8",
+        "dp2_recovery8_trace"
+      ],
+      "fct_sha256": "8e63d12e87033af14a49d4ef64d89d76884b5ee77e11e546acba56437301d1a3",
+      "all_metrics_identical": true
+    },
+    {
+      "arms": [
+        "peer_dp2_startup_wide",
+        "peer_dp2_startup_peer"
+      ],
+      "fct_sha256": "dbec978c39450053619b5ed8fece496d9424a2ddc3f63b1fcc562cd5607d9e83",
+      "all_metrics_identical": true
+    }
+  ],
+  "complete_traces": 2,
+  "complete_events_per_trace": 1280,
+  "archived_attempts": 43,
+  "harness_round_snapshots": "all original hashes verified",
+  "independent_confirmation": false,
+  "source_commits": {
+    "peer_cases-manifest.json": "7e6a10dabfee3e59c56c49df2b1a1fa6cac79889",
+    "dp2-manifest.json": "778d95a3e510d09236dd3ed1b384c96b5388464b",
+    "recovery_cases-manifest.json": "778d95a3e510d09236dd3ed1b384c96b5388464b",
+    "peer_dp2-manifest.json": "7e6a10dabfee3e59c56c49df2b1a1fa6cac79889"
+  }
+}

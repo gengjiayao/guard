@@ -1,0 +1,17 @@
+{
+  "completed": 65,
+  "failed_simulations": 0,
+  "failed_initial_builds": 1,
+  "source_commits": {
+    "activity": "8f9f6bc97521d86044a7ee3dd05f98f72749b276",
+    "feedback": "1181dd94c5c5da3d899705c3caa06f4dad19a1cd",
+    "width": "ef5d5a450d33a9114e52828ed4fc501c18919171",
+    "hybrid_trace": "ef5d5a450d33a9114e52828ed4fc501c18919171",
+    "feedback_trace": "1181dd94c5c5da3d899705c3caa06f4dad19a1cd",
+    "width_trace": "ef5d5a450d33a9114e52828ed4fc501c18919171"
+  },
+  "source_build_input_harness_config_archive_hashes": "verified",
+  "paired_complete_fct_and_metrics": "exact for all observation pairs; unchanged K1 exact across sources",
+  "goal_status": "active",
+  "independent_confirmation": false
+}

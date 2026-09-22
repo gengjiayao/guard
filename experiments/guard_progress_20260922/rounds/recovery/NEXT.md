@@ -1,0 +1,13 @@
+# Continue full objective; no universal advantage yet
+
+This turn made concrete progress:43complete original-trace runs, causal timing-recovery feature, same-peer startup refinement, all4DP2baselines refreshed, exact trace neutrality and raw/harness archives verified. No live jobs, no independent seeds, no paper promotion.
+
+Recovery8/32 reduce DP2P99 from93.682ms to65.752/57.502ms; Homa47.189ms. But mean grows15.932→16.939/16.652ms andqueue12.411→20.434/27.301us. HPCCqueue.213us; DCQCN4.626us. Thus stronger recovery cannot simply be promoted as a universal win. Recovery8lambda1 restores lowerqueue4.622us butmean23.827ms, stillslowerHoma17.699. Recovery32cross-scenario regression NOTyettested.
+
+Trace proof: worst13flows' average low-rate sample fraction75.05%→19.49%, median of median sampled full-feedback gaps197.133→63.169us. Actual recovery increment formula validated at all sampled stored full updates. Everytracehas1280completeevents,nocaptruncation. Sample fractions are not exact time residency; worst13flowidentities differ per arm.
+
+Same-peer startup7e6a10d preservesexactDP2results ofwide-startup(mean14.964ms,P9985.253,queue12.120) and eliminates the additionalWebregression. Analyticsstill+1.31%mean,+5.23%span versusstartupdisabled; otherstudiesunchanged. Need causal tracing of the few overlapping largeAnalyticsflows to see whether the receiver already caps them. Hypothesis, NOTvalidated: avoid startup sharing when old same-peer flows are receiver-bound; consider enabling it only when existing matching flows are fabric-bound with full receiver grants. Do not silently specialize by workload name.
+
+Potential next combined probe: cherry-pick same-peer startup7e6a10d onto recovery778d95a in a NEWworktree, resolve adjacent attribute/member conflicts preservingbothfeatures, rerun helper/allocator tests and freeze. Test unified startup+recovery profiles, with matched ablations; do not mix profiles acrossfigures. Bothfeatures alone now have causalevidence, but their combination is NOTtested. Queuecost remainsprincipalconstraint; blindly increasingrecoverybound is insufficient. A further alternative is investigate fabric-rate sharing or initialization between same-path flows, but path identity is not in current INT records; do not assume paths from destination alone or use simulator-only hidden state as a protocol oracle.
+
+Alloriginalfigures remainin scope: storageworkloadsandbins,directedbottlenecks,ablations,OFLM,fairness,All-to-All/DP2,Ring,time-seriesandreceiver-widthsupplements. Originalsourceguard650811andpreviouspaperdatasetsuntouched. Finalclaimsrequireoneglobalconfiguration,freshmatchedfourbaselineconfirmation,newseeds,andpaperreviewgates.

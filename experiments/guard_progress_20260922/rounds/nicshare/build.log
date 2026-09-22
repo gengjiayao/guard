@@ -1,0 +1,679 @@
+Waf: Entering directory `/home/gengjiayao/ict/guard-nictrace/build'
+[  14/1001] install-ns3-header: src/applications/model/udp-client.h -> build/ns3/udp-client.h
+[  16/1001] install-ns3-header: src/applications/model/v4ping.h -> build/ns3/v4ping.h
+[  17/1001] install-ns3-header: src/applications/model/packet-sink.h -> build/ns3/packet-sink.h
+[  17/1001] install-ns3-header: src/applications/helper/ping6-helper.h -> build/ns3/ping6-helper.h
+[  18/1001] install-ns3-header: src/applications/model/udp-echo-client.h -> build/ns3/udp-echo-client.h
+[  19/1001] install-ns3-header: src/applications/model/radvd-prefix.h -> build/ns3/radvd-prefix.h
+[  20/1001] install-ns3-header: src/applications/model/app-recv-buffer.h -> build/ns3/app-recv-buffer.h
+[  21/1001] install-ns3-header: src/applications/model/ping6.h -> build/ns3/ping6.h
+[  23/1001] install-ns3-header: src/applications/helper/udp-echo-helper.h -> build/ns3/udp-echo-helper.h
+[  23/1001] install-ns3-header: src/applications/helper/rdma-client-helper.h -> build/ns3/rdma-client-helper.h
+[  24/1001] install-ns3-header: src/applications/helper/on-off-helper.h -> build/ns3/on-off-helper.h
+[  25/1001] install-ns3-header: src/applications/helper/v4ping-helper.h -> build/ns3/v4ping-helper.h
+[  27/1001] install-ns3-header: src/applications/model/packet-loss-counter.h -> build/ns3/packet-loss-counter.h
+[  27/1001] install-ns3-header: src/applications/model/udp-trace-client.h -> build/ns3/udp-trace-client.h
+[  28/1001] install-ns3-header: src/applications/helper/packet-sink-helper.h -> build/ns3/packet-sink-helper.h
+[  29/1001] install-ns3-header: src/applications/model/check-all-packets.h -> build/ns3/check-all-packets.h
+[  30/1001] install-ns3-header: src/applications/model/rdma-client.h -> build/ns3/rdma-client.h
+[  32/1001] install-ns3-header: src/applications/model/udp-echo-server.h -> build/ns3/udp-echo-server.h
+[  32/1001] install-ns3-header: src/applications/model/bulk-send-application.h -> build/ns3/bulk-send-application.h
+[  34/1001] install-ns3-header: src/applications/helper/udp-client-server-helper.h -> build/ns3/udp-client-server-helper.h
+[  34/1001] install-ns3-header: src/applications/model/radvd.h -> build/ns3/radvd.h
+[  35/1001] install-ns3-header: src/applications/helper/bulk-send-helper.h -> build/ns3/bulk-send-helper.h
+[  37/1001] install-ns3-header: src/applications/model/udp-server.h -> build/ns3/udp-server.h
+[  37/1001] install-ns3-header: src/applications/model/onoff-application.h -> build/ns3/onoff-application.h
+[  38/1001] install-ns3-header: src/applications/model/radvd-interface.h -> build/ns3/radvd-interface.h
+[  39/1001] install-ns3-header: src/bridge/model/bridge-net-device.h -> build/ns3/bridge-net-device.h
+[  40/1001] install-ns3-header: src/bridge/model/bridge-channel.h -> build/ns3/bridge-channel.h
+[  42/1001] install-ns3-header: src/bridge/helper/bridge-helper.h -> build/ns3/bridge-helper.h
+[  53/1001] install-ns3-header: src/config-store/model/file-config.h -> build/ns3/file-config.h
+[  54/1001] install-ns3-header: src/config-store/model/config-store.h -> build/ns3/config-store.h
+[  55/1001] install-ns3-header: src/core/model/hash.h -> build/ns3/hash.h
+[  56/1001] install-ns3-header: src/core/model/log.h -> build/ns3/log.h
+[  57/1001] install-ns3-header: src/core/model/object-vector.h -> build/ns3/object-vector.h
+[  59/1001] install-ns3-header: src/core/model/synchronizer.h -> build/ns3/synchronizer.h
+[  59/1001] install-ns3-header: src/core/model/int-to-type.h -> build/ns3/int-to-type.h
+[  60/1001] install-ns3-header: src/core/model/type-id.h -> build/ns3/type-id.h
+[  61/1001] install-ns3-header: src/core/model/object-map.h -> build/ns3/object-map.h
+[  63/1001] install-ns3-header: src/core/model/calendar-scheduler.h -> build/ns3/calendar-scheduler.h
+[  63/1001] install-ns3-header: src/core/model/math.h -> build/ns3/math.h
+[  64/1001] install-ns3-header: src/core/model/scheduler.h -> build/ns3/scheduler.h
+[  66/1001] install-ns3-header: src/core/model/integer.h -> build/ns3/integer.h
+[  66/1001] install-ns3-header: src/core/model/list-scheduler.h -> build/ns3/list-scheduler.h
+[  67/1001] install-ns3-header: src/core/model/attribute-helper.h -> build/ns3/attribute-helper.h
+[  68/1001] install-ns3-header: src/core/model/simulator.h -> build/ns3/simulator.h
+[  69/1001] install-ns3-header: src/core/model/rng-seed-manager.h -> build/ns3/rng-seed-manager.h
+[  70/1001] install-ns3-header: src/core/model/boolean.h -> build/ns3/boolean.h
+[  71/1001] install-ns3-header: src/core/model/hash-fnv.h -> build/ns3/hash-fnv.h
+[  72/1001] install-ns3-header: src/core/model/abort.h -> build/ns3/abort.h
+[  73/1001] install-ns3-header: src/core/model/trace-source-accessor.h -> build/ns3/trace-source-accessor.h
+[  74/1001] install-ns3-header: src/core/model/callback.h -> build/ns3/callback.h
+[  76/1001] install-ns3-header: src/core/model/system-condition.h -> build/ns3/system-condition.h
+[  76/1001] install-ns3-header: src/core/model/assert.h -> build/ns3/assert.h
+[  78/1001] install-ns3-header: src/core/model/singleton.h -> build/ns3/singleton.h
+[  78/1001] install-ns3-header: src/core/model/test.h -> build/ns3/test.h
+[  79/1001] install-ns3-header: src/core/model/type-name.h -> build/ns3/type-name.h
+[  81/1001] install-ns3-header: src/core/model/make-event.h -> build/ns3/make-event.h
+[  82/1001] install-ns3-header: src/core/model/attribute-construction-list.h -> build/ns3/attribute-construction-list.h
+[  82/1001] install-ns3-header: src/core/model/int64x64.h -> build/ns3/int64x64.h
+[  83/1001] install-ns3-header: src/core/model/timer.h -> build/ns3/timer.h
+[  85/1001] install-ns3-header: src/core/model/deprecated.h -> build/ns3/deprecated.h
+[  85/1001] install-ns3-header: src/core/model/pointer.h -> build/ns3/pointer.h
+[  86/1001] install-ns3-header: src/core/model/hash-murmur3.h -> build/ns3/hash-murmur3.h
+[  87/1001] install-ns3-header: src/core/model/unix-fd-reader.h -> build/ns3/unix-fd-reader.h
+[  88/1001] install-ns3-header: src/core/model/default-simulator-impl.h -> build/ns3/default-simulator-impl.h
+[  90/1001] install-ns3-header: src/core/model/unused.h -> build/ns3/unused.h
+[  91/1001] install-ns3-header: src/core/model/attribute.h -> build/ns3/attribute.h
+[  91/1001] install-ns3-header: src/core/model/ref-count-base.h -> build/ns3/ref-count-base.h
+[  93/1001] install-ns3-header: src/core/model/random-variable.h -> build/ns3/random-variable.h
+[  93/1001] install-ns3-header: src/core/model/simulator-impl.h -> build/ns3/simulator-impl.h
+[  94/1001] install-ns3-header: src/core/model/system-mutex.h -> build/ns3/system-mutex.h
+[  95/1001] install-ns3-header: src/core/model/wall-clock-synchronizer.h -> build/ns3/wall-clock-synchronizer.h
+[  97/1001] install-ns3-header: src/core/model/system-thread.h -> build/ns3/system-thread.h
+[  97/1001] install-ns3-header: src/core/model/realtime-simulator-impl.h -> build/ns3/realtime-simulator-impl.h
+[  98/1001] install-ns3-header: src/core/model/hash-function.h -> build/ns3/hash-function.h
+[  99/1001] install-ns3-header: src/core/model/map-scheduler.h -> build/ns3/map-scheduler.h
+[ 100/1001] install-ns3-header: src/core/model/watchdog.h -> build/ns3/watchdog.h
+[ 101/1001] install-ns3-header: src/core/model/int64x64-double.h -> build/ns3/int64x64-double.h
+[ 102/1001] install-ns3-header: src/core/model/traced-callback.h -> build/ns3/traced-callback.h
+[ 103/1001] install-ns3-header: src/core/model/traced-value.h -> build/ns3/traced-value.h
+[ 105/1001] install-ns3-header: src/core/model/int64x64-128.h -> build/ns3/int64x64-128.h
+[ 105/1001] install-ns3-header: src/core/model/random-variable-stream.h -> build/ns3/random-variable-stream.h
+[ 106/1001] install-ns3-header: src/core/model/event-id.h -> build/ns3/event-id.h
+[ 107/1001] install-ns3-header: src/core/model/vector.h -> build/ns3/vector.h
+[ 108/1001] install-ns3-header: src/core/model/timer-impl.h -> build/ns3/timer-impl.h
+[ 110/1001] install-ns3-header: src/core/model/uinteger.h -> build/ns3/uinteger.h
+[ 110/1001] install-ns3-header: src/core/model/object-ptr-container.h -> build/ns3/object-ptr-container.h
+[ 111/1001] install-ns3-header: src/core/model/breakpoint.h -> build/ns3/breakpoint.h
+[ 113/1001] install-ns3-header: src/core/model/fatal-error.h -> build/ns3/fatal-error.h
+[ 113/1001] install-ns3-header: src/core/model/object-base.h -> build/ns3/object-base.h
+[ 114/1001] install-ns3-header: src/core/model/simple-ref-count.h -> build/ns3/simple-ref-count.h
+[ 116/1001] install-ns3-header: src/core/model/global-value.h -> build/ns3/global-value.h
+[ 116/1001] install-ns3-header: src/core/model/object-factory.h -> build/ns3/object-factory.h
+[ 117/1001] install-ns3-header: src/core/model/names.h -> build/ns3/names.h
+[ 118/1001] install-ns3-header: src/core/model/attribute-accessor-helper.h -> build/ns3/attribute-accessor-helper.h
+[ 119/1001] install-ns3-header: src/core/model/event-impl.h -> build/ns3/event-impl.h
+[ 120/1001] install-ns3-header: src/core/model/object.h -> build/ns3/object.h
+[ 121/1001] install-ns3-header: src/core/model/heap-scheduler.h -> build/ns3/heap-scheduler.h
+[ 122/1001] install-ns3-header: src/core/model/simulation-singleton.h -> build/ns3/simulation-singleton.h
+[ 123/1001] install-ns3-header: src/core/model/rng-stream.h -> build/ns3/rng-stream.h
+[ 124/1001] install-ns3-header: src/core/model/enum.h -> build/ns3/enum.h
+[ 125/1001] install-ns3-header: src/core/model/config.h -> build/ns3/config.h
+[ 126/1001] install-ns3-header: src/core/model/system-path.h -> build/ns3/system-path.h
+[ 127/1001] install-ns3-header: src/core/model/command-line.h -> build/ns3/command-line.h
+[ 128/1001] install-ns3-header: src/core/model/nstime.h -> build/ns3/nstime.h
+[ 129/1001] install-ns3-header: src/core/model/default-deleter.h -> build/ns3/default-deleter.h
+[ 130/1001] install-ns3-header: src/core/model/ptr.h -> build/ns3/ptr.h
+[ 131/1001] install-ns3-header: src/core/model/double.h -> build/ns3/double.h
+[ 132/1001] install-ns3-header: src/core/model/empty.h -> build/ns3/empty.h
+[ 133/1001] install-ns3-header: src/core/model/fatal-impl.h -> build/ns3/fatal-impl.h
+[ 134/1001] install-ns3-header: src/core/model/string.h -> build/ns3/string.h
+[ 135/1001] install-ns3-header: src/core/model/system-wall-clock-ms.h -> build/ns3/system-wall-clock-ms.h
+[ 146/1001] install-ns3-header: src/core/model/type-traits.h -> build/ns3/type-traits.h
+[ 182/1001] install-ns3-header: src/internet/model/ipv4-address-generator.h -> build/ns3/ipv4-address-generator.h
+[ 183/1001] install-ns3-header: src/internet/model/tcp-option-no-op.h -> build/ns3/tcp-option-no-op.h
+[ 184/1001] install-ns3-header: src/internet/model/ipv4-header.h -> build/ns3/ipv4-header.h
+[ 185/1001] install-ns3-header: src/internet/model/ipv4-route.h -> build/ns3/ipv4-route.h
+[ 186/1001] install-ns3-header: src/internet/helper/ipv6-static-routing-helper.h -> build/ns3/ipv6-static-routing-helper.h
+[ 187/1001] install-ns3-header: src/internet/model/udp-socket-factory.h -> build/ns3/udp-socket-factory.h
+[ 188/1001] install-ns3-header: src/internet/model/arp-cache.h -> build/ns3/arp-cache.h
+[ 190/1001] install-ns3-header: src/internet/model/ipv6-l3-protocol.h -> build/ns3/ipv6-l3-protocol.h
+[ 190/1001] install-ns3-header: src/internet/model/tcp-tahoe.h -> build/ns3/tcp-tahoe.h
+[ 191/1001] install-ns3-header: src/internet/model/ipv4-static-routing.h -> build/ns3/ipv4-static-routing.h
+[ 192/1001] install-ns3-header: src/internet/model/arp-l3-protocol.h -> build/ns3/arp-l3-protocol.h
+[ 193/1001] install-ns3-header: src/internet/model/icmpv6-header.h -> build/ns3/icmpv6-header.h
+[ 194/1001] install-ns3-header: src/internet/model/ipv4-global-routing.h -> build/ns3/ipv4-global-routing.h
+[ 196/1001] install-ns3-header: src/internet/model/tcp-reno.h -> build/ns3/tcp-reno.h
+[ 197/1001] install-ns3-header: src/internet/model/tcp-rx-buffer.h -> build/ns3/tcp-rx-buffer.h
+[ 198/1001] install-ns3-header: src/internet/helper/ipv6-address-helper.h -> build/ns3/ipv6-address-helper.h
+[ 198/1001] install-ns3-header: src/internet/model/icmpv6-l4-protocol.h -> build/ns3/icmpv6-l4-protocol.h
+[ 199/1001] install-ns3-header: src/internet/helper/ipv6-interface-container.h -> build/ns3/ipv6-interface-container.h
+[ 200/1001] install-ns3-header: src/internet/model/ipv4-raw-socket-impl.h -> build/ns3/ipv4-raw-socket-impl.h
+[ 201/1001] install-ns3-header: src/internet/model/ipv6-raw-socket-factory.h -> build/ns3/ipv6-raw-socket-factory.h
+[ 202/1001] install-ns3-header: src/internet/helper/ipv6-routing-helper.h -> build/ns3/ipv6-routing-helper.h
+[ 203/1001] install-ns3-header: src/internet/model/ipv6-interface-address.h -> build/ns3/ipv6-interface-address.h
+[ 204/1001] install-ns3-header: src/internet/model/ipv6-extension.h -> build/ns3/ipv6-extension.h
+[ 205/1001] install-ns3-header: src/internet/helper/ipv4-global-routing-helper.h -> build/ns3/ipv4-global-routing-helper.h
+[ 206/1001] install-ns3-header: src/internet/helper/ipv4-address-helper.h -> build/ns3/ipv4-address-helper.h
+[ 208/1001] install-ns3-header: src/internet/model/ipv4-list-routing.h -> build/ns3/ipv4-list-routing.h
+[ 208/1001] install-ns3-header: src/internet/model/ipv6-header.h -> build/ns3/ipv6-header.h
+[ 209/1001] install-ns3-header: src/internet/model/ipv6-static-routing.h -> build/ns3/ipv6-static-routing.h
+[ 211/1001] install-ns3-header: src/internet/helper/ipv6-list-routing-helper.h -> build/ns3/ipv6-list-routing-helper.h
+[ 212/1001] install-ns3-header: src/internet/model/ipv4-interface.h -> build/ns3/ipv4-interface.h
+[ 212/1001] install-ns3-header: src/internet/model/ipv6-route.h -> build/ns3/ipv6-route.h
+[ 213/1001] install-ns3-header: src/internet/model/ipv6-routing-table-entry.h -> build/ns3/ipv6-routing-table-entry.h
+[ 214/1001] install-ns3-header: src/internet/model/tcp-header.h -> build/ns3/tcp-header.h
+[ 215/1001] install-ns3-header: src/internet/model/global-route-manager.h -> build/ns3/global-route-manager.h
+[ 216/1001] install-ns3-header: src/internet/model/udp-l4-protocol.h -> build/ns3/udp-l4-protocol.h
+[ 217/1001] install-ns3-header: src/internet/model/ipv6-extension-demux.h -> build/ns3/ipv6-extension-demux.h
+[ 219/1001] install-ns3-header: src/internet/model/udp-header.h -> build/ns3/udp-header.h
+[ 219/1001] install-ns3-header: src/internet/helper/ipv4-list-routing-helper.h -> build/ns3/ipv4-list-routing-helper.h
+[ 220/1001] install-ns3-header: src/internet/model/ipv4-l3-protocol.h -> build/ns3/ipv4-l3-protocol.h
+[ 221/1001] install-ns3-header: src/internet/model/ipv4-end-point.h -> build/ns3/ipv4-end-point.h
+[ 222/1001] install-ns3-header: src/internet/model/rdma.h -> build/ns3/rdma.h
+[ 223/1001] install-ns3-header: src/internet/model/tcp-newreno.h -> build/ns3/tcp-newreno.h
+[ 224/1001] install-ns3-header: src/internet/model/ipv4-routing-protocol.h -> build/ns3/ipv4-routing-protocol.h
+[ 225/1001] install-ns3-header: src/internet/model/ip-l4-protocol.h -> build/ns3/ip-l4-protocol.h
+[ 226/1001] install-ns3-header: src/internet/model/ipv4.h -> build/ns3/ipv4.h
+[ 227/1001] install-ns3-header: src/internet/helper/ipv4-routing-helper.h -> build/ns3/ipv4-routing-helper.h
+[ 228/1001] install-ns3-header: src/internet/model/arp-header.h -> build/ns3/arp-header.h
+[ 229/1001] install-ns3-header: src/internet/model/ipv6-packet-info-tag.h -> build/ns3/ipv6-packet-info-tag.h
+[ 231/1001] install-ns3-header: src/internet/model/ipv6-interface.h -> build/ns3/ipv6-interface.h
+[ 231/1001] install-ns3-header: src/internet/model/ipv6-address-generator.h -> build/ns3/ipv6-address-generator.h
+[ 232/1001] install-ns3-header: src/internet/model/global-router-interface.h -> build/ns3/global-router-interface.h
+[ 233/1001] install-ns3-header: src/internet/helper/ipv4-static-routing-helper.h -> build/ns3/ipv4-static-routing-helper.h
+[ 234/1001] install-ns3-header: src/internet/model/tcp-socket-base.h -> build/ns3/tcp-socket-base.h
+[ 235/1001] install-ns3-header: src/internet/model/ipv4-packet-info-tag.h -> build/ns3/ipv4-packet-info-tag.h
+[ 236/1001] install-ns3-header: src/internet/model/ipv4-raw-socket-factory.h -> build/ns3/ipv4-raw-socket-factory.h
+[ 237/1001] install-ns3-header: src/internet/model/udp-socket.h -> build/ns3/udp-socket.h
+[ 238/1001] install-ns3-header: src/internet/model/tcp-rfc793.h -> build/ns3/tcp-rfc793.h
+[ 239/1001] install-ns3-header: src/internet/model/ipv6-routing-protocol.h -> build/ns3/ipv6-routing-protocol.h
+[ 240/1001] install-ns3-header: src/internet/helper/internet-stack-helper.h -> build/ns3/internet-stack-helper.h
+[ 241/1001] install-ns3-header: src/internet/model/ipv6-option-header.h -> build/ns3/ipv6-option-header.h
+[ 242/1001] install-ns3-header: src/internet/model/ipv6-extension-header.h -> build/ns3/ipv6-extension-header.h
+[ 243/1001] install-ns3-header: src/internet/model/tcp-option.h -> build/ns3/tcp-option.h
+[ 244/1001] install-ns3-header: src/internet/model/loopback-net-device.h -> build/ns3/loopback-net-device.h
+[ 245/1001] install-ns3-header: src/internet/model/rtt-estimator.h -> build/ns3/rtt-estimator.h
+[ 246/1001] install-ns3-header: src/internet/helper/internet-trace-helper.h -> build/ns3/internet-trace-helper.h
+[ 247/1001] install-ns3-header: src/internet/model/ipv6.h -> build/ns3/ipv6.h
+[ 248/1001] install-ns3-header: src/internet/model/tcp-l4-protocol.h -> build/ns3/tcp-l4-protocol.h
+[ 249/1001] install-ns3-header: src/internet/helper/ipv4-interface-container.h -> build/ns3/ipv4-interface-container.h
+[ 251/1001] install-ns3-header: src/internet/model/candidate-queue.h -> build/ns3/candidate-queue.h
+[ 251/1001] install-ns3-header: src/internet/model/ndisc-cache.h -> build/ns3/ndisc-cache.h
+[ 252/1001] install-ns3-header: src/internet/model/ipv6-list-routing.h -> build/ns3/ipv6-list-routing.h
+[ 254/1001] install-ns3-header: src/internet/model/tcp-socket-factory.h -> build/ns3/tcp-socket-factory.h
+[ 254/1001] install-ns3-header: src/internet/model/icmpv4.h -> build/ns3/icmpv4.h
+[ 255/1001] install-ns3-header: src/internet/model/icmpv4-l4-protocol.h -> build/ns3/icmpv4-l4-protocol.h
+[ 256/1001] install-ns3-header: src/internet/model/tcp-tx-buffer.h -> build/ns3/tcp-tx-buffer.h
+[ 258/1001] install-ns3-header: src/internet/model/ipv4-interface-address.h -> build/ns3/ipv4-interface-address.h
+[ 258/1001] install-ns3-header: src/internet/model/global-route-manager-impl.h -> build/ns3/global-route-manager-impl.h
+[ 259/1001] install-ns3-header: src/internet/model/ipv4-routing-table-entry.h -> build/ns3/ipv4-routing-table-entry.h
+[ 260/1001] install-ns3-header: src/internet/model/seq-ts-header.h -> build/ns3/seq-ts-header.h
+[ 265/1001] install-ns3-header: src/internet/model/tcp-socket.h -> build/ns3/tcp-socket.h
+[ 372/1001] install-ns3-header: src/mpi/model/mpi-interface.h -> build/ns3/mpi-interface.h
+[ 373/1001] install-ns3-header: src/mpi/model/mpi-receiver.h -> build/ns3/mpi-receiver.h
+[ 376/1001] install-ns3-header: src/mpi/model/distributed-simulator-impl.h -> build/ns3/distributed-simulator-impl.h
+[ 377/1001] install-ns3-header: src/network/helper/trace-helper.h -> build/ns3/trace-helper.h
+[ 378/1001] install-ns3-header: src/network/utils/mac64-address.h -> build/ns3/mac64-address.h
+[ 379/1001] install-ns3-header: src/network/utils/output-stream-wrapper.h -> build/ns3/output-stream-wrapper.h
+[ 380/1001] install-ns3-header: src/network/utils/packetbb.h -> build/ns3/packetbb.h
+[ 381/1001] install-ns3-header: src/network/utils/llc-snap-header.h -> build/ns3/llc-snap-header.h
+[ 382/1001] install-ns3-header: src/network/utils/pcap-file-wrapper.h -> build/ns3/pcap-file-wrapper.h
+[ 383/1001] install-ns3-header: src/network/utils/simple-channel.h -> build/ns3/simple-channel.h
+[ 384/1001] install-ns3-header: src/network/utils/drop-tail-queue.h -> build/ns3/drop-tail-queue.h
+[ 385/1001] install-ns3-header: src/network/utils/ipv6-address.h -> build/ns3/ipv6-address.h
+[ 386/1001] install-ns3-header: src/network/utils/pcap-file.h -> build/ns3/pcap-file.h
+[ 387/1001] install-ns3-header: src/network/utils/packet-socket.h -> build/ns3/packet-socket.h
+[ 388/1001] install-ns3-header: src/network/model/node-list.h -> build/ns3/node-list.h
+[ 389/1001] install-ns3-header: src/network/model/header.h -> build/ns3/header.h
+[ 390/1001] install-ns3-header: src/network/utils/ipv4-address.h -> build/ns3/ipv4-address.h
+[ 392/1001] install-ns3-header: src/network/model/node.h -> build/ns3/node.h
+[ 392/1001] install-ns3-header: src/network/model/net-device.h -> build/ns3/net-device.h
+[ 393/1001] install-ns3-header: src/network/utils/radiotap-header.h -> build/ns3/radiotap-header.h
+[ 394/1001] install-ns3-header: src/network/model/address.h -> build/ns3/address.h
+[ 395/1001] install-ns3-header: src/network/model/packet-metadata.h -> build/ns3/packet-metadata.h
+[ 396/1001] install-ns3-header: src/network/utils/red-queue.h -> build/ns3/red-queue.h
+[ 397/1001] install-ns3-header: src/network/model/packet-tag-list.h -> build/ns3/packet-tag-list.h
+[ 398/1001] install-ns3-header: src/network/utils/custom-header.h -> build/ns3/custom-header.h
+[ 399/1001] install-ns3-header: src/network/model/application.h -> build/ns3/application.h
+[ 400/1001] install-ns3-header: src/network/model/chunk.h -> build/ns3/chunk.h
+[ 401/1001] install-ns3-header: src/network/model/packet.h -> build/ns3/packet.h
+[ 403/1001] install-ns3-header: src/network/utils/queue.h -> build/ns3/queue.h
+[ 403/1001] install-ns3-header: src/network/utils/sgi-hashmap.h -> build/ns3/sgi-hashmap.h
+[ 404/1001] install-ns3-header: src/network/model/channel.h -> build/ns3/channel.h
+[ 405/1001] install-ns3-header: src/network/model/byte-tag-list.h -> build/ns3/byte-tag-list.h
+[ 407/1001] install-ns3-header: src/network/model/flow-id-num-tag.h -> build/ns3/flow-id-num-tag.h
+[ 408/1001] install-ns3-header: src/network/utils/leaky-bucket.h -> build/ns3/leaky-bucket.h
+[ 408/1001] install-ns3-header: src/network/utils/pcap-test.h -> build/ns3/pcap-test.h
+[ 409/1001] install-ns3-header: src/network/utils/error-model.h -> build/ns3/error-model.h
+[ 410/1001] install-ns3-header: src/network/utils/address-utils.h -> build/ns3/address-utils.h
+[ 411/1001] install-ns3-header: src/network/utils/flow-id-tag.h -> build/ns3/flow-id-tag.h
+[ 413/1001] install-ns3-header: src/network/helper/node-container.h -> build/ns3/node-container.h
+[ 413/1001] install-ns3-header: src/network/utils/simple-net-device.h -> build/ns3/simple-net-device.h
+[ 414/1001] install-ns3-header: src/network/utils/data-rate.h -> build/ns3/data-rate.h
+[ 415/1001] install-ns3-header: src/network/helper/packet-socket-helper.h -> build/ns3/packet-socket-helper.h
+[ 416/1001] install-ns3-header: src/network/model/tag-buffer.h -> build/ns3/tag-buffer.h
+[ 417/1001] install-ns3-header: src/network/utils/generic-phy.h -> build/ns3/generic-phy.h
+[ 418/1001] install-ns3-header: src/network/utils/inet-socket-address.h -> build/ns3/inet-socket-address.h
+[ 419/1001] install-ns3-header: src/network/model/buffer.h -> build/ns3/buffer.h
+[ 420/1001] install-ns3-header: src/network/helper/application-container.h -> build/ns3/application-container.h
+[ 422/1001] install-ns3-header: src/network/utils/packet-burst.h -> build/ns3/packet-burst.h
+[ 422/1001] install-ns3-header: src/network/utils/mac48-address.h -> build/ns3/mac48-address.h
+[ 423/1001] install-ns3-header: src/network/helper/leaky-bucket-helper.h -> build/ns3/leaky-bucket-helper.h
+[ 424/1001] install-ns3-header: src/network/utils/broadcom-egress-queue.h -> build/ns3/broadcom-egress-queue.h
+[ 426/1001] install-ns3-header: src/network/model/tag.h -> build/ns3/tag.h
+[ 426/1001] install-ns3-header: src/network/utils/packet-socket-factory.h -> build/ns3/packet-socket-factory.h
+[ 427/1001] install-ns3-header: src/network/model/socket.h -> build/ns3/socket.h
+[ 428/1001] install-ns3-header: src/network/helper/net-device-container.h -> build/ns3/net-device-container.h
+[ 429/1001] install-ns3-header: src/network/utils/sequence-number.h -> build/ns3/sequence-number.h
+[ 430/1001] install-ns3-header: src/network/utils/inet6-socket-address.h -> build/ns3/inet6-socket-address.h
+[ 431/1001] install-ns3-header: src/network/utils/ethernet-header.h -> build/ns3/ethernet-header.h
+[ 432/1001] install-ns3-header: src/network/utils/ethernet-trailer.h -> build/ns3/ethernet-trailer.h
+[ 433/1001] install-ns3-header: src/network/model/socket-factory.h -> build/ns3/socket-factory.h
+[ 434/1001] install-ns3-header: src/network/model/broadcom-node.h -> build/ns3/broadcom-node.h
+[ 435/1001] install-ns3-header: src/network/model/trailer.h -> build/ns3/trailer.h
+[ 436/1001] install-ns3-header: src/network/utils/int-header.h -> build/ns3/int-header.h
+[ 437/1001] install-ns3-header: src/network/model/channel-list.h -> build/ns3/channel-list.h
+[ 439/1001] install-ns3-header: src/network/utils/packet-socket-address.h -> build/ns3/packet-socket-address.h
+[ 439/1001] install-ns3-header: src/network/model/nix-vector.h -> build/ns3/nix-vector.h
+[ 448/1001] install-ns3-header: src/point-to-point/model/switch-node.h -> build/ns3/switch-node.h
+[ 448/1001] install-ns3-header: src/point-to-point/model/rdma-queue-pair.h -> build/ns3/rdma-queue-pair.h
+[ 449/1001] install-ns3-header: src/point-to-point/model/cn-header.h -> build/ns3/cn-header.h
+[ 451/1001] install-ns3-header: src/point-to-point/model/conweave-routing.h -> build/ns3/conweave-routing.h
+[ 451/1001] install-ns3-header: src/point-to-point/model/qbb-channel.h -> build/ns3/qbb-channel.h
+[ 452/1001] install-ns3-header: src/point-to-point/model/switch-mmu.h -> build/ns3/switch-mmu.h
+[ 454/1001] install-ns3-header: src/point-to-point/model/trace-format.h -> build/ns3/trace-format.h
+[ 454/1001] install-ns3-header: src/point-to-point/model/conweave-voq.h -> build/ns3/conweave-voq.h
+[ 455/1001] install-ns3-header: src/point-to-point/model/flow-stat-tag.h -> build/ns3/flow-stat-tag.h
+[ 456/1001] install-ns3-header: src/point-to-point/model/qbb-remote-channel.h -> build/ns3/qbb-remote-channel.h
+[ 458/1001] install-ns3-header: src/point-to-point/helper/qbb-helper.h -> build/ns3/qbb-helper.h
+[ 458/1001] install-ns3-header: src/point-to-point/model/rdma-driver.h -> build/ns3/rdma-driver.h
+[ 459/1001] install-ns3-header: src/point-to-point/model/point-to-point-net-device.h -> build/ns3/point-to-point-net-device.h
+[ 460/1001] install-ns3-header: src/point-to-point/model/settings.h -> build/ns3/settings.h
+[ 461/1001] install-ns3-header: src/point-to-point/model/letflow-routing.h -> build/ns3/letflow-routing.h
+[ 462/1001] install-ns3-header: src/point-to-point/helper/selective-packet-queue.h -> build/ns3/selective-packet-queue.h
+[ 463/1001] install-ns3-header: src/point-to-point/model/homa-simple-header.h -> build/ns3/homa-simple-header.h
+[ 464/1001] install-ns3-header: src/point-to-point/helper/point-to-point-helper.h -> build/ns3/point-to-point-helper.h
+[ 465/1001] install-ns3-header: src/point-to-point/model/conga-routing.h -> build/ns3/conga-routing.h
+[ 466/1001] install-ns3-header: src/point-to-point/model/qbb-header.h -> build/ns3/qbb-header.h
+[ 467/1001] install-ns3-header: src/point-to-point/model/qbb-net-device.h -> build/ns3/qbb-net-device.h
+[ 468/1001] install-ns3-header: src/point-to-point/model/pause-header.h -> build/ns3/pause-header.h
+[ 469/1001] install-ns3-header: src/point-to-point/model/point-to-point-channel.h -> build/ns3/point-to-point-channel.h
+[ 470/1001] install-ns3-header: src/point-to-point/model/ppp-header.h -> build/ns3/ppp-header.h
+[ 471/1001] install-ns3-header: src/point-to-point/model/homa-header.h -> build/ns3/homa-header.h
+[ 472/1001] install-ns3-header: src/point-to-point/helper/sim-setting.h -> build/ns3/sim-setting.h
+[ 474/1001] install-ns3-header: src/point-to-point/model/point-to-point-remote-channel.h -> build/ns3/point-to-point-remote-channel.h
+[ 476/1001] install-ns3-header: src/point-to-point/model/rdma-hw.h -> build/ns3/rdma-hw.h
+[ 518/1001] install-ns3-header: src/stats/model/basic-data-calculators.h -> build/ns3/basic-data-calculators.h
+[ 519/1001] install-ns3-header: src/stats/model/data-calculator.h -> build/ns3/data-calculator.h
+[ 521/1001] install-ns3-header: src/stats/model/data-collector.h -> build/ns3/data-collector.h
+[ 521/1001] install-ns3-header: src/stats/model/time-data-calculators.h -> build/ns3/time-data-calculators.h
+[ 522/1001] install-ns3-header: src/stats/model/data-output-interface.h -> build/ns3/data-output-interface.h
+[ 523/1001] install-ns3-header: src/stats/model/packet-data-calculators.h -> build/ns3/packet-data-calculators.h
+[ 524/1001] install-ns3-header: src/stats/model/omnet-data-output.h -> build/ns3/omnet-data-output.h
+[ 529/1001] install-ns3-header: src/tools/model/gnuplot.h -> build/ns3/gnuplot.h
+[ 530/1001] install-ns3-header: src/stats/model/sqlite-data-output.h -> build/ns3/sqlite-data-output.h
+[ 530/1001] install-ns3-header: src/tools/model/delay-jitter-estimation.h -> build/ns3/delay-jitter-estimation.h
+[ 531/1001] install-ns3-header: src/tools/model/average.h -> build/ns3/average.h
+[ 539/1001] install-ns3-header: src/tools/model/event-garbage-collector.h -> build/ns3/event-garbage-collector.h
+[ 667/1001] gen-module-header: build/ns3/bridge-net-device.h build/ns3/bridge-channel.h build/ns3/bridge-helper.h -> build/ns3/bridge-module.h
+[ 667/1001] gen-module-header: build/ns3/file-config.h build/ns3/config-store.h -> build/ns3/config-store-module.h
+[ 667/1001] gen-module-header: build/ns3/udp-client.h build/ns3/v4ping.h build/ns3/packet-sink.h build/ns3/ping6-helper.h build/ns3/udp-echo-client.h build/ns3/radvd-prefix.h build/ns3/app-recv-buffer.h build/ns3/ping6.h build/ns3/udp-echo-helper.h build/ns3/rdma-client-helper.h build/ns3/on-off-helper.h build/ns3/v4ping-helper.h build/ns3/packet-loss-counter.h build/ns3/udp-trace-client.h build/ns3/packet-sink-helper.h build/ns3/check-all-packets.h build/ns3/rdma-client.h build/ns3/udp-echo-server.h build/ns3/bulk-send-application.h build/ns3/udp-client-server-helper.h build/ns3/radvd.h build/ns3/bulk-send-helper.h build/ns3/udp-server.h build/ns3/onoff-application.h build/ns3/radvd-interface.h -> build/ns3/applications-module.h
+[ 670/1001] gen-module-header: build/ns3/mpi-interface.h build/ns3/mpi-receiver.h build/ns3/distributed-simulator-impl.h -> build/ns3/mpi-module.h
+[ 670/1001] gen-module-header: build/ns3/hash.h build/ns3/log.h build/ns3/object-vector.h build/ns3/int-to-type.h build/ns3/synchronizer.h build/ns3/type-id.h build/ns3/object-map.h build/ns3/calendar-scheduler.h build/ns3/math.h build/ns3/scheduler.h build/ns3/integer.h build/ns3/list-scheduler.h build/ns3/attribute-helper.h build/ns3/simulator.h build/ns3/rng-seed-manager.h build/ns3/boolean.h build/ns3/hash-fnv.h build/ns3/abort.h build/ns3/trace-source-accessor.h build/ns3/callback.h build/ns3/system-condition.h build/ns3/assert.h build/ns3/singleton.h build/ns3/test.h build/ns3/type-name.h build/ns3/make-event.h build/ns3/attribute-construction-list.h build/ns3/int64x64.h build/ns3/timer.h build/ns3/pointer.h build/ns3/deprecated.h build/ns3/hash-murmur3.h build/ns3/unix-fd-reader.h build/ns3/default-simulator-impl.h build/ns3/unused.h build/ns3/attribute.h build/ns3/ref-count-base.h build/ns3/random-variable.h build/ns3/simulator-impl.h build/ns3/system-mutex.h build/ns3/wall-clock-synchronizer.h build/ns3/system-thread.h build/ns3/realtime-simulator-impl.h build/ns3/hash-function.h build/ns3/map-scheduler.h build/ns3/watchdog.h build/ns3/int64x64-double.h build/ns3/traced-callback.h build/ns3/traced-value.h build/ns3/int64x64-128.h build/ns3/random-variable-stream.h build/ns3/event-id.h build/ns3/vector.h build/ns3/timer-impl.h build/ns3/uinteger.h build/ns3/object-ptr-container.h build/ns3/breakpoint.h build/ns3/fatal-error.h build/ns3/object-base.h build/ns3/simple-ref-count.h build/ns3/global-value.h build/ns3/object-factory.h build/ns3/names.h build/ns3/attribute-accessor-helper.h build/ns3/event-impl.h build/ns3/object.h build/ns3/heap-scheduler.h build/ns3/simulation-singleton.h build/ns3/rng-stream.h build/ns3/enum.h build/ns3/config.h build/ns3/system-path.h build/ns3/command-line.h build/ns3/nstime.h build/ns3/default-deleter.h build/ns3/ptr.h build/ns3/double.h build/ns3/empty.h build/ns3/fatal-impl.h build/ns3/string.h build/ns3/system-wall-clock-ms.h build/ns3/type-traits.h -> build/ns3/core-module.h
+[ 672/1001] gen-module-header: build/ns3/ipv4-address-generator.h build/ns3/tcp-option-no-op.h build/ns3/ipv4-header.h build/ns3/ipv4-route.h build/ns3/ipv6-static-routing-helper.h build/ns3/udp-socket-factory.h build/ns3/arp-cache.h build/ns3/ipv6-l3-protocol.h build/ns3/tcp-tahoe.h build/ns3/ipv4-static-routing.h build/ns3/arp-l3-protocol.h build/ns3/icmpv6-header.h build/ns3/ipv4-global-routing.h build/ns3/tcp-reno.h build/ns3/tcp-rx-buffer.h build/ns3/ipv6-address-helper.h build/ns3/icmpv6-l4-protocol.h build/ns3/ipv6-interface-container.h build/ns3/ipv4-raw-socket-impl.h build/ns3/ipv6-raw-socket-factory.h build/ns3/ipv6-routing-helper.h build/ns3/ipv6-interface-address.h build/ns3/ipv6-extension.h build/ns3/ipv4-global-routing-helper.h build/ns3/ipv4-address-helper.h build/ns3/ipv6-header.h build/ns3/ipv4-list-routing.h build/ns3/ipv6-static-routing.h build/ns3/ipv6-list-routing-helper.h build/ns3/ipv4-interface.h build/ns3/ipv6-route.h build/ns3/ipv6-routing-table-entry.h build/ns3/tcp-header.h build/ns3/global-route-manager.h build/ns3/udp-l4-protocol.h build/ns3/ipv6-extension-demux.h build/ns3/udp-header.h build/ns3/ipv4-list-routing-helper.h build/ns3/ipv4-l3-protocol.h build/ns3/ipv4-end-point.h build/ns3/rdma.h build/ns3/tcp-newreno.h build/ns3/ipv4-routing-protocol.h build/ns3/ip-l4-protocol.h build/ns3/ipv4.h build/ns3/ipv4-routing-helper.h build/ns3/arp-header.h build/ns3/ipv6-packet-info-tag.h build/ns3/ipv6-address-generator.h build/ns3/ipv6-interface.h build/ns3/global-router-interface.h build/ns3/ipv4-static-routing-helper.h build/ns3/tcp-socket-base.h build/ns3/ipv4-packet-info-tag.h build/ns3/ipv4-raw-socket-factory.h build/ns3/udp-socket.h build/ns3/tcp-rfc793.h build/ns3/ipv6-routing-protocol.h build/ns3/internet-stack-helper.h build/ns3/ipv6-option-header.h build/ns3/ipv6-extension-header.h build/ns3/tcp-option.h build/ns3/loopback-net-device.h build/ns3/rtt-estimator.h build/ns3/internet-trace-helper.h build/ns3/ipv6.h build/ns3/tcp-l4-protocol.h build/ns3/ipv4-interface-container.h build/ns3/candidate-queue.h build/ns3/ndisc-cache.h build/ns3/ipv6-list-routing.h build/ns3/tcp-socket-factory.h build/ns3/icmpv4.h build/ns3/icmpv4-l4-protocol.h build/ns3/tcp-tx-buffer.h build/ns3/ipv4-interface-address.h build/ns3/global-route-manager-impl.h build/ns3/ipv4-routing-table-entry.h build/ns3/seq-ts-header.h build/ns3/tcp-socket.h -> build/ns3/internet-module.h
+[ 674/1001] gen-module-header: build/ns3/gnuplot.h build/ns3/delay-jitter-estimation.h build/ns3/average.h build/ns3/event-garbage-collector.h -> build/ns3/tools-module.h
+[ 674/1001] gen-module-header: build/ns3/basic-data-calculators.h build/ns3/data-calculator.h build/ns3/data-collector.h build/ns3/time-data-calculators.h build/ns3/data-output-interface.h build/ns3/packet-data-calculators.h build/ns3/omnet-data-output.h build/ns3/sqlite-data-output.h -> build/ns3/stats-module.h
+[ 674/1001] gen-module-header: build/ns3/switch-node.h build/ns3/rdma-queue-pair.h build/ns3/cn-header.h build/ns3/conweave-routing.h build/ns3/qbb-channel.h build/ns3/switch-mmu.h build/ns3/trace-format.h build/ns3/conweave-voq.h build/ns3/flow-stat-tag.h build/ns3/qbb-remote-channel.h build/ns3/qbb-helper.h build/ns3/rdma-driver.h build/ns3/point-to-point-net-device.h build/ns3/settings.h build/ns3/letflow-routing.h build/ns3/selective-packet-queue.h build/ns3/homa-simple-header.h build/ns3/point-to-point-helper.h build/ns3/conga-routing.h build/ns3/qbb-header.h build/ns3/qbb-net-device.h build/ns3/pause-header.h build/ns3/point-to-point-channel.h build/ns3/ppp-header.h build/ns3/homa-header.h build/ns3/sim-setting.h build/ns3/point-to-point-remote-channel.h build/ns3/rdma-hw.h -> build/ns3/point-to-point-module.h
+[ 674/1001] gen-module-header: build/ns3/trace-helper.h build/ns3/mac64-address.h build/ns3/output-stream-wrapper.h build/ns3/packetbb.h build/ns3/llc-snap-header.h build/ns3/pcap-file-wrapper.h build/ns3/simple-channel.h build/ns3/drop-tail-queue.h build/ns3/ipv6-address.h build/ns3/pcap-file.h build/ns3/packet-socket.h build/ns3/node-list.h build/ns3/header.h build/ns3/ipv4-address.h build/ns3/node.h build/ns3/net-device.h build/ns3/radiotap-header.h build/ns3/address.h build/ns3/packet-metadata.h build/ns3/red-queue.h build/ns3/packet-tag-list.h build/ns3/custom-header.h build/ns3/application.h build/ns3/chunk.h build/ns3/packet.h build/ns3/queue.h build/ns3/sgi-hashmap.h build/ns3/channel.h build/ns3/byte-tag-list.h build/ns3/flow-id-num-tag.h build/ns3/leaky-bucket.h build/ns3/pcap-test.h build/ns3/error-model.h build/ns3/address-utils.h build/ns3/flow-id-tag.h build/ns3/node-container.h build/ns3/simple-net-device.h build/ns3/data-rate.h build/ns3/packet-socket-helper.h build/ns3/tag-buffer.h build/ns3/generic-phy.h build/ns3/inet-socket-address.h build/ns3/buffer.h build/ns3/application-container.h build/ns3/packet-burst.h build/ns3/mac48-address.h build/ns3/leaky-bucket-helper.h build/ns3/broadcom-egress-queue.h build/ns3/packet-socket-factory.h build/ns3/tag.h build/ns3/socket.h build/ns3/net-device-container.h build/ns3/sequence-number.h build/ns3/inet6-socket-address.h build/ns3/ethernet-header.h build/ns3/ethernet-trailer.h build/ns3/socket-factory.h build/ns3/broadcom-node.h build/ns3/trailer.h build/ns3/int-header.h build/ns3/channel-list.h build/ns3/packet-socket-address.h build/ns3/nix-vector.h -> build/ns3/network-module.h
+[ 675/1001] cxx: src/core/model/int64x64.cc -> build/src/core/model/int64x64.cc.1.o
+[ 676/1001] cxx: src/core/model/global-value.cc -> build/src/core/model/global-value.cc.1.o
+[ 677/1001] cxx: src/core/model/names.cc -> build/src/core/model/names.cc.1.o
+[ 678/1001] cxx: src/internet/model/ipv4-end-point.cc -> build/src/internet/model/ipv4-end-point.cc.1.o
+[ 679/1001] cxx: src/internet/model/udp-socket-factory-impl.cc -> build/src/internet/model/udp-socket-factory-impl.cc.1.o
+[ 680/1001] cxx: src/internet/model/ipv6-extension-header.cc -> build/src/internet/model/ipv6-extension-header.cc.1.o
+[ 681/1001] cxx: src/internet/model/icmpv6-l4-protocol.cc -> build/src/internet/model/icmpv6-l4-protocol.cc.1.o
+[ 682/1001] cxx: src/internet/model/ipv4-list-routing.cc -> build/src/internet/model/ipv4-list-routing.cc.1.o
+[ 683/1001] cxx: src/internet/model/ipv4-static-routing.cc -> build/src/internet/model/ipv4-static-routing.cc.1.o
+[ 684/1001] cxx: src/internet/model/global-route-manager-impl.cc -> build/src/internet/model/global-route-manager-impl.cc.1.o
+[ 685/1001] cxx: src/internet/helper/ipv4-interface-container.cc -> build/src/internet/helper/ipv4-interface-container.cc.1.o
+[ 686/1001] cxx: src/network/model/packet-tag-list.cc -> build/src/network/model/packet-tag-list.cc.1.o
+[ 687/1001] cxx: src/network/model/socket.cc -> build/src/network/model/socket.cc.1.o
+[ 688/1001] cxx: src/network/utils/ethernet-trailer.cc -> build/src/network/utils/ethernet-trailer.cc.1.o
+[ 689/1001] cxx: src/network/utils/mac48-address.cc -> build/src/network/utils/mac48-address.cc.1.o
+[ 690/1001] cxx: src/network/utils/packetbb.cc -> build/src/network/utils/packetbb.cc.1.o
+[ 691/1001] cxx: src/network/utils/radiotap-header.cc -> build/src/network/utils/radiotap-header.cc.1.o
+[ 692/1001] cxx: src/network/helper/packet-socket-helper.cc -> build/src/network/helper/packet-socket-helper.cc.1.o
+[ 693/1001] cxx: src/point-to-point/model/qbb-net-device.cc -> build/src/point-to-point/model/qbb-net-device.cc.1.o
+[ 694/1001] cxx: src/point-to-point/model/switch-node.cc -> build/src/point-to-point/model/switch-node.cc.1.o
+[ 695/1001] cxx: src/point-to-point/model/conweave-routing.cc -> build/src/point-to-point/model/conweave-routing.cc.1.o
+[ 696/1001] cxx: src/tools/model/delay-jitter-estimation.cc -> build/src/tools/model/delay-jitter-estimation.cc.1.o
+[ 697/1001] cxx: src/stats/model/data-calculator.cc -> build/src/stats/model/data-calculator.cc.1.o
+[ 698/1001] cxx: src/point-to-point/model/settings.cc -> build/src/point-to-point/model/settings.cc.1.o
+[ 699/1001] cxx: src/point-to-point/model/qbb-remote-channel.cc -> build/src/point-to-point/model/qbb-remote-channel.cc.1.o
+[ 700/1001] cxx: src/network/utils/simple-channel.cc -> build/src/network/utils/simple-channel.cc.1.o
+[ 701/1001] cxx: src/network/utils/pcap-file-wrapper.cc -> build/src/network/utils/pcap-file-wrapper.cc.1.o
+[ 702/1001] cxx: src/network/utils/pcap-file.cc -> build/src/network/utils/pcap-file.cc.1.o
+[ 703/1001] cxx: src/network/utils/packet-burst.cc -> build/src/network/utils/packet-burst.cc.1.o
+[ 704/1001] cxx: src/network/utils/inet-socket-address.cc -> build/src/network/utils/inet-socket-address.cc.1.o
+[ 705/1001] cxx: src/network/utils/flow-id-tag.cc -> build/src/network/utils/flow-id-tag.cc.1.o
+[ 706/1001] cxx: src/network/model/socket-factory.cc -> build/src/network/model/socket-factory.cc.1.o
+[ 707/1001] cxx: src/network/model/node-list.cc -> build/src/network/model/node-list.cc.1.o
+[ 708/1001] cxx: src/network/model/nix-vector.cc -> build/src/network/model/nix-vector.cc.1.o
+[ 709/1001] cxx: src/network/model/chunk.cc -> build/src/network/model/chunk.cc.1.o
+[ 710/1001] cxx: src/network/model/channel.cc -> build/src/network/model/channel.cc.1.o
+[ 711/1001] cxx: src/network/model/application.cc -> build/src/network/model/application.cc.1.o
+[ 712/1001] cxx: src/mpi/model/mpi-interface.cc -> build/src/mpi/model/mpi-interface.cc.1.o
+[ 713/1001] cxx: src/internet/helper/ipv4-static-routing-helper.cc -> build/src/internet/helper/ipv4-static-routing-helper.cc.1.o
+[ 714/1001] cxx: src/internet/model/ipv6-static-routing.cc -> build/src/internet/model/ipv6-static-routing.cc.1.o
+[ 715/1001] cxx: src/internet/model/ipv6-route.cc -> build/src/internet/model/ipv6-route.cc.1.o
+[ 716/1001] cxx: src/internet/model/udp-socket-factory.cc -> build/src/internet/model/udp-socket-factory.cc.1.o
+[ 717/1001] cxx: src/internet/model/ipv4-route.cc -> build/src/internet/model/ipv4-route.cc.1.o
+[ 718/1001] cxx: src/internet/model/tcp-rx-buffer.cc -> build/src/internet/model/tcp-rx-buffer.cc.1.o
+[ 719/1001] cxx: src/internet/model/ipv6-autoconfigured-prefix.cc -> build/src/internet/model/ipv6-autoconfigured-prefix.cc.1.o
+[ 720/1001] cxx: src/internet/model/ipv6-raw-socket-impl.cc -> build/src/internet/model/ipv6-raw-socket-impl.cc.1.o
+[ 721/1001] cxx: src/internet/model/ndisc-cache.cc -> build/src/internet/model/ndisc-cache.cc.1.o
+[ 722/1001] cxx: src/internet/model/rtt-estimator.cc -> build/src/internet/model/rtt-estimator.cc.1.o
+[ 723/1001] cxx: src/internet/model/udp-l4-protocol.cc -> build/src/internet/model/udp-l4-protocol.cc.1.o
+[ 724/1001] cxx: src/core/model/unix-system-wall-clock-ms.cc -> build/src/core/model/unix-system-wall-clock-ms.cc.1.o
+[ 725/1001] cxx: src/core/model/callback.cc -> build/src/core/model/callback.cc.1.o
+[ 726/1001] cxx: src/core/model/pointer.cc -> build/src/core/model/pointer.cc.1.o
+[ 727/1001] cxx: src/core/model/double.cc -> build/src/core/model/double.cc.1.o
+[ 728/1001] cxx: src/applications/model/udp-trace-client.cc -> build/src/applications/model/udp-trace-client.cc.1.o
+[ 729/1001] cxx: src/applications/model/udp-client.cc -> build/src/applications/model/udp-client.cc.1.o
+[ 730/1001] cxx: src/applications/model/bulk-send-application.cc -> build/src/applications/model/bulk-send-application.cc.1.o
+[ 731/1001] cxx: src/applications/helper/bulk-send-helper.cc -> build/src/applications/helper/bulk-send-helper.cc.1.o
+[ 732/1001] cxx: src/config-store/model/attribute-default-iterator.cc -> build/src/config-store/model/attribute-default-iterator.cc.1.o
+[ 733/1001] cxx: src/core/model/random-variable-stream.cc -> build/src/core/model/random-variable-stream.cc.1.o
+[ 734/1001] cxx: src/core/model/uinteger.cc -> build/src/core/model/uinteger.cc.1.o
+[ 735/1001] cxx: src/core/model/trace-source-accessor.cc -> build/src/core/model/trace-source-accessor.cc.1.o
+[ 736/1001] cxx: src/core/model/hash-function.cc -> build/src/core/model/hash-function.cc.1.o
+[ 737/1001] cxx: src/core/model/hash-murmur3.cc -> build/src/core/model/hash-murmur3.cc.1.o
+[ 738/1001] cxx: src/core/model/hash.cc -> build/src/core/model/hash.cc.1.o
+[ 739/1001] cxx: src/core/model/int64x64-128.cc -> build/src/core/model/int64x64-128.cc.1.o
+[ 740/1001] cxx: src/core/model/unix-fd-reader.cc -> build/src/core/model/unix-fd-reader.cc.1.o
+[ 741/1001] cxx: src/internet/model/pending-data.cc -> build/src/internet/model/pending-data.cc.1.o
+[ 742/1001] cxx: src/internet/model/ipv6-raw-socket-factory-impl.cc -> build/src/internet/model/ipv6-raw-socket-factory-impl.cc.1.o
+[ 743/1001] cxx: src/internet/model/ipv6-option-header.cc -> build/src/internet/model/ipv6-option-header.cc.1.o
+[ 744/1001] cxx: src/internet/model/tcp-tahoe.cc -> build/src/internet/model/tcp-tahoe.cc.1.o
+[ 745/1001] cxx: src/internet/model/tcp-reno.cc -> build/src/internet/model/tcp-reno.cc.1.o
+[ 746/1001] cxx: src/internet/model/ipv6-header.cc -> build/src/internet/model/ipv6-header.cc.1.o
+[ 747/1001] cxx: src/internet/model/ipv6-interface-address.cc -> build/src/internet/model/ipv6-interface-address.cc.1.o
+[ 748/1001] cxx: src/internet/model/ipv6-raw-socket-factory.cc -> build/src/internet/model/ipv6-raw-socket-factory.cc.1.o
+[ 749/1001] cxx: src/internet/model/ipv6-routing-protocol.cc -> build/src/internet/model/ipv6-routing-protocol.cc.1.o
+[ 750/1001] cxx: src/internet/model/ipv4-global-routing.cc -> build/src/internet/model/ipv4-global-routing.cc.1.o
+[ 751/1001] cxx: src/internet/helper/ipv6-address-helper.cc -> build/src/internet/helper/ipv6-address-helper.cc.1.o
+[ 752/1001] cxx: src/network/model/net-device.cc -> build/src/network/model/net-device.cc.1.o
+[ 753/1001] cxx: src/network/utils/llc-snap-header.cc -> build/src/network/utils/llc-snap-header.cc.1.o
+[ 754/1001] cxx: src/network/helper/net-device-container.cc -> build/src/network/helper/net-device-container.cc.1.o
+[ 755/1001] cxx: src/network/helper/leaky-bucket-helper.cc -> build/src/network/helper/leaky-bucket-helper.cc.1.o
+[ 756/1001] cxx: src/network/utils/custom-header.cc -> build/src/network/utils/custom-header.cc.1.o
+[ 757/1001] cxx: src/point-to-point/model/ppp-header.cc -> build/src/point-to-point/model/ppp-header.cc.1.o
+[ 758/1001] cxx: src/point-to-point/model/pause-header.cc -> build/src/point-to-point/model/pause-header.cc.1.o
+[ 759/1001] cxx: src/point-to-point/model/rdma-hw.cc -> build/src/point-to-point/model/rdma-hw.cc.1.o
+[ 760/1001] cxx: src/point-to-point/model/switch-mmu.cc -> build/src/point-to-point/model/switch-mmu.cc.1.o
+[ 761/1001] cxx: src/point-to-point/helper/selective-packet-queue.cc -> build/src/point-to-point/helper/selective-packet-queue.cc.1.o
+[ 762/1001] cxx: src/point-to-point/model/homa-header.cc -> build/src/point-to-point/model/homa-header.cc.1.o
+[ 763/1001] cxx: utils/bench-simulator.cc -> build/utils/bench-simulator.cc.2.o
+[ 764/1001] cxx: src/stats/model/sqlite-data-output.cc -> build/src/stats/model/sqlite-data-output.cc.1.o
+[ 765/1001] cxx: src/stats/model/time-data-calculators.cc -> build/src/stats/model/time-data-calculators.cc.1.o
+[ 766/1001] cxx: src/point-to-point/model/homa-simple-header.cc -> build/src/point-to-point/model/homa-simple-header.cc.1.o
+[ 767/1001] cxx: src/point-to-point/model/letflow-routing.cc -> build/src/point-to-point/model/letflow-routing.cc.1.o
+[ 768/1001] cxx: src/point-to-point/model/flow-stat-tag.cc -> build/src/point-to-point/model/flow-stat-tag.cc.1.o
+[ 769/1001] cxx: src/point-to-point/helper/qbb-helper.cc -> build/src/point-to-point/helper/qbb-helper.cc.1.o
+[ 770/1001] cxx: src/network/utils/broadcom-egress-queue.cc -> build/src/network/utils/broadcom-egress-queue.cc.1.o
+[ 771/1001] cxx: src/network/utils/packet-socket-factory.cc -> build/src/network/utils/packet-socket-factory.cc.1.o
+[ 772/1001] cxx: src/network/utils/packet-socket.cc -> build/src/network/utils/packet-socket.cc.1.o
+[ 773/1001] cxx: src/network/utils/ipv6-address.cc -> build/src/network/utils/ipv6-address.cc.1.o
+[ 774/1001] cxx: src/network/utils/error-model.cc -> build/src/network/utils/error-model.cc.1.o
+[ 775/1001] cxx: src/network/model/tag-buffer.cc -> build/src/network/model/tag-buffer.cc.1.o
+[ 776/1001] cxx: src/internet/helper/ipv6-interface-container.cc -> build/src/internet/helper/ipv6-interface-container.cc.1.o
+[ 777/1001] cxx: src/internet/model/global-router-interface.cc -> build/src/internet/model/global-router-interface.cc.1.o
+[ 778/1001] cxx: src/internet/model/ipv6-routing-table-entry.cc -> build/src/internet/model/ipv6-routing-table-entry.cc.1.o
+[ 779/1001] cxx: src/internet/helper/ipv4-list-routing-helper.cc -> build/src/internet/helper/ipv4-list-routing-helper.cc.1.o
+[ 780/1001] cxx: src/internet/model/ipv6-list-routing.cc -> build/src/internet/model/ipv6-list-routing.cc.1.o
+[ 781/1001] cxx: src/internet/model/ipv6.cc -> build/src/internet/model/ipv6.cc.1.o
+[ 782/1001] cxx: src/internet/model/ipv4-raw-socket-factory.cc -> build/src/internet/model/ipv4-raw-socket-factory.cc.1.o
+[ 783/1001] cxx: src/internet/model/ipv4-header.cc -> build/src/internet/model/ipv4-header.cc.1.o
+[ 784/1001] cxx: src/internet/model/ipv4-address-generator.cc -> build/src/internet/model/ipv4-address-generator.cc.1.o
+[ 785/1001] cxx: src/internet/model/ipv4-interface-address.cc -> build/src/internet/model/ipv4-interface-address.cc.1.o
+[ 786/1001] cxx: src/internet/model/ipv6-packet-info-tag.cc -> build/src/internet/model/ipv6-packet-info-tag.cc.1.o
+[ 787/1001] cxx: src/internet/model/tcp-option-mss.cc -> build/src/internet/model/tcp-option-mss.cc.1.o
+[ 788/1001] cxx: src/internet/model/ipv6-interface.cc -> build/src/internet/model/ipv6-interface.cc.1.o
+[ 789/1001] cxx: src/internet/model/ipv4-raw-socket-factory-impl.cc -> build/src/internet/model/ipv4-raw-socket-factory-impl.cc.1.o
+[ 790/1001] cxx: src/internet/model/ipv4-end-point-demux.cc -> build/src/internet/model/ipv4-end-point-demux.cc.1.o
+[ 791/1001] cxx: src/internet/model/arp-cache.cc -> build/src/internet/model/arp-cache.cc.1.o
+[ 792/1001] cxx: src/core/model/system-thread.cc -> build/src/core/model/system-thread.cc.1.o
+[ 793/1001] cxx: src/core/model/wall-clock-synchronizer.cc -> build/src/core/model/wall-clock-synchronizer.cc.1.o
+[ 794/1001] cxx: src/core/model/vector.cc -> build/src/core/model/vector.cc.1.o
+[ 795/1001] cxx: src/core/model/object-ptr-container.cc -> build/src/core/model/object-ptr-container.cc.1.o
+[ 796/1001] cxx: src/core/model/enum.cc -> build/src/core/model/enum.cc.1.o
+[ 797/1001] cxx: src/core/model/type-name.cc -> build/src/core/model/type-name.cc.1.o
+[ 798/1001] cxx: src/core/model/rng-stream.cc -> build/src/core/model/rng-stream.cc.1.o
+[ 799/1001] cxx: src/core/model/rng-seed-manager.cc -> build/src/core/model/rng-seed-manager.cc.1.o
+[ 800/1001] cxx: src/core/model/object-base.cc -> build/src/core/model/object-base.cc.1.o
+[ 801/1001] cxx: src/core/model/attribute-construction-list.cc -> build/src/core/model/attribute-construction-list.cc.1.o
+[ 802/1001] cxx: src/core/model/log.cc -> build/src/core/model/log.cc.1.o
+[ 803/1001] cxx: src/core/model/map-scheduler.cc -> build/src/core/model/map-scheduler.cc.1.o
+[ 804/1001] cxx: src/core/model/scheduler.cc -> build/src/core/model/scheduler.cc.1.o
+[ 805/1001] cxx: src/core/model/event-id.cc -> build/src/core/model/event-id.cc.1.o
+[ 806/1001] cxx: src/config-store/model/xml-config.cc -> build/src/config-store/model/xml-config.cc.1.o
+[ 807/1001] cxx: src/config-store/model/attribute-iterator.cc -> build/src/config-store/model/attribute-iterator.cc.1.o
+[ 808/1001] cxx: src/applications/helper/rdma-client-helper.cc -> build/src/applications/helper/rdma-client-helper.cc.1.o
+[ 809/1001] cxx: src/applications/helper/v4ping-helper.cc -> build/src/applications/helper/v4ping-helper.cc.1.o
+[ 810/1001] cxx: src/applications/helper/ping6-helper.cc -> build/src/applications/helper/ping6-helper.cc.1.o
+[ 811/1001] cxx: src/applications/helper/on-off-helper.cc -> build/src/applications/helper/on-off-helper.cc.1.o
+[ 812/1001] cxx: src/applications/model/radvd.cc -> build/src/applications/model/radvd.cc.1.o
+[ 813/1001] cxx: src/config-store/model/raw-text-config.cc -> build/src/config-store/model/raw-text-config.cc.1.o
+[ 814/1001] cxx: src/core/model/list-scheduler.cc -> build/src/core/model/list-scheduler.cc.1.o
+[ 815/1001] cxx: src/core/model/event-impl.cc -> build/src/core/model/event-impl.cc.1.o
+[ 816/1001] cxx: src/core/model/simulator.cc -> build/src/core/model/simulator.cc.1.o
+[ 817/1001] cxx: src/core/model/simulator-impl.cc -> build/src/core/model/simulator-impl.cc.1.o
+[ 818/1001] cxx: src/core/model/watchdog.cc -> build/src/core/model/watchdog.cc.1.o
+[ 819/1001] cxx: src/core/model/make-event.cc -> build/src/core/model/make-event.cc.1.o
+[ 820/1001] cxx: src/core/model/config.cc -> build/src/core/model/config.cc.1.o
+[ 821/1001] cxx: src/core/model/system-path.cc -> build/src/core/model/system-path.cc.1.o
+[ 822/1001] cxx: src/internet/model/ip-l4-protocol.cc -> build/src/internet/model/ip-l4-protocol.cc.1.o
+[ 823/1001] cxx: src/internet/model/arp-header.cc -> build/src/internet/model/arp-header.cc.1.o
+[ 824/1001] cxx: src/internet/model/tcp-socket-factory-impl.cc -> build/src/internet/model/tcp-socket-factory-impl.cc.1.o
+[ 825/1001] cxx: src/internet/model/ipv6-extension-demux.cc -> build/src/internet/model/ipv6-extension-demux.cc.1.o
+[ 826/1001] cxx: src/internet/model/ipv6-option.cc -> build/src/internet/model/ipv6-option.cc.1.o
+[ 827/1001] cxx: src/internet/model/ipv6-option-demux.cc -> build/src/internet/model/ipv6-option-demux.cc.1.o
+[ 828/1001] cxx: src/internet/model/tcp-newreno.cc -> build/src/internet/model/tcp-newreno.cc.1.o
+[ 829/1001] cxx: src/internet/model/tcp-tx-buffer.cc -> build/src/internet/model/tcp-tx-buffer.cc.1.o
+[ 830/1001] cxx: src/internet/model/tcp-option-no-op.cc -> build/src/internet/model/tcp-option-no-op.cc.1.o
+[ 831/1001] cxx: src/internet/model/tcp-option-sack-permitted.cc -> build/src/internet/model/tcp-option-sack-permitted.cc.1.o
+[ 832/1001] cxx: src/internet/model/tcp-option-sack.cc -> build/src/internet/model/tcp-option-sack.cc.1.o
+[ 833/1001] cxx: src/internet/model/tcp-option-ts.cc -> build/src/internet/model/tcp-option-ts.cc.1.o
+[ 834/1001] cxx: src/internet/model/ipv4-packet-info-tag.cc -> build/src/internet/model/ipv4-packet-info-tag.cc.1.o
+[ 835/1001] cxx: src/internet/model/ipv4-routing-protocol.cc -> build/src/internet/model/ipv4-routing-protocol.cc.1.o
+[ 836/1001] cxx: src/internet/model/udp-socket.cc -> build/src/internet/model/udp-socket.cc.1.o
+[ 837/1001] cxx: src/internet/helper/internet-stack-helper.cc -> build/src/internet/helper/internet-stack-helper.cc.1.o
+[ 838/1001] cxx: src/internet/helper/internet-trace-helper.cc -> build/src/internet/helper/internet-trace-helper.cc.1.o
+[ 839/1001] cxx: src/internet/helper/ipv6-routing-helper.cc -> build/src/internet/helper/ipv6-routing-helper.cc.1.o
+[ 840/1001] cxx: src/network/model/byte-tag-list.cc -> build/src/network/model/byte-tag-list.cc.1.o
+[ 841/1001] cxx: src/network/model/packet-metadata.cc -> build/src/network/model/packet-metadata.cc.1.o
+[ 842/1001] cxx: src/network/model/tag.cc -> build/src/network/model/tag.cc.1.o
+[ 843/1001] cxx: src/network/utils/queue.cc -> build/src/network/utils/queue.cc.1.o
+[ 844/1001] cxx: src/network/helper/node-container.cc -> build/src/network/helper/node-container.cc.1.o
+[ 845/1001] cxx: src/network/utils/int-header.cc -> build/src/network/utils/int-header.cc.1.o
+[ 846/1001] cxx: src/point-to-point/model/qbb-header.cc -> build/src/point-to-point/model/qbb-header.cc.1.o
+[ 847/1001] cxx: src/point-to-point/model/conweave-voq.cc -> build/src/point-to-point/model/conweave-voq.cc.1.o
+[ 848/1001] cxx: scratch/network-load-balance.cc -> build/scratch/network-load-balance.cc.1.o
+[ 849/1001] cxx: utils/test-runner.cc -> build/utils/test-runner.cc.1.o
+[ 850/1001] cxx: src/stats/model/data-output-interface.cc -> build/src/stats/model/data-output-interface.cc.1.o
+[ 851/1001] cxx: src/point-to-point/helper/point-to-point-helper.cc -> build/src/point-to-point/helper/point-to-point-helper.cc.1.o
+[ 852/1001] cxx: src/point-to-point/model/point-to-point-channel.cc -> build/src/point-to-point/model/point-to-point-channel.cc.1.o
+[ 853/1001] cxx: src/point-to-point/model/point-to-point-net-device.cc -> build/src/point-to-point/model/point-to-point-net-device.cc.1.o
+[ 854/1001] cxx: src/network/utils/leaky-bucket.cc -> build/src/network/utils/leaky-bucket.cc.1.o
+[ 855/1001] cxx: src/network/utils/output-stream-wrapper.cc -> build/src/network/utils/output-stream-wrapper.cc.1.o
+[ 856/1001] cxx: src/network/utils/address-utils.cc -> build/src/network/utils/address-utils.cc.1.o
+[ 857/1001] cxx: src/network/model/trailer.cc -> build/src/network/model/trailer.cc.1.o
+[ 858/1001] cxx: src/internet/helper/ipv4-address-helper.cc -> build/src/internet/helper/ipv4-address-helper.cc.1.o
+[ 859/1001] cxx: src/internet/model/global-route-manager.cc -> build/src/internet/model/global-route-manager.cc.1.o
+[ 860/1001] cxx: src/internet/model/ipv4-routing-table-entry.cc -> build/src/internet/model/ipv4-routing-table-entry.cc.1.o
+[ 861/1001] cxx: src/internet/model/ipv4.cc -> build/src/internet/model/ipv4.cc.1.o
+[ 862/1001] cxx: src/internet/model/tcp-socket-factory.cc -> build/src/internet/model/tcp-socket-factory.cc.1.o
+[ 863/1001] cxx: src/internet/model/tcp-socket.cc -> build/src/internet/model/tcp-socket.cc.1.o
+[ 864/1001] cxx: src/internet/model/ipv6-extension.cc -> build/src/internet/model/ipv6-extension.cc.1.o
+[ 865/1001] cxx: src/internet/model/ipv6-end-point.cc -> build/src/internet/model/ipv6-end-point.cc.1.o
+[ 866/1001] cxx: src/internet/model/icmpv6-header.cc -> build/src/internet/model/icmpv6-header.cc.1.o
+[ 867/1001] cxx: src/internet/model/arp-l3-protocol.cc -> build/src/internet/model/arp-l3-protocol.cc.1.o
+[ 868/1001] cxx: src/internet/model/ipv4-interface.cc -> build/src/internet/model/ipv4-interface.cc.1.o
+[ 869/1001] cxx: src/core/model/unix-system-mutex.cc -> build/src/core/model/unix-system-mutex.cc.1.o
+[ 870/1001] cxx: src/core/model/realtime-simulator-impl.cc -> build/src/core/model/realtime-simulator-impl.cc.1.o
+[ 871/1001] cxx: src/core/model/string.cc -> build/src/core/model/string.cc.1.o
+[ 872/1001] cxx: src/core/model/object.cc -> build/src/core/model/object.cc.1.o
+[ 873/1001] cxx: src/core/model/default-simulator-impl.cc -> build/src/core/model/default-simulator-impl.cc.1.o
+[ 874/1001] cxx: src/config-store/model/file-config.cc -> build/src/config-store/model/file-config.cc.1.o
+[ 875/1001] cxx: src/applications/model/app-recv-buffer.cc -> build/src/applications/model/app-recv-buffer.cc.1.o
+[ 876/1001] cxx: src/applications/helper/udp-echo-helper.cc -> build/src/applications/helper/udp-echo-helper.cc.1.o
+[ 877/1001] cxx: src/applications/model/udp-echo-server.cc -> build/src/applications/model/udp-echo-server.cc.1.o
+[ 878/1001] cxx: src/applications/model/radvd-interface.cc -> build/src/applications/model/radvd-interface.cc.1.o
+[ 879/1001] cxx: src/applications/model/v4ping.cc -> build/src/applications/model/v4ping.cc.1.o
+[ 880/1001] cxx: src/applications/helper/udp-client-server-helper.cc -> build/src/applications/helper/udp-client-server-helper.cc.1.o
+[ 881/1001] cxx: src/bridge/model/bridge-channel.cc -> build/src/bridge/model/bridge-channel.cc.1.o
+[ 882/1001] cxx: src/core/model/heap-scheduler.cc -> build/src/core/model/heap-scheduler.cc.1.o
+[ 883/1001] cxx: src/core/model/calendar-scheduler.cc -> build/src/core/model/calendar-scheduler.cc.1.o
+[ 884/1001] cxx: src/core/model/timer.cc -> build/src/core/model/timer.cc.1.o
+[ 885/1001] cxx: src/core/model/ref-count-base.cc -> build/src/core/model/ref-count-base.cc.1.o
+[ 886/1001] cxx: src/core/model/random-variable.cc -> build/src/core/model/random-variable.cc.1.o
+[ 887/1001] cxx: src/core/model/attribute.cc -> build/src/core/model/attribute.cc.1.o
+[ 888/1001] cxx: src/core/model/object-factory.cc -> build/src/core/model/object-factory.cc.1.o
+[ 889/1001] cxx: src/core/model/fatal-impl.cc -> build/src/core/model/fatal-impl.cc.1.o
+[ 890/1001] cxx: src/core/model/hash-fnv.cc -> build/src/core/model/hash-fnv.cc.1.o
+[ 891/1001] cxx: src/internet/model/ipv4-l3-protocol.cc -> build/src/internet/model/ipv4-l3-protocol.cc.1.o
+[ 892/1001] cxx: src/internet/model/udp-socket-impl.cc -> build/src/internet/model/udp-socket-impl.cc.1.o
+[ 893/1001] cxx: src/internet/model/icmpv4-l4-protocol.cc -> build/src/internet/model/icmpv4-l4-protocol.cc.1.o
+[ 894/1001] cxx: src/internet/model/loopback-net-device.cc -> build/src/internet/model/loopback-net-device.cc.1.o
+[ 895/1001] cxx: src/internet/model/ipv6-end-point-demux.cc -> build/src/internet/model/ipv6-end-point-demux.cc.1.o
+[ 896/1001] cxx: src/internet/model/tcp-socket-base.cc -> build/src/internet/model/tcp-socket-base.cc.1.o
+[ 897/1001] cxx: src/internet/model/tcp-option.cc -> build/src/internet/model/tcp-option.cc.1.o
+[ 898/1001] cxx: src/internet/model/tcp-option-end.cc -> build/src/internet/model/tcp-option-end.cc.1.o
+[ 899/1001] cxx: src/internet/helper/ipv6-list-routing-helper.cc -> build/src/internet/helper/ipv6-list-routing-helper.cc.1.o
+[ 900/1001] cxx: src/internet/helper/ipv4-global-routing-helper.cc -> build/src/internet/helper/ipv4-global-routing-helper.cc.1.o
+[ 901/1001] cxx: src/internet/helper/ipv4-routing-helper.cc -> build/src/internet/helper/ipv4-routing-helper.cc.1.o
+[ 902/1001] cxx: src/internet/model/ipv6-address-generator.cc -> build/src/internet/model/ipv6-address-generator.cc.1.o
+[ 903/1001] cxx: src/mpi/model/mpi-receiver.cc -> build/src/mpi/model/mpi-receiver.cc.1.o
+[ 904/1001] cxx: src/network/model/channel-list.cc -> build/src/network/model/channel-list.cc.1.o
+[ 905/1001] cxx: src/network/model/header.cc -> build/src/network/model/header.cc.1.o
+[ 906/1001] cxx: src/network/model/packet.cc -> build/src/network/model/packet.cc.1.o
+[ 907/1001] cxx: src/network/utils/drop-tail-queue.cc -> build/src/network/utils/drop-tail-queue.cc.1.o
+[ 908/1001] cxx: src/network/utils/inet6-socket-address.cc -> build/src/network/utils/inet6-socket-address.cc.1.o
+[ 909/1001] cxx: src/network/utils/mac64-address.cc -> build/src/network/utils/mac64-address.cc.1.o
+[ 910/1001] cxx: src/network/helper/trace-helper.cc -> build/src/network/helper/trace-helper.cc.1.o
+[ 911/1001] cxx: src/point-to-point/model/cn-header.cc -> build/src/point-to-point/model/cn-header.cc.1.o
+[ 912/1001] cxx: src/point-to-point/model/rdma-queue-pair.cc -> build/src/point-to-point/model/rdma-queue-pair.cc.1.o
+[ 913/1001] cxx: src/stats/model/omnet-data-output.cc -> build/src/stats/model/omnet-data-output.cc.1.o
+[ 914/1001] cxx: src/stats/model/data-collector.cc -> build/src/stats/model/data-collector.cc.1.o
+[ 915/1001] cxx: scratch/scratch-simulator.cc -> build/scratch/scratch-simulator.cc.2.o
+[ 916/1001] cxx: scratch/subdir/scratch-simulator-subdir.cc -> build/scratch/subdir/scratch-simulator-subdir.cc.3.o
+[ 917/1001] cxx: src/core/model/command-line.cc -> build/src/core/model/command-line.cc.1.o
+[ 918/1001] cxx: src/core/model/synchronizer.cc -> build/src/core/model/synchronizer.cc.1.o
+[ 919/1001] cxx: src/bridge/model/bridge-net-device.cc -> build/src/bridge/model/bridge-net-device.cc.1.o
+[ 920/1001] cxx: src/applications/model/packet-sink.cc -> build/src/applications/model/packet-sink.cc.1.o
+[ 921/1001] cxx: src/applications/model/udp-echo-client.cc -> build/src/applications/model/udp-echo-client.cc.1.o
+[ 922/1001] cxx: src/config-store/model/config-store.cc -> build/src/config-store/model/config-store.cc.1.o
+[ 923/1001] cxx: src/core/model/time.cc -> build/src/core/model/time.cc.1.o
+[ 924/1001] cxx: src/core/model/breakpoint.cc -> build/src/core/model/breakpoint.cc.1.o
+[ 925/1001] cxx: src/core/model/type-id.cc -> build/src/core/model/type-id.cc.1.o
+[ 926/1001] cxx: src/core/model/test.cc -> build/src/core/model/test.cc.1.o
+[ 927/1001] cxx: src/core/model/boolean.cc -> build/src/core/model/boolean.cc.1.o
+[ 928/1001] cxx: src/internet/model/tcp-header.cc -> build/src/internet/model/tcp-header.cc.1.o
+[ 929/1001] cxx: src/internet/model/tcp-l4-protocol.cc -> build/src/internet/model/tcp-l4-protocol.cc.1.o
+[ 930/1001] cxx: src/internet/model/icmpv4.cc -> build/src/internet/model/icmpv4.cc.1.o
+[ 931/1001] cxx: src/internet/model/ipv6-l3-protocol.cc -> build/src/internet/model/ipv6-l3-protocol.cc.1.o
+[ 932/1001] cxx: src/internet/model/tcp-rfc793.cc -> build/src/internet/model/tcp-rfc793.cc.1.o
+[ 933/1001] cxx: src/internet/helper/ipv6-static-routing-helper.cc -> build/src/internet/helper/ipv6-static-routing-helper.cc.1.o
+[ 934/1001] cxx: src/network/model/address.cc -> build/src/network/model/address.cc.1.o
+[ 935/1001] cxx: src/network/model/node.cc -> build/src/network/model/node.cc.1.o
+[ 936/1001] cxx: src/network/utils/ethernet-header.cc -> build/src/network/utils/ethernet-header.cc.1.o
+[ 937/1001] cxx: src/network/utils/simple-net-device.cc -> build/src/network/utils/simple-net-device.cc.1.o
+[ 938/1001] cxx: src/point-to-point/model/conga-routing.cc -> build/src/point-to-point/model/conga-routing.cc.1.o
+[ 939/1001] cxx: src/stats/model/packet-data-calculators.cc -> build/src/stats/model/packet-data-calculators.cc.1.o
+[ 940/1001] cxx: src/tools/model/gnuplot.cc -> build/src/tools/model/gnuplot.cc.1.o
+[ 941/1001] cxx: utils/bench-packets.cc -> build/utils/bench-packets.cc.3.o
+[ 942/1001] cxx: src/tools/model/event-garbage-collector.cc -> build/src/tools/model/event-garbage-collector.cc.1.o
+../src/network/model/node.cc: In member function ‘virtual bool ns3::Node::SwitchReceiveFromDevice(ns3::Ptr<ns3::NetDevice>, ns3::Ptr<ns3::Packet>, ns3::CustomHeader&)’:
+../src/network/model/node.cc:343:1: warning: no return statement in function returning non-void [-Wreturn-type]
+  343 | }
+      | ^
+[ 943/1001] cxx: src/point-to-point/model/rdma-driver.cc -> build/src/point-to-point/model/rdma-driver.cc.1.o
+[ 944/1001] cxx: src/point-to-point/model/qbb-channel.cc -> build/src/point-to-point/model/qbb-channel.cc.1.o
+[ 945/1001] cxx: src/point-to-point/model/point-to-point-remote-channel.cc -> build/src/point-to-point/model/point-to-point-remote-channel.cc.1.o
+[ 946/1001] cxx: src/network/model/flow-id-num-tag.cc -> build/src/network/model/flow-id-num-tag.cc.1.o
+../scratch/network-load-balance.cc: In function ‘int main(int, char**)’:
+../scratch/network-load-balance.cc:2661:36: warning: ‘.0’ directive writing 2 bytes into a region of size between 1 and 10 [-Wformat-overflow=]
+ 2661 |         sprintf(ipstring, "10.%d.%d.0", i / 254 + 1, i % 254 + 1);
+      |                                    ^~
+In file included from /usr/include/stdio.h:894,
+                 from /usr/include/c++/11/cstdio:42,
+                 from /usr/include/c++/11/ext/string_conversions.h:43,
+                 from /usr/include/c++/11/bits/basic_string.h:6608,
+                 from /usr/include/c++/11/string:55,
+                 from /usr/include/c++/11/bits/locale_classes.h:40,
+                 from /usr/include/c++/11/bits/ios_base.h:41,
+                 from /usr/include/c++/11/ios:42,
+                 from /usr/include/c++/11/ostream:38,
+                 from /usr/include/c++/11/iostream:39,
+                 from ./ns3/ptr.h:24,
+                 from ./ns3/event-id.h:24,
+                 from ./ns3/application.h:24,
+                 from ./ns3/application-container.h:26,
+                 from ./ns3/rdma-client-helper.h:24,
+                 from ../scratch/network-load-balance.cc:22:
+/usr/include/x86_64-linux-gnu/bits/stdio2.h:38:34: note: ‘__builtin___sprintf_chk’ output between 9 and 18 bytes into a destination of size 16
+   38 |   return __builtin___sprintf_chk (__s, __USE_FORTIFY_LEVEL - 1,
+      |          ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   39 |                                   __glibc_objsize (__s), __fmt,
+      |                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   40 |                                   __va_arg_pack ());
+      |                                   ~~~~~~~~~~~~~~~~~
+[ 947/1001] cxx: src/network/helper/application-container.cc -> build/src/network/helper/application-container.cc.1.o
+[ 948/1001] cxx: src/network/utils/red-queue.cc -> build/src/network/utils/red-queue.cc.1.o
+[ 949/1001] cxx: src/network/utils/packet-socket-address.cc -> build/src/network/utils/packet-socket-address.cc.1.o
+[ 950/1001] cxx: src/network/utils/ipv4-address.cc -> build/src/network/utils/ipv4-address.cc.1.o
+[ 951/1001] cxx: src/network/utils/data-rate.cc -> build/src/network/utils/data-rate.cc.1.o
+[ 952/1001] cxx: src/network/model/buffer.cc -> build/src/network/model/buffer.cc.1.o
+[ 953/1001] cxx: src/mpi/model/distributed-simulator-impl.cc -> build/src/mpi/model/distributed-simulator-impl.cc.1.o
+[ 954/1001] cxx: src/internet/model/seq-ts-header.cc -> build/src/internet/model/seq-ts-header.cc.1.o
+[ 955/1001] cxx: src/internet/model/candidate-queue.cc -> build/src/internet/model/candidate-queue.cc.1.o
+[ 956/1001] cxx: src/internet/model/tcp-option-winscale.cc -> build/src/internet/model/tcp-option-winscale.cc.1.o
+[ 957/1001] cxx: src/internet/model/ipv4-raw-socket-impl.cc -> build/src/internet/model/ipv4-raw-socket-impl.cc.1.o
+[ 958/1001] cxx: src/internet/model/udp-header.cc -> build/src/internet/model/udp-header.cc.1.o
+[ 959/1001] cxx: src/core/model/unix-system-condition.cc -> build/src/core/model/unix-system-condition.cc.1.o
+[ 960/1001] cxx: src/bridge/helper/bridge-helper.cc -> build/src/bridge/helper/bridge-helper.cc.1.o
+[ 961/1001] cxx: src/applications/model/check-all-packets.cc -> build/src/applications/model/check-all-packets.cc.1.o
+[ 962/1001] cxx: src/applications/model/udp-server.cc -> build/src/applications/model/udp-server.cc.1.o
+[ 963/1001] cxx: src/applications/model/onoff-application.cc -> build/src/applications/model/onoff-application.cc.1.o
+[ 964/1001] cxx: src/applications/model/ping6.cc -> build/src/applications/model/ping6.cc.1.o
+[ 965/1001] cxx: src/applications/model/radvd-prefix.cc -> build/src/applications/model/radvd-prefix.cc.1.o
+[ 966/1001] cxx: src/applications/model/packet-loss-counter.cc -> build/src/applications/model/packet-loss-counter.cc.1.o
+[ 967/1001] cxx: src/applications/helper/packet-sink-helper.cc -> build/src/applications/helper/packet-sink-helper.cc.1.o
+[ 968/1001] cxx: src/applications/model/rdma-client.cc -> build/src/applications/model/rdma-client.cc.1.o
+[ 969/1001] cxx: src/core/model/integer.cc -> build/src/core/model/integer.cc.1.o
+[ 970/1001] cxxshlib: build/src/core/model/time.cc.1.o build/src/core/model/event-id.cc.1.o build/src/core/model/scheduler.cc.1.o build/src/core/model/list-scheduler.cc.1.o build/src/core/model/map-scheduler.cc.1.o build/src/core/model/heap-scheduler.cc.1.o build/src/core/model/calendar-scheduler.cc.1.o build/src/core/model/event-impl.cc.1.o build/src/core/model/simulator.cc.1.o build/src/core/model/simulator-impl.cc.1.o build/src/core/model/default-simulator-impl.cc.1.o build/src/core/model/timer.cc.1.o build/src/core/model/watchdog.cc.1.o build/src/core/model/synchronizer.cc.1.o build/src/core/model/make-event.cc.1.o build/src/core/model/log.cc.1.o build/src/core/model/breakpoint.cc.1.o build/src/core/model/type-id.cc.1.o build/src/core/model/attribute-construction-list.cc.1.o build/src/core/model/object-base.cc.1.o build/src/core/model/ref-count-base.cc.1.o build/src/core/model/object.cc.1.o build/src/core/model/test.cc.1.o build/src/core/model/random-variable.cc.1.o build/src/core/model/random-variable-stream.cc.1.o build/src/core/model/rng-seed-manager.cc.1.o build/src/core/model/rng-stream.cc.1.o build/src/core/model/command-line.cc.1.o build/src/core/model/type-name.cc.1.o build/src/core/model/attribute.cc.1.o build/src/core/model/boolean.cc.1.o build/src/core/model/integer.cc.1.o build/src/core/model/uinteger.cc.1.o build/src/core/model/enum.cc.1.o build/src/core/model/double.cc.1.o build/src/core/model/int64x64.cc.1.o build/src/core/model/string.cc.1.o build/src/core/model/pointer.cc.1.o build/src/core/model/object-ptr-container.cc.1.o build/src/core/model/object-factory.cc.1.o build/src/core/model/global-value.cc.1.o build/src/core/model/trace-source-accessor.cc.1.o build/src/core/model/config.cc.1.o build/src/core/model/callback.cc.1.o build/src/core/model/names.cc.1.o build/src/core/model/vector.cc.1.o build/src/core/model/fatal-impl.cc.1.o build/src/core/model/system-path.cc.1.o build/src/core/model/hash-function.cc.1.o build/src/core/model/hash-murmur3.cc.1.o build/src/core/model/hash-fnv.cc.1.o build/src/core/model/hash.cc.1.o build/src/core/model/unix-system-wall-clock-ms.cc.1.o build/src/core/model/int64x64-128.cc.1.o build/src/core/model/realtime-simulator-impl.cc.1.o build/src/core/model/wall-clock-synchronizer.cc.1.o build/src/core/model/system-thread.cc.1.o build/src/core/model/unix-fd-reader.cc.1.o build/src/core/model/unix-system-mutex.cc.1.o build/src/core/model/unix-system-condition.cc.1.o -> build/libns3.19-core-optimized.so
+[ 971/1001] cxxprogram: build/utils/bench-simulator.cc.2.o -> build/utils/ns3.19-bench-simulator-optimized
+[ 972/1001] cxxshlib: build/src/network/model/address.cc.1.o build/src/network/model/application.cc.1.o build/src/network/model/buffer.cc.1.o build/src/network/model/byte-tag-list.cc.1.o build/src/network/model/channel.cc.1.o build/src/network/model/channel-list.cc.1.o build/src/network/model/chunk.cc.1.o build/src/network/model/header.cc.1.o build/src/network/model/nix-vector.cc.1.o build/src/network/model/node.cc.1.o build/src/network/model/node-list.cc.1.o build/src/network/model/net-device.cc.1.o build/src/network/model/packet.cc.1.o build/src/network/model/packet-metadata.cc.1.o build/src/network/model/packet-tag-list.cc.1.o build/src/network/model/socket.cc.1.o build/src/network/model/socket-factory.cc.1.o build/src/network/model/tag.cc.1.o build/src/network/model/tag-buffer.cc.1.o build/src/network/model/trailer.cc.1.o build/src/network/utils/address-utils.cc.1.o build/src/network/utils/data-rate.cc.1.o build/src/network/utils/drop-tail-queue.cc.1.o build/src/network/utils/error-model.cc.1.o build/src/network/utils/ethernet-header.cc.1.o build/src/network/utils/ethernet-trailer.cc.1.o build/src/network/utils/flow-id-tag.cc.1.o build/src/network/utils/inet-socket-address.cc.1.o build/src/network/utils/inet6-socket-address.cc.1.o build/src/network/utils/ipv4-address.cc.1.o build/src/network/utils/ipv6-address.cc.1.o build/src/network/utils/mac48-address.cc.1.o build/src/network/utils/mac64-address.cc.1.o build/src/network/utils/llc-snap-header.cc.1.o build/src/network/utils/output-stream-wrapper.cc.1.o build/src/network/utils/packetbb.cc.1.o build/src/network/utils/packet-burst.cc.1.o build/src/network/utils/packet-socket.cc.1.o build/src/network/utils/packet-socket-address.cc.1.o build/src/network/utils/packet-socket-factory.cc.1.o build/src/network/utils/pcap-file.cc.1.o build/src/network/utils/pcap-file-wrapper.cc.1.o build/src/network/utils/queue.cc.1.o build/src/network/utils/radiotap-header.cc.1.o build/src/network/utils/red-queue.cc.1.o build/src/network/utils/simple-channel.cc.1.o build/src/network/utils/simple-net-device.cc.1.o build/src/network/utils/broadcom-egress-queue.cc.1.o build/src/network/helper/application-container.cc.1.o build/src/network/helper/net-device-container.cc.1.o build/src/network/helper/node-container.cc.1.o build/src/network/helper/packet-socket-helper.cc.1.o build/src/network/helper/trace-helper.cc.1.o build/src/network/helper/leaky-bucket-helper.cc.1.o build/src/network/utils/leaky-bucket.cc.1.o build/src/network/utils/custom-header.cc.1.o build/src/network/utils/int-header.cc.1.o build/src/network/model/flow-id-num-tag.cc.1.o -> build/libns3.19-network-optimized.so
+[ 973/1001] cxxshlib: build/src/stats/model/data-calculator.cc.1.o build/src/stats/model/packet-data-calculators.cc.1.o build/src/stats/model/time-data-calculators.cc.1.o build/src/stats/model/data-output-interface.cc.1.o build/src/stats/model/omnet-data-output.cc.1.o build/src/stats/model/data-collector.cc.1.o build/src/stats/model/sqlite-data-output.cc.1.o -> build/libns3.19-stats-optimized.so
+[ 974/1001] cxxprogram: build/utils/bench-packets.cc.3.o -> build/utils/ns3.19-bench-packets-optimized
+[ 975/1001] cxxshlib: build/src/config-store/model/attribute-iterator.cc.1.o build/src/config-store/model/config-store.cc.1.o build/src/config-store/model/attribute-default-iterator.cc.1.o build/src/config-store/model/file-config.cc.1.o build/src/config-store/model/raw-text-config.cc.1.o build/src/config-store/model/xml-config.cc.1.o -> build/libns3.19-config-store-optimized.so
+[ 976/1001] cxxshlib: build/src/mpi/model/distributed-simulator-impl.cc.1.o build/src/mpi/model/mpi-interface.cc.1.o build/src/mpi/model/mpi-receiver.cc.1.o -> build/libns3.19-mpi-optimized.so
+[ 977/1001] cxxshlib: build/src/bridge/model/bridge-net-device.cc.1.o build/src/bridge/model/bridge-channel.cc.1.o build/src/bridge/helper/bridge-helper.cc.1.o -> build/libns3.19-bridge-optimized.so
+[ 978/1001] cxxshlib: build/src/tools/model/event-garbage-collector.cc.1.o build/src/tools/model/gnuplot.cc.1.o build/src/tools/model/delay-jitter-estimation.cc.1.o -> build/libns3.19-tools-optimized.so
+[ 979/1001] cxxshlib: build/src/internet/model/ip-l4-protocol.cc.1.o build/src/internet/model/udp-header.cc.1.o build/src/internet/model/tcp-header.cc.1.o build/src/internet/model/ipv4-interface.cc.1.o build/src/internet/model/ipv4-l3-protocol.cc.1.o build/src/internet/model/ipv4-end-point.cc.1.o build/src/internet/model/udp-l4-protocol.cc.1.o build/src/internet/model/tcp-l4-protocol.cc.1.o build/src/internet/model/arp-header.cc.1.o build/src/internet/model/arp-cache.cc.1.o build/src/internet/model/arp-l3-protocol.cc.1.o build/src/internet/model/udp-socket-impl.cc.1.o build/src/internet/model/ipv4-end-point-demux.cc.1.o build/src/internet/model/udp-socket-factory-impl.cc.1.o build/src/internet/model/tcp-socket-factory-impl.cc.1.o build/src/internet/model/pending-data.cc.1.o build/src/internet/model/rtt-estimator.cc.1.o build/src/internet/model/ipv4-raw-socket-factory-impl.cc.1.o build/src/internet/model/ipv4-raw-socket-impl.cc.1.o build/src/internet/model/icmpv4.cc.1.o build/src/internet/model/icmpv4-l4-protocol.cc.1.o build/src/internet/model/loopback-net-device.cc.1.o build/src/internet/model/ndisc-cache.cc.1.o build/src/internet/model/ipv6-interface.cc.1.o build/src/internet/model/icmpv6-header.cc.1.o build/src/internet/model/ipv6-l3-protocol.cc.1.o build/src/internet/model/ipv6-end-point.cc.1.o build/src/internet/model/ipv6-end-point-demux.cc.1.o build/src/internet/model/ipv6-raw-socket-factory-impl.cc.1.o build/src/internet/model/ipv6-raw-socket-impl.cc.1.o build/src/internet/model/ipv6-autoconfigured-prefix.cc.1.o build/src/internet/model/ipv6-extension.cc.1.o build/src/internet/model/ipv6-extension-header.cc.1.o build/src/internet/model/ipv6-extension-demux.cc.1.o build/src/internet/model/ipv6-option.cc.1.o build/src/internet/model/ipv6-option-header.cc.1.o build/src/internet/model/ipv6-option-demux.cc.1.o build/src/internet/model/icmpv6-l4-protocol.cc.1.o build/src/internet/model/tcp-socket-base.cc.1.o build/src/internet/model/tcp-rfc793.cc.1.o build/src/internet/model/tcp-tahoe.cc.1.o build/src/internet/model/tcp-reno.cc.1.o build/src/internet/model/tcp-newreno.cc.1.o build/src/internet/model/tcp-rx-buffer.cc.1.o build/src/internet/model/tcp-tx-buffer.cc.1.o build/src/internet/model/tcp-option.cc.1.o build/src/internet/model/tcp-option-end.cc.1.o build/src/internet/model/tcp-option-no-op.cc.1.o build/src/internet/model/tcp-option-mss.cc.1.o build/src/internet/model/tcp-option-winscale.cc.1.o build/src/internet/model/tcp-option-sack-permitted.cc.1.o build/src/internet/model/tcp-option-sack.cc.1.o build/src/internet/model/tcp-option-ts.cc.1.o build/src/internet/model/ipv4-packet-info-tag.cc.1.o build/src/internet/model/ipv6-packet-info-tag.cc.1.o build/src/internet/model/ipv4-interface-address.cc.1.o build/src/internet/model/ipv4-address-generator.cc.1.o build/src/internet/model/ipv4-header.cc.1.o build/src/internet/model/ipv4-route.cc.1.o build/src/internet/model/ipv4-routing-protocol.cc.1.o build/src/internet/model/udp-socket.cc.1.o build/src/internet/model/udp-socket-factory.cc.1.o build/src/internet/model/tcp-socket.cc.1.o build/src/internet/model/tcp-socket-factory.cc.1.o build/src/internet/model/ipv4.cc.1.o build/src/internet/model/ipv4-raw-socket-factory.cc.1.o build/src/internet/model/ipv6-header.cc.1.o build/src/internet/model/ipv6-interface-address.cc.1.o build/src/internet/model/ipv6-route.cc.1.o build/src/internet/model/ipv6.cc.1.o build/src/internet/model/ipv6-raw-socket-factory.cc.1.o build/src/internet/model/ipv6-routing-protocol.cc.1.o build/src/internet/model/ipv4-list-routing.cc.1.o build/src/internet/model/ipv6-list-routing.cc.1.o build/src/internet/helper/ipv4-list-routing-helper.cc.1.o build/src/internet/helper/ipv6-list-routing-helper.cc.1.o build/src/internet/model/ipv4-static-routing.cc.1.o build/src/internet/model/ipv4-routing-table-entry.cc.1.o build/src/internet/model/ipv6-static-routing.cc.1.o build/src/internet/model/ipv6-routing-table-entry.cc.1.o build/src/internet/helper/ipv4-static-routing-helper.cc.1.o build/src/internet/helper/ipv6-static-routing-helper.cc.1.o build/src/internet/model/global-router-interface.cc.1.o build/src/internet/model/global-route-manager.cc.1.o build/src/internet/model/global-route-manager-impl.cc.1.o build/src/internet/model/candidate-queue.cc.1.o build/src/internet/model/ipv4-global-routing.cc.1.o build/src/internet/helper/ipv4-global-routing-helper.cc.1.o build/src/internet/helper/internet-stack-helper.cc.1.o build/src/internet/helper/internet-trace-helper.cc.1.o build/src/internet/helper/ipv4-address-helper.cc.1.o build/src/internet/helper/ipv4-interface-container.cc.1.o build/src/internet/helper/ipv4-routing-helper.cc.1.o build/src/internet/helper/ipv6-address-helper.cc.1.o build/src/internet/helper/ipv6-interface-container.cc.1.o build/src/internet/helper/ipv6-routing-helper.cc.1.o build/src/internet/model/ipv6-address-generator.cc.1.o build/src/internet/model/seq-ts-header.cc.1.o -> build/libns3.19-internet-optimized.so
+[ 980/1001] pcfile: build/src/config-store/libns3.19-config-store-optimized.pc
+[ 986/1001] pcfile: build/src/mpi/libns3.19-mpi-optimized.pc
+[ 986/1001] pcfile: build/src/applications/libns3.19-applications-optimized.pc
+[ 986/1001] pcfile: build/src/core/libns3.19-core-optimized.pc
+[ 985/1001] pcfile: build/src/bridge/libns3.19-bridge-optimized.pc
+[ 986/1001] pcfile: build/src/internet/libns3.19-internet-optimized.pc
+[ 985/1001] cxxshlib: build/src/point-to-point/model/point-to-point-net-device.cc.1.o build/src/point-to-point/model/point-to-point-channel.cc.1.o build/src/point-to-point/model/point-to-point-remote-channel.cc.1.o build/src/point-to-point/model/ppp-header.cc.1.o build/src/point-to-point/helper/point-to-point-helper.cc.1.o build/src/point-to-point/helper/qbb-helper.cc.1.o build/src/point-to-point/model/qbb-net-device.cc.1.o build/src/point-to-point/model/pause-header.cc.1.o build/src/point-to-point/model/cn-header.cc.1.o build/src/point-to-point/model/qbb-header.cc.1.o build/src/point-to-point/model/qbb-channel.cc.1.o build/src/point-to-point/model/qbb-remote-channel.cc.1.o build/src/point-to-point/model/rdma-driver.cc.1.o build/src/point-to-point/model/rdma-queue-pair.cc.1.o build/src/point-to-point/model/rdma-hw.cc.1.o build/src/point-to-point/model/switch-node.cc.1.o build/src/point-to-point/model/switch-mmu.cc.1.o build/src/point-to-point/model/flow-stat-tag.cc.1.o build/src/point-to-point/model/settings.cc.1.o build/src/point-to-point/model/conga-routing.cc.1.o build/src/point-to-point/model/letflow-routing.cc.1.o build/src/point-to-point/model/conweave-routing.cc.1.o build/src/point-to-point/model/conweave-voq.cc.1.o build/src/point-to-point/helper/selective-packet-queue.cc.1.o build/src/point-to-point/model/homa-simple-header.cc.1.o build/src/point-to-point/model/homa-header.cc.1.o -> build/libns3.19-point-to-point-optimized.so
+[ 988/1001] pcfile: build/src/network/libns3.19-network-optimized.pc
+[ 988/1001] pcfile: build/src/point-to-point/libns3.19-point-to-point-optimized.pc
+[ 990/1001] pcfile: build/src/tools/libns3.19-tools-optimized.pc
+[ 990/1001] pcfile: build/src/stats/libns3.19-stats-optimized.pc
+[ 991/1001] cxxshlib: build/src/applications/model/bulk-send-application.cc.1.o build/src/applications/model/onoff-application.cc.1.o build/src/applications/model/packet-sink.cc.1.o build/src/applications/model/ping6.cc.1.o build/src/applications/model/radvd.cc.1.o build/src/applications/model/radvd-interface.cc.1.o build/src/applications/model/radvd-prefix.cc.1.o build/src/applications/model/udp-client.cc.1.o build/src/applications/model/udp-server.cc.1.o build/src/applications/model/udp-trace-client.cc.1.o build/src/applications/model/packet-loss-counter.cc.1.o build/src/applications/model/udp-echo-client.cc.1.o build/src/applications/model/udp-echo-server.cc.1.o build/src/applications/model/v4ping.cc.1.o build/src/applications/helper/bulk-send-helper.cc.1.o build/src/applications/helper/on-off-helper.cc.1.o build/src/applications/helper/packet-sink-helper.cc.1.o build/src/applications/helper/ping6-helper.cc.1.o build/src/applications/helper/udp-client-server-helper.cc.1.o build/src/applications/helper/udp-echo-helper.cc.1.o build/src/applications/helper/v4ping-helper.cc.1.o build/src/applications/model/rdma-client.cc.1.o build/src/applications/helper/rdma-client-helper.cc.1.o build/src/applications/model/check-all-packets.cc.1.o build/src/applications/model/app-recv-buffer.cc.1.o -> build/libns3.19-applications-optimized.so
+[ 992/1001] cxxprogram: build/scratch/network-load-balance.cc.1.o -> build/scratch/network-load-balance
+[ 993/1001] cxxprogram: build/utils/test-runner.cc.1.o -> build/utils/ns3.19-test-runner-optimized
+[ 994/1001] cxxprogram: build/scratch/scratch-simulator.cc.2.o -> build/scratch/scratch-simulator
+[ 995/1001] cxxprogram: build/scratch/subdir/scratch-simulator-subdir.cc.3.o -> build/scratch/subdir/subdir
+[ 996/1001] cxx: src/emu/model/emu-sock-creator.cc -> build/src/emu/model/emu-sock-creator.cc.4.o
+[ 997/1001] cxx: src/emu/model/emu-encode-decode.cc -> build/src/emu/model/emu-encode-decode.cc.4.o
+[ 998/1001] cxxprogram: build/src/emu/model/emu-sock-creator.cc.4.o build/src/emu/model/emu-encode-decode.cc.4.o -> build/src/emu/ns3.19-emu-sock-creator-optimized
+[ 999/1001] cxx: src/tap-bridge/model/tap-creator.cc -> build/src/tap-bridge/model/tap-creator.cc.4.o
+[1000/1001] cxx: src/tap-bridge/model/tap-encode-decode.cc -> build/src/tap-bridge/model/tap-encode-decode.cc.4.o
+[1001/1001] cxxprogram: build/src/tap-bridge/model/tap-creator.cc.4.o build/src/tap-bridge/model/tap-encode-decode.cc.4.o -> build/src/tap-bridge/ns3.19-tap-creator-optimized
+Waf: Leaving directory `/home/gengjiayao/ict/guard-nictrace/build'
+'build' finished successfully (18.168s)
+
+Modules built:
+applications              bridge                    config-store             
+core                      internet                  mpi                      
+network                   point-to-point            stats                    
+tools                    
+
+Modules not built (see ns-3 tutorial for explanation):
+click                     openflow                  visualizer               
+

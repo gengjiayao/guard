@@ -1,0 +1,11 @@
+{
+  "status": "passed",
+  "confirmation_runs": 454,
+  "archived_attempts": 641,
+  "completed_simulations": 623,
+  "rejected_or_failed_attempts": 18,
+  "planned_but_unexecuted": [],
+  "source_build_hashes": "match frozen confirmation manifest",
+  "raw_checks": "All archives, result records, and completed FCT/stats/queue hashes verified",
+  "performance_decision": "Experimental only; not promoted because of storage, DP2, and fairness regressions"
+}

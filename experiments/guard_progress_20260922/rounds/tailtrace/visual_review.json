@@ -1,0 +1,22 @@
+{
+  "reviewer": "primary agent",
+  "scope": "development evidence only; no manuscript review claimed",
+  "figures": [
+    "figures/causal_cdf.png",
+    "figures/causal_shared_nofabric_trace_slowflows.png",
+    "figures/causal_shared_trace_slowflows.png",
+    "figures/scheduler_shared_rr_trace_slowflows.png",
+    "figures/stable_cdf.png",
+    "figures/stable_metrics.png",
+    "figures/stable_shared_trace_slowflows.png",
+    "figures/stable_startup_trace_slowflows.png"
+  ],
+  "checks": [
+    "legible axes and labels; no clipping",
+    "single observed seed explicit",
+    "full CDF crossings and adverse tails retained",
+    "identical 0.08\u2013150Gbps axes for sampled cap comparisons",
+    "four external baselines retained"
+  ],
+  "result": "pass"
+}

@@ -1,0 +1,3848 @@
+{
+  "raw/ali30-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "c0bdaacf3fd523d9c2d1b7eebc6f959daa5ac738a4b19053840351e7378709d1",
+    "status": "completed",
+    "key": "ali30-s301-adaptive_gate_k1",
+    "bytes": 3426184
+  },
+  "raw/ali30-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "d05315f7874bf94941d75cb4f810c97fae0adc292ca52f8c6f1734ff2c397b1e",
+    "status": "completed",
+    "key": "ali30-s301-adaptive_gate_k1_min1",
+    "bytes": 3426345
+  },
+  "raw/ali30-s301-queue_adaptive_gate.tar.gz": {
+    "sha256": "ae5c292ea716ad9356d4772e9e256746c2ac0f41ca628ff32c9b739b5b399218",
+    "status": "completed",
+    "key": "ali30-s301-queue_adaptive_gate",
+    "bytes": 3426051
+  },
+  "raw/ali30-s301-queue_adaptive_gate_budget4.tar.gz": {
+    "sha256": "dcbb64b19f37e6b935fcd1a26eefdab9509bbe4ca47470aae96b1aa0d738b88d",
+    "status": "completed",
+    "key": "ali30-s301-queue_adaptive_gate_budget4",
+    "bytes": 3425867
+  },
+  "raw/ali30-s301-queue_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "9056aa28230bb6be8440c9300d9d3a271c7ab9fa5378c4e853e883d33b696692",
+    "status": "completed",
+    "key": "ali30-s301-queue_adaptive_gate_budget4_k1",
+    "bytes": 3426182
+  },
+  "raw/ali30-s301-queue_adaptive_gate_e2.tar.gz": {
+    "sha256": "763ed536eb6c7a76f59efa449160595454e973bf2b1d0263e0397bbee3cb4c41",
+    "status": "completed",
+    "key": "ali30-s301-queue_adaptive_gate_e2",
+    "bytes": 3425870
+  },
+  "raw/ali30-s301-queue_adaptive_gate_k1_min12.tar.gz": {
+    "sha256": "8c044409f4142a88f1d370aa044b2c6013425e1f1051c3e3f92882f7d149f060",
+    "status": "completed",
+    "key": "ali30-s301-queue_adaptive_gate_k1_min12",
+    "bytes": 3426478
+  },
+  "raw/ali30-s301-queue_adaptive_gate_k4_min12.tar.gz": {
+    "sha256": "f6dc4be6419f10b662fd98b1dc3e982a7aa02a413306972a436c2f7dfa3db392",
+    "status": "incomplete_or_failed",
+    "key": "ali30-s301-queue_adaptive_gate_k4_min12",
+    "bytes": 1193707
+  },
+  "raw/ali30-s301-revocable_serialized.tar.gz": {
+    "sha256": "acbeff0efed87075fad55f80d3be0c4ec9d175502fec0139d06381a5e443f8d1",
+    "status": "completed",
+    "key": "ali30-s301-revocable_serialized",
+    "bytes": 3428266
+  },
+  "raw/ali30-s301-revocable_serialized_safe.tar.gz": {
+    "sha256": "a030844147bb6ec54caa45cb587fe7fb2c6ce59c740dd15abce163e9d22cf3c9",
+    "status": "completed",
+    "key": "ali30-s301-revocable_serialized_safe",
+    "bytes": 3429285
+  },
+  "raw/ali30-s301-scope_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "a4d1db3d7e085fdc7c9f5d5f8eb7de8970120807a12aa6a7a0a85c8be4908571",
+    "status": "completed",
+    "key": "ali30-s301-scope_adaptive_gate_budget4_k1",
+    "bytes": 3425918
+  },
+  "raw/ali50-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "43f4e36fcaf4c5f74b74c1c0ec170f67283143115e5a22b5ee427e7a0051225e",
+    "status": "completed",
+    "key": "ali50-s301-adaptive_gate_k1",
+    "bytes": 5674617
+  },
+  "raw/ali50-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "6c3c0e2e3625f71b2658016c688841d62c21924ce85a3f8341d348c6aac5ca0d",
+    "status": "completed",
+    "key": "ali50-s301-adaptive_gate_k1_min1",
+    "bytes": 5674585
+  },
+  "raw/ali50-s301-queue_adaptive_gate.tar.gz": {
+    "sha256": "65104caa30ed8957b1cdf34ee7fda3d8d6213e4457c1939bb370966f953abf3e",
+    "status": "completed",
+    "key": "ali50-s301-queue_adaptive_gate",
+    "bytes": 5675879
+  },
+  "raw/ali50-s301-queue_adaptive_gate_budget4.tar.gz": {
+    "sha256": "af36a6ac03c9d6efa2cfc537f1367eab5fce738f356edc5ee826aeb8d70ebb8a",
+    "status": "completed",
+    "key": "ali50-s301-queue_adaptive_gate_budget4",
+    "bytes": 5675575
+  },
+  "raw/ali50-s301-queue_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "78aa907bb03ed2fde80eb6bbc01873ed1f51bd92f0a94b047231b51127be2fd8",
+    "status": "completed",
+    "key": "ali50-s301-queue_adaptive_gate_budget4_k1",
+    "bytes": 5674920
+  },
+  "raw/ali50-s301-queue_adaptive_gate_e2.tar.gz": {
+    "sha256": "6065b28e532318f43f84265fccd3309508802e6d44c87a70c22505e357d360d1",
+    "status": "completed",
+    "key": "ali50-s301-queue_adaptive_gate_e2",
+    "bytes": 5675954
+  },
+  "raw/ali50-s301-queue_adaptive_gate_k1_min12.tar.gz": {
+    "sha256": "60a16afa05dcae4f21a2f29eee4d41b918aa3a66e1f6adc66856116ba97ed31e",
+    "status": "completed",
+    "key": "ali50-s301-queue_adaptive_gate_k1_min12",
+    "bytes": 5675395
+  },
+  "raw/ali50-s301-queue_adaptive_gate_k4_min12.tar.gz": {
+    "sha256": "10f09b20e3e5d01161503ff24fd1591ae8cd2fa23a66c64990f0dda4aaa3a6c1",
+    "status": "incomplete_or_failed",
+    "key": "ali50-s301-queue_adaptive_gate_k4_min12",
+    "bytes": 1962409
+  },
+  "raw/ali50-s301-revocable_serialized.tar.gz": {
+    "sha256": "77d9dc94a03f4b1372aae842bb365ef9363385a09f613e8968ea607a216da4c5",
+    "status": "completed",
+    "key": "ali50-s301-revocable_serialized",
+    "bytes": 5677661
+  },
+  "raw/ali50-s301-revocable_serialized_safe.tar.gz": {
+    "sha256": "cd542064fcf75689f6e673668dd5d469804f1fba43d9f8fe122c2a992ed5a68f",
+    "status": "incomplete_or_failed",
+    "key": "ali50-s301-revocable_serialized_safe",
+    "bytes": 3066573
+  },
+  "raw/ali50-s301-scope_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "a2b8c1009e0b7de9390b1195cabbf9304bb150594a5d13cc1e6de5b687dbc545",
+    "status": "completed",
+    "key": "ali50-s301-scope_adaptive_gate_budget4_k1",
+    "bytes": 5674817
+  },
+  "raw/allreduce_dp2-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "a4001e03a72f37f4f5634ff624200733255c3198d7643ce6beefd12379806ad9",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-adaptive_gate_k1",
+    "bytes": 39026
+  },
+  "raw/allreduce_dp2-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "20f37d5b5fb7c051c2d81b2ca167fda2a028b702125d1b7e79402cac5815a680",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-adaptive_gate_k1_min1",
+    "bytes": 39003
+  },
+  "raw/allreduce_dp2-s301-queue_adaptive_gate.tar.gz": {
+    "sha256": "0c5568688e8cb124b9795f08d5697968b1f23bc8adef8270f60ecc1b0fd9608d",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-queue_adaptive_gate",
+    "bytes": 39320
+  },
+  "raw/allreduce_dp2-s301-queue_adaptive_gate_budget4.tar.gz": {
+    "sha256": "feffa13be1e7cbeb165e31786631376ab1a7fa4a6eb77a1fb18c5b7d8178dd80",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-queue_adaptive_gate_budget4",
+    "bytes": 39362
+  },
+  "raw/allreduce_dp2-s301-queue_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "28155e51545235b00b3b23ced5bf86ebcf5fdc0cdcfd122dbe302acb6614bf2c",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-queue_adaptive_gate_budget4_k1",
+    "bytes": 38863
+  },
+  "raw/allreduce_dp2-s301-queue_adaptive_gate_e2.tar.gz": {
+    "sha256": "68416996b56105f8ccd898ebffdd5f32055775f4794311a763b3cd946d54de9c",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-queue_adaptive_gate_e2",
+    "bytes": 38841
+  },
+  "raw/allreduce_dp2-s301-queue_adaptive_gate_k1_min12.tar.gz": {
+    "sha256": "0c6e7ee142d193050cb1e648fd318935a11395b63f40b26ff7bd76fbe3aa93cd",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-queue_adaptive_gate_k1_min12",
+    "bytes": 39035
+  },
+  "raw/allreduce_dp2-s301-queue_adaptive_gate_k4_min12.tar.gz": {
+    "sha256": "3982377ca7184023cea2048a0048bbc5980a2866588c44a27026e1159f1f18c2",
+    "status": "incomplete_or_failed",
+    "key": "allreduce_dp2-s301-queue_adaptive_gate_k4_min12",
+    "bytes": 11037
+  },
+  "raw/allreduce_dp2-s301-revocable_serialized.tar.gz": {
+    "sha256": "db4fbbc11571f94b730976e1f6201ab6e0f173951312e45925ca8766a80a1fe2",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-revocable_serialized",
+    "bytes": 40408
+  },
+  "raw/allreduce_dp2-s301-revocable_serialized_safe.tar.gz": {
+    "sha256": "b7ea0417628a56cd4be207a43ee6f555ff8a0e74069368165df1a1ca617aa7d1",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-revocable_serialized_safe",
+    "bytes": 40281
+  },
+  "raw/allreduce_dp2-s301-scope_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "46ec479bc98a50d639421155315342f95895d0156049d587e59b89a1a80ba787",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-scope_adaptive_gate_budget4_k1",
+    "bytes": 39343
+  },
+  "raw/alltoall-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "c1e078515bd354c38815385a9f08bb9fa53d14f10c1469296745ee30d78f3d1d",
+    "status": "completed",
+    "key": "alltoall-s301-adaptive_gate_k1",
+    "bytes": 19793
+  },
+  "raw/alltoall-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "18a720d3d161442ac990881843eb0707ecfd4b1e8f6d22128ad05ec88f163595",
+    "status": "completed",
+    "key": "alltoall-s301-adaptive_gate_k1_min1",
+    "bytes": 19930
+  },
+  "raw/alltoall-s301-adaptive_gate_k1_reclaim.tar.gz": {
+    "sha256": "c474e4596f1b57ca7332d852e788a26a1ffa2f49abb738c9df9afacdf8627e13",
+    "status": "completed",
+    "key": "alltoall-s301-adaptive_gate_k1_reclaim",
+    "bytes": 20000
+  },
+  "raw/alltoall-s301-lambda1_gate_k1.tar.gz": {
+    "sha256": "27d452f530e6af1243121ed6a46e21e2a3d7c8a8e10807ca3062067bb9968678",
+    "status": "completed",
+    "key": "alltoall-s301-lambda1_gate_k1",
+    "bytes": 19881
+  },
+  "raw/alltoall-s301-queue_adaptive_gate.tar.gz": {
+    "sha256": "4320e4ea3de62494a724ca6654faf41159fd5409c1811f7883302d3e20be35bd",
+    "status": "completed",
+    "key": "alltoall-s301-queue_adaptive_gate",
+    "bytes": 19659
+  },
+  "raw/alltoall-s301-queue_adaptive_gate_budget4.tar.gz": {
+    "sha256": "506df3d2341cddd1880a9d453a98a4fb6b8865be52c5b84f31add48a1702f243",
+    "status": "completed",
+    "key": "alltoall-s301-queue_adaptive_gate_budget4",
+    "bytes": 19585
+  },
+  "raw/alltoall-s301-queue_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "6d0f61953631055d1da4926ab629bb160121c2dac7e5083b014343524de19c62",
+    "status": "completed",
+    "key": "alltoall-s301-queue_adaptive_gate_budget4_k1",
+    "bytes": 19635
+  },
+  "raw/alltoall-s301-queue_adaptive_gate_e2.tar.gz": {
+    "sha256": "c3ea88180a8f8852448fe827aa61787b69a816eed93ece5c748365b96925c2ab",
+    "status": "completed",
+    "key": "alltoall-s301-queue_adaptive_gate_e2",
+    "bytes": 19858
+  },
+  "raw/alltoall-s301-queue_adaptive_gate_k1.tar.gz": {
+    "sha256": "ae7394ac476f79595f95129c215370ec4fb04b9585d4aad4d8dfd47ab89b3d3a",
+    "status": "completed",
+    "key": "alltoall-s301-queue_adaptive_gate_k1",
+    "bytes": 19981
+  },
+  "raw/alltoall-s301-queue_adaptive_gate_k1_min12.tar.gz": {
+    "sha256": "29bb3e73a4830d64266a74023683d0aad4174ca1d06fffaf66bb5eb9f08f5852",
+    "status": "completed",
+    "key": "alltoall-s301-queue_adaptive_gate_k1_min12",
+    "bytes": 19681
+  },
+  "raw/alltoall-s301-queue_adaptive_gate_k4_min12.tar.gz": {
+    "sha256": "853898533aa126bf7de3899950f32b11d62e2fdc15bacbe5a2e38a7ed272410f",
+    "status": "incomplete_or_failed",
+    "key": "alltoall-s301-queue_adaptive_gate_k4_min12",
+    "bytes": 5340
+  },
+  "raw/alltoall-s301-queue_tail_gate.tar.gz": {
+    "sha256": "eaa65a23738dba21d8f18f1ea5970504cc239f719b0d41a38a84fd0180086533",
+    "status": "completed",
+    "key": "alltoall-s301-queue_tail_gate",
+    "bytes": 19660
+  },
+  "raw/alltoall-s301-queue_tail_gate_k1.tar.gz": {
+    "sha256": "569c9abfa65167369a54cc1d36cc3174eac900d350e2e39060a796fb335d8f4f",
+    "status": "completed",
+    "key": "alltoall-s301-queue_tail_gate_k1",
+    "bytes": 19902
+  },
+  "raw/alltoall-s301-revocable_adaptive_gate_k1.tar.gz": {
+    "sha256": "1021128051ab9e6f396477fefa2efeb447b1c8dcf33802af066408774d037d02",
+    "status": "completed",
+    "key": "alltoall-s301-revocable_adaptive_gate_k1",
+    "bytes": 19874
+  },
+  "raw/alltoall-s301-revocable_adaptive_gate_k1_ack1.tar.gz": {
+    "sha256": "8eb36e32c9efe412b5c6d5238e15f375bab5b9b7d401be31b0ae4468ed537ccb",
+    "status": "completed",
+    "key": "alltoall-s301-revocable_adaptive_gate_k1_ack1",
+    "bytes": 19994
+  },
+  "raw/alltoall-s301-revocable_adaptive_gate_k1_window.tar.gz": {
+    "sha256": "5ed943c840b5140c3ffda20d2fb939383536cae8e77724a88d9dcf099cc8ad11",
+    "status": "error",
+    "key": "alltoall-s301-revocable_adaptive_gate_k1_window",
+    "bytes": 1263
+  },
+  "raw/alltoall-s301-revocable_default.tar.gz": {
+    "sha256": "af0517cd768c373a6a79274c355d863155b209f2b793a53484cd45a37e80ba5e",
+    "status": "completed",
+    "key": "alltoall-s301-revocable_default",
+    "bytes": 19385
+  },
+  "raw/alltoall-s301-revocable_serialized.tar.gz": {
+    "sha256": "693de78f2fa3bb6df9f28cddd81b6484daf68a95e6e68dcaafdebc1d6cd930e6",
+    "status": "completed",
+    "key": "alltoall-s301-revocable_serialized",
+    "bytes": 21935
+  },
+  "raw/alltoall-s301-revocable_serialized_safe.tar.gz": {
+    "sha256": "06a9e61a231dc7315093c13bbd91175b9e52cd3a488b9740fb5f09b32e16de73",
+    "status": "completed",
+    "key": "alltoall-s301-revocable_serialized_safe",
+    "bytes": 22143
+  },
+  "raw/alltoall-s301-scope_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "5e5fe363eb880cde90824ba6bbe5d971242adb4012f86036d09ecb8e4f466470",
+    "status": "completed",
+    "key": "alltoall-s301-scope_adaptive_gate_budget4_k1",
+    "bytes": 19660
+  },
+  "raw/fairness-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "2d197ca2188df0a21d269bc257c439434c946208f9c79a2c8c76f30614e810fc",
+    "status": "completed",
+    "key": "fairness-s301-adaptive_gate_k1",
+    "bytes": 609800
+  },
+  "raw/fairness-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "b3987ad433e6e2f14e9a4e15cefdb70b3108f3f0bfcfc34206801b75f86db477",
+    "status": "completed",
+    "key": "fairness-s301-adaptive_gate_k1_min1",
+    "bytes": 609806
+  },
+  "raw/fairness-s301-adaptive_gate_k1_reclaim.tar.gz": {
+    "sha256": "fe92619c14dbc4c8af6c0865993314e33b31293352d90b8e2725c091b565a939",
+    "status": "completed",
+    "key": "fairness-s301-adaptive_gate_k1_reclaim",
+    "bytes": 624660
+  },
+  "raw/fairness-s301-lambda1_gate_k1.tar.gz": {
+    "sha256": "b4afec860b77ed74746b6ceda6d567ef64b19e687dc74417fdfc6d748694810b",
+    "status": "completed",
+    "key": "fairness-s301-lambda1_gate_k1",
+    "bytes": 630503
+  },
+  "raw/fb40-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "a84e3531bfe3c63c291e6c92496e170811edd9c9c7c3eb860acb93071015cdae",
+    "status": "completed",
+    "key": "fb40-s301-adaptive_gate_k1",
+    "bytes": 192892
+  },
+  "raw/fb40-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "5b92d28b69239df1b43730d8664335c5129ebe9fc9b2d53ec03e5115f7c0482e",
+    "status": "completed",
+    "key": "fb40-s301-adaptive_gate_k1_min1",
+    "bytes": 192797
+  },
+  "raw/fb40-s301-adaptive_gate_k1_reclaim.tar.gz": {
+    "sha256": "482ec6618b7a88848253f4249789a88d9da29c8b7bfbccc9a197aa08bf7732c8",
+    "status": "completed",
+    "key": "fb40-s301-adaptive_gate_k1_reclaim",
+    "bytes": 192951
+  },
+  "raw/fb40-s301-lambda1_gate_k1.tar.gz": {
+    "sha256": "f4fb23faa93addd1d77d35f39cf008b2d00058380232a0abfe9ccb72b5f78454",
+    "status": "completed",
+    "key": "fb40-s301-lambda1_gate_k1",
+    "bytes": 192717
+  },
+  "raw/fb40-s301-queue_adaptive_gate.tar.gz": {
+    "sha256": "82d60352a8a4468ecf686b3aaa52f34ee18c1ca5f086fbf86f15ee256841d5ad",
+    "status": "completed",
+    "key": "fb40-s301-queue_adaptive_gate",
+    "bytes": 192934
+  },
+  "raw/fb40-s301-queue_adaptive_gate_budget4.tar.gz": {
+    "sha256": "df4955bcb05f921bb357fc3c5a210a8cb35410e2a254b7fb64d2107f09fdf4d2",
+    "status": "completed",
+    "key": "fb40-s301-queue_adaptive_gate_budget4",
+    "bytes": 192902
+  },
+  "raw/fb40-s301-queue_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "806b2d42846e40635ee71ee24b0115604c488d4e307de8ec558892ab230f7d0d",
+    "status": "completed",
+    "key": "fb40-s301-queue_adaptive_gate_budget4_k1",
+    "bytes": 192861
+  },
+  "raw/fb40-s301-queue_adaptive_gate_e2.tar.gz": {
+    "sha256": "ed820140ce47f568149138a8f1a04dc24c25765237261f5da70c078b11175db8",
+    "status": "completed",
+    "key": "fb40-s301-queue_adaptive_gate_e2",
+    "bytes": 192867
+  },
+  "raw/fb40-s301-queue_adaptive_gate_k1.tar.gz": {
+    "sha256": "1991c29aa66963e62654c30c5fc8517ac68fcb1ba64988a71e105decc9b4678b",
+    "status": "completed",
+    "key": "fb40-s301-queue_adaptive_gate_k1",
+    "bytes": 192857
+  },
+  "raw/fb40-s301-queue_adaptive_gate_k1_min12.tar.gz": {
+    "sha256": "aabf864eb045bb1e7529073f181497461413d84b6f168ccdc71c5506a83ff30d",
+    "status": "completed",
+    "key": "fb40-s301-queue_adaptive_gate_k1_min12",
+    "bytes": 192787
+  },
+  "raw/fb40-s301-queue_adaptive_gate_k4_min12.tar.gz": {
+    "sha256": "8c91ca0c96ffdc2dbf82fb131764eb5c893668aaf17679f20067f90fc6b9ea85",
+    "status": "incomplete_or_failed",
+    "key": "fb40-s301-queue_adaptive_gate_k4_min12",
+    "bytes": 66233
+  },
+  "raw/fb40-s301-queue_tail_gate.tar.gz": {
+    "sha256": "613181f814bc29a2a5c3c1bf34e0861b75be0ae0facd3c455e6472dddbcde2a3",
+    "status": "completed",
+    "key": "fb40-s301-queue_tail_gate",
+    "bytes": 192802
+  },
+  "raw/fb40-s301-queue_tail_gate_k1.tar.gz": {
+    "sha256": "8af812b8ce8a98bda25c9665fffa30b8654f5efd8cafd58d85d534a72864a6da",
+    "status": "completed",
+    "key": "fb40-s301-queue_tail_gate_k1",
+    "bytes": 192829
+  },
+  "raw/fb40-s301-revocable_adaptive_gate_k1.tar.gz": {
+    "sha256": "d35d15804027c1999e565334f8e8ba2812aad53d16e2a77c458bbc8f7314c642",
+    "status": "completed",
+    "key": "fb40-s301-revocable_adaptive_gate_k1",
+    "bytes": 192905
+  },
+  "raw/fb40-s301-revocable_adaptive_gate_k1_ack1.tar.gz": {
+    "sha256": "efb60e8fe865079cdef64c89f19906127fdcae4a4bcec1e4c588bf08cdf8f496",
+    "status": "completed",
+    "key": "fb40-s301-revocable_adaptive_gate_k1_ack1",
+    "bytes": 193073
+  },
+  "raw/fb40-s301-revocable_adaptive_gate_k1_window.tar.gz": {
+    "sha256": "4be52689c1fda445dc799e58fedc138f31405bc58011661ba1186c70f4c27c8d",
+    "status": "error",
+    "key": "fb40-s301-revocable_adaptive_gate_k1_window",
+    "bytes": 1263
+  },
+  "raw/fb40-s301-revocable_default.tar.gz": {
+    "sha256": "2281351862d07f0bdc135fd6dcf3324ccc14594426cfeec2cc45be3708d50b14",
+    "status": "completed",
+    "key": "fb40-s301-revocable_default",
+    "bytes": 192792
+  },
+  "raw/fb40-s301-revocable_serialized.tar.gz": {
+    "sha256": "ccb44e399752c8d68a77533e61efc24ed596a3fe647bb1a893c7f9ccae2b433b",
+    "status": "completed",
+    "key": "fb40-s301-revocable_serialized",
+    "bytes": 195120
+  },
+  "raw/fb40-s301-revocable_serialized_safe.tar.gz": {
+    "sha256": "1ff99b176e91e8fbbb042970864208abe77f1b2dea80cc1e4f77f9fa858ffdfc",
+    "status": "completed",
+    "key": "fb40-s301-revocable_serialized_safe",
+    "bytes": 195276
+  },
+  "raw/fb40-s301-scope_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "b9cf67621182cda7deb8df3089eafdc1993b37c03b7f4acc359ce3075ac7e636",
+    "status": "completed",
+    "key": "fb40-s301-scope_adaptive_gate_budget4_k1",
+    "bytes": 192784
+  },
+  "raw/hybrid-s301-adaptive_gate.tar.gz": {
+    "sha256": "dafa9a4834242896e44885ce14d5fda792776b3ddc263fc718cab1f02a3c05aa",
+    "status": "completed",
+    "key": "hybrid-s301-adaptive_gate",
+    "bytes": 10341
+  },
+  "raw/hybrid-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "c4979bbcbe4457061bcaf0f7f3abb79b35b89c38b554397f5e0ad1d02fb2952c",
+    "status": "completed",
+    "key": "hybrid-s301-adaptive_gate_k1",
+    "bytes": 10399
+  },
+  "raw/hybrid-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "30755bc6c2e03f9e8044fd8e877520f6062c1903db7f20d44f2614a11d379780",
+    "status": "completed",
+    "key": "hybrid-s301-adaptive_gate_k1_min1",
+    "bytes": 10416
+  },
+  "raw/hybrid-s301-adaptive_gate_k1_reclaim.tar.gz": {
+    "sha256": "fb7a3a7136eae18e659c2f1256f5be5a2638c507e6cf3e1c7dddbf080e84dfb4",
+    "status": "completed",
+    "key": "hybrid-s301-adaptive_gate_k1_reclaim",
+    "bytes": 10511
+  },
+  "raw/hybrid-s301-default.tar.gz": {
+    "sha256": "907b5ff1942fd2d79c1c8f972459b0545d03b011c4a4f556e06929b6d85068bf",
+    "status": "completed",
+    "key": "hybrid-s301-default",
+    "bytes": 10252
+  },
+  "raw/hybrid-s301-lambda1_gate.tar.gz": {
+    "sha256": "56e4551571bc7691c6114f22b062686a24b7f56c689a1462313ee40c2ba26e79",
+    "status": "completed",
+    "key": "hybrid-s301-lambda1_gate",
+    "bytes": 10278
+  },
+  "raw/hybrid-s301-lambda1_gate_k1.tar.gz": {
+    "sha256": "ccc9100e93f7fe2a32cebd304f1968857995044bf07334244fd2168a9e9ad118",
+    "status": "completed",
+    "key": "hybrid-s301-lambda1_gate_k1",
+    "bytes": 10394
+  },
+  "raw/hybrid-s301-queue_adaptive_gate.tar.gz": {
+    "sha256": "f980fa357d99578c1e67531c759ead3579dddf30d1b6cd3dda5a0a98e1b2e332",
+    "status": "completed",
+    "key": "hybrid-s301-queue_adaptive_gate",
+    "bytes": 10425
+  },
+  "raw/hybrid-s301-queue_adaptive_gate_budget4.tar.gz": {
+    "sha256": "a6ad5836e8e0edf2f4bf0202ed34dc978847e69a63bf69cf897e02869928c7a2",
+    "status": "completed",
+    "key": "hybrid-s301-queue_adaptive_gate_budget4",
+    "bytes": 10506
+  },
+  "raw/hybrid-s301-queue_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "a959d8d2bb72c6e8be007f42fb946cfc0e1cbd554eae81321e75b81ff033ab87",
+    "status": "completed",
+    "key": "hybrid-s301-queue_adaptive_gate_budget4_k1",
+    "bytes": 10514
+  },
+  "raw/hybrid-s301-queue_adaptive_gate_e2.tar.gz": {
+    "sha256": "6d05794a425e03cceb1282777a46018b9d8e989663b1be750675f90ebd738f05",
+    "status": "completed",
+    "key": "hybrid-s301-queue_adaptive_gate_e2",
+    "bytes": 10453
+  },
+  "raw/hybrid-s301-queue_adaptive_gate_k1.tar.gz": {
+    "sha256": "9eca862acbf7074d8326cef3c98fee7bebf639cbf874ec0b0629936e575fb26c",
+    "status": "completed",
+    "key": "hybrid-s301-queue_adaptive_gate_k1",
+    "bytes": 10427
+  },
+  "raw/hybrid-s301-queue_adaptive_gate_k1_min12.tar.gz": {
+    "sha256": "aba5a6fcabe4aef36b465b09751a932254307f98292546d172d51c7b48f62547",
+    "status": "completed",
+    "key": "hybrid-s301-queue_adaptive_gate_k1_min12",
+    "bytes": 10468
+  },
+  "raw/hybrid-s301-queue_adaptive_gate_k4_min12.tar.gz": {
+    "sha256": "3ecd2a38e8e4adc8274e34d3c7dc11a1338b9be2a1d0fb43cbba08547040ae21",
+    "status": "incomplete_or_failed",
+    "key": "hybrid-s301-queue_adaptive_gate_k4_min12",
+    "bytes": 3998
+  },
+  "raw/hybrid-s301-queue_tail_gate.tar.gz": {
+    "sha256": "c9e3c74f01b33b7c468da9466eb9a1bb8e690b28700a7bb2f0dd3d126e60fa87",
+    "status": "completed",
+    "key": "hybrid-s301-queue_tail_gate",
+    "bytes": 10295
+  },
+  "raw/hybrid-s301-queue_tail_gate_k1.tar.gz": {
+    "sha256": "901babb85ba7304a0ac1ea9ce03679777de94a17124d448ce9566b7c866d8e8e",
+    "status": "completed",
+    "key": "hybrid-s301-queue_tail_gate_k1",
+    "bytes": 10425
+  },
+  "raw/hybrid-s301-revocable_adaptive_gate_k1.tar.gz": {
+    "sha256": "59419fed9162baeca32ffc48491cfd4bef96e4af0c10288907b9dbbc97cff474",
+    "status": "completed",
+    "key": "hybrid-s301-revocable_adaptive_gate_k1",
+    "bytes": 10415
+  },
+  "raw/hybrid-s301-revocable_adaptive_gate_k1_ack1.tar.gz": {
+    "sha256": "7bfbfd3a5d4e8544127711d749c9e38dc79710e0fb797ae9ec641334b3bb96a7",
+    "status": "completed",
+    "key": "hybrid-s301-revocable_adaptive_gate_k1_ack1",
+    "bytes": 10466
+  },
+  "raw/hybrid-s301-revocable_adaptive_gate_k1_window.tar.gz": {
+    "sha256": "c175b88aea6168f47d17485936cda47b75c3312d78b0aad802f6b72243560fc4",
+    "status": "error",
+    "key": "hybrid-s301-revocable_adaptive_gate_k1_window",
+    "bytes": 1258
+  },
+  "raw/hybrid-s301-revocable_default.tar.gz": {
+    "sha256": "fb8f4626cbcc04fbdc4f713df4496a72b6b56f18ae2db76d8667fc92db408945",
+    "status": "completed",
+    "key": "hybrid-s301-revocable_default",
+    "bytes": 10275
+  },
+  "raw/hybrid-s301-revocable_serialized.tar.gz": {
+    "sha256": "86c112ceaaf6e9a3fa6b30f31419c6a146fc248928aed4495f64e9c43aafd6c1",
+    "status": "completed",
+    "key": "hybrid-s301-revocable_serialized",
+    "bytes": 13385
+  },
+  "raw/hybrid-s301-revocable_serialized_safe.tar.gz": {
+    "sha256": "542298bce37f73f71cb9ae9b490b88bd46dc04323b4f0bd4dd027ec64e0798b0",
+    "status": "completed",
+    "key": "hybrid-s301-revocable_serialized_safe",
+    "bytes": 13448
+  },
+  "raw/hybrid-s301-scope_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "3ac00c6058ae5606844f12bf75185408896bfdcb99a537c39c7bbba8573bbd2c",
+    "status": "completed",
+    "key": "hybrid-s301-scope_adaptive_gate_budget4_k1",
+    "bytes": 10506
+  },
+  "raw/hybrid-s301-tail1.tar.gz": {
+    "sha256": "cf530fc6929d260a8e735a1f1dac6620b3bc555cb8c90ca6c1075c709585dc63",
+    "status": "completed",
+    "key": "hybrid-s301-tail1",
+    "bytes": 10314
+  },
+  "raw/hybrid-s301-tail_gate.tar.gz": {
+    "sha256": "a06f60d773076a299600d8addbc17a9ddea6d7b5782b839a7c02ff924cd66a90",
+    "status": "completed",
+    "key": "hybrid-s301-tail_gate",
+    "bytes": 10317
+  },
+  "raw/receiver-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "8759c40fa90c22d15c49e05df58040fbc94af219665dc49b173267e7f74ce8f3",
+    "status": "completed",
+    "key": "receiver-s301-adaptive_gate_k1",
+    "bytes": 12137
+  },
+  "raw/receiver-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "3b2e01f653d12620a9dda040258953ab8fe73955825a192d3ee06849b26a951e",
+    "status": "completed",
+    "key": "receiver-s301-adaptive_gate_k1_min1",
+    "bytes": 12111
+  },
+  "raw/receiver-s301-adaptive_gate_k1_reclaim.tar.gz": {
+    "sha256": "d0ab29066ecc8b6ae76b063a738097dac28feaf8b307442cdb6995959ba1c818",
+    "status": "completed",
+    "key": "receiver-s301-adaptive_gate_k1_reclaim",
+    "bytes": 12126
+  },
+  "raw/receiver-s301-lambda1_gate_k1.tar.gz": {
+    "sha256": "bcc8dda6ed443c6b08ee8869c5b8966a8477ebb8ca822b8b71ff0d3cd53567b5",
+    "status": "completed",
+    "key": "receiver-s301-lambda1_gate_k1",
+    "bytes": 11969
+  },
+  "raw/receiver-s301-queue_adaptive_gate.tar.gz": {
+    "sha256": "67e4fe6414b3002d1f3a9c25edf86efa61bb61a647f486ac055048d31b616d1b",
+    "status": "completed",
+    "key": "receiver-s301-queue_adaptive_gate",
+    "bytes": 11950
+  },
+  "raw/receiver-s301-queue_adaptive_gate_budget4.tar.gz": {
+    "sha256": "6c734a58f88ee510ed7a47e6580171a8c90daf720829a52cb8f56d8911db69ba",
+    "status": "completed",
+    "key": "receiver-s301-queue_adaptive_gate_budget4",
+    "bytes": 11937
+  },
+  "raw/receiver-s301-queue_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "82e2d84e4a25800882793d8fa6394356f31fac1d9a728356ec3a76086b3678fb",
+    "status": "completed",
+    "key": "receiver-s301-queue_adaptive_gate_budget4_k1",
+    "bytes": 12143
+  },
+  "raw/receiver-s301-queue_adaptive_gate_e2.tar.gz": {
+    "sha256": "ffe6d0917e0e3443c189f3e72a5960209dfc73f409c2a6c442f2637a6c206967",
+    "status": "completed",
+    "key": "receiver-s301-queue_adaptive_gate_e2",
+    "bytes": 12049
+  },
+  "raw/receiver-s301-queue_adaptive_gate_k1.tar.gz": {
+    "sha256": "fd9f5317a8c7e27d9de5799e4390eb7858561ee5d1556fb1ad4d4d82c8d4a1b9",
+    "status": "completed",
+    "key": "receiver-s301-queue_adaptive_gate_k1",
+    "bytes": 12146
+  },
+  "raw/receiver-s301-queue_adaptive_gate_k1_min12.tar.gz": {
+    "sha256": "e3de10a6f13fb9054f522c6311ce5645acfc97067f11dd1f6324681d7423ad02",
+    "status": "completed",
+    "key": "receiver-s301-queue_adaptive_gate_k1_min12",
+    "bytes": 12139
+  },
+  "raw/receiver-s301-queue_adaptive_gate_k4_min12.tar.gz": {
+    "sha256": "3443efb0338c6a23aa4098b8042d403e3ec6011b69c7f2f5cb560b256ccbb7dd",
+    "status": "incomplete_or_failed",
+    "key": "receiver-s301-queue_adaptive_gate_k4_min12",
+    "bytes": 3988
+  },
+  "raw/receiver-s301-queue_tail_gate.tar.gz": {
+    "sha256": "da1a4fd2ca62dd261b9802ad7b8f7f7c8d14ac476cff08c63ac12b819df98f49",
+    "status": "completed",
+    "key": "receiver-s301-queue_tail_gate",
+    "bytes": 11904
+  },
+  "raw/receiver-s301-queue_tail_gate_k1.tar.gz": {
+    "sha256": "c5403fc8c931908dfb65ca0500f1d57f5ab72fdb81e5a3aa05f988c59afffee3",
+    "status": "completed",
+    "key": "receiver-s301-queue_tail_gate_k1",
+    "bytes": 12068
+  },
+  "raw/receiver-s301-revocable_adaptive_gate_k1.tar.gz": {
+    "sha256": "9b2e78ca4c8ed32f352ef44ce8919e7292c31dcff3f2058a6c1a329d203b352e",
+    "status": "completed",
+    "key": "receiver-s301-revocable_adaptive_gate_k1",
+    "bytes": 12133
+  },
+  "raw/receiver-s301-revocable_adaptive_gate_k1_ack1.tar.gz": {
+    "sha256": "70a033dbfd620d92d061b18d2bbd266dad910f8b8b3958f0c8f5391b66019136",
+    "status": "completed",
+    "key": "receiver-s301-revocable_adaptive_gate_k1_ack1",
+    "bytes": 12080
+  },
+  "raw/receiver-s301-revocable_adaptive_gate_k1_window.tar.gz": {
+    "sha256": "dd12fe68352a4a9c25d4cb2651a068a9e7eb54697c7db5910860a300b2dce996",
+    "status": "error",
+    "key": "receiver-s301-revocable_adaptive_gate_k1_window",
+    "bytes": 1260
+  },
+  "raw/receiver-s301-revocable_default.tar.gz": {
+    "sha256": "946ef3f1d3c0521c9d25aaa6a3dfe5e0e01c8bdc0ea4018ba211e2472dc661dd",
+    "status": "completed",
+    "key": "receiver-s301-revocable_default",
+    "bytes": 11878
+  },
+  "raw/receiver-s301-revocable_serialized.tar.gz": {
+    "sha256": "87207355ede2a2ac585e255652e1f123a9064cf7009bf2d6848faf36cca97585",
+    "status": "completed",
+    "key": "receiver-s301-revocable_serialized",
+    "bytes": 14135
+  },
+  "raw/receiver-s301-revocable_serialized_safe.tar.gz": {
+    "sha256": "d4d990a2acbb1ebcc361d920ea7f7718b2e4db62a125acdc61ec6dc4b458b5b7",
+    "status": "completed",
+    "key": "receiver-s301-revocable_serialized_safe",
+    "bytes": 14196
+  },
+  "raw/receiver-s301-scope_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "033947ce7f7ef9506802250c9be9670dd71efba8543ce7c38fb4dced84ae453f",
+    "status": "completed",
+    "key": "receiver-s301-scope_adaptive_gate_budget4_k1",
+    "bytes": 12136
+  },
+  "raw/receiver2-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "6370c884acb8918d4361b22057cfb94d19790e6187c1d658960c0fd8eb8b0188",
+    "status": "completed",
+    "key": "receiver2-s301-adaptive_gate_k1",
+    "bytes": 257529
+  },
+  "raw/receiver2-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "01126e9413ce5872dafccdf57d0a7dd55f239a34a120a27a388e75c81ede8912",
+    "status": "completed",
+    "key": "receiver2-s301-adaptive_gate_k1_min1",
+    "bytes": 257891
+  },
+  "raw/receiver2-s301-adaptive_gate_k1_reclaim.tar.gz": {
+    "sha256": "443a3a3028f05100a7802efbf259cd6c71e1202ac5dcc74a3590da199033f284",
+    "status": "completed",
+    "key": "receiver2-s301-adaptive_gate_k1_reclaim",
+    "bytes": 259337
+  },
+  "raw/receiver2-s301-lambda1_gate_k1.tar.gz": {
+    "sha256": "71529a9195825f25055b7f5d2e803384d22ea52529e4f016d12d51fab6ae209e",
+    "status": "completed",
+    "key": "receiver2-s301-lambda1_gate_k1",
+    "bytes": 264620
+  },
+  "raw/receiver2-s301-queue_adaptive_gate.tar.gz": {
+    "sha256": "e99d180499093ffbd2d577b78da6077cabd6926590b9d12095023cb4a35a26b2",
+    "status": "completed",
+    "key": "receiver2-s301-queue_adaptive_gate",
+    "bytes": 267592
+  },
+  "raw/receiver2-s301-queue_adaptive_gate_budget4.tar.gz": {
+    "sha256": "2bd42f3717cd0831409d2b79246a85ed5c12594e4c2a40abba6af0915081b6b5",
+    "status": "completed",
+    "key": "receiver2-s301-queue_adaptive_gate_budget4",
+    "bytes": 267502
+  },
+  "raw/receiver2-s301-queue_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "2c1f551d89b6a22cdf6fad0646da268873c9faded1fc951c2eca253aa0ef597c",
+    "status": "completed",
+    "key": "receiver2-s301-queue_adaptive_gate_budget4_k1",
+    "bytes": 257317
+  },
+  "raw/receiver2-s301-queue_adaptive_gate_e2.tar.gz": {
+    "sha256": "5cabc19b0c760fe2a6f25f024bdbc63f393a0d084e3e8254c6b02501f584a193",
+    "status": "completed",
+    "key": "receiver2-s301-queue_adaptive_gate_e2",
+    "bytes": 267589
+  },
+  "raw/receiver2-s301-queue_adaptive_gate_k1.tar.gz": {
+    "sha256": "4c9cd177bbe98b80841a60d3a18b67c62eb9f982eba0d706811ac6d56305fe80",
+    "status": "completed",
+    "key": "receiver2-s301-queue_adaptive_gate_k1",
+    "bytes": 257746
+  },
+  "raw/receiver2-s301-queue_adaptive_gate_k1_min12.tar.gz": {
+    "sha256": "749492eeb643d3c8129472684cd92c59d726907d7ead2741e8fa6f2a56df6636",
+    "status": "completed",
+    "key": "receiver2-s301-queue_adaptive_gate_k1_min12",
+    "bytes": 258170
+  },
+  "raw/receiver2-s301-queue_adaptive_gate_k4_min12.tar.gz": {
+    "sha256": "2ebf5f51f2549943799ea63813496227d681104196d31ff511cd084172a841c4",
+    "status": "incomplete_or_failed",
+    "key": "receiver2-s301-queue_adaptive_gate_k4_min12",
+    "bytes": 4107
+  },
+  "raw/receiver2-s301-queue_tail_gate.tar.gz": {
+    "sha256": "934e56662f45d8339f4ebb9df75b7cd990843e9ba04eb2f5f67bfdd655e0dd9b",
+    "status": "completed",
+    "key": "receiver2-s301-queue_tail_gate",
+    "bytes": 267202
+  },
+  "raw/receiver2-s301-queue_tail_gate_k1.tar.gz": {
+    "sha256": "3da116bdf243ef82ce8f108a6c128ccce736c232203c6e9ce936ea921c054ce5",
+    "status": "completed",
+    "key": "receiver2-s301-queue_tail_gate_k1",
+    "bytes": 257777
+  },
+  "raw/receiver2-s301-revocable_adaptive_gate_k1.tar.gz": {
+    "sha256": "0ba68acd1804f3e7622142b9d66714b309ffa6e160a1e1e957c7e45b3e95d8a2",
+    "status": "completed",
+    "key": "receiver2-s301-revocable_adaptive_gate_k1",
+    "bytes": 257519
+  },
+  "raw/receiver2-s301-revocable_adaptive_gate_k1_ack1.tar.gz": {
+    "sha256": "35dd8380be624fdcb1f8eda304dae902eda821b9d487788690060022b51a264c",
+    "status": "completed",
+    "key": "receiver2-s301-revocable_adaptive_gate_k1_ack1",
+    "bytes": 260488
+  },
+  "raw/receiver2-s301-revocable_adaptive_gate_k1_window.tar.gz": {
+    "sha256": "adafae1354c9f87514d5f187f3323b9dc3071bf0276b5d0fb5fed51b9476c1fd",
+    "status": "error",
+    "key": "receiver2-s301-revocable_adaptive_gate_k1_window",
+    "bytes": 1304
+  },
+  "raw/receiver2-s301-revocable_default.tar.gz": {
+    "sha256": "dbfe90f47ab9fc848e7aed673e79b5d8d72a3846d8f542f336ae493bacfdc972",
+    "status": "completed",
+    "key": "receiver2-s301-revocable_default",
+    "bytes": 267608
+  },
+  "raw/receiver2-s301-revocable_serialized.tar.gz": {
+    "sha256": "a743d0271e261835c9f2be663fdacb024cf4841ef835ad34c6673f70e512272e",
+    "status": "completed",
+    "key": "receiver2-s301-revocable_serialized",
+    "bytes": 258146
+  },
+  "raw/receiver2-s301-revocable_serialized_safe.tar.gz": {
+    "sha256": "9518dea7932935faf9033f408bae0a7f3f11993a3f3c919d4715131da4cb3d10",
+    "status": "completed",
+    "key": "receiver2-s301-revocable_serialized_safe",
+    "bytes": 258617
+  },
+  "raw/receiver2-s301-scope_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "a55ed6da89ea8a943a6d3da67391f7f7680f22edbb53c2c10874eed341096987",
+    "status": "completed",
+    "key": "receiver2-s301-scope_adaptive_gate_budget4_k1",
+    "bytes": 257862
+  },
+  "raw/ring-s301-adaptive_gate.tar.gz": {
+    "sha256": "b036a12220938e43351398a814c22f2c0297ddb5888ddb52ac29cc81700cc81a",
+    "status": "completed",
+    "key": "ring-s301-adaptive_gate",
+    "bytes": 415182
+  },
+  "raw/ring-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "b5a795f6cd9ac72bb9a438459bf016a388938a7bc41dba34545a6be8eff23343",
+    "status": "completed",
+    "key": "ring-s301-adaptive_gate_k1",
+    "bytes": 415230
+  },
+  "raw/ring-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "2459ba8d39edf3c802e532bc761d6d481d4f0d8b62d7b3fec5a1b3654909bdd4",
+    "status": "completed",
+    "key": "ring-s301-adaptive_gate_k1_min1",
+    "bytes": 21259
+  },
+  "raw/ring-s301-adaptive_gate_k1_reclaim.tar.gz": {
+    "sha256": "0dc6dcee613f22b5dc4ac8548d4aa6ae089ee95b08a4ce1361a75b2ea2dfee9e",
+    "status": "completed",
+    "key": "ring-s301-adaptive_gate_k1_reclaim",
+    "bytes": 437809
+  },
+  "raw/ring-s301-default.tar.gz": {
+    "sha256": "1a9f50ff17dcfff4297b88837551d31d999a57e0f284ab2061d835668244fd96",
+    "status": "completed",
+    "key": "ring-s301-default",
+    "bytes": 13094581
+  },
+  "raw/ring-s301-lambda1_gate.tar.gz": {
+    "sha256": "3eb4b455b07211fed6d001d146dcd7a3e6b34b689b4f3271cfac60e4e2369efc",
+    "status": "completed",
+    "key": "ring-s301-lambda1_gate",
+    "bytes": 413954
+  },
+  "raw/ring-s301-lambda1_gate_k1.tar.gz": {
+    "sha256": "b06d22e9017c3f3267500f73047c4bb9db9dd30db58bac9581ab032c168ac78e",
+    "status": "completed",
+    "key": "ring-s301-lambda1_gate_k1",
+    "bytes": 413997
+  },
+  "raw/ring-s301-queue_adaptive_gate.tar.gz": {
+    "sha256": "c045027f9bcc82fe512335002e9b3b58237306eeb835757fab62183e1fe66a7d",
+    "status": "completed",
+    "key": "ring-s301-queue_adaptive_gate",
+    "bytes": 413413
+  },
+  "raw/ring-s301-queue_adaptive_gate_budget4.tar.gz": {
+    "sha256": "faf9785896e254d050ae608bad31a878d17481ac4f815cb2cdcb5caaa0297146",
+    "status": "completed",
+    "key": "ring-s301-queue_adaptive_gate_budget4",
+    "bytes": 414822
+  },
+  "raw/ring-s301-queue_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "bb95ac3f17a05bb3fa4e60cdb46707e50522585f152b85fe4685b3292e7afa2a",
+    "status": "completed",
+    "key": "ring-s301-queue_adaptive_gate_budget4_k1",
+    "bytes": 414861
+  },
+  "raw/ring-s301-queue_adaptive_gate_e2.tar.gz": {
+    "sha256": "58169b5224d2c1f6f853f37a3da3b1ed621fe4be8374c1bab163967c77ce1e42",
+    "status": "completed",
+    "key": "ring-s301-queue_adaptive_gate_e2",
+    "bytes": 358901
+  },
+  "raw/ring-s301-queue_adaptive_gate_k1.tar.gz": {
+    "sha256": "c8fae7d3a2d8ea0e30a295cabfaf6af18d2e78494e1050819e54604301ff4ad8",
+    "status": "completed",
+    "key": "ring-s301-queue_adaptive_gate_k1",
+    "bytes": 413421
+  },
+  "raw/ring-s301-queue_adaptive_gate_k1_min12.tar.gz": {
+    "sha256": "ff8802b81ec5b0e0e71210735d95cea010794809be3059605555c3c19cd81636",
+    "status": "completed",
+    "key": "ring-s301-queue_adaptive_gate_k1_min12",
+    "bytes": 413462
+  },
+  "raw/ring-s301-queue_adaptive_gate_k4_min12.tar.gz": {
+    "sha256": "0ecfdf1d0491a11e3e3d0484029cabbb988ba7fa501b6bd1bba84d9bb76f597c",
+    "status": "incomplete_or_failed",
+    "key": "ring-s301-queue_adaptive_gate_k4_min12",
+    "bytes": 6760
+  },
+  "raw/ring-s301-queue_tail_gate.tar.gz": {
+    "sha256": "50bac63c564532c678116f06fcba84cf65b525f3b275a16aa2f0d95403041796",
+    "status": "completed",
+    "key": "ring-s301-queue_tail_gate",
+    "bytes": 905809
+  },
+  "raw/ring-s301-queue_tail_gate_k1.tar.gz": {
+    "sha256": "7d5f93dbed79eaef9140e884df70af45eab1ea9554c41daa28219a7c668c1df0",
+    "status": "completed",
+    "key": "ring-s301-queue_tail_gate_k1",
+    "bytes": 905840
+  },
+  "raw/ring-s301-revocable_adaptive_gate_k1.tar.gz": {
+    "sha256": "c71456fdc331f6efa258fc1f059b3292f750e4099c2c7aee36940c5fec5345de",
+    "status": "completed",
+    "key": "ring-s301-revocable_adaptive_gate_k1",
+    "bytes": 413439
+  },
+  "raw/ring-s301-revocable_adaptive_gate_k1_ack1.tar.gz": {
+    "sha256": "f8d6a99d040ec05345546deef709b4f41d5b4030bb20cb7808ea367599c1ce41",
+    "status": "completed",
+    "key": "ring-s301-revocable_adaptive_gate_k1_ack1",
+    "bytes": 875023
+  },
+  "raw/ring-s301-revocable_adaptive_gate_k1_window.tar.gz": {
+    "sha256": "6e1ae43edb38733ffa0d282da5c341384fa196074b4a11b82ef8a05209852ce1",
+    "status": "error",
+    "key": "ring-s301-revocable_adaptive_gate_k1_window",
+    "bytes": 1256
+  },
+  "raw/ring-s301-revocable_default.tar.gz": {
+    "sha256": "d71609193a6c38e272bf080f99070ae78890eb9855cae5883adcd1b0d50d6aa8",
+    "status": "completed",
+    "key": "ring-s301-revocable_default",
+    "bytes": 13211193
+  },
+  "raw/ring-s301-revocable_serialized.tar.gz": {
+    "sha256": "ac1b8bf29fd87cad7a98ab80727a2598a345b245d2bfa764020d4825fb05032c",
+    "status": "completed",
+    "key": "ring-s301-revocable_serialized",
+    "bytes": 8747374
+  },
+  "raw/ring-s301-revocable_serialized_safe.tar.gz": {
+    "sha256": "5c35de209196d1f95688c798514c19e3e37283686adb50baf1b5670a5c695e68",
+    "status": "completed",
+    "key": "ring-s301-revocable_serialized_safe",
+    "bytes": 435499
+  },
+  "raw/ring-s301-scope_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "56ad1f12d4f837cd8f11dd271f21b90b2464d13ca1c19a99095ce1142427a6d1",
+    "status": "completed",
+    "key": "ring-s301-scope_adaptive_gate_budget4_k1",
+    "bytes": 414860
+  },
+  "raw/ring-s301-tail1.tar.gz": {
+    "sha256": "85472688ca256e53d803bb85d35d0babe86ac447083630e16b8bfa54864a54ed",
+    "status": "completed",
+    "key": "ring-s301-tail1",
+    "bytes": 1577506
+  },
+  "raw/ring-s301-tail_gate.tar.gz": {
+    "sha256": "d7d6bf963bf083ed9cd4864d007d4164d708f5838e26192627cefca5efb89cba",
+    "status": "completed",
+    "key": "ring-s301-tail_gate",
+    "bytes": 984442
+  },
+  "raw/web40-s301-adaptive_gate_k1.tar.gz": {
+    "sha256": "2e6e3e203b6b6b5503c6a8fd67f4509d1a2d5071d7e425be7f4584e6f8ac1f4a",
+    "status": "completed",
+    "key": "web40-s301-adaptive_gate_k1",
+    "bytes": 29782
+  },
+  "raw/web40-s301-adaptive_gate_k1_min1.tar.gz": {
+    "sha256": "0517030d004fcfd9f4e5469ab898ae1a7881462c6772842bc6a940c01ed5c4f7",
+    "status": "completed",
+    "key": "web40-s301-adaptive_gate_k1_min1",
+    "bytes": 29787
+  },
+  "raw/web40-s301-adaptive_gate_k1_reclaim.tar.gz": {
+    "sha256": "9ccabb596706edd1ee7c45588ffb8d44f7f00412814e020c79ea0f2573a7d527",
+    "status": "completed",
+    "key": "web40-s301-adaptive_gate_k1_reclaim",
+    "bytes": 29902
+  },
+  "raw/web40-s301-lambda1_gate_k1.tar.gz": {
+    "sha256": "002914024302057e9cc37527f901217834d03055a9e6daa301cac4c9bd525844",
+    "status": "completed",
+    "key": "web40-s301-lambda1_gate_k1",
+    "bytes": 29718
+  },
+  "raw/web40-s301-queue_adaptive_gate.tar.gz": {
+    "sha256": "c8ca8043a7386b34c99cc4941ba86fdcaa43c4c65405da4616358fae69ee3ddc",
+    "status": "completed",
+    "key": "web40-s301-queue_adaptive_gate",
+    "bytes": 29877
+  },
+  "raw/web40-s301-queue_adaptive_gate_budget4.tar.gz": {
+    "sha256": "9f14937e9538251f74696b56a2cd4762883fc58da9158c411e5d9b8a125e641b",
+    "status": "completed",
+    "key": "web40-s301-queue_adaptive_gate_budget4",
+    "bytes": 29897
+  },
+  "raw/web40-s301-queue_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "621460c53726cbd34cdf7b2bf78f0bd9395cd19cc4033dd30f4b00af80dcc8dc",
+    "status": "completed",
+    "key": "web40-s301-queue_adaptive_gate_budget4_k1",
+    "bytes": 29816
+  },
+  "raw/web40-s301-queue_adaptive_gate_e2.tar.gz": {
+    "sha256": "9115b5b51be5d070381043f6418cef2d26ba0e6702a6dedfeaf2ffbe8d297f7d",
+    "status": "completed",
+    "key": "web40-s301-queue_adaptive_gate_e2",
+    "bytes": 29869
+  },
+  "raw/web40-s301-queue_adaptive_gate_k1.tar.gz": {
+    "sha256": "2c6fc6d74f182053e6301d0d46c18ffe4be05c1f78a73b928f8dfcce8835c5f2",
+    "status": "completed",
+    "key": "web40-s301-queue_adaptive_gate_k1",
+    "bytes": 29789
+  },
+  "raw/web40-s301-queue_adaptive_gate_k1_min12.tar.gz": {
+    "sha256": "a518174bcc17fb876c0975f31b0448fe128d8d7e4dbbb3b5adc3c8dd480de411",
+    "status": "completed",
+    "key": "web40-s301-queue_adaptive_gate_k1_min12",
+    "bytes": 29835
+  },
+  "raw/web40-s301-queue_adaptive_gate_k4_min12.tar.gz": {
+    "sha256": "34de8519425f24994359c1f650aa6d9c91ffadd81b490f7024d248efc79e6f28",
+    "status": "incomplete_or_failed",
+    "key": "web40-s301-queue_adaptive_gate_k4_min12",
+    "bytes": 9351
+  },
+  "raw/web40-s301-queue_tail_gate.tar.gz": {
+    "sha256": "e210ebfa9f74a7f2543653fc3e74c9aeeaa5f181834ae12fb6a0e109b80bfcbe",
+    "status": "completed",
+    "key": "web40-s301-queue_tail_gate",
+    "bytes": 29802
+  },
+  "raw/web40-s301-queue_tail_gate_k1.tar.gz": {
+    "sha256": "0bd634c81a00643a474c1d2e7e401c5c6655275f0d5f80dbc8a4af731514ac0c",
+    "status": "completed",
+    "key": "web40-s301-queue_tail_gate_k1",
+    "bytes": 29753
+  },
+  "raw/web40-s301-revocable_adaptive_gate_k1.tar.gz": {
+    "sha256": "786b074459995c3b075390eda65d01d89b563e07a008e788d4eb07d89d952b77",
+    "status": "completed",
+    "key": "web40-s301-revocable_adaptive_gate_k1",
+    "bytes": 29847
+  },
+  "raw/web40-s301-revocable_adaptive_gate_k1_ack1.tar.gz": {
+    "sha256": "8919e9382625fd1e9e323c29c2acffaee27a4422cbd78486c4cae92345c35d1d",
+    "status": "completed",
+    "key": "web40-s301-revocable_adaptive_gate_k1_ack1",
+    "bytes": 29914
+  },
+  "raw/web40-s301-revocable_adaptive_gate_k1_window.tar.gz": {
+    "sha256": "ddc299ea37765f21b9757b92db1f7aeebc9bd474d1aba25a8241607ff776a6a6",
+    "status": "error",
+    "key": "web40-s301-revocable_adaptive_gate_k1_window",
+    "bytes": 1264
+  },
+  "raw/web40-s301-revocable_default.tar.gz": {
+    "sha256": "2b13ac0975407e5b34b893621cd735c4c2e66ba0f1b5457e3beacf02d45beedc",
+    "status": "completed",
+    "key": "web40-s301-revocable_default",
+    "bytes": 29831
+  },
+  "raw/web40-s301-revocable_serialized.tar.gz": {
+    "sha256": "8a69a29de5c8f0ce0785fb8330a0e335c81917b9afdf0c2fbf892fafba35838b",
+    "status": "completed",
+    "key": "web40-s301-revocable_serialized",
+    "bytes": 32074
+  },
+  "raw/web40-s301-revocable_serialized_safe.tar.gz": {
+    "sha256": "30e8d9ae9b78ce9a45fd1b9b20ce8d63e9931780b22349755278f7fed3d3244b",
+    "status": "completed",
+    "key": "web40-s301-revocable_serialized_safe",
+    "bytes": 32161
+  },
+  "raw/web40-s301-scope_adaptive_gate_budget4_k1.tar.gz": {
+    "sha256": "495b3948f7abf5f85ac1f04a4a2d2e7046f08eadafe8bc6b80ca461ddee5f249",
+    "status": "completed",
+    "key": "web40-s301-scope_adaptive_gate_budget4_k1",
+    "bytes": 29794
+  },
+  "holdout/raw/ali30-s401-dcqcn.tar.gz": {
+    "sha256": "265804a658ca8e152fee1dd59c5501b31ebae3ab7ba89c7957a96311ca07da33",
+    "status": "completed",
+    "key": "ali30-s401-dcqcn",
+    "bytes": 3465422
+  },
+  "holdout/raw/ali30-s401-guard.tar.gz": {
+    "sha256": "f7fae66469e6d5eb7e4a2bf05cc4438ee0966a8ee2834ca2057131d1ab4bbab2",
+    "status": "completed",
+    "key": "ali30-s401-guard",
+    "bytes": 3409151
+  },
+  "holdout/raw/ali30-s401-homa.tar.gz": {
+    "sha256": "0dac9e0936c1648b3eee634458f431a99abf0619d6dcd888b263cc2175665b92",
+    "status": "completed",
+    "key": "ali30-s401-homa",
+    "bytes": 3410385
+  },
+  "holdout/raw/ali30-s401-hpcc.tar.gz": {
+    "sha256": "5af84506c37eb535ffbeacb10cdf863d35ef2367450bd8256ffad5c1959aa122",
+    "status": "completed",
+    "key": "ali30-s401-hpcc",
+    "bytes": 3433510
+  },
+  "holdout/raw/ali30-s401-old_guard.tar.gz": {
+    "sha256": "687f2d3adc6aa23631991911d9b50372dff5a5ded48bf659aa8e76e27a09fe9b",
+    "status": "completed",
+    "key": "ali30-s401-old_guard",
+    "bytes": 3409223
+  },
+  "holdout/raw/ali30-s401-timely.tar.gz": {
+    "sha256": "7d95ad367e41774902393bc57cf23e751cd2192cb7570c17ea7298c39e757011",
+    "status": "completed",
+    "key": "ali30-s401-timely",
+    "bytes": 4126517
+  },
+  "holdout/raw/ali30-s402-dcqcn.tar.gz": {
+    "sha256": "b48b15ae2d3fed564635a42cb9ae7c6643fa294eb9947089b721efbc9db909b8",
+    "status": "completed",
+    "key": "ali30-s402-dcqcn",
+    "bytes": 3478240
+  },
+  "holdout/raw/ali30-s402-guard.tar.gz": {
+    "sha256": "b1a1ea056327619c6c8fc0d3211a1c0f8f0df704ed58a88559e19fa49f0849ae",
+    "status": "completed",
+    "key": "ali30-s402-guard",
+    "bytes": 3422506
+  },
+  "holdout/raw/ali30-s402-homa.tar.gz": {
+    "sha256": "de7fce6108c4c6b02c98c5caa41e13540cf33811493ec04235c1daab6370e044",
+    "status": "completed",
+    "key": "ali30-s402-homa",
+    "bytes": 3423510
+  },
+  "holdout/raw/ali30-s402-hpcc.tar.gz": {
+    "sha256": "8de40ce255715480d81e2b7430c4a64e35a55b127ec81015d12e21a454acfff7",
+    "status": "completed",
+    "key": "ali30-s402-hpcc",
+    "bytes": 3446311
+  },
+  "holdout/raw/ali30-s402-old_guard.tar.gz": {
+    "sha256": "19230cfb1b92ef5bbb88c8fb3478ca562a7019900b698bc2a460e7369de58cf6",
+    "status": "completed",
+    "key": "ali30-s402-old_guard",
+    "bytes": 3421856
+  },
+  "holdout/raw/ali30-s402-timely.tar.gz": {
+    "sha256": "6febf00044096ecb2dade5106a9476291cb89406b49e99f8134253637c821543",
+    "status": "completed",
+    "key": "ali30-s402-timely",
+    "bytes": 4214159
+  },
+  "holdout/raw/ali30-s403-dcqcn.tar.gz": {
+    "sha256": "1bb03366d0aa24c079d2d0894841be3c18cf8f4a41dce9ff5f1492849754996f",
+    "status": "completed",
+    "key": "ali30-s403-dcqcn",
+    "bytes": 3492342
+  },
+  "holdout/raw/ali30-s403-guard.tar.gz": {
+    "sha256": "626c035200aa3769e13f20a976ff6c440c35eb1bf64b9dfb24d9f9b769ec7988",
+    "status": "completed",
+    "key": "ali30-s403-guard",
+    "bytes": 3402838
+  },
+  "holdout/raw/ali30-s403-homa.tar.gz": {
+    "sha256": "6be112f62d21e21262ec56479fd4d7c616b2b0c80d24f13bac9a52f23c80f110",
+    "status": "completed",
+    "key": "ali30-s403-homa",
+    "bytes": 3429831
+  },
+  "holdout/raw/ali30-s403-hpcc.tar.gz": {
+    "sha256": "feda34e79581b0401f7e11a456fa1fd0ea636f43fe2256db213b443ec5e5e3a1",
+    "status": "completed",
+    "key": "ali30-s403-hpcc",
+    "bytes": 3452913
+  },
+  "holdout/raw/ali30-s403-old_guard.tar.gz": {
+    "sha256": "e5190e98d0653de40fed8fb28a8768012bea95bd04756de61834c8b863039b08",
+    "status": "completed",
+    "key": "ali30-s403-old_guard",
+    "bytes": 3402419
+  },
+  "holdout/raw/ali30-s403-timely.tar.gz": {
+    "sha256": "4c0290c46e6f45f118f1a9d99a757ced46b7ae5f1a41d9de1256d1f7c216e03a",
+    "status": "completed",
+    "key": "ali30-s403-timely",
+    "bytes": 4292343
+  },
+  "holdout/raw/ali30-s404-dcqcn.tar.gz": {
+    "sha256": "315035558e2c0536bbdbf984c5d538af9aa90049e24a90857883fee626cc535a",
+    "status": "completed",
+    "key": "ali30-s404-dcqcn",
+    "bytes": 3472385
+  },
+  "holdout/raw/ali30-s404-guard.tar.gz": {
+    "sha256": "1ee518b35753f257176df469ff70b1cbc81c2260c886f0af4256d4fd0eaeea8b",
+    "status": "completed",
+    "key": "ali30-s404-guard",
+    "bytes": 3392951
+  },
+  "holdout/raw/ali30-s404-homa.tar.gz": {
+    "sha256": "2c6d52bcf10c3a0daf448403ba3eebb7e5e18b9a4e1cc639c2de47f9ea706456",
+    "status": "completed",
+    "key": "ali30-s404-homa",
+    "bytes": 3419216
+  },
+  "holdout/raw/ali30-s404-hpcc.tar.gz": {
+    "sha256": "9e9b0ca78425d623654777ff61572689b9f84fc37774dcb1c3266a68d91f808a",
+    "status": "completed",
+    "key": "ali30-s404-hpcc",
+    "bytes": 3441900
+  },
+  "holdout/raw/ali30-s404-old_guard.tar.gz": {
+    "sha256": "1701ad68cf2f46e32d45743342cb7e1c0d6d1101604db5190f0eb46a87b0f2e8",
+    "status": "completed",
+    "key": "ali30-s404-old_guard",
+    "bytes": 3392542
+  },
+  "holdout/raw/ali30-s404-timely.tar.gz": {
+    "sha256": "1616d482dca1542e6af81ab9525f5b2a43c01509f602a5751b8683216768aa10",
+    "status": "completed",
+    "key": "ali30-s404-timely",
+    "bytes": 4082733
+  },
+  "holdout/raw/ali30-s405-dcqcn.tar.gz": {
+    "sha256": "31da1a4f9ae795996d6aa7a561af1850b7da67d50ad575af5e8cd175ae535dcd",
+    "status": "completed",
+    "key": "ali30-s405-dcqcn",
+    "bytes": 3494350
+  },
+  "holdout/raw/ali30-s405-guard.tar.gz": {
+    "sha256": "dea2e030419766e044eea69084c6c270224e705c17f25ff969ae4e0054088821",
+    "status": "completed",
+    "key": "ali30-s405-guard",
+    "bytes": 3433993
+  },
+  "holdout/raw/ali30-s405-homa.tar.gz": {
+    "sha256": "d1aec22915b45d556eac1f077320c819a37e66df45cf0da1d303f1e713f096b8",
+    "status": "completed",
+    "key": "ali30-s405-homa",
+    "bytes": 3435223
+  },
+  "holdout/raw/ali30-s405-hpcc.tar.gz": {
+    "sha256": "660267cfdb3dd956044d22883dac400c16d85fadfa3c22313e89b9d7d387b6ca",
+    "status": "completed",
+    "key": "ali30-s405-hpcc",
+    "bytes": 3458895
+  },
+  "holdout/raw/ali30-s405-old_guard.tar.gz": {
+    "sha256": "8de401cbf083ffa32f9cd096e9055cdd60e4657afa61fa4a2054417425224153",
+    "status": "completed",
+    "key": "ali30-s405-old_guard",
+    "bytes": 3433958
+  },
+  "holdout/raw/ali30-s405-timely.tar.gz": {
+    "sha256": "b63ecb965bd65c1ac8d6c0f90c6563d62b24bb37abec417dd99aa106948ad7b4",
+    "status": "completed",
+    "key": "ali30-s405-timely",
+    "bytes": 4114520
+  },
+  "holdout/raw/ali50-s401-dcqcn.tar.gz": {
+    "sha256": "b12c8273478ec2ecce75e2ce62c78192817faa97b341d80ad8fc4b7162d3cc1a",
+    "status": "completed",
+    "key": "ali50-s401-dcqcn",
+    "bytes": 5972224
+  },
+  "holdout/raw/ali50-s401-guard.tar.gz": {
+    "sha256": "12eab100e3077d9f2368e5f5a0d3a48e0a30c2d82458ddb95c8845fc92d83abc",
+    "status": "completed",
+    "key": "ali50-s401-guard",
+    "bytes": 5660572
+  },
+  "holdout/raw/ali50-s401-homa.tar.gz": {
+    "sha256": "80b9298d003d7ecd0104e484ca2885033667afe2e816f5d19fdadb92c2973542",
+    "status": "completed",
+    "key": "ali50-s401-homa",
+    "bytes": 5663806
+  },
+  "holdout/raw/ali50-s401-hpcc.tar.gz": {
+    "sha256": "96b167600b2f66b0291ad066159723f8ed4144a56c9c64db4929f80a87cecae8",
+    "status": "completed",
+    "key": "ali50-s401-hpcc",
+    "bytes": 5731302
+  },
+  "holdout/raw/ali50-s401-no_oflm.tar.gz": {
+    "sha256": "2fb715efdcde7e7f34f376132148dd0f2ec8b9a90eff225eaa6a6401443eecb0",
+    "status": "completed",
+    "key": "ali50-s401-no_oflm",
+    "bytes": 5662039
+  },
+  "holdout/raw/ali50-s401-no_release.tar.gz": {
+    "sha256": "dd2e095df0291b876b93ea15a66996afbe1c59e353f3481395813d31f7f25fa4",
+    "status": "completed",
+    "key": "ali50-s401-no_release",
+    "bytes": 5660702
+  },
+  "holdout/raw/ali50-s401-no_selective.tar.gz": {
+    "sha256": "d7684ba380fe1d3bbdaf99d7a25b975f1ac205ebcb51249a1f37c9a69c97d0e5",
+    "status": "completed",
+    "key": "ali50-s401-no_selective",
+    "bytes": 5661065
+  },
+  "holdout/raw/ali50-s401-old_guard.tar.gz": {
+    "sha256": "ef0e490deb73af8a2fb31ce74c2b77eca3fee1587e4dfd28285bd95b6475ede4",
+    "status": "completed",
+    "key": "ali50-s401-old_guard",
+    "bytes": 5635123
+  },
+  "holdout/raw/ali50-s401-timely.tar.gz": {
+    "sha256": "62c0670a269807ad6e75c7ca59a6913818f28743dfcea0e4c56e18d66c3124e0",
+    "status": "completed",
+    "key": "ali50-s401-timely",
+    "bytes": 8764811
+  },
+  "holdout/raw/ali50-s402-dcqcn.tar.gz": {
+    "sha256": "e83ca4a4c85c47b9e3d6bb17fc22762fffaaf14c9dbf8462c4f92c1ae47393d0",
+    "status": "completed",
+    "key": "ali50-s402-dcqcn",
+    "bytes": 6034480
+  },
+  "holdout/raw/ali50-s402-guard.tar.gz": {
+    "sha256": "21b78ba2965b2eb1a33d4de74c4dfa98fa42b0aa565cf50b7d326d3ad4fbf998",
+    "status": "completed",
+    "key": "ali50-s402-guard",
+    "bytes": 5653431
+  },
+  "holdout/raw/ali50-s402-homa.tar.gz": {
+    "sha256": "abfcb22bd3a78564750d6b1c43dabca731d6ded90f401784116028547b17ea55",
+    "status": "completed",
+    "key": "ali50-s402-homa",
+    "bytes": 5682803
+  },
+  "holdout/raw/ali50-s402-hpcc.tar.gz": {
+    "sha256": "96f7244cfedd1dbedee51479b653a2dfc073685dffc5357f04d6b80ba9ca7eec",
+    "status": "completed",
+    "key": "ali50-s402-hpcc",
+    "bytes": 5750282
+  },
+  "holdout/raw/ali50-s402-no_oflm.tar.gz": {
+    "sha256": "7eaba9460c5c80e1c3b7725e264f0ab3555ca8f17eff986c1b27fa4181e8d60d",
+    "status": "completed",
+    "key": "ali50-s402-no_oflm",
+    "bytes": 5681118
+  },
+  "holdout/raw/ali50-s402-no_release.tar.gz": {
+    "sha256": "2c9805c3c7ea7975ec2925eb4d0af970c62586136e9a6585054fc4e6343e01a2",
+    "status": "completed",
+    "key": "ali50-s402-no_release",
+    "bytes": 5679242
+  },
+  "holdout/raw/ali50-s402-no_selective.tar.gz": {
+    "sha256": "10fb6acfdd19e80e4e28cc17f6d35b49e787fae9d9348fa63da7ed9a56f3d8ec",
+    "status": "completed",
+    "key": "ali50-s402-no_selective",
+    "bytes": 5680707
+  },
+  "holdout/raw/ali50-s402-old_guard.tar.gz": {
+    "sha256": "94a03b44f814cd86c949f3a8290f86875fc211adf0cc7b2e67d6699149e0abcb",
+    "status": "completed",
+    "key": "ali50-s402-old_guard",
+    "bytes": 5653916
+  },
+  "holdout/raw/ali50-s402-timely.tar.gz": {
+    "sha256": "137fcb64e134982f81e543c43062767fe212edc4ae1a5747cdd3a175ce043625",
+    "status": "completed",
+    "key": "ali50-s402-timely",
+    "bytes": 9428617
+  },
+  "holdout/raw/ali50-s403-dcqcn.tar.gz": {
+    "sha256": "373f26aad9442a9e2643c312473a2df5a446216cbbb1ca43abda8093312320bb",
+    "status": "completed",
+    "key": "ali50-s403-dcqcn",
+    "bytes": 6035587
+  },
+  "holdout/raw/ali50-s403-guard.tar.gz": {
+    "sha256": "69b8fca1810f9a8920aedc3d96ad88099fbbf459010cd6dfaa33e5bae7809ad5",
+    "status": "completed",
+    "key": "ali50-s403-guard",
+    "bytes": 5653659
+  },
+  "holdout/raw/ali50-s403-homa.tar.gz": {
+    "sha256": "5200eb8fbaaeaeb10628f8dead23d4e6072d5f86905f63ee0cff692e3fee6675",
+    "status": "completed",
+    "key": "ali50-s403-homa",
+    "bytes": 5683995
+  },
+  "holdout/raw/ali50-s403-hpcc.tar.gz": {
+    "sha256": "b36b56bcced55bf92628e219280c8fc966c6b0dcafdbc5e048a996e86704b6ca",
+    "status": "completed",
+    "key": "ali50-s403-hpcc",
+    "bytes": 5751733
+  },
+  "holdout/raw/ali50-s403-no_oflm.tar.gz": {
+    "sha256": "2655d9260c3f8791c0fa35ac0e5f710898f198344b1920be190b70c73736d87a",
+    "status": "completed",
+    "key": "ali50-s403-no_oflm",
+    "bytes": 5681692
+  },
+  "holdout/raw/ali50-s403-no_release.tar.gz": {
+    "sha256": "5cc1cd444aad0374cdf680476fb2e8f1c6d6d2929db74a5fb643fdb11c8f3835",
+    "status": "completed",
+    "key": "ali50-s403-no_release",
+    "bytes": 5680289
+  },
+  "holdout/raw/ali50-s403-no_selective.tar.gz": {
+    "sha256": "ae1ef0e7aeed4143d49cbd6d8931ab10b143b3069980e486e28da22bcd4ef4b2",
+    "status": "completed",
+    "key": "ali50-s403-no_selective",
+    "bytes": 5681703
+  },
+  "holdout/raw/ali50-s403-old_guard.tar.gz": {
+    "sha256": "0ff6ed13d58dd1fd06bf54556bf0682ba31f16c568c6c893539c615b82c6a521",
+    "status": "completed",
+    "key": "ali50-s403-old_guard",
+    "bytes": 5679393
+  },
+  "holdout/raw/ali50-s403-timely.tar.gz": {
+    "sha256": "853246270e6ed0a835781005275e0a5b96ebb0508a17f10a5929d9728aded1fd",
+    "status": "completed",
+    "key": "ali50-s403-timely",
+    "bytes": 9595225
+  },
+  "holdout/raw/ali50-s404-dcqcn.tar.gz": {
+    "sha256": "401fb4500303fa08b193803bdb86325aaa03d9f660379752a85041125bb2591e",
+    "status": "completed",
+    "key": "ali50-s404-dcqcn",
+    "bytes": 5954617
+  },
+  "holdout/raw/ali50-s404-guard.tar.gz": {
+    "sha256": "06816ffb4d3fd6377b3fd77ac77eed1d104d5f68af0d71fd447a2fded6bdf223",
+    "status": "completed",
+    "key": "ali50-s404-guard",
+    "bytes": 5691215
+  },
+  "holdout/raw/ali50-s404-homa.tar.gz": {
+    "sha256": "c37013cfec93c1e4ff72f9b29ddd4d5159a808d11078dfa462395f4ab609c292",
+    "status": "completed",
+    "key": "ali50-s404-homa",
+    "bytes": 5695057
+  },
+  "holdout/raw/ali50-s404-hpcc.tar.gz": {
+    "sha256": "8228f70ec9485ed219340c3937b054d2ea28231d9c89720b185d0984470dc574",
+    "status": "completed",
+    "key": "ali50-s404-hpcc",
+    "bytes": 5762150
+  },
+  "holdout/raw/ali50-s404-no_oflm.tar.gz": {
+    "sha256": "343acf54386674d302e5cf8b7cb6c9f4749c7189b7db974f94e2d3294c75f919",
+    "status": "completed",
+    "key": "ali50-s404-no_oflm",
+    "bytes": 5692781
+  },
+  "holdout/raw/ali50-s404-no_release.tar.gz": {
+    "sha256": "630c0655fe76b128fe070b7e7f11af215018220bbed04e8480d45135d9fe28d8",
+    "status": "completed",
+    "key": "ali50-s404-no_release",
+    "bytes": 5691357
+  },
+  "holdout/raw/ali50-s404-no_selective.tar.gz": {
+    "sha256": "cb07e6b4a7e0433a6e63b9df9d6621525964dc0226a492b6cbe6ebdf38c4cdad",
+    "status": "completed",
+    "key": "ali50-s404-no_selective",
+    "bytes": 5692522
+  },
+  "holdout/raw/ali50-s404-old_guard.tar.gz": {
+    "sha256": "eddf4485e758ecca669efa28af49cf676010283eb7aa3814d118e0714bb22fc1",
+    "status": "completed",
+    "key": "ali50-s404-old_guard",
+    "bytes": 5691322
+  },
+  "holdout/raw/ali50-s404-timely.tar.gz": {
+    "sha256": "45768517ecb1aa3b2cad3131d3dd6cfa468ec88ee0d56c1e2c48e9ebbd651852",
+    "status": "completed",
+    "key": "ali50-s404-timely",
+    "bytes": 9327896
+  },
+  "holdout/raw/ali50-s405-dcqcn.tar.gz": {
+    "sha256": "f8f48e7e7c7d56a8c2dac35dd3d535aa1710d43ed8aaa7953cb4948292997922",
+    "status": "completed",
+    "key": "ali50-s405-dcqcn",
+    "bytes": 5982500
+  },
+  "holdout/raw/ali50-s405-guard.tar.gz": {
+    "sha256": "1795772d318a4439a5c70d77265e369c294095cebdef724c4706971aa1c7801c",
+    "status": "completed",
+    "key": "ali50-s405-guard",
+    "bytes": 5690928
+  },
+  "holdout/raw/ali50-s405-homa.tar.gz": {
+    "sha256": "a24dff68b43f82df32f8748f77c233f48748887a29603c70126eaff0b33b8118",
+    "status": "completed",
+    "key": "ali50-s405-homa",
+    "bytes": 5694930
+  },
+  "holdout/raw/ali50-s405-hpcc.tar.gz": {
+    "sha256": "e2e7b4f0d95e0305e58fe25d335c6210ac35b2aa67cdcf9a751eb9aff86c4bdc",
+    "status": "completed",
+    "key": "ali50-s405-hpcc",
+    "bytes": 5763600
+  },
+  "holdout/raw/ali50-s405-no_oflm.tar.gz": {
+    "sha256": "f3d0bca9132031a8e2c1ac4a8986c03bf3c9dbabb290908ba9e6e112c957e578",
+    "status": "completed",
+    "key": "ali50-s405-no_oflm",
+    "bytes": 5692263
+  },
+  "holdout/raw/ali50-s405-no_release.tar.gz": {
+    "sha256": "1ccaf8baad5e877f87ef2987eb98da0cb29ef46d24a97145c79c037a3b97de2c",
+    "status": "completed",
+    "key": "ali50-s405-no_release",
+    "bytes": 5691791
+  },
+  "holdout/raw/ali50-s405-no_selective.tar.gz": {
+    "sha256": "1e5e28d9ba25eca23a7a15dd12d1da00d0aad03c3330f04228eb68a2b66a1df3",
+    "status": "completed",
+    "key": "ali50-s405-no_selective",
+    "bytes": 5692412
+  },
+  "holdout/raw/ali50-s405-old_guard.tar.gz": {
+    "sha256": "f8a8c58c03eee4b6424e03807d1593dc280d5fbcafc1a84ba34aa5cc8e3fb33d",
+    "status": "completed",
+    "key": "ali50-s405-old_guard",
+    "bytes": 5691660
+  },
+  "holdout/raw/ali50-s405-timely.tar.gz": {
+    "sha256": "b898d83404c0296c39b5e6127628d8d57a28a43df201291be352ab3e88a6291f",
+    "status": "completed",
+    "key": "ali50-s405-timely",
+    "bytes": 9538584
+  },
+  "holdout/raw/allreduce_dp2-s401-dcqcn.tar.gz": {
+    "sha256": "700d16bf43d06278c8c2a8a6aebc000b8878ca83480256218eb5fe8d1a16e6aa",
+    "status": "completed",
+    "key": "allreduce_dp2-s401-dcqcn",
+    "bytes": 152624
+  },
+  "holdout/raw/allreduce_dp2-s401-guard.tar.gz": {
+    "sha256": "2bdaf7a90fcfffaa98c0b764cdf6f79d7736bf0c94832b01a16843d39c88fa9c",
+    "status": "completed",
+    "key": "allreduce_dp2-s401-guard",
+    "bytes": 33190
+  },
+  "holdout/raw/allreduce_dp2-s401-homa.tar.gz": {
+    "sha256": "8c7941b590e959b83120f05eb663a413ca2b96ec95d0c46306e5c093c949ad8b",
+    "status": "completed",
+    "key": "allreduce_dp2-s401-homa",
+    "bytes": 38920
+  },
+  "holdout/raw/allreduce_dp2-s401-hpcc.tar.gz": {
+    "sha256": "99f9d3564baa6b9028922719448f466aef85cfc9314d8c05d5a7f09b36c5d0c0",
+    "status": "completed",
+    "key": "allreduce_dp2-s401-hpcc",
+    "bytes": 38254
+  },
+  "holdout/raw/allreduce_dp2-s401-old_guard.tar.gz": {
+    "sha256": "f78b447d93cfea02711eb4ba1c28acd6bd4ce8e8b292ceed39e311c29781167c",
+    "status": "completed",
+    "key": "allreduce_dp2-s401-old_guard",
+    "bytes": 33123
+  },
+  "holdout/raw/allreduce_dp2-s401-timely.tar.gz": {
+    "sha256": "352231dfa137a87094128a5f50bc7228cd20fec12f13e6062c6bc28b4c0f2707",
+    "status": "completed",
+    "key": "allreduce_dp2-s401-timely",
+    "bytes": 57246
+  },
+  "holdout/raw/allreduce_dp2-s402-dcqcn.tar.gz": {
+    "sha256": "b11cc6f5009fcf0abadd48e89065ed24a6ab945ae5acc3b3a0d8b392972b75bf",
+    "status": "completed",
+    "key": "allreduce_dp2-s402-dcqcn",
+    "bytes": 153433
+  },
+  "holdout/raw/allreduce_dp2-s402-guard.tar.gz": {
+    "sha256": "7e9ad4bd89846cb9301d5a6b71fa83ae387b3dbd8d236ebca32dd5db22a6682d",
+    "status": "completed",
+    "key": "allreduce_dp2-s402-guard",
+    "bytes": 33162
+  },
+  "holdout/raw/allreduce_dp2-s402-homa.tar.gz": {
+    "sha256": "f5687b0c4fc62e7c54554ed49dc08de4845849ec2a33ab2d9630a447c7bae5f3",
+    "status": "completed",
+    "key": "allreduce_dp2-s402-homa",
+    "bytes": 38917
+  },
+  "holdout/raw/allreduce_dp2-s402-hpcc.tar.gz": {
+    "sha256": "62439397ef0b77dca9d0acf4f1287aa7f93d837a2a74242a54e06d2b62ca351c",
+    "status": "completed",
+    "key": "allreduce_dp2-s402-hpcc",
+    "bytes": 38226
+  },
+  "holdout/raw/allreduce_dp2-s402-old_guard.tar.gz": {
+    "sha256": "b538b386b08f07e9409f97481cff012ecc67f2526b78e0e7a85a46c464dfb652",
+    "status": "completed",
+    "key": "allreduce_dp2-s402-old_guard",
+    "bytes": 32986
+  },
+  "holdout/raw/allreduce_dp2-s402-timely.tar.gz": {
+    "sha256": "6b930c47f21094462ef093671a379b8ac54e3b0c2ec39662b6d0410d289d537d",
+    "status": "completed",
+    "key": "allreduce_dp2-s402-timely",
+    "bytes": 54975
+  },
+  "holdout/raw/allreduce_dp2-s403-dcqcn.tar.gz": {
+    "sha256": "cf6403a0e1e2c57c91daf305b836b853796c7b3a12b69095522e1b178ffe3eb7",
+    "status": "completed",
+    "key": "allreduce_dp2-s403-dcqcn",
+    "bytes": 153126
+  },
+  "holdout/raw/allreduce_dp2-s403-guard.tar.gz": {
+    "sha256": "f0813dc0ae20031fec0b82ea67f70c2b98f85b45b97a531ffe38d6b36533f0bf",
+    "status": "completed",
+    "key": "allreduce_dp2-s403-guard",
+    "bytes": 39341
+  },
+  "holdout/raw/allreduce_dp2-s403-homa.tar.gz": {
+    "sha256": "72a4572fc3b683e070c2a802e07f1d182d102c4152dda1a284e764f4b30fbfec",
+    "status": "completed",
+    "key": "allreduce_dp2-s403-homa",
+    "bytes": 38959
+  },
+  "holdout/raw/allreduce_dp2-s403-hpcc.tar.gz": {
+    "sha256": "6c3520f201bdefe97ab3ea8b288f15d2854adbcc760ae9db909d4563785cca0a",
+    "status": "completed",
+    "key": "allreduce_dp2-s403-hpcc",
+    "bytes": 38210
+  },
+  "holdout/raw/allreduce_dp2-s403-old_guard.tar.gz": {
+    "sha256": "dad67228c0821b711db51320e4efb98cae86fbfc814b3af94d3ed9af984c0d3a",
+    "status": "completed",
+    "key": "allreduce_dp2-s403-old_guard",
+    "bytes": 39145
+  },
+  "holdout/raw/allreduce_dp2-s403-timely.tar.gz": {
+    "sha256": "5f73a3416a7c8ec8da1e75293ab2600a6c3acac788aa6a44b1624517c92fcb20",
+    "status": "completed",
+    "key": "allreduce_dp2-s403-timely",
+    "bytes": 63224
+  },
+  "holdout/raw/allreduce_dp2-s404-dcqcn.tar.gz": {
+    "sha256": "1464f439edfe81b5d5365a4e16cc72bb0423333989f9ee8b7793d67c8f216ca2",
+    "status": "completed",
+    "key": "allreduce_dp2-s404-dcqcn",
+    "bytes": 152553
+  },
+  "holdout/raw/allreduce_dp2-s404-guard.tar.gz": {
+    "sha256": "c2c54093e7050b65343ce08063787c1cf72d950fff7d198e57c9aeb711b07e1c",
+    "status": "completed",
+    "key": "allreduce_dp2-s404-guard",
+    "bytes": 39383
+  },
+  "holdout/raw/allreduce_dp2-s404-homa.tar.gz": {
+    "sha256": "8ffb4ff6e0aff8e4770727843a9b94758b94eb816618b72d266ecd06a1dfd82b",
+    "status": "completed",
+    "key": "allreduce_dp2-s404-homa",
+    "bytes": 38879
+  },
+  "holdout/raw/allreduce_dp2-s404-hpcc.tar.gz": {
+    "sha256": "834c00130ef79391a42e1c109488c03f6a0609cd399244b443ca628f030e6e10",
+    "status": "completed",
+    "key": "allreduce_dp2-s404-hpcc",
+    "bytes": 38273
+  },
+  "holdout/raw/allreduce_dp2-s404-old_guard.tar.gz": {
+    "sha256": "e330c7124d0c6ab47081ef59daaf3c69ea73a2c79951586ba41865c0b3f15408",
+    "status": "completed",
+    "key": "allreduce_dp2-s404-old_guard",
+    "bytes": 39251
+  },
+  "holdout/raw/allreduce_dp2-s404-timely.tar.gz": {
+    "sha256": "67a428735cd693de9bcb0da3170abc9a57bb3d59a95014de3db2b415cb939ad5",
+    "status": "completed",
+    "key": "allreduce_dp2-s404-timely",
+    "bytes": 57048
+  },
+  "holdout/raw/allreduce_dp2-s405-dcqcn.tar.gz": {
+    "sha256": "749ea26bc2971369056453b5087dcec216cf78c20d035a26cafd73163b034da8",
+    "status": "completed",
+    "key": "allreduce_dp2-s405-dcqcn",
+    "bytes": 154477
+  },
+  "holdout/raw/allreduce_dp2-s405-guard.tar.gz": {
+    "sha256": "c0cc8b24a58268640af99b305df035e390c6ce86dc8fe90dff1a733cb71c626f",
+    "status": "completed",
+    "key": "allreduce_dp2-s405-guard",
+    "bytes": 39292
+  },
+  "holdout/raw/allreduce_dp2-s405-homa.tar.gz": {
+    "sha256": "86b6c3a03e2d3d08ff1562a0974efe7d0f50b5127a78fffbb0b6b182dcc1e9f9",
+    "status": "completed",
+    "key": "allreduce_dp2-s405-homa",
+    "bytes": 38911
+  },
+  "holdout/raw/allreduce_dp2-s405-hpcc.tar.gz": {
+    "sha256": "175973e401a77bf5bfc8a39e74d6a7dc15b1f384bf96808e4779d0dc2fea67c6",
+    "status": "completed",
+    "key": "allreduce_dp2-s405-hpcc",
+    "bytes": 38240
+  },
+  "holdout/raw/allreduce_dp2-s405-old_guard.tar.gz": {
+    "sha256": "523e791e7bb9eca120cf876c6f96952705fbaac109f732d4c9f0fe45699a8d81",
+    "status": "completed",
+    "key": "allreduce_dp2-s405-old_guard",
+    "bytes": 39130
+  },
+  "holdout/raw/allreduce_dp2-s405-timely.tar.gz": {
+    "sha256": "89449139e717359c28f2e073b7c69c6d924fd7736e6b442927e8700d97512eb6",
+    "status": "completed",
+    "key": "allreduce_dp2-s405-timely",
+    "bytes": 61632
+  },
+  "holdout/raw/alltoall-s401-dcqcn.tar.gz": {
+    "sha256": "12a1c3f29b23fea05f0b73991153e33351e7ca8ddad15827061fe6c1ff25f331",
+    "status": "completed",
+    "key": "alltoall-s401-dcqcn",
+    "bytes": 17682
+  },
+  "holdout/raw/alltoall-s401-guard.tar.gz": {
+    "sha256": "c0f29eab6907bfe5b12068e6b333fd849093dae955fd55991e59df66569ca9fb",
+    "status": "completed",
+    "key": "alltoall-s401-guard",
+    "bytes": 19592
+  },
+  "holdout/raw/alltoall-s401-homa.tar.gz": {
+    "sha256": "502cbf5ba6d871af3e1acda8dbbf97356ac5261c04d59832e9d7473b8500cb0b",
+    "status": "completed",
+    "key": "alltoall-s401-homa",
+    "bytes": 19351
+  },
+  "holdout/raw/alltoall-s401-hpcc.tar.gz": {
+    "sha256": "4be4389e2a694d8351a3c3347bd66bd4918397e2ecef1b4d9f2f1444d94e7eb4",
+    "status": "completed",
+    "key": "alltoall-s401-hpcc",
+    "bytes": 18679
+  },
+  "holdout/raw/alltoall-s401-old_guard.tar.gz": {
+    "sha256": "193b5a4b14683b9578c4ad16060a02e4ef86bec803caad0504b90bb7927bea70",
+    "status": "completed",
+    "key": "alltoall-s401-old_guard",
+    "bytes": 19311
+  },
+  "holdout/raw/alltoall-s401-timely.tar.gz": {
+    "sha256": "05746001386a10702093b041428b7f76cff605d0096b80bca6e700582082cc48",
+    "status": "completed",
+    "key": "alltoall-s401-timely",
+    "bytes": 17739
+  },
+  "holdout/raw/alltoall-s402-dcqcn.tar.gz": {
+    "sha256": "5ed009cee7f344bb41530f72e80af2dcb3343314b2eb5ec61565c4d934751d72",
+    "status": "completed",
+    "key": "alltoall-s402-dcqcn",
+    "bytes": 19072
+  },
+  "holdout/raw/alltoall-s402-guard.tar.gz": {
+    "sha256": "4f84ea5e2b491f24b552993692f20b57dcbd8f4e696a6df84948c8c2a82ae168",
+    "status": "completed",
+    "key": "alltoall-s402-guard",
+    "bytes": 19685
+  },
+  "holdout/raw/alltoall-s402-homa.tar.gz": {
+    "sha256": "717e652a30ad459c9bd47960b7bc07efe01a6dc0739eed609e94a1603c005a9b",
+    "status": "completed",
+    "key": "alltoall-s402-homa",
+    "bytes": 19380
+  },
+  "holdout/raw/alltoall-s402-hpcc.tar.gz": {
+    "sha256": "f08fb6dcefbd0b3bbf326799b24d24e3e85fca319df9c72e6e06ac73faae61db",
+    "status": "completed",
+    "key": "alltoall-s402-hpcc",
+    "bytes": 18897
+  },
+  "holdout/raw/alltoall-s402-old_guard.tar.gz": {
+    "sha256": "d92920ccc68fc555847742e71db18717e18f8eb86d76139a0cfd451d8db8742a",
+    "status": "completed",
+    "key": "alltoall-s402-old_guard",
+    "bytes": 19292
+  },
+  "holdout/raw/alltoall-s402-timely.tar.gz": {
+    "sha256": "44dbd7b2df67ddaecd8c15c086987fc40c43e6c3fa9706cecf29dea130501fbb",
+    "status": "completed",
+    "key": "alltoall-s402-timely",
+    "bytes": 17927
+  },
+  "holdout/raw/alltoall-s403-dcqcn.tar.gz": {
+    "sha256": "d0067133f189f8757ab5b6b92738f35af90d7e89f0dad5a4a4b14b45683ecd64",
+    "status": "completed",
+    "key": "alltoall-s403-dcqcn",
+    "bytes": 17772
+  },
+  "holdout/raw/alltoall-s403-guard.tar.gz": {
+    "sha256": "3688ab3188a35ee0b06b0425d63db2337b1d8fe7a615a1f51a940bab05e832d3",
+    "status": "completed",
+    "key": "alltoall-s403-guard",
+    "bytes": 19490
+  },
+  "holdout/raw/alltoall-s403-homa.tar.gz": {
+    "sha256": "22f0ef3ec23735ca065e6b57f6ef9557392eae19d07b362f1a52cb3e9b19f44e",
+    "status": "completed",
+    "key": "alltoall-s403-homa",
+    "bytes": 19487
+  },
+  "holdout/raw/alltoall-s403-hpcc.tar.gz": {
+    "sha256": "9d3d0b46c19f7e58fbe2eb191a6f52e74d1c7ae45d815a6a8919bdb0a4b20dcc",
+    "status": "completed",
+    "key": "alltoall-s403-hpcc",
+    "bytes": 18796
+  },
+  "holdout/raw/alltoall-s403-old_guard.tar.gz": {
+    "sha256": "e20adf63889b40fc3e2c1b5f8bf4cb57ed91a694ccfbcdac5a19a8787a7c3801",
+    "status": "completed",
+    "key": "alltoall-s403-old_guard",
+    "bytes": 19221
+  },
+  "holdout/raw/alltoall-s403-timely.tar.gz": {
+    "sha256": "83db03378a7d3ccfacd32375d4b79f6d9ee182de8a801c8318385801b16f2555",
+    "status": "completed",
+    "key": "alltoall-s403-timely",
+    "bytes": 17776
+  },
+  "holdout/raw/alltoall-s404-dcqcn.tar.gz": {
+    "sha256": "f9f960a8989b82045bc2ef4a0895f013eec9ffe939c551fbad8e4843845d7c52",
+    "status": "completed",
+    "key": "alltoall-s404-dcqcn",
+    "bytes": 17763
+  },
+  "holdout/raw/alltoall-s404-guard.tar.gz": {
+    "sha256": "69ffab4bf59fc5c6fcbf9a2f3cc9460294d9b598f222a912c9c27862753493f7",
+    "status": "completed",
+    "key": "alltoall-s404-guard",
+    "bytes": 19662
+  },
+  "holdout/raw/alltoall-s404-homa.tar.gz": {
+    "sha256": "9922c827f309a6123171945ba5ed5b791360a3434a3b1d6e31c4290ce19eaf6e",
+    "status": "completed",
+    "key": "alltoall-s404-homa",
+    "bytes": 19412
+  },
+  "holdout/raw/alltoall-s404-hpcc.tar.gz": {
+    "sha256": "23672d46fa1ea9591518e251a2c58c435472eb4d8638f4d3b33d9aa2e5d0f4f7",
+    "status": "completed",
+    "key": "alltoall-s404-hpcc",
+    "bytes": 18763
+  },
+  "holdout/raw/alltoall-s404-old_guard.tar.gz": {
+    "sha256": "08d3d83b5711ecdbdb38b2832b8bbf4c2f40a054ac74938b1a82051dc0070418",
+    "status": "completed",
+    "key": "alltoall-s404-old_guard",
+    "bytes": 19392
+  },
+  "holdout/raw/alltoall-s404-timely.tar.gz": {
+    "sha256": "57c9747c7a786a1e0c7483143ca5e7fc868973cf0457b861b8b3ec3213b470d1",
+    "status": "completed",
+    "key": "alltoall-s404-timely",
+    "bytes": 17874
+  },
+  "holdout/raw/alltoall-s405-dcqcn.tar.gz": {
+    "sha256": "42d47efb5e0031fcf02ed8583a51829160a5ab332690c3bfeee0e6e9856daba7",
+    "status": "completed",
+    "key": "alltoall-s405-dcqcn",
+    "bytes": 17854
+  },
+  "holdout/raw/alltoall-s405-guard.tar.gz": {
+    "sha256": "b6f4212d06f6bf79e5c7614ae61a189968025f96b4417a9f43fef10f3a007401",
+    "status": "completed",
+    "key": "alltoall-s405-guard",
+    "bytes": 19639
+  },
+  "holdout/raw/alltoall-s405-homa.tar.gz": {
+    "sha256": "c9c806e3753a7998e21524b3b5215085863c53a3a7bab69a9569335d613d944c",
+    "status": "completed",
+    "key": "alltoall-s405-homa",
+    "bytes": 19348
+  },
+  "holdout/raw/alltoall-s405-hpcc.tar.gz": {
+    "sha256": "64071d036ccab6ee714c9fa724a4a070f6f48bbc5909a5c45b2e3e27ea795b73",
+    "status": "completed",
+    "key": "alltoall-s405-hpcc",
+    "bytes": 18844
+  },
+  "holdout/raw/alltoall-s405-old_guard.tar.gz": {
+    "sha256": "978be5cfe0094f70e0140d764294e6b3a0b3e674d95fe98b08da57b2c47312c6",
+    "status": "completed",
+    "key": "alltoall-s405-old_guard",
+    "bytes": 19461
+  },
+  "holdout/raw/alltoall-s405-timely.tar.gz": {
+    "sha256": "b7054fadbfa00896a3d9313029efb6c4ba7bd37cac84d77cbc22610d21ea987a",
+    "status": "completed",
+    "key": "alltoall-s405-timely",
+    "bytes": 17888
+  },
+  "holdout/raw/fabric-s401-dcqcn.tar.gz": {
+    "sha256": "d50b1a5fcd4a131b389d8f23d6ff21c8d2bc3c7c4e642e113d731bb9850dced2",
+    "status": "completed",
+    "key": "fabric-s401-dcqcn",
+    "bytes": 10184
+  },
+  "holdout/raw/fabric-s401-guard.tar.gz": {
+    "sha256": "40a49c312c3ac0526be3e0885bd2741dff70bec7d7d7a0110b29268667096287",
+    "status": "completed",
+    "key": "fabric-s401-guard",
+    "bytes": 10284
+  },
+  "holdout/raw/fabric-s401-homa.tar.gz": {
+    "sha256": "f277143b5444e9d5515585d83b7a174f990acb9bc8a12696dcca6ab55460772a",
+    "status": "completed",
+    "key": "fabric-s401-homa",
+    "bytes": 9853
+  },
+  "holdout/raw/fabric-s401-hpcc.tar.gz": {
+    "sha256": "57d502dc3a0e480a1e2d16c003160a2abd7b314cf43dc881bc1e404c159401bf",
+    "status": "completed",
+    "key": "fabric-s401-hpcc",
+    "bytes": 9854
+  },
+  "holdout/raw/fabric-s401-keep_last_hop.tar.gz": {
+    "sha256": "1c7b4654856fe7aba082771812d1f4b18a2287d27abf31fc4b0396caa1f5d13a",
+    "status": "completed",
+    "key": "fabric-s401-keep_last_hop",
+    "bytes": 10296
+  },
+  "holdout/raw/fabric-s401-lambda1.tar.gz": {
+    "sha256": "4a738b2517a902fe56ef3d0d34522aecf7d2f94d2b6fbd5d131cf273769e3289",
+    "status": "completed",
+    "key": "fabric-s401-lambda1",
+    "bytes": 10315
+  },
+  "holdout/raw/fabric-s401-lambda14.tar.gz": {
+    "sha256": "5855e298e59688a1544fd3ccf2c9d590d74475fbdd752e644bb7976bf5411317",
+    "status": "completed",
+    "key": "fabric-s401-lambda14",
+    "bytes": 10391
+  },
+  "holdout/raw/fabric-s401-old_guard.tar.gz": {
+    "sha256": "931a959ad6b0bb55dbdb9c1ab80e8aa3dc491fc3c934397111113b915f9318c5",
+    "status": "completed",
+    "key": "fabric-s401-old_guard",
+    "bytes": 10068
+  },
+  "holdout/raw/fabric-s401-receiver_only.tar.gz": {
+    "sha256": "09d120277fb2ee17a54157a033bfaeb8464caf6bcecf058e285de7862cd82e12",
+    "status": "completed",
+    "key": "fabric-s401-receiver_only",
+    "bytes": 9887
+  },
+  "holdout/raw/fabric-s401-timely.tar.gz": {
+    "sha256": "db5dbdedbda8efceb3bd066c1bf27d4c63933bf6f28186a6f23fba0480d8ced2",
+    "status": "completed",
+    "key": "fabric-s401-timely",
+    "bytes": 15226
+  },
+  "holdout/raw/fabric-s402-dcqcn.tar.gz": {
+    "sha256": "0b1afc833fae18c09b3c5617b4cfcec45e337c833d2e109b6fc1d597f292dc7a",
+    "status": "completed",
+    "key": "fabric-s402-dcqcn",
+    "bytes": 10167
+  },
+  "holdout/raw/fabric-s402-guard.tar.gz": {
+    "sha256": "6d706dbff44ba7dcca5050b728515898561847d60f5697d551ecf0c2516fd0eb",
+    "status": "completed",
+    "key": "fabric-s402-guard",
+    "bytes": 10301
+  },
+  "holdout/raw/fabric-s402-homa.tar.gz": {
+    "sha256": "e9eba39fe42206bc86e908f0cec070804768ed4f51c67d6cf3d33d57d54cefb7",
+    "status": "completed",
+    "key": "fabric-s402-homa",
+    "bytes": 9843
+  },
+  "holdout/raw/fabric-s402-hpcc.tar.gz": {
+    "sha256": "1a6bbf5114f4aa9bcce86c6eef85595293e8e086d007887a6f5268156b9df60b",
+    "status": "completed",
+    "key": "fabric-s402-hpcc",
+    "bytes": 9913
+  },
+  "holdout/raw/fabric-s402-keep_last_hop.tar.gz": {
+    "sha256": "17f16233fc7fb78caee80d5bd83270eef88f3d34a9e4ad056403317d50334777",
+    "status": "completed",
+    "key": "fabric-s402-keep_last_hop",
+    "bytes": 10337
+  },
+  "holdout/raw/fabric-s402-lambda1.tar.gz": {
+    "sha256": "0c593a8fd95fb8ae37be00dd963e85abadee194ea6706bda08e18737e97a77cf",
+    "status": "completed",
+    "key": "fabric-s402-lambda1",
+    "bytes": 10289
+  },
+  "holdout/raw/fabric-s402-lambda14.tar.gz": {
+    "sha256": "d53ba68a2aaf76587c86773781279ed85de088d5fc491eddcc0d510e3b8d4134",
+    "status": "completed",
+    "key": "fabric-s402-lambda14",
+    "bytes": 10400
+  },
+  "holdout/raw/fabric-s402-old_guard.tar.gz": {
+    "sha256": "72e5eec4b142e9fde57100e60aa02ad34e04038c47f707cae04ea08267c37262",
+    "status": "completed",
+    "key": "fabric-s402-old_guard",
+    "bytes": 10036
+  },
+  "holdout/raw/fabric-s402-receiver_only.tar.gz": {
+    "sha256": "92fcce4fe33326f94d16169942725f702a09b0bbedc915a85129ba2c1ac575a4",
+    "status": "completed",
+    "key": "fabric-s402-receiver_only",
+    "bytes": 9886
+  },
+  "holdout/raw/fabric-s402-timely.tar.gz": {
+    "sha256": "75b6480deae9adb9eb0912a80059de3dd17dde817508702c08bd42bf34fed517",
+    "status": "completed",
+    "key": "fabric-s402-timely",
+    "bytes": 15260
+  },
+  "holdout/raw/fabric-s403-dcqcn.tar.gz": {
+    "sha256": "7124368da288b251bd1a50c01f6b49fca72a5a1766aeb9f9a1818d83fde3b9bf",
+    "status": "completed",
+    "key": "fabric-s403-dcqcn",
+    "bytes": 10183
+  },
+  "holdout/raw/fabric-s403-guard.tar.gz": {
+    "sha256": "ab7e59c482ba0d00a56f546569ba5b68daeba7446b1ab3ec5818e0a8f551b2bc",
+    "status": "completed",
+    "key": "fabric-s403-guard",
+    "bytes": 10298
+  },
+  "holdout/raw/fabric-s403-homa.tar.gz": {
+    "sha256": "d5cdc651b5088fd60ba0e7a974851ddd8cf5933b4df1f10afb17a55103888c2a",
+    "status": "completed",
+    "key": "fabric-s403-homa",
+    "bytes": 9846
+  },
+  "holdout/raw/fabric-s403-hpcc.tar.gz": {
+    "sha256": "79bab402241602228407756ebe4a60d025a4e608b477ff1537d23a395bf9bdf2",
+    "status": "completed",
+    "key": "fabric-s403-hpcc",
+    "bytes": 9847
+  },
+  "holdout/raw/fabric-s403-keep_last_hop.tar.gz": {
+    "sha256": "64e181275be04a55943383d9ff988d2a7cd7f89b54517aae2b4557f766c6a16d",
+    "status": "completed",
+    "key": "fabric-s403-keep_last_hop",
+    "bytes": 10297
+  },
+  "holdout/raw/fabric-s403-lambda1.tar.gz": {
+    "sha256": "50f1d98c418e04168c19f6c34ff6e96430c2d2fcba37cf27a5ca1f57a84b890a",
+    "status": "completed",
+    "key": "fabric-s403-lambda1",
+    "bytes": 10317
+  },
+  "holdout/raw/fabric-s403-lambda14.tar.gz": {
+    "sha256": "eaa12256134b230e31f7e66c0217c7ff46d9960a117a9e6e72f3659d2ae5ab97",
+    "status": "completed",
+    "key": "fabric-s403-lambda14",
+    "bytes": 10351
+  },
+  "holdout/raw/fabric-s403-old_guard.tar.gz": {
+    "sha256": "ec536d9cf92bfefc658ebae47725f4b36e2e3e7271b079d1b119039dd6eaf796",
+    "status": "completed",
+    "key": "fabric-s403-old_guard",
+    "bytes": 10033
+  },
+  "holdout/raw/fabric-s403-receiver_only.tar.gz": {
+    "sha256": "7c7656767b5125e75d833194a8d0a47ce08624261fb3a93c1aa53bf46c39c2a4",
+    "status": "completed",
+    "key": "fabric-s403-receiver_only",
+    "bytes": 9897
+  },
+  "holdout/raw/fabric-s403-timely.tar.gz": {
+    "sha256": "4524b923811b2b5cfff3d72781b970f176d8c97b69dff799dd22f30f08e6c1b0",
+    "status": "completed",
+    "key": "fabric-s403-timely",
+    "bytes": 15215
+  },
+  "holdout/raw/fabric-s404-dcqcn.tar.gz": {
+    "sha256": "ef2e20c18ce6291cf7f8500d7a5744c5ea083c3036ce288d2a3e4a1e27298b2d",
+    "status": "completed",
+    "key": "fabric-s404-dcqcn",
+    "bytes": 10202
+  },
+  "holdout/raw/fabric-s404-guard.tar.gz": {
+    "sha256": "0e75b108e860fe0ea9da982bdd0f9a034d76777b86006e5e15ac83bc72d91c02",
+    "status": "completed",
+    "key": "fabric-s404-guard",
+    "bytes": 10232
+  },
+  "holdout/raw/fabric-s404-homa.tar.gz": {
+    "sha256": "96ea9512383af34ef689bec400d2a6563b286218e12cc172882fb96bd4ed4bcf",
+    "status": "completed",
+    "key": "fabric-s404-homa",
+    "bytes": 9823
+  },
+  "holdout/raw/fabric-s404-hpcc.tar.gz": {
+    "sha256": "8ac60f484d301f9b2235b901581604922b14e19d28f999d3c5cd0c936a5aeadf",
+    "status": "completed",
+    "key": "fabric-s404-hpcc",
+    "bytes": 9878
+  },
+  "holdout/raw/fabric-s404-keep_last_hop.tar.gz": {
+    "sha256": "becfbca683c6eae6877e1b449cca8240073b443aecaa805c248b051ea5bc14e8",
+    "status": "completed",
+    "key": "fabric-s404-keep_last_hop",
+    "bytes": 10251
+  },
+  "holdout/raw/fabric-s404-lambda1.tar.gz": {
+    "sha256": "ebc6b445fe9da5e3ae1a37fa166b45adcf12658dde76a0d82b874c7aab1aeb0a",
+    "status": "completed",
+    "key": "fabric-s404-lambda1",
+    "bytes": 10340
+  },
+  "holdout/raw/fabric-s404-lambda14.tar.gz": {
+    "sha256": "e13d28a0916e495e24ff74310a2f636c0e53c5379747a81801ed4c7f8477fbbe",
+    "status": "completed",
+    "key": "fabric-s404-lambda14",
+    "bytes": 10319
+  },
+  "holdout/raw/fabric-s404-old_guard.tar.gz": {
+    "sha256": "ce0d95466b931bf7c15fa17996fd598e15cafa9ffb27f619f3cd414b41f32692",
+    "status": "completed",
+    "key": "fabric-s404-old_guard",
+    "bytes": 10040
+  },
+  "holdout/raw/fabric-s404-receiver_only.tar.gz": {
+    "sha256": "d1f6712ff94dd8616431b4defb3e39016ab2d925692afc358f5544af953d3acd",
+    "status": "completed",
+    "key": "fabric-s404-receiver_only",
+    "bytes": 9871
+  },
+  "holdout/raw/fabric-s404-timely.tar.gz": {
+    "sha256": "571493b821a2349d6caa6c48cb6ba7019fa4741d82107629d11b619bd2daa34a",
+    "status": "completed",
+    "key": "fabric-s404-timely",
+    "bytes": 15395
+  },
+  "holdout/raw/fabric-s405-dcqcn.tar.gz": {
+    "sha256": "f5fc67542bd9a67c36d21384b4603ead2b4408d47256e91e0ecf0bddc1da0b97",
+    "status": "completed",
+    "key": "fabric-s405-dcqcn",
+    "bytes": 10193
+  },
+  "holdout/raw/fabric-s405-guard.tar.gz": {
+    "sha256": "0c3fcf08ea5ea1d988d836055e1e8e367298a1f4e0aae21b7b766ecb87c7c81f",
+    "status": "completed",
+    "key": "fabric-s405-guard",
+    "bytes": 10288
+  },
+  "holdout/raw/fabric-s405-homa.tar.gz": {
+    "sha256": "83b25a4db9c9591543376fd772f8100f3ce76b7d155376b93d6636409bf1bc30",
+    "status": "completed",
+    "key": "fabric-s405-homa",
+    "bytes": 9845
+  },
+  "holdout/raw/fabric-s405-hpcc.tar.gz": {
+    "sha256": "e021340fe115d74bc0dfa88e861bd009c0c7a2048ec827ec3524d66b062992aa",
+    "status": "completed",
+    "key": "fabric-s405-hpcc",
+    "bytes": 9891
+  },
+  "holdout/raw/fabric-s405-keep_last_hop.tar.gz": {
+    "sha256": "a016ecba81a854280dee21e6fcbcabb6c703f4943769060125a55270df550cc8",
+    "status": "completed",
+    "key": "fabric-s405-keep_last_hop",
+    "bytes": 10300
+  },
+  "holdout/raw/fabric-s405-lambda1.tar.gz": {
+    "sha256": "879ae722359c1abaa153c0a87d8ece6400549f855b0f52dfe7ba1617a8fedb39",
+    "status": "completed",
+    "key": "fabric-s405-lambda1",
+    "bytes": 10327
+  },
+  "holdout/raw/fabric-s405-lambda14.tar.gz": {
+    "sha256": "1d34008be44ad18ce63708cd7fa9b77fbeca4b496e01778db809c5a99698a3ee",
+    "status": "completed",
+    "key": "fabric-s405-lambda14",
+    "bytes": 10363
+  },
+  "holdout/raw/fabric-s405-old_guard.tar.gz": {
+    "sha256": "8549449041aee5153fcba00f5e019aff28bee18abb8fc3f4d7aeab3afdae063f",
+    "status": "completed",
+    "key": "fabric-s405-old_guard",
+    "bytes": 10150
+  },
+  "holdout/raw/fabric-s405-receiver_only.tar.gz": {
+    "sha256": "bcede90b74ad1cb921d7d4011287d9ee5f6f083aead5e96e59e82d6a6e818b9a",
+    "status": "completed",
+    "key": "fabric-s405-receiver_only",
+    "bytes": 9867
+  },
+  "holdout/raw/fabric-s405-timely.tar.gz": {
+    "sha256": "af5ae5d8bf23287a19233389607e1cb33affa5bdf00b89b7758bff44fe34581c",
+    "status": "completed",
+    "key": "fabric-s405-timely",
+    "bytes": 15179
+  },
+  "holdout/raw/fabric_series-s401-dcqcn.tar.gz": {
+    "sha256": "29b83e2fce3ba18303e8053e811b5329d765e4090ba10794a0c33d8e4d018913",
+    "status": "completed",
+    "key": "fabric_series-s401-dcqcn",
+    "bytes": 178302
+  },
+  "holdout/raw/fabric_series-s401-guard.tar.gz": {
+    "sha256": "04e12bd0c22972a12eee37a5bdfe848ee331b207902cbf16530066dd7ff4d63a",
+    "status": "completed",
+    "key": "fabric_series-s401-guard",
+    "bytes": 169133
+  },
+  "holdout/raw/fabric_series-s401-homa.tar.gz": {
+    "sha256": "f32ae4427cb27a435345873f8d77fd7c29dd7d52a1f05116fef05803c98a22ce",
+    "status": "completed",
+    "key": "fabric_series-s401-homa",
+    "bytes": 157908
+  },
+  "holdout/raw/fabric_series-s401-hpcc.tar.gz": {
+    "sha256": "43c6356ebf0565859e30bc2c3ab36403d08a33435cef64d46b8b4deddfefb9b4",
+    "status": "completed",
+    "key": "fabric_series-s401-hpcc",
+    "bytes": 164601
+  },
+  "holdout/raw/fabric_series-s401-old_guard.tar.gz": {
+    "sha256": "e1566b256b96c637b419b3acef1fe30796b06072e88ee4764ddab66748a464f4",
+    "status": "completed",
+    "key": "fabric_series-s401-old_guard",
+    "bytes": 168542
+  },
+  "holdout/raw/fabric_series-s401-receiver_only.tar.gz": {
+    "sha256": "6b3af902ca079413cb1e848a5ce61f3dc882f82872937735daf6ddf315ddb9e6",
+    "status": "completed",
+    "key": "fabric_series-s401-receiver_only",
+    "bytes": 153099
+  },
+  "holdout/raw/fabric_series-s401-timely.tar.gz": {
+    "sha256": "fe9ec4eaaab9e764ef841dccc780beb0aa4a2eb30eb5ca616457a53d5bd5dbe5",
+    "status": "completed",
+    "key": "fabric_series-s401-timely",
+    "bytes": 214904
+  },
+  "holdout/raw/fairness-s401-dcqcn.tar.gz": {
+    "sha256": "056113494a3ebc13dc1d204c66fd69c3f3c07379e3d290919e0b0607c5c5cace",
+    "status": "completed",
+    "key": "fairness-s401-dcqcn",
+    "bytes": 774770
+  },
+  "holdout/raw/fairness-s401-guard.tar.gz": {
+    "sha256": "fca7d2cf770158c71e487c8866c89cb99b397bfce8ee025f149074cc61a10c20",
+    "status": "completed",
+    "key": "fairness-s401-guard",
+    "bytes": 609369
+  },
+  "holdout/raw/fairness-s401-homa.tar.gz": {
+    "sha256": "d4e60c4bcee764f17289fe0cfda8405d7119446a7481a42b80da4ec5acabd802",
+    "status": "completed",
+    "key": "fairness-s401-homa",
+    "bytes": 600788
+  },
+  "holdout/raw/fairness-s401-hpcc.tar.gz": {
+    "sha256": "a248f7bd85063607015d1ba93de15af4705a2bd92f324f1b7a4905830fd94eac",
+    "status": "completed",
+    "key": "fairness-s401-hpcc",
+    "bytes": 719022
+  },
+  "holdout/raw/fairness-s401-old_guard.tar.gz": {
+    "sha256": "8688e76e25ec056570b0cde3b147761f014a45f75349a43b597ad90a59ad5000",
+    "status": "completed",
+    "key": "fairness-s401-old_guard",
+    "bytes": 666239
+  },
+  "holdout/raw/fairness-s401-timely.tar.gz": {
+    "sha256": "1d522db06448767bb27f6cb44c181bf74e1617f730c05da82c5802544bbd0b48",
+    "status": "completed",
+    "key": "fairness-s401-timely",
+    "bytes": 786430
+  },
+  "holdout/raw/fairness-s402-dcqcn.tar.gz": {
+    "sha256": "60b7f6f07dc2bfe3d5580f7d729298669c8b6ec515b96117201f4ca6d24e7672",
+    "status": "completed",
+    "key": "fairness-s402-dcqcn",
+    "bytes": 759230
+  },
+  "holdout/raw/fairness-s402-guard.tar.gz": {
+    "sha256": "af465d885572cb394bf7d9726cb36cd7b3aeb9833b9e5adbefd6f64b4789eab3",
+    "status": "completed",
+    "key": "fairness-s402-guard",
+    "bytes": 609890
+  },
+  "holdout/raw/fairness-s402-homa.tar.gz": {
+    "sha256": "ec5bfc724a3c6fb353978e01e259ee2779324e5ba3d9b2d1ff6256c89a9ba2ec",
+    "status": "completed",
+    "key": "fairness-s402-homa",
+    "bytes": 600362
+  },
+  "holdout/raw/fairness-s402-hpcc.tar.gz": {
+    "sha256": "1d52c8031b8619a22bc1bf80ccb2603e76f8802131a79dd022d5fdc2dd0ceb22",
+    "status": "completed",
+    "key": "fairness-s402-hpcc",
+    "bytes": 720920
+  },
+  "holdout/raw/fairness-s402-old_guard.tar.gz": {
+    "sha256": "a71862acdbc227ffef9479dfa5391f1d93636047a7dd6c7df191a2d659a09099",
+    "status": "completed",
+    "key": "fairness-s402-old_guard",
+    "bytes": 666170
+  },
+  "holdout/raw/fairness-s402-timely.tar.gz": {
+    "sha256": "ca80c3aafad2bc72c9128316ea949b9d1a194e951630244a43d25b93ed5fc1b1",
+    "status": "completed",
+    "key": "fairness-s402-timely",
+    "bytes": 783853
+  },
+  "holdout/raw/fairness-s403-dcqcn.tar.gz": {
+    "sha256": "8137cfdbd4923d0b4ed2dd43c7bdd69162c419b1eef0cb92b3e8f81cd380e411",
+    "status": "completed",
+    "key": "fairness-s403-dcqcn",
+    "bytes": 772268
+  },
+  "holdout/raw/fairness-s403-guard.tar.gz": {
+    "sha256": "a133a510c556b7be1bffb1c4c9580e8827372fc0fbe6347df24e3bd8e041da62",
+    "status": "completed",
+    "key": "fairness-s403-guard",
+    "bytes": 609699
+  },
+  "holdout/raw/fairness-s403-homa.tar.gz": {
+    "sha256": "5d6e94992a25c517f4ed0c18923fcd715a7730b71137fb46f850a3cd1a10abe1",
+    "status": "completed",
+    "key": "fairness-s403-homa",
+    "bytes": 600376
+  },
+  "holdout/raw/fairness-s403-hpcc.tar.gz": {
+    "sha256": "13dcc752166d72208a7d445dc32c310efb322e82d05dce87fe0ced0457855767",
+    "status": "completed",
+    "key": "fairness-s403-hpcc",
+    "bytes": 720118
+  },
+  "holdout/raw/fairness-s403-old_guard.tar.gz": {
+    "sha256": "56d05c7414632627c03566b0e5ff3fdbfbd1aeab144319c19079d4f33bbd03ee",
+    "status": "completed",
+    "key": "fairness-s403-old_guard",
+    "bytes": 666360
+  },
+  "holdout/raw/fairness-s403-timely.tar.gz": {
+    "sha256": "33fdec2d2d99068ef36a9273689c330b660788ad6de71a565a15281599093cc8",
+    "status": "completed",
+    "key": "fairness-s403-timely",
+    "bytes": 790901
+  },
+  "holdout/raw/fairness-s404-dcqcn.tar.gz": {
+    "sha256": "ed1e830db67e55a80efc3a5dd982d7a389bdd323c7a7092abfb63dee7d065f3d",
+    "status": "completed",
+    "key": "fairness-s404-dcqcn",
+    "bytes": 796335
+  },
+  "holdout/raw/fairness-s404-guard.tar.gz": {
+    "sha256": "9e2212e0c03777aa09a432dc1698b4742c77c02406a189e8e32dea86889d7d5d",
+    "status": "completed",
+    "key": "fairness-s404-guard",
+    "bytes": 611065
+  },
+  "holdout/raw/fairness-s404-homa.tar.gz": {
+    "sha256": "94634cae3507786d9d58553be6f598871bc06d7fc21f3706524669427ce5d01a",
+    "status": "completed",
+    "key": "fairness-s404-homa",
+    "bytes": 598939
+  },
+  "holdout/raw/fairness-s404-hpcc.tar.gz": {
+    "sha256": "ad96154891b181578c4a4b7815481c2453f896b8f6d58d6066006ef352b669de",
+    "status": "completed",
+    "key": "fairness-s404-hpcc",
+    "bytes": 717874
+  },
+  "holdout/raw/fairness-s404-old_guard.tar.gz": {
+    "sha256": "305b40d718e983820cba5cc2177a973e1726660ef2f59016b711be7d5801abbf",
+    "status": "completed",
+    "key": "fairness-s404-old_guard",
+    "bytes": 666069
+  },
+  "holdout/raw/fairness-s404-timely.tar.gz": {
+    "sha256": "eddb08b9dcfbc7fa7570964734d460e7db3866eb7b9fecb5a1b69f1980c6c91d",
+    "status": "completed",
+    "key": "fairness-s404-timely",
+    "bytes": 784801
+  },
+  "holdout/raw/fairness-s405-dcqcn.tar.gz": {
+    "sha256": "35171b4d6971998a266f4067ca086acb355ea1480aae08c6a41c2f0e92c247be",
+    "status": "completed",
+    "key": "fairness-s405-dcqcn",
+    "bytes": 763781
+  },
+  "holdout/raw/fairness-s405-guard.tar.gz": {
+    "sha256": "0c5b7b845631ad966a71edce5ffc99dcae63ae0b469afe9ebe004408f78ea133",
+    "status": "completed",
+    "key": "fairness-s405-guard",
+    "bytes": 609457
+  },
+  "holdout/raw/fairness-s405-homa.tar.gz": {
+    "sha256": "eb68462cdbfc8d4d7ce3eeeb4299c2612e535f9e508dec91a534302bb63a7c10",
+    "status": "completed",
+    "key": "fairness-s405-homa",
+    "bytes": 599162
+  },
+  "holdout/raw/fairness-s405-hpcc.tar.gz": {
+    "sha256": "5d103772d0d11a0438830aa11d65ebb8750a493141d7435264b214b864dea916",
+    "status": "completed",
+    "key": "fairness-s405-hpcc",
+    "bytes": 720321
+  },
+  "holdout/raw/fairness-s405-old_guard.tar.gz": {
+    "sha256": "84239740ef5a0f0123280de40b722812e2f6df5a0a1db89f91753e8ff713dcd3",
+    "status": "completed",
+    "key": "fairness-s405-old_guard",
+    "bytes": 666130
+  },
+  "holdout/raw/fairness-s405-timely.tar.gz": {
+    "sha256": "dd30dffefa680b8698c2c18dfa40e710f5bf614a4556c9c27cd2890cff70c21f",
+    "status": "completed",
+    "key": "fairness-s405-timely",
+    "bytes": 785168
+  },
+  "holdout/raw/fb40-s401-dcqcn.tar.gz": {
+    "sha256": "29f38a4b3316ecd05e7f8c53dbb0fde657e5caa1c39c40d74f949fe160df8c04",
+    "status": "completed",
+    "key": "fb40-s401-dcqcn",
+    "bytes": 192495
+  },
+  "holdout/raw/fb40-s401-guard.tar.gz": {
+    "sha256": "d6891fd5e2af40f79ae2db8e5b9b6f6209f7a6261faa3534fc822b31523a2bb6",
+    "status": "completed",
+    "key": "fb40-s401-guard",
+    "bytes": 189540
+  },
+  "holdout/raw/fb40-s401-homa.tar.gz": {
+    "sha256": "773a6ad5ce207a93f7fd8220965aa43c2fede2a8a955a101ffb85a7898a5285e",
+    "status": "completed",
+    "key": "fb40-s401-homa",
+    "bytes": 189485
+  },
+  "holdout/raw/fb40-s401-hpcc.tar.gz": {
+    "sha256": "32c4f01c07e30131bff5bc48970055c2a4b93562406fe4ea37a1e3b12145da39",
+    "status": "completed",
+    "key": "fb40-s401-hpcc",
+    "bytes": 189743
+  },
+  "holdout/raw/fb40-s401-old_guard.tar.gz": {
+    "sha256": "585c20bb778e6ea2cb8b669b51d6d41d88e833aaad77255ee1757030e53babd0",
+    "status": "completed",
+    "key": "fb40-s401-old_guard",
+    "bytes": 189400
+  },
+  "holdout/raw/fb40-s401-timely.tar.gz": {
+    "sha256": "0d78384a129bb91e05c6ae833b8d709648a46bc5e5720c33f1afe719ca8157ec",
+    "status": "completed",
+    "key": "fb40-s401-timely",
+    "bytes": 255078
+  },
+  "holdout/raw/fb40-s402-dcqcn.tar.gz": {
+    "sha256": "d9b6421250029f8d9d5109fe5fa2c018138c577a8d5996363ffd6a7841fde40e",
+    "status": "completed",
+    "key": "fb40-s402-dcqcn",
+    "bytes": 196339
+  },
+  "holdout/raw/fb40-s402-guard.tar.gz": {
+    "sha256": "8b0ace8e426a79a6fcd3ea2b1b8a5dac6bae9e2cd32501641104928d2ccbd6fe",
+    "status": "completed",
+    "key": "fb40-s402-guard",
+    "bytes": 192190
+  },
+  "holdout/raw/fb40-s402-homa.tar.gz": {
+    "sha256": "5f22502fa03bed42177fac23f822ba744612d3852e1b63312698b3b2f4948981",
+    "status": "completed",
+    "key": "fb40-s402-homa",
+    "bytes": 191899
+  },
+  "holdout/raw/fb40-s402-hpcc.tar.gz": {
+    "sha256": "fe2d86d13312abda1ef3c9e4d0d34a8a9bcc37df0b54fe2434f4efd7457b9e59",
+    "status": "completed",
+    "key": "fb40-s402-hpcc",
+    "bytes": 192435
+  },
+  "holdout/raw/fb40-s402-old_guard.tar.gz": {
+    "sha256": "3749ecda9d6a0d0a0d513b45d84c866840aff61b6198587c62dff529f2f012c6",
+    "status": "completed",
+    "key": "fb40-s402-old_guard",
+    "bytes": 191890
+  },
+  "holdout/raw/fb40-s402-timely.tar.gz": {
+    "sha256": "e1730a02b3365f9593e9b6541597170e7fa920387e06416a397609e9e4a9eccf",
+    "status": "completed",
+    "key": "fb40-s402-timely",
+    "bytes": 281180
+  },
+  "holdout/raw/fb40-s403-dcqcn.tar.gz": {
+    "sha256": "1791422a29be550ff60a45f99a34c5b85f42e857c3320939e2c463b3e21a8fa9",
+    "status": "completed",
+    "key": "fb40-s403-dcqcn",
+    "bytes": 196643
+  },
+  "holdout/raw/fb40-s403-guard.tar.gz": {
+    "sha256": "1f596f3fcdb1fa01b975b50c8c5b68d5da492b6389c26d2674767af465d33e54",
+    "status": "completed",
+    "key": "fb40-s403-guard",
+    "bytes": 192136
+  },
+  "holdout/raw/fb40-s403-homa.tar.gz": {
+    "sha256": "4c5fd65ab64a21287c39b95ff52769de5db47e834b04996299e90a38234a567c",
+    "status": "completed",
+    "key": "fb40-s403-homa",
+    "bytes": 191937
+  },
+  "holdout/raw/fb40-s403-hpcc.tar.gz": {
+    "sha256": "4c32fa72669a42b39e0ff6b43b6c93eb583adb560682684694a36173779510b6",
+    "status": "completed",
+    "key": "fb40-s403-hpcc",
+    "bytes": 192300
+  },
+  "holdout/raw/fb40-s403-old_guard.tar.gz": {
+    "sha256": "2fe0f07cf744ed2b168ae320393744a0b6d1664df58cd5b86f730a8e4a94f390",
+    "status": "completed",
+    "key": "fb40-s403-old_guard",
+    "bytes": 191717
+  },
+  "holdout/raw/fb40-s403-timely.tar.gz": {
+    "sha256": "aaad384410060a599ea6991d281e0eef41ec1921483ba4213f4c0624af371642",
+    "status": "completed",
+    "key": "fb40-s403-timely",
+    "bytes": 274810
+  },
+  "holdout/raw/fb40-s404-dcqcn.tar.gz": {
+    "sha256": "2d97bd971de315051af21c48f83d27719e3c6ab393999d84792d6f6efaf13cba",
+    "status": "completed",
+    "key": "fb40-s404-dcqcn",
+    "bytes": 194587
+  },
+  "holdout/raw/fb40-s404-guard.tar.gz": {
+    "sha256": "4b4a202d37f4921b920ea2acd978ef20f5138de26e6bee81128835acffb8296e",
+    "status": "completed",
+    "key": "fb40-s404-guard",
+    "bytes": 191381
+  },
+  "holdout/raw/fb40-s404-homa.tar.gz": {
+    "sha256": "162ab2f769ae896797605202e4859e4f1cec70bdbdad8564a0e75cc7fecefcab",
+    "status": "completed",
+    "key": "fb40-s404-homa",
+    "bytes": 191045
+  },
+  "holdout/raw/fb40-s404-hpcc.tar.gz": {
+    "sha256": "04d121a7cb1081f57ed5aa42182819dfdd38c93bcb79a958a2d1febe02e10c99",
+    "status": "completed",
+    "key": "fb40-s404-hpcc",
+    "bytes": 191550
+  },
+  "holdout/raw/fb40-s404-old_guard.tar.gz": {
+    "sha256": "658fe0a5c9962426ec03c8a8eb469578100b340d24a0499f1d628920a5d8dffd",
+    "status": "completed",
+    "key": "fb40-s404-old_guard",
+    "bytes": 191058
+  },
+  "holdout/raw/fb40-s404-timely.tar.gz": {
+    "sha256": "25ea496fb2cee94051c68eba87d28c3c60923cddb517c451eebece235cf1788c",
+    "status": "completed",
+    "key": "fb40-s404-timely",
+    "bytes": 256606
+  },
+  "holdout/raw/fb40-s405-dcqcn.tar.gz": {
+    "sha256": "1d5db0a26950386209812d352164ddabd2e04f95249c57bdee5600921a604fba",
+    "status": "completed",
+    "key": "fb40-s405-dcqcn",
+    "bytes": 197694
+  },
+  "holdout/raw/fb40-s405-guard.tar.gz": {
+    "sha256": "cd461482e74dac5b6dd61b4015ae5b856a7aed3d15f0b59cec268836bd5e0766",
+    "status": "completed",
+    "key": "fb40-s405-guard",
+    "bytes": 194314
+  },
+  "holdout/raw/fb40-s405-homa.tar.gz": {
+    "sha256": "9745aaa2a74d6842386b75f57de1abad13c7cc867a1153e3946dc08d6bed9dc6",
+    "status": "completed",
+    "key": "fb40-s405-homa",
+    "bytes": 194206
+  },
+  "holdout/raw/fb40-s405-hpcc.tar.gz": {
+    "sha256": "de345a9c718667731b01e1612fb89a2a0084ce5de3d9728feb01abe23af99204",
+    "status": "completed",
+    "key": "fb40-s405-hpcc",
+    "bytes": 194404
+  },
+  "holdout/raw/fb40-s405-old_guard.tar.gz": {
+    "sha256": "2d7358f787da8674c14326f0758dcc6a76737b6e2cc0f3fffdd81d11986c1050",
+    "status": "completed",
+    "key": "fb40-s405-old_guard",
+    "bytes": 194010
+  },
+  "holdout/raw/fb40-s405-timely.tar.gz": {
+    "sha256": "66bca56e4293f0181bdb7c3760948f41500769bab166b284c408340616c5a8d9",
+    "status": "completed",
+    "key": "fb40-s405-timely",
+    "bytes": 287196
+  },
+  "holdout/raw/hybrid-s401-dcqcn.tar.gz": {
+    "sha256": "22b73d6c18a69e04bf2dcde91beed92a5adcd6051cf8be50162a072fc6f446f5",
+    "status": "completed",
+    "key": "hybrid-s401-dcqcn",
+    "bytes": 10320
+  },
+  "holdout/raw/hybrid-s401-guard.tar.gz": {
+    "sha256": "a6ce09668689cae7966bfebc0f7afc34e1ccb34718991f308e6a366a5715c477",
+    "status": "completed",
+    "key": "hybrid-s401-guard",
+    "bytes": 10455
+  },
+  "holdout/raw/hybrid-s401-homa.tar.gz": {
+    "sha256": "3be2f3727dd1002b5c05487d18a4e82b49797e04f765eff61bb2ea393cf548d8",
+    "status": "completed",
+    "key": "hybrid-s401-homa",
+    "bytes": 10064
+  },
+  "holdout/raw/hybrid-s401-hpcc.tar.gz": {
+    "sha256": "54eaf270fa320e3fafb388bc12b7482d3bdfca3f281e8be705a2143249ee9f86",
+    "status": "completed",
+    "key": "hybrid-s401-hpcc",
+    "bytes": 9982
+  },
+  "holdout/raw/hybrid-s401-keep_last_hop.tar.gz": {
+    "sha256": "d8c629fb58bbb2e3beee07668ab0e1bc09d49804b2f2fa86dc23e2d2fdf43f15",
+    "status": "completed",
+    "key": "hybrid-s401-keep_last_hop",
+    "bytes": 10492
+  },
+  "holdout/raw/hybrid-s401-lambda1.tar.gz": {
+    "sha256": "2299509901c8b0d68cc65ffcc7ffd1ed1a070e1c962ba88d01e0bd2bc15dd63d",
+    "status": "completed",
+    "key": "hybrid-s401-lambda1",
+    "bytes": 10488
+  },
+  "holdout/raw/hybrid-s401-lambda14.tar.gz": {
+    "sha256": "f55fda85761d4643201c31f73663a3810fcdf5b053d492155725fb344a2e96dc",
+    "status": "completed",
+    "key": "hybrid-s401-lambda14",
+    "bytes": 10521
+  },
+  "holdout/raw/hybrid-s401-old_guard.tar.gz": {
+    "sha256": "4f45a6e5a905615a1f99e8305d8d9943832348d1f616f26e90b69962a9f6c91b",
+    "status": "completed",
+    "key": "hybrid-s401-old_guard",
+    "bytes": 10263
+  },
+  "holdout/raw/hybrid-s401-receiver_only.tar.gz": {
+    "sha256": "d901b68182d422a55cebbd532218611ac83ead9d53e5f6b91b58106fc16808bb",
+    "status": "completed",
+    "key": "hybrid-s401-receiver_only",
+    "bytes": 10124
+  },
+  "holdout/raw/hybrid-s401-timely.tar.gz": {
+    "sha256": "f21b5ca724a1d84c22edeb89b46c56520d4ec6fe6963555bc6f559494fa727ed",
+    "status": "completed",
+    "key": "hybrid-s401-timely",
+    "bytes": 12612
+  },
+  "holdout/raw/hybrid-s402-dcqcn.tar.gz": {
+    "sha256": "0081ba2b7eea22a8bdc631fcc068faa39085bfedaf44ab2e7c4e4960ffb18ec7",
+    "status": "completed",
+    "key": "hybrid-s402-dcqcn",
+    "bytes": 10205
+  },
+  "holdout/raw/hybrid-s402-guard.tar.gz": {
+    "sha256": "fea17d447b9a9b3702f52e0c1880638ea421603d28d87c736a0c2aba34fc974e",
+    "status": "completed",
+    "key": "hybrid-s402-guard",
+    "bytes": 10477
+  },
+  "holdout/raw/hybrid-s402-homa.tar.gz": {
+    "sha256": "6905de05c09c4571ac10f2c6b7e2f0490755ca58614ef0819117e25dc06e06ea",
+    "status": "completed",
+    "key": "hybrid-s402-homa",
+    "bytes": 10073
+  },
+  "holdout/raw/hybrid-s402-hpcc.tar.gz": {
+    "sha256": "b783e19ac24cc1785e85393122bc04178332ea49cb8e6eccc7dab962697a6fb7",
+    "status": "completed",
+    "key": "hybrid-s402-hpcc",
+    "bytes": 9993
+  },
+  "holdout/raw/hybrid-s402-keep_last_hop.tar.gz": {
+    "sha256": "4dae6efdd2a3002b81c1c21af185aa390928c640006c696ccad2d8de85d0c664",
+    "status": "completed",
+    "key": "hybrid-s402-keep_last_hop",
+    "bytes": 10496
+  },
+  "holdout/raw/hybrid-s402-lambda1.tar.gz": {
+    "sha256": "ae0a3863f86c45f7cd54e4c928596a2aca4076d1c1bde7084d3607ed942470dc",
+    "status": "completed",
+    "key": "hybrid-s402-lambda1",
+    "bytes": 10449
+  },
+  "holdout/raw/hybrid-s402-lambda14.tar.gz": {
+    "sha256": "289e68c1be7146fd91f6e326a32ecdda7e9a337d71fa5639099ef25a836720f8",
+    "status": "completed",
+    "key": "hybrid-s402-lambda14",
+    "bytes": 10493
+  },
+  "holdout/raw/hybrid-s402-old_guard.tar.gz": {
+    "sha256": "ac2b9d91a7bb81e6010b7771dbee07e9a87a51c9fea6a19247342d3a9ce5c35e",
+    "status": "completed",
+    "key": "hybrid-s402-old_guard",
+    "bytes": 10286
+  },
+  "holdout/raw/hybrid-s402-receiver_only.tar.gz": {
+    "sha256": "48329862ab4e4956b0a46b138bc1768406e09c2c2380d865835da78b17b074ca",
+    "status": "completed",
+    "key": "hybrid-s402-receiver_only",
+    "bytes": 10153
+  },
+  "holdout/raw/hybrid-s402-timely.tar.gz": {
+    "sha256": "26c06965cc7bb1d5d59f410abbb72a6ae90b013b9381e079cb502603b4612622",
+    "status": "completed",
+    "key": "hybrid-s402-timely",
+    "bytes": 15744
+  },
+  "holdout/raw/hybrid-s403-dcqcn.tar.gz": {
+    "sha256": "8ceb4a1c7b558c45cfc65e13728d83ba952be6c5c0a659def0843b5449035141",
+    "status": "completed",
+    "key": "hybrid-s403-dcqcn",
+    "bytes": 10186
+  },
+  "holdout/raw/hybrid-s403-guard.tar.gz": {
+    "sha256": "5b7cbecf16aab9370758c2a7bec3fd0c92b508135f58b4afe71e4ab7950f7d20",
+    "status": "completed",
+    "key": "hybrid-s403-guard",
+    "bytes": 10453
+  },
+  "holdout/raw/hybrid-s403-homa.tar.gz": {
+    "sha256": "36d3cc9f033da18e145ce3f13db3725e27f04d97e0b21bc37c4a7965958fee04",
+    "status": "completed",
+    "key": "hybrid-s403-homa",
+    "bytes": 10094
+  },
+  "holdout/raw/hybrid-s403-hpcc.tar.gz": {
+    "sha256": "30da0057597cd9c2537b3e025bbb4f4b276d2308dbc7638f9bdffd86915fc9d9",
+    "status": "completed",
+    "key": "hybrid-s403-hpcc",
+    "bytes": 9999
+  },
+  "holdout/raw/hybrid-s403-keep_last_hop.tar.gz": {
+    "sha256": "91528292be644339062e9ae3b1c03a01d96ee72bce776d3483be85b2ad448393",
+    "status": "completed",
+    "key": "hybrid-s403-keep_last_hop",
+    "bytes": 10505
+  },
+  "holdout/raw/hybrid-s403-lambda1.tar.gz": {
+    "sha256": "1fd14189eac45f2491fa75d94b156c0129d0e996550f718213faf39ed304e97a",
+    "status": "completed",
+    "key": "hybrid-s403-lambda1",
+    "bytes": 10495
+  },
+  "holdout/raw/hybrid-s403-lambda14.tar.gz": {
+    "sha256": "42933acfa39ba97af426f6c5de4e8cbf7859d96d295796fc9ec3df3ad931980c",
+    "status": "completed",
+    "key": "hybrid-s403-lambda14",
+    "bytes": 10484
+  },
+  "holdout/raw/hybrid-s403-old_guard.tar.gz": {
+    "sha256": "687ac03e12655de709505f88ad478f075c53b5bf550f2aca6a96bb9460236b7f",
+    "status": "completed",
+    "key": "hybrid-s403-old_guard",
+    "bytes": 10259
+  },
+  "holdout/raw/hybrid-s403-receiver_only.tar.gz": {
+    "sha256": "072b4c6794d6f0dc019342fd3bf52ad6465140d9ff476ad84b1620fc2687af6d",
+    "status": "completed",
+    "key": "hybrid-s403-receiver_only",
+    "bytes": 10113
+  },
+  "holdout/raw/hybrid-s403-timely.tar.gz": {
+    "sha256": "64fb23f723780574a5c9951c859660d8c6deac4c3a4902d5e3675ece10f88251",
+    "status": "completed",
+    "key": "hybrid-s403-timely",
+    "bytes": 12839
+  },
+  "holdout/raw/hybrid-s404-dcqcn.tar.gz": {
+    "sha256": "7447bb5c3494e8249abdc44836027aac0871531c024f9cfed000dbf4f43565b7",
+    "status": "completed",
+    "key": "hybrid-s404-dcqcn",
+    "bytes": 10303
+  },
+  "holdout/raw/hybrid-s404-guard.tar.gz": {
+    "sha256": "17288f700451b72a413c006409bd185129eeb9f7b99c6a381f18d57767af2c96",
+    "status": "completed",
+    "key": "hybrid-s404-guard",
+    "bytes": 10476
+  },
+  "holdout/raw/hybrid-s404-homa.tar.gz": {
+    "sha256": "7edc5e05e8a20cd10ac7eb7dc0d6c27a04622545d9622a23e53baecbd5ab4c4f",
+    "status": "completed",
+    "key": "hybrid-s404-homa",
+    "bytes": 10059
+  },
+  "holdout/raw/hybrid-s404-hpcc.tar.gz": {
+    "sha256": "bf7439f18d3dbaffa45a8ec027b77f5108673e782163fa942194666170031295",
+    "status": "completed",
+    "key": "hybrid-s404-hpcc",
+    "bytes": 9961
+  },
+  "holdout/raw/hybrid-s404-keep_last_hop.tar.gz": {
+    "sha256": "c352ec52e4f9d51c5255394288a4d45afd84c8e0e3cf2119976524f5dee15559",
+    "status": "completed",
+    "key": "hybrid-s404-keep_last_hop",
+    "bytes": 10458
+  },
+  "holdout/raw/hybrid-s404-lambda1.tar.gz": {
+    "sha256": "c78080a56f324f4d56df5b54f39d5da41ac75ee10c4bc15c3a9f185c413b3516",
+    "status": "completed",
+    "key": "hybrid-s404-lambda1",
+    "bytes": 10439
+  },
+  "holdout/raw/hybrid-s404-lambda14.tar.gz": {
+    "sha256": "698b46aec23b420585cc68a4477275825410ae5be01640d74446053c634612bb",
+    "status": "completed",
+    "key": "hybrid-s404-lambda14",
+    "bytes": 10496
+  },
+  "holdout/raw/hybrid-s404-old_guard.tar.gz": {
+    "sha256": "44dea7660c27b67d612058aae98e82b07cb0ee6950b879f725812ef850357c25",
+    "status": "completed",
+    "key": "hybrid-s404-old_guard",
+    "bytes": 10268
+  },
+  "holdout/raw/hybrid-s404-receiver_only.tar.gz": {
+    "sha256": "a47a3d34e0967f12692f3851ba381b9475292cc328f06f62faf7e37444aa42e1",
+    "status": "completed",
+    "key": "hybrid-s404-receiver_only",
+    "bytes": 10116
+  },
+  "holdout/raw/hybrid-s404-timely.tar.gz": {
+    "sha256": "a392a71d4c5c4a262a2c7779619a66b65822e85bf33581e4dd901b08f873f0df",
+    "status": "completed",
+    "key": "hybrid-s404-timely",
+    "bytes": 12267
+  },
+  "holdout/raw/hybrid-s405-dcqcn.tar.gz": {
+    "sha256": "452180036b6379d972a9c29e731722c738cd29f4791ccbc826a8dfcea9c7ed73",
+    "status": "completed",
+    "key": "hybrid-s405-dcqcn",
+    "bytes": 10313
+  },
+  "holdout/raw/hybrid-s405-guard.tar.gz": {
+    "sha256": "98beeb8a97b489d868451231868689d5f5bebd060f7a131970f4f288ac01b69d",
+    "status": "completed",
+    "key": "hybrid-s405-guard",
+    "bytes": 10491
+  },
+  "holdout/raw/hybrid-s405-homa.tar.gz": {
+    "sha256": "fb3af1ab409a59866f40b94bd5e110a060ec7b61dcc9c8a6f814eda668872b0f",
+    "status": "completed",
+    "key": "hybrid-s405-homa",
+    "bytes": 10046
+  },
+  "holdout/raw/hybrid-s405-hpcc.tar.gz": {
+    "sha256": "f4ffa2c5d3e7598128ff3b1695d72084de3f1f896b1ad7cf11e993e453cc5432",
+    "status": "completed",
+    "key": "hybrid-s405-hpcc",
+    "bytes": 9970
+  },
+  "holdout/raw/hybrid-s405-keep_last_hop.tar.gz": {
+    "sha256": "50280986a8c9f31a3e68fe5e00aa875f0f06d8907e11a2b40be8972cf039e3e4",
+    "status": "completed",
+    "key": "hybrid-s405-keep_last_hop",
+    "bytes": 10506
+  },
+  "holdout/raw/hybrid-s405-lambda1.tar.gz": {
+    "sha256": "4669629b9e19a67eda511baa9bf69ab76e51f3ec89a9089d1ca9734d5de64118",
+    "status": "completed",
+    "key": "hybrid-s405-lambda1",
+    "bytes": 10480
+  },
+  "holdout/raw/hybrid-s405-lambda14.tar.gz": {
+    "sha256": "bc5ba1bbb192c0eacc425614445025f1a9a0e6261cfe404b940fdff934c670b6",
+    "status": "completed",
+    "key": "hybrid-s405-lambda14",
+    "bytes": 10472
+  },
+  "holdout/raw/hybrid-s405-old_guard.tar.gz": {
+    "sha256": "808e46969f33d2f7f89931479b208f01dba2679d4f577591514a6f68bea71a5e",
+    "status": "completed",
+    "key": "hybrid-s405-old_guard",
+    "bytes": 10265
+  },
+  "holdout/raw/hybrid-s405-receiver_only.tar.gz": {
+    "sha256": "3524dacd6713ebc55e3f2808faafbf4a588e9dd2e1892e44c940602350dba305",
+    "status": "completed",
+    "key": "hybrid-s405-receiver_only",
+    "bytes": 10140
+  },
+  "holdout/raw/hybrid-s405-timely.tar.gz": {
+    "sha256": "921cee37f55e9396aaf989ea959ddd4190b43a6fec93c009a7654b35b33aff6a",
+    "status": "completed",
+    "key": "hybrid-s405-timely",
+    "bytes": 15876
+  },
+  "holdout/raw/hybrid_series-s401-dcqcn.tar.gz": {
+    "sha256": "08542732a0e966233d422d02c2b8369060300106edc90ecd60a4824b9f25ca9b",
+    "status": "completed",
+    "key": "hybrid_series-s401-dcqcn",
+    "bytes": 224298
+  },
+  "holdout/raw/hybrid_series-s401-guard.tar.gz": {
+    "sha256": "618d1c5ea4e05aaf0613012f65f1d0aa8e89708a43beffb4e0d7c5a7d3d04147",
+    "status": "completed",
+    "key": "hybrid_series-s401-guard",
+    "bytes": 162627
+  },
+  "holdout/raw/hybrid_series-s401-homa.tar.gz": {
+    "sha256": "43da9a49c5b9ef1e403c63eeed1bead1ac5a2b63b625c12e9078dd49752c4f4e",
+    "status": "completed",
+    "key": "hybrid_series-s401-homa",
+    "bytes": 165808
+  },
+  "holdout/raw/hybrid_series-s401-hpcc.tar.gz": {
+    "sha256": "d02193af083c322c00c7097dbe75c457712a1503e00ab57d321cabb9be727d3a",
+    "status": "completed",
+    "key": "hybrid_series-s401-hpcc",
+    "bytes": 165659
+  },
+  "holdout/raw/hybrid_series-s401-old_guard.tar.gz": {
+    "sha256": "026eebee15988c2084b63b053baa65751ee844382b6c10a5846a13938444516a",
+    "status": "completed",
+    "key": "hybrid_series-s401-old_guard",
+    "bytes": 170114
+  },
+  "holdout/raw/hybrid_series-s401-receiver_only.tar.gz": {
+    "sha256": "199b828f0f36f68da043a09cd3bd6605da1ee7f9851f0ccf17692bd552bf747f",
+    "status": "completed",
+    "key": "hybrid_series-s401-receiver_only",
+    "bytes": 156101
+  },
+  "holdout/raw/hybrid_series-s401-timely.tar.gz": {
+    "sha256": "6a2bbd63ed24922966b6775f727db674c65dbe67df78555b64a579dca325a591",
+    "status": "completed",
+    "key": "hybrid_series-s401-timely",
+    "bytes": 216947
+  },
+  "holdout/raw/receiver-s401-dcqcn.tar.gz": {
+    "sha256": "49ccbd10d3f5de64326ab6b8313a5d2b4fa6e3cc975fc1556f2055f2e16d05d3",
+    "status": "completed",
+    "key": "receiver-s401-dcqcn",
+    "bytes": 11868
+  },
+  "holdout/raw/receiver-s401-guard.tar.gz": {
+    "sha256": "0fdc304936fa05433bb6257b271ea56b5c2f74ea9b3f8ea2456fefd3bc5c85ef",
+    "status": "completed",
+    "key": "receiver-s401-guard",
+    "bytes": 12059
+  },
+  "holdout/raw/receiver-s401-homa.tar.gz": {
+    "sha256": "b6867195b269b344f554a1966a227a949fb51481d29b05b3f601769492e9f4b4",
+    "status": "completed",
+    "key": "receiver-s401-homa",
+    "bytes": 11891
+  },
+  "holdout/raw/receiver-s401-hpcc.tar.gz": {
+    "sha256": "75cdc40770a17ff87152958ff3c4150697f2fed3e39091dbff251aacbb6c1802",
+    "status": "completed",
+    "key": "receiver-s401-hpcc",
+    "bytes": 11727
+  },
+  "holdout/raw/receiver-s401-keep_last_hop.tar.gz": {
+    "sha256": "fc2ffdef83a860378cb9f6111165ceec8cb0253a6e5cdc724189955dd66e6112",
+    "status": "completed",
+    "key": "receiver-s401-keep_last_hop",
+    "bytes": 12113
+  },
+  "holdout/raw/receiver-s401-lambda1.tar.gz": {
+    "sha256": "e2d93cc44e77d9a929cddf636ae569496f8c7a2e8a62981241d245a3c43e1fdd",
+    "status": "completed",
+    "key": "receiver-s401-lambda1",
+    "bytes": 12056
+  },
+  "holdout/raw/receiver-s401-lambda14.tar.gz": {
+    "sha256": "2919ec077502ce3834dcc2a35d8a2eb30a8bbdf9e3c1f60aa5ed80c95e55f260",
+    "status": "completed",
+    "key": "receiver-s401-lambda14",
+    "bytes": 12090
+  },
+  "holdout/raw/receiver-s401-old_guard.tar.gz": {
+    "sha256": "96cfb8a7c990b42a12d162c72a109f15f81662bc853799624e3d86c9b2a69b20",
+    "status": "completed",
+    "key": "receiver-s401-old_guard",
+    "bytes": 11853
+  },
+  "holdout/raw/receiver-s401-receiver_only.tar.gz": {
+    "sha256": "c5d03039d7c468e365b400b85aaeb0254cae0b50f4400d3f9e04166d24136101",
+    "status": "completed",
+    "key": "receiver-s401-receiver_only",
+    "bytes": 11928
+  },
+  "holdout/raw/receiver-s401-timely.tar.gz": {
+    "sha256": "ab02fdac76c4c5526e742a62ebbabb8d4490c08cdc7a58df15a8b5597bf6b71e",
+    "status": "completed",
+    "key": "receiver-s401-timely",
+    "bytes": 13416
+  },
+  "holdout/raw/receiver-s402-dcqcn.tar.gz": {
+    "sha256": "fdb3071fa338ddfead08522ecfc74e94956d02bd1ab42222f391c4f94ad4b830",
+    "status": "completed",
+    "key": "receiver-s402-dcqcn",
+    "bytes": 11708
+  },
+  "holdout/raw/receiver-s402-guard.tar.gz": {
+    "sha256": "9fb2b9cf9c3daaaf90b61e47d26c9731b383419907911c6a9b6f3dabd3765458",
+    "status": "completed",
+    "key": "receiver-s402-guard",
+    "bytes": 12025
+  },
+  "holdout/raw/receiver-s402-homa.tar.gz": {
+    "sha256": "4f4f107532abb81930ec469668f5cec89a8d655080de40f5a6bc98969d1f5afb",
+    "status": "completed",
+    "key": "receiver-s402-homa",
+    "bytes": 11803
+  },
+  "holdout/raw/receiver-s402-hpcc.tar.gz": {
+    "sha256": "0cc0bf7d3512c0ce57468ed333e382d4a40b652d11342ec4c56152ae9a8be93f",
+    "status": "completed",
+    "key": "receiver-s402-hpcc",
+    "bytes": 11594
+  },
+  "holdout/raw/receiver-s402-keep_last_hop.tar.gz": {
+    "sha256": "3899ef987bc039a09eeb453841132f590260a7e875417de5d0db83dd8c1c959c",
+    "status": "completed",
+    "key": "receiver-s402-keep_last_hop",
+    "bytes": 12050
+  },
+  "holdout/raw/receiver-s402-lambda1.tar.gz": {
+    "sha256": "6c87d20061923fd3fa667aa0e6aab874f6cceaf2587f7cfe1e36ef5b041e9302",
+    "status": "completed",
+    "key": "receiver-s402-lambda1",
+    "bytes": 11943
+  },
+  "holdout/raw/receiver-s402-lambda14.tar.gz": {
+    "sha256": "cb0ebc52fbbf0ccb47befc9471b7d07d7d81d6e7415d41134c5a006cccfb98bb",
+    "status": "completed",
+    "key": "receiver-s402-lambda14",
+    "bytes": 12059
+  },
+  "holdout/raw/receiver-s402-old_guard.tar.gz": {
+    "sha256": "3eef6abe801d05ae65350db6c6eab92e79d82fa9b63803d0b562a0f8fde4e27c",
+    "status": "completed",
+    "key": "receiver-s402-old_guard",
+    "bytes": 11633
+  },
+  "holdout/raw/receiver-s402-receiver_only.tar.gz": {
+    "sha256": "307725f2485c21b5e3fb3f1b64f9c2fe823f03c1ea297756cec7ac2d12377ef4",
+    "status": "completed",
+    "key": "receiver-s402-receiver_only",
+    "bytes": 11970
+  },
+  "holdout/raw/receiver-s402-timely.tar.gz": {
+    "sha256": "865ac1d9a6a75278a4093f9ac7b2cf1e5de3bb033b4bac50a52200681ed21446",
+    "status": "completed",
+    "key": "receiver-s402-timely",
+    "bytes": 30960
+  },
+  "holdout/raw/receiver-s403-dcqcn.tar.gz": {
+    "sha256": "442e8d3e07f4244451c5df0cf4e6b44bd17e16a85da86e65a778d1038fdcef00",
+    "status": "completed",
+    "key": "receiver-s403-dcqcn",
+    "bytes": 11836
+  },
+  "holdout/raw/receiver-s403-guard.tar.gz": {
+    "sha256": "13dd4331cb212baab87531913162f97f74c3388ea69ef8a81a8309b650144097",
+    "status": "completed",
+    "key": "receiver-s403-guard",
+    "bytes": 12087
+  },
+  "holdout/raw/receiver-s403-homa.tar.gz": {
+    "sha256": "4473f3166fe58f8ced03c43a7123b286cd4aaddb2e50722491f2ff8c8df2b366",
+    "status": "completed",
+    "key": "receiver-s403-homa",
+    "bytes": 11916
+  },
+  "holdout/raw/receiver-s403-hpcc.tar.gz": {
+    "sha256": "3a116732e93b96ba3b563bc5e56db1a1e86dbcd8725faab4918bac8fae8d2181",
+    "status": "completed",
+    "key": "receiver-s403-hpcc",
+    "bytes": 11725
+  },
+  "holdout/raw/receiver-s403-keep_last_hop.tar.gz": {
+    "sha256": "20d01b984f01e3a2f96d40c716585adec648a7b1bdce019539f24073b5586141",
+    "status": "completed",
+    "key": "receiver-s403-keep_last_hop",
+    "bytes": 12152
+  },
+  "holdout/raw/receiver-s403-lambda1.tar.gz": {
+    "sha256": "f678452722594a846f22a623de8c47afa364d5e8a646e366339b1debe102fd62",
+    "status": "completed",
+    "key": "receiver-s403-lambda1",
+    "bytes": 12070
+  },
+  "holdout/raw/receiver-s403-lambda14.tar.gz": {
+    "sha256": "dccb5ee9b7f82f628998ebf18ff71052ab34d3ee52fbf7b53a5c6f125813631c",
+    "status": "completed",
+    "key": "receiver-s403-lambda14",
+    "bytes": 12120
+  },
+  "holdout/raw/receiver-s403-old_guard.tar.gz": {
+    "sha256": "72f9056a2159f9b69d24ca7e2fe671602b4635c3eab33cb9bf07d5dd60abbd28",
+    "status": "completed",
+    "key": "receiver-s403-old_guard",
+    "bytes": 11841
+  },
+  "holdout/raw/receiver-s403-receiver_only.tar.gz": {
+    "sha256": "f0b6e218f6d4f928803c5cf181c3b80cb058d239398558e2dcd771a09df57c89",
+    "status": "completed",
+    "key": "receiver-s403-receiver_only",
+    "bytes": 11931
+  },
+  "holdout/raw/receiver-s403-timely.tar.gz": {
+    "sha256": "f551b22d72048dc9a98857eb5f3ab6984554953cde7cc4740858354c9ffc2216",
+    "status": "completed",
+    "key": "receiver-s403-timely",
+    "bytes": 19512
+  },
+  "holdout/raw/receiver-s404-dcqcn.tar.gz": {
+    "sha256": "0e1b12ea4fa83a8254a2bd14ae55b4b41473b3dfc8e9c4d4d463b0e67299e384",
+    "status": "completed",
+    "key": "receiver-s404-dcqcn",
+    "bytes": 11723
+  },
+  "holdout/raw/receiver-s404-guard.tar.gz": {
+    "sha256": "a7f932cef9f09f7af83bae822091f4e2514eccba3d69a15527fb801efc6d54a8",
+    "status": "completed",
+    "key": "receiver-s404-guard",
+    "bytes": 11979
+  },
+  "holdout/raw/receiver-s404-homa.tar.gz": {
+    "sha256": "33e352887e8abe76b0e97a671ea3e32bf929f4eaadaee738990c27fb9f87ac33",
+    "status": "completed",
+    "key": "receiver-s404-homa",
+    "bytes": 11803
+  },
+  "holdout/raw/receiver-s404-hpcc.tar.gz": {
+    "sha256": "92caa9705764b64bfa337f4179fcd22ebafbc1840cbfdbfb0018e6cdb1b5252d",
+    "status": "completed",
+    "key": "receiver-s404-hpcc",
+    "bytes": 11598
+  },
+  "holdout/raw/receiver-s404-keep_last_hop.tar.gz": {
+    "sha256": "e9d137acda57d8c59cd1f48f0f13c0630adfa4c02bea7e71dfb5d020720fe39d",
+    "status": "completed",
+    "key": "receiver-s404-keep_last_hop",
+    "bytes": 12037
+  },
+  "holdout/raw/receiver-s404-lambda1.tar.gz": {
+    "sha256": "6e3c369018d46e5f976fa6a58026b9918d0b33191ff1f7d690ac1b6dbb8ec27f",
+    "status": "completed",
+    "key": "receiver-s404-lambda1",
+    "bytes": 11951
+  },
+  "holdout/raw/receiver-s404-lambda14.tar.gz": {
+    "sha256": "3053a660e5366de5c49f2cf3251f34194554f9d9c8538793255e514f643b9089",
+    "status": "completed",
+    "key": "receiver-s404-lambda14",
+    "bytes": 12040
+  },
+  "holdout/raw/receiver-s404-old_guard.tar.gz": {
+    "sha256": "980839061e73a66f6468ad31441f4baadd5a49b2d2388a7c46390a4bc7762e3d",
+    "status": "completed",
+    "key": "receiver-s404-old_guard",
+    "bytes": 11694
+  },
+  "holdout/raw/receiver-s404-receiver_only.tar.gz": {
+    "sha256": "fb481a789f915c4646ffb721490eeeb8608e3bcb68c4daeea4aa5db34c7fdd3c",
+    "status": "completed",
+    "key": "receiver-s404-receiver_only",
+    "bytes": 11895
+  },
+  "holdout/raw/receiver-s404-timely.tar.gz": {
+    "sha256": "6b13c4e952fd89e13c54a15d9d0632a8595f805cb17613df2285ab273fda1bab",
+    "status": "completed",
+    "key": "receiver-s404-timely",
+    "bytes": 31040
+  },
+  "holdout/raw/receiver-s405-dcqcn.tar.gz": {
+    "sha256": "9fe805b52338b8261757eedd7eca9f269c1ab7cf2d4daab9d4e3ae9191548e11",
+    "status": "completed",
+    "key": "receiver-s405-dcqcn",
+    "bytes": 11803
+  },
+  "holdout/raw/receiver-s405-guard.tar.gz": {
+    "sha256": "b7182d241e3199ed2e0be29e907192719940457c1ca978879570212fdc73d40a",
+    "status": "completed",
+    "key": "receiver-s405-guard",
+    "bytes": 12049
+  },
+  "holdout/raw/receiver-s405-homa.tar.gz": {
+    "sha256": "3407cf76bd33a7681088b903e23bdad3239192b9f0b3169acbf87cd40f5d0c65",
+    "status": "completed",
+    "key": "receiver-s405-homa",
+    "bytes": 11883
+  },
+  "holdout/raw/receiver-s405-hpcc.tar.gz": {
+    "sha256": "15703b7f015a5827b1961f3924ebbfff20d25c3dba3d38b5fb327912ab3e648c",
+    "status": "completed",
+    "key": "receiver-s405-hpcc",
+    "bytes": 11693
+  },
+  "holdout/raw/receiver-s405-keep_last_hop.tar.gz": {
+    "sha256": "da1ecb901152edf934457a4d6e7ff7738526b3edeedf0dc2bcd0f68d404b69b7",
+    "status": "completed",
+    "key": "receiver-s405-keep_last_hop",
+    "bytes": 12070
+  },
+  "holdout/raw/receiver-s405-lambda1.tar.gz": {
+    "sha256": "1a171678f6e44d7710cae8f1964167ea77a97650207a9b9e990d3832972cca15",
+    "status": "completed",
+    "key": "receiver-s405-lambda1",
+    "bytes": 12083
+  },
+  "holdout/raw/receiver-s405-lambda14.tar.gz": {
+    "sha256": "05c48dd74b487f297ced42852f05a0913bd4f38a1698ff4dade033ab9328afc4",
+    "status": "completed",
+    "key": "receiver-s405-lambda14",
+    "bytes": 12107
+  },
+  "holdout/raw/receiver-s405-old_guard.tar.gz": {
+    "sha256": "be2282ebeebe7c3ef69be8630b3a49cdf847c8865ff64545ebead971b745c4bd",
+    "status": "completed",
+    "key": "receiver-s405-old_guard",
+    "bytes": 11823
+  },
+  "holdout/raw/receiver-s405-receiver_only.tar.gz": {
+    "sha256": "a26335119a7d06d340f018ec8f50ee9578487c39ca212b1e6b98a2b67593806c",
+    "status": "completed",
+    "key": "receiver-s405-receiver_only",
+    "bytes": 11884
+  },
+  "holdout/raw/receiver-s405-timely.tar.gz": {
+    "sha256": "6f7cf2c5c1dbc7c8f82f90e9e8e36e21dd29a49598a2b4f56b30876fc10a4c29",
+    "status": "completed",
+    "key": "receiver-s405-timely",
+    "bytes": 19563
+  },
+  "holdout/raw/receiver2-s401-dcqcn.tar.gz": {
+    "sha256": "91faa1591324731249778d997a83d11cc13f51bb4e2cffde33d56cefb9b35589",
+    "status": "completed",
+    "key": "receiver2-s401-dcqcn",
+    "bytes": 11568
+  },
+  "holdout/raw/receiver2-s401-guard.tar.gz": {
+    "sha256": "09714a64fb9655d758a51d9b575a2ecdfdb6a6900d060b5dbccc38cad1446daa",
+    "status": "completed",
+    "key": "receiver2-s401-guard",
+    "bytes": 11800
+  },
+  "holdout/raw/receiver2-s401-homa.tar.gz": {
+    "sha256": "61ad76ac6e49b5baa58a76e3e73acf02fcf454f1a2a17b9f65cf376a1138fb72",
+    "status": "completed",
+    "key": "receiver2-s401-homa",
+    "bytes": 11517
+  },
+  "holdout/raw/receiver2-s401-hpcc.tar.gz": {
+    "sha256": "eab981a79e5d23ef28f7eb418947e4c79cf70197e6a96b2b635b5fa383f14e28",
+    "status": "completed",
+    "key": "receiver2-s401-hpcc",
+    "bytes": 11431
+  },
+  "holdout/raw/receiver2-s401-old_guard.tar.gz": {
+    "sha256": "8775ad85b73539847365773eb577ef31b1eed4be9bfb9904a5bda2ac03c008af",
+    "status": "completed",
+    "key": "receiver2-s401-old_guard",
+    "bytes": 11517
+  },
+  "holdout/raw/receiver2-s401-receiver_only.tar.gz": {
+    "sha256": "7d850b64a61be54e2300b754c35e1769172b9907bd70a065c8ea37d8b69ba6b1",
+    "status": "completed",
+    "key": "receiver2-s401-receiver_only",
+    "bytes": 11681
+  },
+  "holdout/raw/receiver2-s401-timely.tar.gz": {
+    "sha256": "feca0b029e4b32e0dda33fa1a936b9e4db9b289cef78ea440d2c15aafc372650",
+    "status": "completed",
+    "key": "receiver2-s401-timely",
+    "bytes": 11426
+  },
+  "holdout/raw/receiver2-s402-dcqcn.tar.gz": {
+    "sha256": "ede4f4cfe07310a1850a908c5a91a13e4e6d1582b825ed8a7ea92768df042a5e",
+    "status": "completed",
+    "key": "receiver2-s402-dcqcn",
+    "bytes": 11543
+  },
+  "holdout/raw/receiver2-s402-guard.tar.gz": {
+    "sha256": "459c1195cba4ecc9bb8f61a63fbe804e96fb4a338fc27958885fe61e8a0a0251",
+    "status": "completed",
+    "key": "receiver2-s402-guard",
+    "bytes": 11802
+  },
+  "holdout/raw/receiver2-s402-homa.tar.gz": {
+    "sha256": "a639f00ec749d3e5067e7ff3ac2cc69f105a93237b6984d2709f69374aed8c65",
+    "status": "completed",
+    "key": "receiver2-s402-homa",
+    "bytes": 11534
+  },
+  "holdout/raw/receiver2-s402-hpcc.tar.gz": {
+    "sha256": "40dd428ad8cfb0f9e4da82d6a0cc2ff3fdcb4aa14d5f149fb2cec2b32068eccf",
+    "status": "completed",
+    "key": "receiver2-s402-hpcc",
+    "bytes": 11364
+  },
+  "holdout/raw/receiver2-s402-old_guard.tar.gz": {
+    "sha256": "41c5beebcdc92663990697512f78fd1892f748fc6446a217ee6abf1a311b6627",
+    "status": "completed",
+    "key": "receiver2-s402-old_guard",
+    "bytes": 11456
+  },
+  "holdout/raw/receiver2-s402-receiver_only.tar.gz": {
+    "sha256": "1b841c87425021b2f28780eb6c1f3c8a2c935ae48a20612604cf7920d291fd5e",
+    "status": "completed",
+    "key": "receiver2-s402-receiver_only",
+    "bytes": 11658
+  },
+  "holdout/raw/receiver2-s402-timely.tar.gz": {
+    "sha256": "86b8732d52b5cec00ff34618d4e390f6a5b6c8e4a2281097fd91d399e7ff5f5d",
+    "status": "completed",
+    "key": "receiver2-s402-timely",
+    "bytes": 11419
+  },
+  "holdout/raw/receiver2-s403-dcqcn.tar.gz": {
+    "sha256": "d0c5f614e172ff43adba33aa32cf7300936eef4ee4b250f09ffc6698d7a3a12a",
+    "status": "completed",
+    "key": "receiver2-s403-dcqcn",
+    "bytes": 11528
+  },
+  "holdout/raw/receiver2-s403-guard.tar.gz": {
+    "sha256": "6002f790afd8cf12eae4e97f37ca902e5800304d170bccce5194496f500d3e26",
+    "status": "completed",
+    "key": "receiver2-s403-guard",
+    "bytes": 11834
+  },
+  "holdout/raw/receiver2-s403-homa.tar.gz": {
+    "sha256": "526f5159aa25486e9f06a8a63fd647cc5de585182965b41778d0c3b6fb3ed272",
+    "status": "completed",
+    "key": "receiver2-s403-homa",
+    "bytes": 11560
+  },
+  "holdout/raw/receiver2-s403-hpcc.tar.gz": {
+    "sha256": "54d703fb122f6e79ceaf6b09031a72ca0bb6ae80e609494e3d0e858a31c970e4",
+    "status": "completed",
+    "key": "receiver2-s403-hpcc",
+    "bytes": 11376
+  },
+  "holdout/raw/receiver2-s403-old_guard.tar.gz": {
+    "sha256": "3ca4b03ed39ec8e8c6132319172897c14562dcd9b4be3565661c2b58766bdee3",
+    "status": "completed",
+    "key": "receiver2-s403-old_guard",
+    "bytes": 11454
+  },
+  "holdout/raw/receiver2-s403-receiver_only.tar.gz": {
+    "sha256": "5706696e76d5f9876e4bc5b970d3efb666d60b9f72695bb73481a9ee007560d1",
+    "status": "completed",
+    "key": "receiver2-s403-receiver_only",
+    "bytes": 11662
+  },
+  "holdout/raw/receiver2-s403-timely.tar.gz": {
+    "sha256": "ee2341eac3f907dc55acb2b0761e479f8f2f688dc04e34634a5bcf4d5665acb8",
+    "status": "completed",
+    "key": "receiver2-s403-timely",
+    "bytes": 11422
+  },
+  "holdout/raw/receiver2-s404-dcqcn.tar.gz": {
+    "sha256": "a237951d134368be49c7c387d909a726c5caa66984b748492fb83737bfebf195",
+    "status": "completed",
+    "key": "receiver2-s404-dcqcn",
+    "bytes": 11518
+  },
+  "holdout/raw/receiver2-s404-guard.tar.gz": {
+    "sha256": "d19d5d895ffee25993a3e397aee4019470e3e0b0f22fa837d53c5d128b754895",
+    "status": "completed",
+    "key": "receiver2-s404-guard",
+    "bytes": 11810
+  },
+  "holdout/raw/receiver2-s404-homa.tar.gz": {
+    "sha256": "49666b4b891fbe85096aea6dedc4ffcbe2b757260425fb90411a3309189da993",
+    "status": "completed",
+    "key": "receiver2-s404-homa",
+    "bytes": 11554
+  },
+  "holdout/raw/receiver2-s404-hpcc.tar.gz": {
+    "sha256": "efca033d3113a0ca130024cc863cca1163ee1b1204c67b1a4a3feac2604687bf",
+    "status": "completed",
+    "key": "receiver2-s404-hpcc",
+    "bytes": 11449
+  },
+  "holdout/raw/receiver2-s404-old_guard.tar.gz": {
+    "sha256": "50147e98238bfe4fa6f65d5eddbfe5d3cabc835f0e04b2e1b170993d9508fd68",
+    "status": "completed",
+    "key": "receiver2-s404-old_guard",
+    "bytes": 11507
+  },
+  "holdout/raw/receiver2-s404-receiver_only.tar.gz": {
+    "sha256": "c4c55b13f9ba2b9e119473c44947e1a53717a253afed9ed2dda257d8f6fcceca",
+    "status": "completed",
+    "key": "receiver2-s404-receiver_only",
+    "bytes": 11708
+  },
+  "holdout/raw/receiver2-s404-timely.tar.gz": {
+    "sha256": "758a4dfbfe22f6b5202e2a63ded4faece64979035765fc5004026a77e456cffe",
+    "status": "completed",
+    "key": "receiver2-s404-timely",
+    "bytes": 11425
+  },
+  "holdout/raw/receiver2-s405-dcqcn.tar.gz": {
+    "sha256": "1cae7b017ee101544a7f345cd1ab4c726d8f8cea3c5d869c52370dc59a302a23",
+    "status": "completed",
+    "key": "receiver2-s405-dcqcn",
+    "bytes": 11540
+  },
+  "holdout/raw/receiver2-s405-guard.tar.gz": {
+    "sha256": "8bd1f219cdbb2df0b3f2a1b84018d2f9fee58f316b21d04439a03d1247c0e349",
+    "status": "completed",
+    "key": "receiver2-s405-guard",
+    "bytes": 11817
+  },
+  "holdout/raw/receiver2-s405-homa.tar.gz": {
+    "sha256": "372cc8822c1bd34c5a2fb657b6cedcc73139fdf2167558026d5d1a78a50f9ec9",
+    "status": "completed",
+    "key": "receiver2-s405-homa",
+    "bytes": 11568
+  },
+  "holdout/raw/receiver2-s405-hpcc.tar.gz": {
+    "sha256": "8ddbf3cdfec879824b55c88abcd6226f719eddb56c46d601032b18c5f80cce5d",
+    "status": "completed",
+    "key": "receiver2-s405-hpcc",
+    "bytes": 11372
+  },
+  "holdout/raw/receiver2-s405-old_guard.tar.gz": {
+    "sha256": "669b88ece8aa6f114307007873ec70b4db5c880d360ae73d2651bc89dbbbc9dc",
+    "status": "completed",
+    "key": "receiver2-s405-old_guard",
+    "bytes": 11517
+  },
+  "holdout/raw/receiver2-s405-receiver_only.tar.gz": {
+    "sha256": "e971ae7a3aab532e6f10dd9dab97204e8ca4ba2befa7e4aa2f315b2724c994c0",
+    "status": "completed",
+    "key": "receiver2-s405-receiver_only",
+    "bytes": 11718
+  },
+  "holdout/raw/receiver2-s405-timely.tar.gz": {
+    "sha256": "d84e0c7f8a1f83082a1ca0f3208048b96193303ea3391f0ee0dc817d0d93529a",
+    "status": "completed",
+    "key": "receiver2-s405-timely",
+    "bytes": 11412
+  },
+  "holdout/raw/ring-s401-dcqcn.tar.gz": {
+    "sha256": "f1ab8110713aafeba15b6e002621a8d58d4da42a4f724cd9045d43b609aefad9",
+    "status": "completed",
+    "key": "ring-s401-dcqcn",
+    "bytes": 3113224
+  },
+  "holdout/raw/ring-s401-guard.tar.gz": {
+    "sha256": "76d5b5c08c61a74af9c6346b13fca34115c4acd1f428ac727b86c4a72933af87",
+    "status": "completed",
+    "key": "ring-s401-guard",
+    "bytes": 416228
+  },
+  "holdout/raw/ring-s401-homa.tar.gz": {
+    "sha256": "0c7423aa96d2a153df2f30246fc3cd7f43a5d9723945270cba18629b0867ba9f",
+    "status": "completed",
+    "key": "ring-s401-homa",
+    "bytes": 19854
+  },
+  "holdout/raw/ring-s401-hpcc.tar.gz": {
+    "sha256": "78ce5e90562ca3085186f2c0ce182b47f528b7d78068b7f956d6403d870f863f",
+    "status": "completed",
+    "key": "ring-s401-hpcc",
+    "bytes": 19465
+  },
+  "holdout/raw/ring-s401-old_guard.tar.gz": {
+    "sha256": "19dd500921f05b208e73afc8f54bd5cd7df35c2a90d69868670d5c02ffb9e616",
+    "status": "completed",
+    "key": "ring-s401-old_guard",
+    "bytes": 13024654
+  },
+  "holdout/raw/ring-s401-timely.tar.gz": {
+    "sha256": "2a04227cf13e2e3c41fc6f29691c2eb4940911f77f0037d40c075f2765885cd1",
+    "status": "completed",
+    "key": "ring-s401-timely",
+    "bytes": 10456213
+  },
+  "holdout/raw/ring-s402-dcqcn.tar.gz": {
+    "sha256": "ec831bcef68afcedf490bbafb21bcc8fccfd837b40e8dae0981047aae09c5502",
+    "status": "completed",
+    "key": "ring-s402-dcqcn",
+    "bytes": 3102466
+  },
+  "holdout/raw/ring-s402-guard.tar.gz": {
+    "sha256": "061290a78b4a7e146771aa1bbbf19ccb1cdd95c61792d98dfa125ab9b4d3416a",
+    "status": "completed",
+    "key": "ring-s402-guard",
+    "bytes": 415491
+  },
+  "holdout/raw/ring-s402-homa.tar.gz": {
+    "sha256": "cdb9fde484f4b86e23fcb8db912853c96f16e62be0a576f8da5b9087a72f3c3d",
+    "status": "completed",
+    "key": "ring-s402-homa",
+    "bytes": 19786
+  },
+  "holdout/raw/ring-s402-hpcc.tar.gz": {
+    "sha256": "63d6eb53cf3b71d4fa873e738152c32c828c6c2f2155af6ba875524b15f450ee",
+    "status": "completed",
+    "key": "ring-s402-hpcc",
+    "bytes": 19440
+  },
+  "holdout/raw/ring-s402-old_guard.tar.gz": {
+    "sha256": "c65289ac94fd6b5a4b0321364d5410ba6fe5f375e2bf29509c70d4ca4e94a66f",
+    "status": "completed",
+    "key": "ring-s402-old_guard",
+    "bytes": 13201784
+  },
+  "holdout/raw/ring-s402-timely.tar.gz": {
+    "sha256": "f50ccf642d0f7b91c7a71e80026bd1fec47b5930cc69bf85706f80d918211e29",
+    "status": "completed",
+    "key": "ring-s402-timely",
+    "bytes": 10887217
+  },
+  "holdout/raw/ring-s403-dcqcn.tar.gz": {
+    "sha256": "e50aaa6ad793d692a48792bb860fe11e1d15264706e550f2cae061cc387c0c78",
+    "status": "completed",
+    "key": "ring-s403-dcqcn",
+    "bytes": 3062585
+  },
+  "holdout/raw/ring-s403-guard.tar.gz": {
+    "sha256": "c23da3c0a23c015f692bc09a622075df7242571640ed1ae9f7caa64ec37ed7b6",
+    "status": "completed",
+    "key": "ring-s403-guard",
+    "bytes": 416234
+  },
+  "holdout/raw/ring-s403-homa.tar.gz": {
+    "sha256": "45092e1231aae7604bd9d62c425d4e9a6cbd0128058bfa591fe0b53f0832ddd3",
+    "status": "completed",
+    "key": "ring-s403-homa",
+    "bytes": 19731
+  },
+  "holdout/raw/ring-s403-hpcc.tar.gz": {
+    "sha256": "d903fd4e0d1c197120df0c135b60ae6d31147265b50ed047b3b167678a119479",
+    "status": "completed",
+    "key": "ring-s403-hpcc",
+    "bytes": 19390
+  },
+  "holdout/raw/ring-s403-old_guard.tar.gz": {
+    "sha256": "7d71e5c9ba1b944098004f4e26b58aa4fc720b3307c1f5c4864c9589d8344022",
+    "status": "completed",
+    "key": "ring-s403-old_guard",
+    "bytes": 13333863
+  },
+  "holdout/raw/ring-s403-timely.tar.gz": {
+    "sha256": "0b5245a28a5d180788f0b7adb32b12a94a562c22e68af3611467c44e80e4113b",
+    "status": "completed",
+    "key": "ring-s403-timely",
+    "bytes": 10959576
+  },
+  "holdout/raw/ring-s404-dcqcn.tar.gz": {
+    "sha256": "1c520f4bae8f41275eb479f2204b769bc9935b7a51168d2addb5bb073bf2f9e0",
+    "status": "completed",
+    "key": "ring-s404-dcqcn",
+    "bytes": 3080116
+  },
+  "holdout/raw/ring-s404-guard.tar.gz": {
+    "sha256": "40b2c645e3e45834a9e8ee540fbb62ab0fed4069db723953eba26ea686b8eea3",
+    "status": "completed",
+    "key": "ring-s404-guard",
+    "bytes": 415685
+  },
+  "holdout/raw/ring-s404-homa.tar.gz": {
+    "sha256": "73f5f11a3a0dc894481532452a66c1465bcefa9652817e6c004425af84848271",
+    "status": "completed",
+    "key": "ring-s404-homa",
+    "bytes": 19776
+  },
+  "holdout/raw/ring-s404-hpcc.tar.gz": {
+    "sha256": "865202d49eabbe2cb84aaa82ebc77c9c6b59aa47764862202d537e00aa1999cb",
+    "status": "completed",
+    "key": "ring-s404-hpcc",
+    "bytes": 19412
+  },
+  "holdout/raw/ring-s404-old_guard.tar.gz": {
+    "sha256": "40518578909beae8d1109e985385974ee2bf958f10aa79cbb3993636a6ca1685",
+    "status": "completed",
+    "key": "ring-s404-old_guard",
+    "bytes": 13279587
+  },
+  "holdout/raw/ring-s404-timely.tar.gz": {
+    "sha256": "5856c3c86c2397149eca37af7a11d104e5c103cd217f2ea01d6c97c2a3721fa8",
+    "status": "completed",
+    "key": "ring-s404-timely",
+    "bytes": 11374911
+  },
+  "holdout/raw/ring-s405-dcqcn.tar.gz": {
+    "sha256": "a2387bdb95e425c4601be7bd9471fcef1a19237bb298fc1019088ae0b1b95119",
+    "status": "completed",
+    "key": "ring-s405-dcqcn",
+    "bytes": 3080733
+  },
+  "holdout/raw/ring-s405-guard.tar.gz": {
+    "sha256": "0dc7f33f0ce03b18287fc6992c999c9f37bcb6347b7b87755e574a994c15c6bb",
+    "status": "completed",
+    "key": "ring-s405-guard",
+    "bytes": 415603
+  },
+  "holdout/raw/ring-s405-homa.tar.gz": {
+    "sha256": "3c78a6643b4505c5c380eed1b81e194973ac4839848d26889788feb135a1b156",
+    "status": "completed",
+    "key": "ring-s405-homa",
+    "bytes": 19808
+  },
+  "holdout/raw/ring-s405-hpcc.tar.gz": {
+    "sha256": "201b867204327280951d5278ba97420eb010825819d025b03197a3c6b13800f5",
+    "status": "completed",
+    "key": "ring-s405-hpcc",
+    "bytes": 19338
+  },
+  "holdout/raw/ring-s405-old_guard.tar.gz": {
+    "sha256": "cd36d15e3ec31eb64f02907e0fcb577f9939b33b59e50b8f8dc0163f6e2c5eed",
+    "status": "completed",
+    "key": "ring-s405-old_guard",
+    "bytes": 13257057
+  },
+  "holdout/raw/ring-s405-timely.tar.gz": {
+    "sha256": "cfeb25471a163af7ff1e1b04d8f04bed9c8d1056b32d910dfc2e9ced843bc759",
+    "status": "completed",
+    "key": "ring-s405-timely",
+    "bytes": 11026868
+  },
+  "holdout/raw/web40-s401-dcqcn.tar.gz": {
+    "sha256": "d636abdb5436263dcfbe553ae62fb3a788a32e88a0fb008ceedb0465d9507919",
+    "status": "completed",
+    "key": "web40-s401-dcqcn",
+    "bytes": 30636
+  },
+  "holdout/raw/web40-s401-guard.tar.gz": {
+    "sha256": "9f46a313d854f00aed9c3c20faa128f3725c66d77f30d21bd94da702072412a9",
+    "status": "completed",
+    "key": "web40-s401-guard",
+    "bytes": 29632
+  },
+  "holdout/raw/web40-s401-homa.tar.gz": {
+    "sha256": "a03e762b70ae69b2fb14b9bd95b9a78152fd30e0157605a43a2af1923efd76ee",
+    "status": "completed",
+    "key": "web40-s401-homa",
+    "bytes": 29500
+  },
+  "holdout/raw/web40-s401-hpcc.tar.gz": {
+    "sha256": "4b37caf4fe1166701578590583ced5190456a431e40edb44907be28abc877e44",
+    "status": "completed",
+    "key": "web40-s401-hpcc",
+    "bytes": 29123
+  },
+  "holdout/raw/web40-s401-old_guard.tar.gz": {
+    "sha256": "3c9092668034527d5eb4ecbcc92d30aa9373a2d6175513b68663dff809270d2b",
+    "status": "completed",
+    "key": "web40-s401-old_guard",
+    "bytes": 29512
+  },
+  "holdout/raw/web40-s401-timely.tar.gz": {
+    "sha256": "0dedc444ff933ac483102262cc5e9bcd0d61038c282d62fdc3cdb2507df54f1f",
+    "status": "completed",
+    "key": "web40-s401-timely",
+    "bytes": 68114
+  },
+  "holdout/raw/web40-s402-dcqcn.tar.gz": {
+    "sha256": "6f8a42dc1f58404a4334ee79c19a883879d7d4f8ad982c38a00c7d72f749e4b9",
+    "status": "completed",
+    "key": "web40-s402-dcqcn",
+    "bytes": 32069
+  },
+  "holdout/raw/web40-s402-guard.tar.gz": {
+    "sha256": "6392b60f8901a12ac6d8838b1c9fc3b015234da6ed6c57ddf195096329fc5ed2",
+    "status": "completed",
+    "key": "web40-s402-guard",
+    "bytes": 30967
+  },
+  "holdout/raw/web40-s402-homa.tar.gz": {
+    "sha256": "99eecf5427af39d3009a27abb276c61bad0482c176c4c2d115ce30143604daf1",
+    "status": "completed",
+    "key": "web40-s402-homa",
+    "bytes": 30700
+  },
+  "holdout/raw/web40-s402-hpcc.tar.gz": {
+    "sha256": "9384bc916f9337df4259200e820812fccf47b47c94a679cf01c9ef4a272d67cc",
+    "status": "completed",
+    "key": "web40-s402-hpcc",
+    "bytes": 30431
+  },
+  "holdout/raw/web40-s402-old_guard.tar.gz": {
+    "sha256": "ee9a6fdde1ddcdcf9b3fe7d0fd3de7d14f2aa8c96259fb9becefd5a924a9ef6f",
+    "status": "completed",
+    "key": "web40-s402-old_guard",
+    "bytes": 30973
+  },
+  "holdout/raw/web40-s402-timely.tar.gz": {
+    "sha256": "17901f10e91678c37a24b7171db3ada49779c74e9e84d71a826b9cbcd3bda892",
+    "status": "completed",
+    "key": "web40-s402-timely",
+    "bytes": 103240
+  },
+  "holdout/raw/web40-s403-dcqcn.tar.gz": {
+    "sha256": "c9f78138f88127df08b58274bfac1aa0d1c211a540bb25ebc80ce44e4d5a626a",
+    "status": "completed",
+    "key": "web40-s403-dcqcn",
+    "bytes": 30928
+  },
+  "holdout/raw/web40-s403-guard.tar.gz": {
+    "sha256": "519f227ebe2faf7d8242dd90f33350d7c3b2113754b11818173484df6ae8178c",
+    "status": "completed",
+    "key": "web40-s403-guard",
+    "bytes": 29916
+  },
+  "holdout/raw/web40-s403-homa.tar.gz": {
+    "sha256": "a09622f1549bc7fa51eec568ea907ce14b00d62b05792c07c4151d0a90e21798",
+    "status": "completed",
+    "key": "web40-s403-homa",
+    "bytes": 29746
+  },
+  "holdout/raw/web40-s403-hpcc.tar.gz": {
+    "sha256": "84ac10ac3ea1baf730d27840a90203c0134c960b013a122fbe3f64b67b000c2c",
+    "status": "completed",
+    "key": "web40-s403-hpcc",
+    "bytes": 29229
+  },
+  "holdout/raw/web40-s403-old_guard.tar.gz": {
+    "sha256": "1424a1e1ebe6361b3334ed7bccda71ad9caf807f514d447bf8fecd79f79df95b",
+    "status": "completed",
+    "key": "web40-s403-old_guard",
+    "bytes": 29975
+  },
+  "holdout/raw/web40-s403-timely.tar.gz": {
+    "sha256": "94653b1cb7984dd5fe7a10f3657018f03c4f50b72ab4d494c3edee8abab5e4ca",
+    "status": "completed",
+    "key": "web40-s403-timely",
+    "bytes": 83195
+  },
+  "holdout/raw/web40-s404-dcqcn.tar.gz": {
+    "sha256": "ee1099ca025379d9189c469bcfb090adfa116d99194f7ad221ed637412754314",
+    "status": "completed",
+    "key": "web40-s404-dcqcn",
+    "bytes": 31451
+  },
+  "holdout/raw/web40-s404-guard.tar.gz": {
+    "sha256": "8575680e2172bb0722cf50811642afbc4f58ea1a2e6aa6829b0a3df19faa3ea3",
+    "status": "completed",
+    "key": "web40-s404-guard",
+    "bytes": 30173
+  },
+  "holdout/raw/web40-s404-homa.tar.gz": {
+    "sha256": "ac1898f5ed1e12e1728bdd9883e1399a4f09216e060bb988f1ce57e2606d412f",
+    "status": "completed",
+    "key": "web40-s404-homa",
+    "bytes": 29980
+  },
+  "holdout/raw/web40-s404-hpcc.tar.gz": {
+    "sha256": "223e1e8ff744f605f18b0c32f23e5ba53a028fd110f56380b4684c17cf7d8d91",
+    "status": "completed",
+    "key": "web40-s404-hpcc",
+    "bytes": 29571
+  },
+  "holdout/raw/web40-s404-old_guard.tar.gz": {
+    "sha256": "1417e8736e6c5f9987b342ef8bd493ac791efc77eb5fb10bd066a3305ccf4517",
+    "status": "completed",
+    "key": "web40-s404-old_guard",
+    "bytes": 30176
+  },
+  "holdout/raw/web40-s404-timely.tar.gz": {
+    "sha256": "2c118150c11e2103bf8d89d1f46ad987e5090ddecd6a1ac98d1d3ef23476007d",
+    "status": "completed",
+    "key": "web40-s404-timely",
+    "bytes": 87621
+  },
+  "holdout/raw/web40-s405-dcqcn.tar.gz": {
+    "sha256": "e214aebf0f89b3ff8514d1fd5e42ea041f5e4fd6b94c58b80e9ffa86c5d46b0d",
+    "status": "completed",
+    "key": "web40-s405-dcqcn",
+    "bytes": 32335
+  },
+  "holdout/raw/web40-s405-guard.tar.gz": {
+    "sha256": "81967fb95e69534c758c107de82c44d9dec39674c9b7e7805b09625a080b4eca",
+    "status": "completed",
+    "key": "web40-s405-guard",
+    "bytes": 30749
+  },
+  "holdout/raw/web40-s405-homa.tar.gz": {
+    "sha256": "529ce298eb58e61865ede355150595c3b5511688d89f75f64eeabb4b316022bf",
+    "status": "completed",
+    "key": "web40-s405-homa",
+    "bytes": 30686
+  },
+  "holdout/raw/web40-s405-hpcc.tar.gz": {
+    "sha256": "48d5f3b7d36bd7aa968fa5b91e01e3205de4b983b49e6e30638f459ff6cfe30a",
+    "status": "completed",
+    "key": "web40-s405-hpcc",
+    "bytes": 30067
+  },
+  "holdout/raw/web40-s405-old_guard.tar.gz": {
+    "sha256": "eefe2bca20af2b7db424ef6532d84a0376e66f58f4fb586f50af5814f7afb617",
+    "status": "completed",
+    "key": "web40-s405-old_guard",
+    "bytes": 30793
+  },
+  "holdout/raw/web40-s405-timely.tar.gz": {
+    "sha256": "744463fe34c25160c2fab13e2cacd18402f3ca045708f6b69f263e6399dc5fa4",
+    "status": "completed",
+    "key": "web40-s405-timely",
+    "bytes": 80003
+  }
+}

@@ -1,0 +1,128 @@
+{
+  "dp2_percent": {
+    "shared": {
+      "fct_mean_us": 0.016002887676780375,
+      "fct_p99_us": -3.82065795039509,
+      "span_ms": -0.7077419871988178,
+      "queue_worst_port_fixed_mean_us": -1.7551079147189452
+    },
+    "joint32": {
+      "fct_mean_us": 0.0,
+      "fct_p99_us": 0.0,
+      "span_ms": 0.0,
+      "queue_worst_port_fixed_mean_us": 0.0
+    },
+    "shared_l10": {
+      "fct_mean_us": -0.5894234067194248,
+      "fct_p99_us": 0.4015154750365513,
+      "span_ms": -0.4243499318346555,
+      "queue_worst_port_fixed_mean_us": -45.33159379002976
+    }
+  },
+  "regression_percent": {
+    "ali30": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      }
+    },
+    "ali50": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      }
+    },
+    "web40": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      },
+      "joint32": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      }
+    },
+    "fb40": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      },
+      "joint32": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      }
+    },
+    "alltoall": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      },
+      "joint32": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      }
+    },
+    "ring": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      },
+      "joint32": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      }
+    },
+    "fairness": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      }
+    },
+    "fabric": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      }
+    },
+    "receiver": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      }
+    },
+    "hybrid": {
+      "shared": {
+        "fct_mean_us": 0.0,
+        "slowdown_p99": 0.0,
+        "span_ms": 0.0,
+        "queue_worst_port_fixed_mean_us": 0.0
+      }
+    }
+  }
+}

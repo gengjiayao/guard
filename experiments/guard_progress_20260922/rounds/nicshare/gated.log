@@ -1,0 +1,9 @@
+completed hybrid-s301-gated_feedback_trace 0.4 5
+METRICS hybrid-s301-gated_feedback_trace {'fct_mean_us': 2076.1586, 'slowdown_p99': 4.170667854563237, 'span_ms': 2.986341, 'queue_worst_port_fixed_mean_us': 1.3715175149442527, 'drops': 0}
+completed hybrid-s301-gated_feedback_width 0.4 5
+METRICS hybrid-s301-gated_feedback_width {'fct_mean_us': 2076.1586, 'slowdown_p99': 4.170667854563237, 'span_ms': 2.986341, 'queue_worst_port_fixed_mean_us': 1.3715175149442527, 'drops': 0}
+completed ali50-s301-gated_feedback_width 241.1 195532
+METRICS ali50-s301-gated_feedback_width {'fct_mean_us': 21.763106486997245, 'slowdown_p99': 4.1720457327641105, 'span_ms': 11.069264, 'queue_worst_port_fixed_mean_us': 4.31703896, 'drops': 0}
+completed ali50-s301-gated_feedback_trace 244.9 195532
+METRICS ali50-s301-gated_feedback_trace {'fct_mean_us': 21.763106486997245, 'slowdown_p99': 4.1720457327641105, 'span_ms': 11.069264, 'queue_worst_port_fixed_mean_us': 4.31703896, 'drops': 0}
+ROUND FINISHED gated 4 failures []

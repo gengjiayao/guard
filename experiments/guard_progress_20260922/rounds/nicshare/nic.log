@@ -1,0 +1,13 @@
+completed hybrid-s301-nic_shared_rescue 0.4 5
+METRICS hybrid-s301-nic_shared_rescue {'fct_mean_us': 1926.301, 'slowdown_p99': 4.148501423508548, 'span_ms': 2.981088, 'queue_worst_port_fixed_mean_us': 0.9361092230508473, 'drops': 0}
+completed hybrid-s301-nic_activity_trace 0.4 5
+METRICS hybrid-s301-nic_activity_trace {'fct_mean_us': 1926.301, 'slowdown_p99': 4.148501423508548, 'span_ms': 2.981088, 'queue_worst_port_fixed_mean_us': 0.9361092230508473, 'drops': 0}
+completed ali30-s301-nic_shared_rescue 97.8 117433
+METRICS ali30-s301-nic_shared_rescue {'fct_mean_us': 15.693685037898103, 'slowdown_p99': 2.3512960762343513, 'span_ms': 10.469198, 'queue_worst_port_fixed_mean_us': 2.10256288, 'drops': 0}
+completed ali30-s301-nic_activity_trace 100.6 117433
+METRICS ali30-s301-nic_activity_trace {'fct_mean_us': 15.693685037898103, 'slowdown_p99': 2.3512960762343513, 'span_ms': 10.469198, 'queue_worst_port_fixed_mean_us': 2.10256288, 'drops': 0}
+completed ali50-s301-nic_shared_rescue 234.8 195532
+METRICS ali50-s301-nic_shared_rescue {'fct_mean_us': 22.940846514111993, 'slowdown_p99': 4.285566365578878, 'span_ms': 11.164708, 'queue_worst_port_fixed_mean_us': 3.9069623200000003, 'drops': 0}
+completed ali50-s301-nic_activity_trace 238.3 195532
+METRICS ali50-s301-nic_activity_trace {'fct_mean_us': 22.940846514111993, 'slowdown_p99': 4.285566365578878, 'span_ms': 11.164708, 'queue_worst_port_fixed_mean_us': 3.9069623200000003, 'drops': 0}
+ROUND FINISHED nic 6 failures []

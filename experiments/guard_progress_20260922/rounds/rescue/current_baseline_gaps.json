@@ -1,0 +1,552 @@
+{
+  "ali30": {
+    "fct_mean_us": {
+      "guard": 15.67157615308793,
+      "best_baseline": "homa",
+      "best_value": 15.68501811631148,
+      "ratio": 0.9991430062035075,
+      "pairwise_ratios": {
+        "homa": 0.9991430062035075,
+        "hpcc": 0.8432549811516213,
+        "dcqcn": 0.6178904509890667,
+        "timely": 0.5603049561063003
+      }
+    },
+    "slowdown_p99": {
+      "guard": 2.3370145600400534,
+      "best_baseline": "homa",
+      "best_value": 2.4820991791600266,
+      "ratio": 0.9415476140767784,
+      "pairwise_ratios": {
+        "homa": 0.9415476140767784,
+        "hpcc": 0.7144454534802508,
+        "dcqcn": 0.3585908033688812,
+        "timely": 0.18842321943138826
+      }
+    },
+    "span_ms": {
+      "guard": 10.469448,
+      "best_baseline": "hpcc",
+      "best_value": 10.469689,
+      "ratio": 0.9999769811691636,
+      "pairwise_ratios": {
+        "homa": 0.9970077714520579,
+        "hpcc": 0.9999769811691636,
+        "dcqcn": 0.954741237803837,
+        "timely": 0.8969070495727902
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 2.07579136,
+      "best_baseline": "hpcc",
+      "best_value": 0.8852536,
+      "ratio": 2.344855033631041,
+      "pairwise_ratios": {
+        "homa": 0.5201657769567978,
+        "hpcc": 2.344855033631041,
+        "dcqcn": 0.5135691989650868,
+        "timely": 0.17104458355696336
+      }
+    }
+  },
+  "ali50": {
+    "fct_mean_us": {
+      "guard": 22.935609147118033,
+      "best_baseline": "homa",
+      "best_value": 20.1430882975227,
+      "ratio": 1.1386341959260922,
+      "pairwise_ratios": {
+        "homa": 1.1386341959260922,
+        "hpcc": 0.810477264274205,
+        "dcqcn": 0.5585978142677543,
+        "timely": 0.3898905860063991
+      }
+    },
+    "slowdown_p99": {
+      "guard": 4.246846922264313,
+      "best_baseline": "homa",
+      "best_value": 3.9036766677193158,
+      "ratio": 1.087909497572577,
+      "pairwise_ratios": {
+        "homa": 1.087909497572577,
+        "hpcc": 0.788636540906772,
+        "dcqcn": 0.3648318854895007,
+        "timely": 0.16913986394046326
+      }
+    },
+    "span_ms": {
+      "guard": 11.426654,
+      "best_baseline": "homa",
+      "best_value": 10.802852,
+      "ratio": 1.057744195699432,
+      "pairwise_ratios": {
+        "homa": 1.057744195699432,
+        "hpcc": 1.0422499343044327,
+        "dcqcn": 0.9252349918647785,
+        "timely": 0.9444944152710699
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 4.44156712,
+      "best_baseline": "hpcc",
+      "best_value": 1.78054152,
+      "ratio": 2.4945035373283515,
+      "pairwise_ratios": {
+        "homa": 0.5231780178871478,
+        "hpcc": 2.4945035373283515,
+        "dcqcn": 0.36420276837480364,
+        "timely": 0.16825581398449882
+      }
+    }
+  },
+  "web40": {
+    "fct_mean_us": {
+      "guard": 374.73200966183583,
+      "best_baseline": "homa",
+      "best_value": 324.66033816425124,
+      "ratio": 1.1542278671324875,
+      "pairwise_ratios": {
+        "homa": 1.1542278671324875,
+        "hpcc": 0.8864088107448717,
+        "dcqcn": 0.6250221260957335,
+        "timely": 0.7070992376863937
+      }
+    },
+    "slowdown_p99": {
+      "guard": 4.439847305442131,
+      "best_baseline": "homa",
+      "best_value": 3.5346923975698554,
+      "ratio": 1.2560774194933002,
+      "pairwise_ratios": {
+        "homa": 1.2560774194933002,
+        "hpcc": 0.7259621634933793,
+        "dcqcn": 0.4897518525629866,
+        "timely": 0.45390256963523895
+      }
+    },
+    "span_ms": {
+      "guard": 13.658788,
+      "best_baseline": "hpcc",
+      "best_value": 13.667266,
+      "ratio": 0.9993796857396351,
+      "pairwise_ratios": {
+        "homa": 0.9769170354331213,
+        "hpcc": 0.9993796857396351,
+        "dcqcn": 0.5449060368579063,
+        "timely": 0.8933404649942319
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 2.55220512,
+      "best_baseline": "hpcc",
+      "best_value": 0.47531175999999997,
+      "ratio": 5.3695391841346405,
+      "pairwise_ratios": {
+        "homa": 0.4362751908844576,
+        "hpcc": 5.3695391841346405,
+        "dcqcn": 0.7787464132639099,
+        "timely": 0.19211903957859863
+      }
+    }
+  },
+  "fb40": {
+    "fct_mean_us": {
+      "guard": 29.947544791982995,
+      "best_baseline": "homa",
+      "best_value": 29.593870634679625,
+      "ratio": 1.0119509259761688,
+      "pairwise_ratios": {
+        "homa": 1.0119509259761688,
+        "hpcc": 0.7763284834995157,
+        "dcqcn": 0.5734572703724761,
+        "timely": 0.5414400124406183
+      }
+    },
+    "slowdown_p99": {
+      "guard": 2.279624831515977,
+      "best_baseline": "homa",
+      "best_value": 2.4138528935040395,
+      "ratio": 0.9443926088663953,
+      "pairwise_ratios": {
+        "homa": 0.9443926088663953,
+        "hpcc": 0.5698872841499684,
+        "dcqcn": 0.2991146853085426,
+        "timely": 0.15089478232956013
+      }
+    },
+    "span_ms": {
+      "guard": 12.454657,
+      "best_baseline": "homa",
+      "best_value": 11.956249,
+      "ratio": 1.0416859836224555,
+      "pairwise_ratios": {
+        "homa": 1.0416859836224555,
+        "hpcc": 1.023078174196691,
+        "dcqcn": 0.815884433256195,
+        "timely": 0.865885306769609
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 0.6851836800000001,
+      "best_baseline": "hpcc",
+      "best_value": 1.37135392,
+      "ratio": 0.49964029708683816,
+      "pairwise_ratios": {
+        "homa": 0.09889282201366702,
+        "hpcc": 0.49964029708683816,
+        "dcqcn": 0.15341396932571802,
+        "timely": 0.06841817642244698
+      }
+    }
+  },
+  "fabric": {
+    "fct_mean_us": {
+      "guard": 3015.512,
+      "best_baseline": "hpcc",
+      "best_value": 2920.04,
+      "ratio": 1.0326954425281847,
+      "pairwise_ratios": {
+        "homa": 1.007503541116121,
+        "hpcc": 1.0326954425281847,
+        "dcqcn": 0.8870702052748183,
+        "timely": 0.6760031927040816
+      }
+    },
+    "slowdown_p99": {
+      "guard": 4.268173356079492,
+      "best_baseline": "homa",
+      "best_value": 4.206052286185644,
+      "ratio": 1.0147694478496805,
+      "pairwise_ratios": {
+        "homa": 1.0147694478496805,
+        "hpcc": 0.9779170812118831,
+        "dcqcn": 0.867625779749591,
+        "timely": 0.676966993770368
+      }
+    },
+    "span_ms": {
+      "guard": 3.037509,
+      "best_baseline": "homa",
+      "best_value": 2.993322,
+      "ratio": 1.0147618599001378,
+      "pairwise_ratios": {
+        "homa": 1.0147618599001378,
+        "hpcc": 0.9762094838108792,
+        "dcqcn": 0.8675843182349832,
+        "timely": 0.6769403057421082
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 2.946965288819559,
+      "best_baseline": "hpcc",
+      "best_value": 0.14552516047397632,
+      "ratio": 20.250555156381726,
+      "pairwise_ratios": {
+        "homa": 0.6964550444695438,
+        "hpcc": 20.250555156381726,
+        "dcqcn": 4.294951576105962,
+        "timely": 0.645575705805628
+      }
+    }
+  },
+  "receiver": {
+    "fct_mean_us": {
+      "guard": 1851.67775,
+      "best_baseline": "homa",
+      "best_value": 2256.31575,
+      "ratio": 0.8206642842430187,
+      "pairwise_ratios": {
+        "homa": 0.8206642842430187,
+        "hpcc": 0.6728255269082576,
+        "dcqcn": 0.5388833278984535,
+        "timely": 0.4409222927925174
+      }
+    },
+    "slowdown_p99": {
+      "guard": 4.092973109319273,
+      "best_baseline": "homa",
+      "best_value": 4.175233326119766,
+      "ratio": 0.9802980551324203,
+      "pairwise_ratios": {
+        "homa": 0.9802980551324203,
+        "hpcc": 0.9348666633149074,
+        "dcqcn": 0.8336954348051078,
+        "timely": 0.617198391650738
+      }
+    },
+    "span_ms": {
+      "guard": 2.93432,
+      "best_baseline": "homa",
+      "best_value": 2.993498,
+      "ratio": 0.9802311543218001,
+      "pairwise_ratios": {
+        "homa": 0.9802311543218001,
+        "hpcc": 0.9413793778269983,
+        "dcqcn": 0.8398742787500347,
+        "timely": 0.6196882678602919
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 0.03699118838858057,
+      "best_baseline": "hpcc",
+      "best_value": 0.15718724233388331,
+      "ratio": 0.23533200175372465,
+      "pairwise_ratios": {
+        "homa": 0.01661393613982471,
+        "hpcc": 0.23533200175372465,
+        "dcqcn": 0.05254545702842942,
+        "timely": 0.009938650630246878
+      }
+    }
+  },
+  "hybrid": {
+    "fct_mean_us": {
+      "guard": 1926.301,
+      "best_baseline": "homa",
+      "best_value": 2256.6632,
+      "ratio": 0.8536058903251491,
+      "pairwise_ratios": {
+        "homa": 0.8536058903251491,
+        "hpcc": 0.78327977691644,
+        "dcqcn": 0.5725099204686263,
+        "timely": 0.47346372738335024
+      }
+    },
+    "slowdown_p99": {
+      "guard": 4.148501423508548,
+      "best_baseline": "homa",
+      "best_value": 4.18606524250234,
+      "ratio": 0.9910264611711266,
+      "pairwise_ratios": {
+        "homa": 0.9910264611711266,
+        "hpcc": 0.9531664079162429,
+        "dcqcn": 0.642008620389396,
+        "timely": 0.6655969611802693
+      }
+    },
+    "span_ms": {
+      "guard": 2.981088,
+      "best_baseline": "homa",
+      "best_value": 2.993403,
+      "ratio": 0.9958859532111114,
+      "pairwise_ratios": {
+        "homa": 0.9958859532111114,
+        "hpcc": 0.9606892782378237,
+        "dcqcn": 0.6478017980586946,
+        "timely": 0.6720719404608281
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 0.9361092230508473,
+      "best_baseline": "hpcc",
+      "best_value": 0.13967433382330882,
+      "ratio": 6.7020847526292595,
+      "pairwise_ratios": {
+        "homa": 0.4230382901500137,
+        "hpcc": 6.7020847526292595,
+        "dcqcn": 1.4566768126289782,
+        "timely": 0.2991377217989383
+      }
+    }
+  },
+  "fairness": {
+    "fct_mean_us": {
+      "guard": 41842.1945,
+      "best_baseline": "homa",
+      "best_value": 29213.155000000006,
+      "ratio": 1.4323065926977072,
+      "pairwise_ratios": {
+        "homa": 1.4323065926977072,
+        "hpcc": 0.9319247211805869,
+        "dcqcn": 0.8831678078577548,
+        "timely": 0.8180899189787878
+      }
+    },
+    "slowdown_p99": {
+      "guard": 3.525826496783299,
+      "best_baseline": "homa",
+      "best_value": 3.502876695761074,
+      "ratio": 1.0065517010775735,
+      "pairwise_ratios": {
+        "homa": 1.0065517010775735,
+        "hpcc": 0.8619702073694782,
+        "dcqcn": 0.7709925539432284,
+        "timely": 0.8227574171746278
+      }
+    },
+    "span_ms": {
+      "guard": 52.328308,
+      "best_baseline": "homa",
+      "best_value": 53.391154,
+      "ratio": 0.980093219187583,
+      "pairwise_ratios": {
+        "homa": 0.980093219187583,
+        "hpcc": 0.9502389547810731,
+        "dcqcn": 0.8618216144833797,
+        "timely": 0.8793457603879584
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 8.3088233380022,
+      "best_baseline": "hpcc",
+      "best_value": 0.04928051809219078,
+      "ratio": 168.60259712486373,
+      "pairwise_ratios": {
+        "homa": 1.1703305920349867,
+        "hpcc": 168.60259712486373,
+        "dcqcn": 6.624862458874834,
+        "timely": 1.408440470301459
+      }
+    }
+  },
+  "alltoall": {
+    "fct_mean_us": {
+      "guard": 582.8941791666667,
+      "best_baseline": "homa",
+      "best_value": 514.9411458333333,
+      "ratio": 1.1319627182313514,
+      "pairwise_ratios": {
+        "homa": 1.1319627182313514,
+        "hpcc": 0.8722395421552115,
+        "dcqcn": 0.8292846232470038,
+        "timely": 0.8233785663018269
+      }
+    },
+    "slowdown_p99": {
+      "guard": 16.561541802614354,
+      "best_baseline": "dcqcn",
+      "best_value": 14.568820632182714,
+      "ratio": 1.1367798547831451,
+      "pairwise_ratios": {
+        "homa": 0.9369950706000675,
+        "hpcc": 0.9927559600219704,
+        "dcqcn": 1.1367798547831451,
+        "timely": 1.1285572289343881
+      }
+    },
+    "span_ms": {
+      "guard": 0.813599,
+      "best_baseline": "dcqcn",
+      "best_value": 0.705276,
+      "ratio": 1.1535895167282029,
+      "pairwise_ratios": {
+        "homa": 0.9178409502418134,
+        "hpcc": 1.0101624754474097,
+        "dcqcn": 1.1535895167282029,
+        "timely": 1.1453897863653961
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 0.6330290271086445,
+      "best_baseline": "dcqcn",
+      "best_value": 0.01042046840057997,
+      "ratio": 60.74861539558165,
+      "pairwise_ratios": {
+        "homa": 0.6691585174291453,
+        "hpcc": 33.0870387540582,
+        "dcqcn": 60.74861539558165,
+        "timely": 59.57701380415566
+      }
+    }
+  },
+  "allreduce_dp2": {
+    "fct_mean_us": {
+      "guard": 15671.422720312501,
+      "best_baseline": "homa",
+      "best_value": 18145.900793750003,
+      "ratio": 0.863634321516307,
+      "pairwise_ratios": {
+        "homa": 0.863634321516307,
+        "hpcc": 0.5464799746729004,
+        "dcqcn": 0.6183827761827901,
+        "timely": 0.40091405177078066
+      }
+    },
+    "slowdown_p99": {
+      "guard": 40.58350030413628,
+      "best_baseline": "homa",
+      "best_value": 21.711416476581515,
+      "ratio": 1.8692239793709762,
+      "pairwise_ratios": {
+        "homa": 1.8692239793709762,
+        "hpcc": 1.1845673785506763,
+        "dcqcn": 1.0949799164933522,
+        "timely": 1.0060754669214729
+      }
+    },
+    "span_ms": {
+      "guard": 215.001914,
+      "best_baseline": "dcqcn",
+      "best_value": 224.54429,
+      "ratio": 0.9575033682664565,
+      "pairwise_ratios": {
+        "homa": 0.9308397907279502,
+        "hpcc": 0.9498146064538515,
+        "dcqcn": 0.9575033682664565,
+        "timely": 0.894965528628225
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 12.259149571368752,
+      "best_baseline": "hpcc",
+      "best_value": 0.2126548136258655,
+      "ratio": 57.648116975790174,
+      "pairwise_ratios": {
+        "homa": 0.2278249215406794,
+        "hpcc": 57.648116975790174,
+        "dcqcn": 2.650094091197299,
+        "timely": 0.73886457332787
+      }
+    }
+  },
+  "ring": {
+    "fct_mean_us": {
+      "guard": 5439.113810416667,
+      "best_baseline": "homa",
+      "best_value": 5384.4891729166675,
+      "ratio": 1.010144813323194,
+      "pairwise_ratios": {
+        "homa": 1.010144813323194,
+        "hpcc": 0.5745144678632844,
+        "dcqcn": 0.20836879433940708,
+        "timely": 0.06238386797570302
+      }
+    },
+    "slowdown_p99": {
+      "guard": 182.72938254365994,
+      "best_baseline": "homa",
+      "best_value": 201.8067013523594,
+      "ratio": 0.9054673671347019,
+      "pairwise_ratios": {
+        "homa": 0.9054673671347019,
+        "hpcc": 0.804646448667511,
+        "dcqcn": 0.28315878076965895,
+        "timely": 0.0838103228052535
+      }
+    },
+    "span_ms": {
+      "guard": 11.709459,
+      "best_baseline": "homa",
+      "best_value": 12.185071,
+      "ratio": 0.9609676463928688,
+      "pairwise_ratios": {
+        "homa": 0.9609676463928688,
+        "hpcc": 0.9535584193489282,
+        "dcqcn": 0.33052781944929094,
+        "timely": 0.10133603762182912
+      }
+    },
+    "queue_worst_port_fixed_mean_us": {
+      "guard": 18.171824200473978,
+      "best_baseline": "hpcc",
+      "best_value": 92.7850212279706,
+      "ratio": 0.195848682901373,
+      "pairwise_ratios": {
+        "homa": 0.07359583844994871,
+        "hpcc": 0.195848682901373,
+        "dcqcn": 0.013978148863843968,
+        "timely": 0.013910954372103585
+      }
+    }
+  }
+}

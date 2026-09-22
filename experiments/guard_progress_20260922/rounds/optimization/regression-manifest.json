@@ -1,0 +1,155 @@
+{
+  "phase": "development, not held-out validation",
+  "old_manifest_sha256": "9ac9db75f2ec9289d602313ecee181e771f0bafe9df8f34462cecf34cc04ae63",
+  "binary_sha256": "66bd49556ba090d1a9288f8b50b0c2d45804c3485fc7186bcd517ac3593c1398",
+  "profiles": {
+    "adaptive_gate_k1": {
+      "guard_adaptive_fabric_target": 1,
+      "guard_tail_congestion_gate": 1,
+      "guard_receiver_concurrency": 1
+    },
+    "adaptive_gate_k1_min1": {
+      "guard_adaptive_fabric_target": 1,
+      "guard_tail_congestion_gate": 1,
+      "guard_receiver_concurrency": 1,
+      "guard_concurrency_min_bdps": 1
+    }
+  },
+  "tasks": [
+    {
+      "study": "ali30",
+      "seed": 301,
+      "arm": "adaptive_gate_k1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ali30-s301.txt",
+      "topo": "leaf_spine_128_100G_OS1",
+      "duration": 0.01,
+      "warmup": 0.005,
+      "load": 30,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_adaptive_fabric_target": 1,
+        "guard_tail_congestion_gate": 1,
+        "guard_receiver_concurrency": 1
+      },
+      "monitor": "bulk",
+      "buffer": 9,
+      "key": "ali30-s301-adaptive_gate_k1",
+      "flow_sha256": "d5b78c617ce6526fefd93f56cf31d54cbbbe69991cb3bda0026bbd5c2bf0cd4c",
+      "flow_count": 117433
+    },
+    {
+      "study": "ali30",
+      "seed": 301,
+      "arm": "adaptive_gate_k1_min1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ali30-s301.txt",
+      "topo": "leaf_spine_128_100G_OS1",
+      "duration": 0.01,
+      "warmup": 0.005,
+      "load": 30,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_adaptive_fabric_target": 1,
+        "guard_tail_congestion_gate": 1,
+        "guard_receiver_concurrency": 1,
+        "guard_concurrency_min_bdps": 1
+      },
+      "monitor": "bulk",
+      "buffer": 9,
+      "key": "ali30-s301-adaptive_gate_k1_min1",
+      "flow_sha256": "d5b78c617ce6526fefd93f56cf31d54cbbbe69991cb3bda0026bbd5c2bf0cd4c",
+      "flow_count": 117433
+    },
+    {
+      "study": "ali50",
+      "seed": 301,
+      "arm": "adaptive_gate_k1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ali50-s301.txt",
+      "topo": "leaf_spine_128_100G_OS1",
+      "duration": 0.01,
+      "warmup": 0.005,
+      "load": 50,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_adaptive_fabric_target": 1,
+        "guard_tail_congestion_gate": 1,
+        "guard_receiver_concurrency": 1
+      },
+      "monitor": "bulk",
+      "buffer": 9,
+      "key": "ali50-s301-adaptive_gate_k1",
+      "flow_sha256": "bae7965ce327c8235df0cd044b06d6acc5d989f7a93146e01da646f651652aa0",
+      "flow_count": 195532
+    },
+    {
+      "study": "ali50",
+      "seed": 301,
+      "arm": "adaptive_gate_k1_min1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/ali50-s301.txt",
+      "topo": "leaf_spine_128_100G_OS1",
+      "duration": 0.01,
+      "warmup": 0.005,
+      "load": 50,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_adaptive_fabric_target": 1,
+        "guard_tail_congestion_gate": 1,
+        "guard_receiver_concurrency": 1,
+        "guard_concurrency_min_bdps": 1
+      },
+      "monitor": "bulk",
+      "buffer": 9,
+      "key": "ali50-s301-adaptive_gate_k1_min1",
+      "flow_sha256": "bae7965ce327c8235df0cd044b06d6acc5d989f7a93146e01da646f651652aa0",
+      "flow_count": 195532
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "adaptive_gate_k1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_adaptive_fabric_target": 1,
+        "guard_tail_congestion_gate": 1,
+        "guard_receiver_concurrency": 1
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-adaptive_gate_k1",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    },
+    {
+      "study": "allreduce_dp2",
+      "seed": 301,
+      "arm": "adaptive_gate_k1_min1",
+      "cc": "guard",
+      "flow": "/home/gengjiayao/ict/work/guard_eurosys_20260921/flows/allreduce_dp2-s301.txt",
+      "topo": "leaf_spine_16_100G_OS1",
+      "duration": 0.25,
+      "warmup": 0,
+      "load": 40,
+      "cdf": "AliStorage2019",
+      "extra": {
+        "guard_adaptive_fabric_target": 1,
+        "guard_tail_congestion_gate": 1,
+        "guard_receiver_concurrency": 1,
+        "guard_concurrency_min_bdps": 1
+      },
+      "monitor": "bulk",
+      "buffer": 16,
+      "key": "allreduce_dp2-s301-adaptive_gate_k1_min1",
+      "flow_sha256": "91bdbc62901347c54dde59e883e53c5eb3f610bcc339c77ad1aa63f1190d05c8",
+      "flow_count": 1280
+    }
+  ]
+}

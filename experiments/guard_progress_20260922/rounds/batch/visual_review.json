@@ -1,0 +1,46 @@
+{
+  "status": "12 figures visually inspected; final revised event and budget panels re-inspected",
+  "checked": [
+    "axis units and full CDF tails",
+    "all adverse changes retained",
+    "three busiest queue ranks",
+    "all Storage bins",
+    "distinct numerical x positions",
+    "no cropped event annotations",
+    "Homa native RESEND counts distinct from generic RTO counts",
+    "prior-build baseline references labeled",
+    "development seed301 and no unsupported uncertainty intervals"
+  ],
+  "fixes": [
+    "Added separate native Homa RESEND panel after review identified ambiguity in generic RTO zero",
+    "Raised budget event axis headroom to keep annotation within axes"
+  ],
+  "figures": {
+    "batch_baselines.png": "b84746d3a30c2cd2d159979d3929c092c36fc694d47775aeedf7d8400beadf58",
+    "batch_cdf.png": "4bee550821023b4e17146a26d439a1486e062698975ded6e9cda1f97fe105a4c",
+    "batch_controls.png": "d12f1bcc17c7dca531815634b41b9316bfb4f78eebc024925d0d9a6bd006a4eb",
+    "batch_events.png": "ec16c3637c9998e6ee79f1639d5570b70c14ac8ef58e32ff936302dd6ab313eb",
+    "batch_regression.png": "7e82621742dbde9e24b33c25303e0c96019657b73a7cc9f5504d99ad5415998a",
+    "budget_cdf.png": "256b73cbade2d9ee1e031ca18223e89571302b4ae8ffe9e0e9829eda6d04b3a0",
+    "budget_controls.png": "35688c448554f3ba3dc1e8350d23345c8dc87fb3a9ddec5e3fad49076ff2d732",
+    "budget_regression.png": "b2d52111cc2a40e00fd3e6e5c7c31afea916624803fc6ee19afcf2b39f2b90ac",
+    "budget_storage_bins.png": "c41f53ae5af3320443d5f0924ee76c677946885804d93e199b25e9fe5357584f",
+    "homa_order.png": "de92a5df246937ef6569e1ab24acbff5fcfb6834c887aed6b682b04c730f02ee",
+    "queue_ranks.png": "c772cdcfde0e5e3f9cb9b97d4c6e68e97c4552b2160f23e746080a4073a7a4cd",
+    "storage_bins.png": "cae65afdf5d25d6c52708d6cb1cd29185b72cab661a08379aad0a378e108f8db"
+  },
+  "pdf_sha256": {
+    "batch_baselines.pdf": "d680056c22662d2077e40071129ef619a3e552d4ac74703c4263d2290b48ffc8",
+    "budget_regression.pdf": "4c131fdfea1b5b0b57b4fab60b71057cbacd368270cbc77bc8946bd9e62a36cb",
+    "homa_order.pdf": "9e3019a485312ca4ff851b2af28bf2ddef46356c4b410728f866f147d43c0d4d",
+    "budget_storage_bins.pdf": "4e387cb92adf31505a2644f04a70fa8425c6ddf85edef386edddd8868c3d263c",
+    "batch_cdf.pdf": "50bb2e5cabc6e584e94dc25827a20843504d273112ef4f3335a6117723502400",
+    "batch_regression.pdf": "27337859f8fbb48eb2f5fb81d610b464f10219caf78c8514a5ebd86916fff530",
+    "batch_controls.pdf": "13a090abd205d217b2838deff677a8345c22c7d970ef257ebdb81a15d9959b54",
+    "batch_events.pdf": "33be1d5c4a3760ecaf9263d19eeeada4b79be2b6bd805a0ed402971ab6da0b46",
+    "budget_controls.pdf": "b8ef66b7d5b864d5597e198f88e9e041e58e2611332c29affebfbc935166afdd",
+    "budget_cdf.pdf": "67d2285dbe066a690d66d57972edeee2a753090d830582e0162525c9faf2171f",
+    "queue_ranks.pdf": "9f431a59fd331d05050de2d8a7bd1b433aeb471ce63c46aa4cbda463a54955a0",
+    "storage_bins.pdf": "e6470e584e794986053cb8b1ca9c432cc109c01a1aaff47cbd80b93f6ed420b7"
+  }
+}

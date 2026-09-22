@@ -1,0 +1,17 @@
+{
+  "reviewer": "primary agent",
+  "scope": "development plots only; no manuscript review",
+  "figures": [
+    "figures/dp2_full_metrics.png",
+    "figures/dp2_full_cdf.png",
+    "figures/storage_weights.png"
+  ],
+  "checks": [
+    "legible axes and labels",
+    "no visible clipping or overlap",
+    "single development seed explicitly identified",
+    "DP2 CDF crossing and adverse P99 preserved",
+    "storage adverse latency preserved"
+  ],
+  "result": "pass"
+}

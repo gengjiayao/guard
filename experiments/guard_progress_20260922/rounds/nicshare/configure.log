@@ -1,0 +1,58 @@
+Setting top to                           : /home/gengjiayao/ict/guard-nictrace 
+Setting out to                           : /home/gengjiayao/ict/guard-nictrace/build 
+Checking for 'gcc' (c compiler)          : /usr/bin/gcc 
+Checking for 'g++' (c++ compiler)        : /usr/bin/g++ 
+Checking for compilation flag -march=native... support : ok 
+Checking for compilation flag -Wl,--soname=foo... support : ok 
+Checking boost includes                                   : not found 
+Checking boost includes                                   : not found 
+Checking for click location                               : not found 
+Checking for program pkg-config                           : /usr/bin/pkg-config 
+Checking for 'gtk+-2.0' >= 2.12                           : not found 
+Checking for 'libxml-2.0' >= 2.7                          : yes 
+Checking for type uint128_t                               : not found 
+Checking for type __uint128_t                             : yes 
+Checking high precision time implementation               : 128-bit integer 
+Checking for header stdint.h                              : yes 
+Checking for header inttypes.h                            : yes 
+Checking for header sys/inttypes.h                        : not found 
+Checking for header sys/types.h                           : yes 
+Checking for header sys/stat.h                            : yes 
+Checking for header dirent.h                              : yes 
+Checking for header stdlib.h                              : yes 
+Checking for header signal.h                              : yes 
+Checking for header pthread.h                             : yes 
+Checking for header stdint.h                              : yes 
+Checking for header inttypes.h                            : yes 
+Checking for header sys/inttypes.h                        : not found 
+Checking for library rt                                   : yes 
+Checking for header netpacket/packet.h                    : yes 
+Checking for NSC location                                 : not found 
+Checking for 'sqlite3'                                    : yes 
+Checking for header linux/if_tun.h                        : yes 
+Checking for program sudo                                 : /usr/bin/sudo 
+Checking for program valgrind                             : not found 
+Checking for 'gsl'                                        : not found 
+Checking for compilation flag -Wno-error=deprecated-d... support : ok 
+Checking for compilation flag -fstrict-aliasing... support       : ok 
+Checking for compilation flag -Wstrict-aliasing... support       : ok 
+Checking for program doxygen                                     : not found 
+---- Summary of optional NS-3 features:
+Python Bindings               : [01;31mnot enabled (disabled by user request)[0m
+NS-3 Click Integration        : [01;31mnot enabled (nsclick not enabled (see option --with-nsclick))[0m
+GtkConfigStore                : [01;31mnot enabled (library 'gtk+-2.0 >= 2.12' not found)[0m
+XmlIo                         : [32menabled[0m
+Threading Primitives          : [32menabled[0m
+Real Time Simulator           : [32menabled[0m
+Emulated Net Device           : [32menabled[0m
+Network Simulation Cradle     : [01;31mnot enabled (NSC not found (see option --with-nsc))[0m
+MPI Support                   : [01;31mnot enabled (option --enable-mpi not selected)[0m
+NS-3 OpenFlow Integration     : [01;31mnot enabled (Required boost libraries not found)[0m
+SQlite stats data output      : [32menabled[0m
+Tap Bridge                    : [32menabled[0m
+PyViz visualizer              : [01;31mnot enabled (Python Bindings are needed but not enabled)[0m
+Use sudo to set suid bit      : [01;31mnot enabled (option --enable-sudo not selected)[0m
+Build tests                   : [01;31mnot enabled (defaults to disabled)[0m
+Build examples                : [01;31mnot enabled (defaults to disabled)[0m
+GNU Scientific Library (GSL)  : [01;31mnot enabled (GSL not found)[0m
+'configure' finished successfully (1.064s)

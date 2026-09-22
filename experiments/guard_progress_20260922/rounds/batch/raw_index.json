@@ -1,0 +1,422 @@
+{
+  "raw/ali30-s301-budget_storage_shared_budget.tar.gz": {
+    "sha256": "73cdf7d7e97bdcd304b7c59a893f6b2c87b575e5d02fa9333662ca95d905235f",
+    "status": "completed",
+    "key": "ali30-s301-budget_storage_shared_budget",
+    "bytes": 3427515
+  },
+  "raw/ali30-s301-budget_storage_shared_cursor.tar.gz": {
+    "sha256": "b49ae68b87638c9d61dcf6d34de1bc72167794f5bc8b1ec783763708359b46e1",
+    "status": "completed",
+    "key": "ali30-s301-budget_storage_shared_cursor",
+    "bytes": 3427085
+  },
+  "raw/ali30-s301-storage_shared_batch.tar.gz": {
+    "sha256": "99fdf0d974a4cf5f2479b1ce828ea97e3a8efd5088b503c647661559c15d7990",
+    "status": "completed",
+    "key": "ali30-s301-storage_shared_batch",
+    "bytes": 3426832
+  },
+  "raw/ali30-s301-storage_shared_cursor.tar.gz": {
+    "sha256": "56650fbf58189e9cb9095bb1faed52ab87e2acca002f8d83791add1fa4415fef",
+    "status": "completed",
+    "key": "ali30-s301-storage_shared_cursor",
+    "bytes": 3427033
+  },
+  "raw/ali50-s301-budget_storage_shared_budget.tar.gz": {
+    "sha256": "e5af90f1de7d280aa47298020e5f612bc29cd29ebee479a7ea082f65d35d182a",
+    "status": "completed",
+    "key": "ali50-s301-budget_storage_shared_budget",
+    "bytes": 5677883
+  },
+  "raw/ali50-s301-budget_storage_shared_cursor.tar.gz": {
+    "sha256": "38ee9a56cc35b3d56eb7b3b9e3e57dc2e9484f02e4557e477f7b8d63bc7e5832",
+    "status": "completed",
+    "key": "ali50-s301-budget_storage_shared_cursor",
+    "bytes": 5676219
+  },
+  "raw/ali50-s301-storage_shared_batch.tar.gz": {
+    "sha256": "70749fff415ae8097e37918d134255532aacd3e1f6c04cdd632b72367739c120",
+    "status": "completed",
+    "key": "ali50-s301-storage_shared_batch",
+    "bytes": 5676267
+  },
+  "raw/ali50-s301-storage_shared_cursor.tar.gz": {
+    "sha256": "cad701bf41197d58a806a69ced1194db5f7751cdd3a83d9d921d0ff6274d0d7d",
+    "status": "completed",
+    "key": "ali50-s301-storage_shared_cursor",
+    "bytes": 5676210
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_dcqcn.tar.gz": {
+    "sha256": "09fd0cab93aa3c7568dabe0b3b25232f64ddab127c7e64623530e806ad495bec",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_dcqcn",
+    "bytes": 154472
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_homa.tar.gz": {
+    "sha256": "778d34bdda438bd0f5d93a456f673c4c463d1035ea17c6cd2ef1b0a15d66a602",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_homa",
+    "bytes": 39232
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_hpcc.tar.gz": {
+    "sha256": "7dc69ff7773d9727e2f88d232fc5a239d2a5dd9e1444fac46be013b118172798",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_hpcc",
+    "bytes": 38497
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_joint32_batch.tar.gz": {
+    "sha256": "446e795595f098b91ed4a5f132c5fae46494170ed9cbf8ce41a3214b50419bd0",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_joint32_batch",
+    "bytes": 41025
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_joint32_cursor.tar.gz": {
+    "sha256": "eb08949f5a08e90b70d46cdde0557e461e450d06561cf0ac858636bd5bd05d1e",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_joint32_cursor",
+    "bytes": 40024
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_shared_batch.tar.gz": {
+    "sha256": "be36ecbd67d0a0ae372adba7736b93d73a4b0f2c8603e961887045c832befead",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_shared_batch",
+    "bytes": 39781
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_shared_cursor.tar.gz": {
+    "sha256": "3b4ce8406001b5fb91da04fcee6f47aa50afdb4d8c97f04a48f3cf780c26c08b",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_shared_cursor",
+    "bytes": 39731
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_shared_l10_batch.tar.gz": {
+    "sha256": "dec322f5e873ad9e7d32aa76b8eae849c64933452f6e926cb2cae83f75935e5c",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_shared_l10_batch",
+    "bytes": 39972
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_shared_l10_batch_trace.tar.gz": {
+    "sha256": "2315e42fb810454fd564b94e9d6cec970ec3b140b27bd1468d2fafb1da3b873a",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_shared_l10_batch_trace",
+    "bytes": 1962288
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_shared_l10_cursor.tar.gz": {
+    "sha256": "f171ceef06408f6b94bd3fdbfdc761c92ba008b3d2a6c070b11be81dbba5ca5f",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_shared_l10_cursor",
+    "bytes": 39955
+  },
+  "raw/allreduce_dp2-s301-batch_dp2_timely.tar.gz": {
+    "sha256": "fc07276b8229087af98890b5608faa0990540ad0a774ac88cc5c8a2d25caca0e",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_dp2_timely",
+    "bytes": 58779
+  },
+  "raw/allreduce_dp2-s301-batch_trace_shared_l10_cursor_trace.tar.gz": {
+    "sha256": "09076795fcbb6493ac491ff92850dab64c53ae0abef2786484761e0e38d0b70f",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-batch_trace_shared_l10_cursor_trace",
+    "bytes": 1970779
+  },
+  "raw/allreduce_dp2-s301-budget_dp2_homa.tar.gz": {
+    "sha256": "f9c9c47e97214128787c641728d1ecfaa6f31fb6b3d00c1a4cbce2434cfab801",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-budget_dp2_homa",
+    "bytes": 39248
+  },
+  "raw/allreduce_dp2-s301-budget_dp2_joint32_budget.tar.gz": {
+    "sha256": "add0a59c0389794d92bc2fa453eee1be11795c5905dafe7f518587284b06c6b2",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-budget_dp2_joint32_budget",
+    "bytes": 39956
+  },
+  "raw/allreduce_dp2-s301-budget_dp2_joint32_cursor.tar.gz": {
+    "sha256": "88ea46ede4da92366a13b52f3eb7698934576147af8274b9be97f0eab9f76140",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-budget_dp2_joint32_cursor",
+    "bytes": 40044
+  },
+  "raw/allreduce_dp2-s301-budget_dp2_shared_budget.tar.gz": {
+    "sha256": "beb988fe7d9a9bef6d87a31cd63a2cc388ed5fd218e469a17e7ca2172d265a2d",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-budget_dp2_shared_budget",
+    "bytes": 39841
+  },
+  "raw/allreduce_dp2-s301-budget_dp2_shared_budget_batch.tar.gz": {
+    "sha256": "68a8fc0c394c8c36d1152fedd6e4c6166dff4f63e2f22d217d0cb6e3dd754a0a",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-budget_dp2_shared_budget_batch",
+    "bytes": 39830
+  },
+  "raw/allreduce_dp2-s301-budget_dp2_shared_cursor.tar.gz": {
+    "sha256": "4fe168862916cc078f0c87b773240e273203fa250ebd967cce5b3ec0bd80c57e",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-budget_dp2_shared_cursor",
+    "bytes": 39788
+  },
+  "raw/allreduce_dp2-s301-budget_dp2_shared_l10_budget.tar.gz": {
+    "sha256": "c336432e8e9e0c3b8a3b7a9ae71c72f11c5badb2fec8a950f329b8dd15d5b384",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-budget_dp2_shared_l10_budget",
+    "bytes": 40032
+  },
+  "raw/allreduce_dp2-s301-budget_dp2_shared_l10_budget_batch.tar.gz": {
+    "sha256": "7e4556fd0bee6330976e7dcc3e5fb463a834a4ff06dbf03b3d6d957a639f3787",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-budget_dp2_shared_l10_budget_batch",
+    "bytes": 39932
+  },
+  "raw/allreduce_dp2-s301-budget_dp2_shared_l10_budget_trace.tar.gz": {
+    "sha256": "c80db3323efc957e6733c3a77ddc08a233a7a09f890c2d28f80c9d12e2bea619",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-budget_dp2_shared_l10_budget_trace",
+    "bytes": 2066499
+  },
+  "raw/allreduce_dp2-s301-budget_dp2_shared_l10_cursor.tar.gz": {
+    "sha256": "0c4bd21c0764fce00a1b59daf230d27e84de6e8063f5356ef00ac8a0eb9881c8",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-budget_dp2_shared_l10_cursor",
+    "bytes": 40018
+  },
+  "raw/allreduce_dp2-s301-homa_order_homa_legacy_a.tar.gz": {
+    "sha256": "cce8d2968e95056c857ab1fb1713901b5d13a2330b05ce8e5715112199f36d34",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-homa_order_homa_legacy_a",
+    "bytes": 39155
+  },
+  "raw/allreduce_dp2-s301-homa_order_homa_legacy_b.tar.gz": {
+    "sha256": "00628c189acecc9d15913f8240990091c7042d750400c0400f3c888577c91900",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-homa_order_homa_legacy_b",
+    "bytes": 39144
+  },
+  "raw/allreduce_dp2-s301-homa_order_homa_legacy_large.tar.gz": {
+    "sha256": "469c74e94f3e9dd6f4a3935d7fd990705d4d0b24dccc490dc6ac78f6b3a68967",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-homa_order_homa_legacy_large",
+    "bytes": 39154
+  },
+  "raw/allreduce_dp2-s301-homa_order_homa_legacy_small.tar.gz": {
+    "sha256": "011fd6461baea33672dd452c77f4778b46de9c2a9186b888b4df06061e1ec14d",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-homa_order_homa_legacy_small",
+    "bytes": 39150
+  },
+  "raw/allreduce_dp2-s301-homa_order_homa_stable_a.tar.gz": {
+    "sha256": "474a2f9946b8f0ecd9b714533aadece9ccbf6355f8c70d7cfd296fba229b130f",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-homa_order_homa_stable_a",
+    "bytes": 39241
+  },
+  "raw/allreduce_dp2-s301-homa_order_homa_stable_b.tar.gz": {
+    "sha256": "bcde16d40a101f5bcae0594e79dc2b06cd707e23edf1fb3751a774ee1897328a",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-homa_order_homa_stable_b",
+    "bytes": 39229
+  },
+  "raw/allreduce_dp2-s301-homa_order_homa_stable_large.tar.gz": {
+    "sha256": "ef550122972491d429c78c1b043dfcc8ca45c23bd4633f5d3550f2e0d6fd410a",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-homa_order_homa_stable_large",
+    "bytes": 39236
+  },
+  "raw/allreduce_dp2-s301-homa_order_homa_stable_small.tar.gz": {
+    "sha256": "c1f3e8a588c74bc40676a55bf2fa1f5dd3a8ecd9da0e404915c8511dd12c27bf",
+    "status": "completed",
+    "key": "allreduce_dp2-s301-homa_order_homa_stable_small",
+    "bytes": 39238
+  },
+  "raw/alltoall-s301-batch_cases_joint32_batch.tar.gz": {
+    "sha256": "509c863f800ae3e6dee6b4569b8ac7e57eb0ad0ccd03b728620c6eab8e503223",
+    "status": "completed",
+    "key": "alltoall-s301-batch_cases_joint32_batch",
+    "bytes": 20152
+  },
+  "raw/alltoall-s301-batch_cases_joint32_cursor.tar.gz": {
+    "sha256": "e8fa4848e9c610e03af5be88aa2bb7c3902dca0a94268a3047b0fce784d6307a",
+    "status": "completed",
+    "key": "alltoall-s301-batch_cases_joint32_cursor",
+    "bytes": 20086
+  },
+  "raw/alltoall-s301-batch_cases_shared_batch.tar.gz": {
+    "sha256": "d925639fd78df280f4cb6dcae3da736d2a1c0567a2f32829d276122577db8e3c",
+    "status": "completed",
+    "key": "alltoall-s301-batch_cases_shared_batch",
+    "bytes": 20035
+  },
+  "raw/alltoall-s301-batch_cases_shared_cursor.tar.gz": {
+    "sha256": "05223ab9bc69b1fff16382af199e62a3269230383ef46669a1263d2bec6a1ca8",
+    "status": "completed",
+    "key": "alltoall-s301-batch_cases_shared_cursor",
+    "bytes": 20119
+  },
+  "raw/alltoall-s301-budget_cases_joint32_budget.tar.gz": {
+    "sha256": "a92c5ada0cb9d5ac9cb6ba72aa1a6aaabd3a6b92675f1b154cdfd0676e62b496",
+    "status": "completed",
+    "key": "alltoall-s301-budget_cases_joint32_budget",
+    "bytes": 20053
+  },
+  "raw/alltoall-s301-budget_cases_joint32_cursor.tar.gz": {
+    "sha256": "a00c7e3242914d8db342606b0c733c471de3b3e1499f7e7c270a09d355e13b41",
+    "status": "completed",
+    "key": "alltoall-s301-budget_cases_joint32_cursor",
+    "bytes": 20128
+  },
+  "raw/alltoall-s301-budget_cases_shared_budget.tar.gz": {
+    "sha256": "26f3aec33723c73ec6ac5778869186095c85a7ca2a6e79abd2681619dc45ef08",
+    "status": "completed",
+    "key": "alltoall-s301-budget_cases_shared_budget",
+    "bytes": 20148
+  },
+  "raw/alltoall-s301-budget_cases_shared_cursor.tar.gz": {
+    "sha256": "7e53d5e3f9d6f3e9bd550f8cf6e88569e748f6a657763c5c0e1f635883ffe85c",
+    "status": "completed",
+    "key": "alltoall-s301-budget_cases_shared_cursor",
+    "bytes": 20188
+  },
+  "raw/fb40-s301-batch_cases_joint32_batch.tar.gz": {
+    "sha256": "97b81a64135ab3fc1fa61c54da8929828164bf6599b1d10fde51e543d4c04293",
+    "status": "completed",
+    "key": "fb40-s301-batch_cases_joint32_batch",
+    "bytes": 193394
+  },
+  "raw/fb40-s301-batch_cases_joint32_cursor.tar.gz": {
+    "sha256": "19780eb719eae581a808ff735ce36fb2d945280e3d85aeea612010796d39dcab",
+    "status": "completed",
+    "key": "fb40-s301-batch_cases_joint32_cursor",
+    "bytes": 193283
+  },
+  "raw/fb40-s301-batch_cases_shared_batch.tar.gz": {
+    "sha256": "b9283d18fdc40611ae88417332f05fd6bfe9610ab477e0c1a578f2696a5c13c9",
+    "status": "completed",
+    "key": "fb40-s301-batch_cases_shared_batch",
+    "bytes": 193226
+  },
+  "raw/fb40-s301-batch_cases_shared_cursor.tar.gz": {
+    "sha256": "8b8c3d7be1823f2560fda1965a82d874352757e3b1acaca0ef4855fd06b0cb71",
+    "status": "completed",
+    "key": "fb40-s301-batch_cases_shared_cursor",
+    "bytes": 193214
+  },
+  "raw/fb40-s301-budget_cases_joint32_budget.tar.gz": {
+    "sha256": "e4a8b26738b792c407cbd81e266dd702c049eb0eed393b81d6e3995aaa86f50b",
+    "status": "completed",
+    "key": "fb40-s301-budget_cases_joint32_budget",
+    "bytes": 193370
+  },
+  "raw/fb40-s301-budget_cases_joint32_cursor.tar.gz": {
+    "sha256": "ec9ca78f632d283f4c77ad66f447140d263033e2716d5043cbf6a77e15cfcd37",
+    "status": "completed",
+    "key": "fb40-s301-budget_cases_joint32_cursor",
+    "bytes": 193299
+  },
+  "raw/fb40-s301-budget_cases_shared_budget.tar.gz": {
+    "sha256": "c1ba7cae4d716149701dcc1a89f3622e032d8f8ee3a41428edb73ef1c276eb10",
+    "status": "completed",
+    "key": "fb40-s301-budget_cases_shared_budget",
+    "bytes": 193391
+  },
+  "raw/fb40-s301-budget_cases_shared_cursor.tar.gz": {
+    "sha256": "6c55df597ec8ebd7bd408aba1717368fec78074ce20e9efefe87f7f381f93694",
+    "status": "completed",
+    "key": "fb40-s301-budget_cases_shared_cursor",
+    "bytes": 193215
+  },
+  "raw/ring-s301-batch_cases_joint32_batch.tar.gz": {
+    "sha256": "470451b55e34591604d3f1daee1623e7c733b83fa1e001d249d8345e2535fa79",
+    "status": "completed",
+    "key": "ring-s301-batch_cases_joint32_batch",
+    "bytes": 21692
+  },
+  "raw/ring-s301-batch_cases_joint32_cursor.tar.gz": {
+    "sha256": "468367ddef542f06e5c32e9c9361f887b9caa54174c0b859022528b589dc5e88",
+    "status": "completed",
+    "key": "ring-s301-batch_cases_joint32_cursor",
+    "bytes": 21534
+  },
+  "raw/ring-s301-batch_cases_shared_batch.tar.gz": {
+    "sha256": "cf6c0cd449c94d1800919ac46e1fcf9e50dae95832b3f2cdb64804dcf89be980",
+    "status": "completed",
+    "key": "ring-s301-batch_cases_shared_batch",
+    "bytes": 21798
+  },
+  "raw/ring-s301-batch_cases_shared_cursor.tar.gz": {
+    "sha256": "cf56ec29c9f57f15a88763c059df15b8cc89824d1ef1bb2e0dcb6a355f2989ac",
+    "status": "completed",
+    "key": "ring-s301-batch_cases_shared_cursor",
+    "bytes": 21778
+  },
+  "raw/ring-s301-budget_cases_joint32_budget.tar.gz": {
+    "sha256": "f7ea10bcd554471fdc4033caa711b2665c9933b2445a400770951c5160098864",
+    "status": "completed",
+    "key": "ring-s301-budget_cases_joint32_budget",
+    "bytes": 21775
+  },
+  "raw/ring-s301-budget_cases_joint32_cursor.tar.gz": {
+    "sha256": "817d82c5337ae92ee840ab774b88acd3fd39a7e13e5ba90232cf13fff6e089bf",
+    "status": "completed",
+    "key": "ring-s301-budget_cases_joint32_cursor",
+    "bytes": 21601
+  },
+  "raw/ring-s301-budget_cases_shared_budget.tar.gz": {
+    "sha256": "ed294d0f90254783614ef80482577849c7492cb9826c6377a92504144a421f23",
+    "status": "completed",
+    "key": "ring-s301-budget_cases_shared_budget",
+    "bytes": 21818
+  },
+  "raw/ring-s301-budget_cases_shared_cursor.tar.gz": {
+    "sha256": "5b26bfad0bc2f43e995f3ec3d668569e00c949986c1b989b3f8260a9f8bf4876",
+    "status": "completed",
+    "key": "ring-s301-budget_cases_shared_cursor",
+    "bytes": 21787
+  },
+  "raw/web40-s301-batch_cases_joint32_batch.tar.gz": {
+    "sha256": "e0fc94220ea1385ec2fd7e934f4dce3a72551ae879f559110b85642d01be80f7",
+    "status": "completed",
+    "key": "web40-s301-batch_cases_joint32_batch",
+    "bytes": 30339
+  },
+  "raw/web40-s301-batch_cases_joint32_cursor.tar.gz": {
+    "sha256": "a05879daa1c557f748559e5d9e5f1e775ff75196f8e6583cc34277892f558356",
+    "status": "completed",
+    "key": "web40-s301-batch_cases_joint32_cursor",
+    "bytes": 30324
+  },
+  "raw/web40-s301-batch_cases_shared_batch.tar.gz": {
+    "sha256": "63c6879a9474854b411c24229d0251a694a02d5861eab16f99839a5e7669d925",
+    "status": "completed",
+    "key": "web40-s301-batch_cases_shared_batch",
+    "bytes": 30323
+  },
+  "raw/web40-s301-batch_cases_shared_cursor.tar.gz": {
+    "sha256": "c706bb60c07cbebd717f017e036e2fd06bede3229a7410b40b53e72352b6ab26",
+    "status": "completed",
+    "key": "web40-s301-batch_cases_shared_cursor",
+    "bytes": 30364
+  },
+  "raw/web40-s301-budget_cases_joint32_budget.tar.gz": {
+    "sha256": "f360b254712664256c0a982c1c85627b4ff837f2d19c4e55a5a5c17b08191c72",
+    "status": "completed",
+    "key": "web40-s301-budget_cases_joint32_budget",
+    "bytes": 30370
+  },
+  "raw/web40-s301-budget_cases_joint32_cursor.tar.gz": {
+    "sha256": "12cfdfb9e4319700ce67bc9e6942374086a078446fbbb375e6a4c4254a7b3cc7",
+    "status": "completed",
+    "key": "web40-s301-budget_cases_joint32_cursor",
+    "bytes": 30362
+  },
+  "raw/web40-s301-budget_cases_shared_budget.tar.gz": {
+    "sha256": "a8b070cc0179ba12200ab197fe10a78978c4264cb9de5d75a83bee344cf4aaba",
+    "status": "completed",
+    "key": "web40-s301-budget_cases_shared_budget",
+    "bytes": 30425
+  },
+  "raw/web40-s301-budget_cases_shared_cursor.tar.gz": {
+    "sha256": "d6fa30f501d820f7dfad43497fd8e169d8599380f6a04d259de66d8583bb7266",
+    "status": "completed",
+    "key": "web40-s301-budget_cases_shared_cursor",
+    "bytes": 30399
+  }
+}

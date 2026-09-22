@@ -1,0 +1,157 @@
+{
+  "status": "evidence verified; full performance goal remains active",
+  "attempts": 83,
+  "completed": 83,
+  "exact_cross_build_controls": [
+    {
+      "current": "allreduce_dp2-s301-dp2_shared_cursor",
+      "previous": "allreduce_dp2-s301-batch_dp2_shared_cursor",
+      "all_metrics_identical": true
+    },
+    {
+      "current": "allreduce_dp2-s301-dp2_joint32_cursor",
+      "previous": "allreduce_dp2-s301-batch_dp2_joint32_cursor",
+      "all_metrics_identical": true
+    },
+    {
+      "current": "allreduce_dp2-s301-dp2_shared_l10_cursor",
+      "previous": "allreduce_dp2-s301-batch_dp2_shared_l10_cursor",
+      "all_metrics_identical": true
+    },
+    {
+      "current": "allreduce_dp2-s301-dp2_homa",
+      "previous": "allreduce_dp2-s301-batch_dp2_homa",
+      "all_metrics_identical": true
+    },
+    {
+      "current": "allreduce_dp2-s301-dp2_hpcc",
+      "previous": "allreduce_dp2-s301-batch_dp2_hpcc",
+      "all_metrics_identical": true
+    },
+    {
+      "current": "allreduce_dp2-s301-dp2_dcqcn",
+      "previous": "allreduce_dp2-s301-batch_dp2_dcqcn",
+      "all_metrics_identical": true
+    },
+    {
+      "current": "allreduce_dp2-s301-dp2_timely",
+      "previous": "allreduce_dp2-s301-batch_dp2_timely",
+      "all_metrics_identical": true
+    }
+  ],
+  "paired_interventions": [
+    {
+      "study": "ali30",
+      "arm": "scenes_shared_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "ali50",
+      "arm": "scenes_shared_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "allreduce_dp2",
+      "arm": "dp2_joint32_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "allreduce_dp2",
+      "arm": "dp2_shared_l10_rescue",
+      "episodes": 30,
+      "all_metrics_and_fct_identical": false
+    },
+    {
+      "study": "allreduce_dp2",
+      "arm": "dp2_shared_rescue",
+      "episodes": 6,
+      "all_metrics_and_fct_identical": false
+    },
+    {
+      "study": "alltoall",
+      "arm": "joint_cases_joint32_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "alltoall",
+      "arm": "scenes_shared_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "fabric",
+      "arm": "scenes_shared_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "fairness",
+      "arm": "scenes_shared_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "fb40",
+      "arm": "joint_cases_joint32_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "fb40",
+      "arm": "scenes_shared_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "hybrid",
+      "arm": "scenes_shared_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "receiver",
+      "arm": "scenes_shared_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "ring",
+      "arm": "joint_cases_joint32_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "ring",
+      "arm": "scenes_shared_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "web40",
+      "arm": "joint_cases_joint32_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    },
+    {
+      "study": "web40",
+      "arm": "scenes_shared_rescue",
+      "episodes": 0,
+      "all_metrics_and_fct_identical": true
+    }
+  ],
+  "trace_pairs": 1,
+  "runs_with_drops": 2,
+  "source_build_input_harness_archive_hashes": "verified",
+  "independent_confirmation": false,
+  "source_commits": {
+    "joint_cases-manifest.json": "aa3691eb25a80347e55889b95e8c84e3f3ee543e",
+    "dp2-manifest.json": "aa3691eb25a80347e55889b95e8c84e3f3ee543e",
+    "baselines-manifest.json": "aa3691eb25a80347e55889b95e8c84e3f3ee543e",
+    "size_trace-manifest.json": "009738fcfa3a5d9ae96815da728b0191b58f8110",
+    "scenes-manifest.json": "aa3691eb25a80347e55889b95e8c84e3f3ee543e"
+  }
+}

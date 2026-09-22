@@ -1,0 +1,28 @@
+{
+  "review": "all eight final PNG previews inspected; PDFs generated from identical figure objects",
+  "artifacts": {
+    "cursor_controls.pdf": "b2f96d26cd60c17f845d9488f2eddf7fed1e96f1609f0c9e7278b2bba7f4c1af",
+    "cursor_controls.png": "4a2c8fa3b0baed10b0525bd11b511d1fa0d23728fad7051dc52d7adced8e01c1",
+    "cursor_regression.pdf": "bfeb94baf6527bd7118cb9bf637b68dc71e83c38e21e973b9d25618ed7feb935",
+    "cursor_regression.png": "3e9c0e5c16cbd5bddba45ca519baf509610457c4adb5b600f2f48df05ffd07f6",
+    "deadline_baselines.pdf": "21867ac5adab37c227808c78a8df952cff9153fbe7ac043e0f3f3f7cb4f1aa50",
+    "deadline_baselines.png": "8a60e412df46372bb7a11415aaeffa2489e12cf9da1e0ca98a633a7e0ad95b62",
+    "deadline_cdf.pdf": "80bf36b85945137ae05757939e1d0d6dd7233a9b1f1fb694bc8f11d5e4e29956",
+    "deadline_cdf.png": "1a699f483e073732513480b400720f6cad3bc822f7a524a49adaa2891b271ea3",
+    "deadline_regression.pdf": "3fbd368455aa04cd5628042111d3f59ac7a9cab453c2956c8816e18b98d3ec43",
+    "deadline_regression.png": "0cc762ab8569747a2f4228a1b5676c62736e07fb1593e0cdfc1ceb5ba86c6761",
+    "idle_controls.pdf": "9f7c7542855f164b2b39de7a00e5796bf0b3fb3d4fff30e15b69edbc43c662b2",
+    "idle_controls.png": "64d303dfe6069ed8d4168f94645d3a34fd00c2737e958e6b2a305b722bd4eef6",
+    "recovery_events.pdf": "3375c5b57b5985b9a16a5dc05710e3ad06a516ff1c79e33e8104139ecfd1d107",
+    "recovery_events.png": "9544a4239b3ad25f9a8279f216fece30675d3c192904d235ab1f2f507c9be1cc",
+    "timeout_wire_diagnosis.pdf": "1a0fe5e4b88e975ce1c6010f97b522a2b19bf577e7238331a58357744b222916",
+    "timeout_wire_diagnosis.png": "e6fc6b8b56cf5ed4a78ce95cb483b3958e918258a6d515708ebb70a8b395bb84"
+  },
+  "findings": [
+    "Numeric bar positions avoid duplicate categorical labels overlaying controls",
+    "Axes, complete CDF tails, units, baselines and adverse changes remain visible",
+    "Zero-inclusive symlog event counts retain the 7460-PFC regression",
+    "No confidence intervals fabricated for one development seed",
+    "Homa named consistently"
+  ]
+}

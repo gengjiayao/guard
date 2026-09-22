@@ -1,0 +1,33 @@
+{
+  "completed": 44,
+  "failed_simulations": 0,
+  "preparation_failures": 3,
+  "preparation_failure": "Missing runs parent directory once and profile preparation path error causing two rejected driver launches; no simulator started; logs preserved",
+  "source_commits": {
+    "width_scenes": "c2aedb045375838444f4e072c88a088ffa2b8bbb",
+    "width_workloads": "c2aedb045375838444f4e072c88a088ffa2b8bbb",
+    "grants": "f82eb1b045fe1f241effe4934d5ebd39e29d2cf4",
+    "fixed": "c2aedb045375838444f4e072c88a088ffa2b8bbb",
+    "fixed_trace": "c2aedb045375838444f4e072c88a088ffa2b8bbb"
+  },
+  "source_build_input_harness_config_archive_hashes": "verified",
+  "paired_complete_fct_and_metrics": "exact; old observation build also exact against previous round; shared identity fix effects retained separately",
+  "grant_trace_send_receive_pairs": "all matched",
+  "cap_omissions": 0,
+  "goal_status": "active",
+  "independent_confirmation": false,
+  "identity_fix_exact_baseline_comparisons": 16,
+  "identity_fix_exact_other_guard_scenes": 9,
+  "width_exact_scenes": [
+    "fabric",
+    "fairness",
+    "alltoall",
+    "allreduce_dp2"
+  ],
+  "original_fairness_jain": {
+    "K1": 0.9999999943056737,
+    "K2": 0.9999999943056737
+  },
+  "width_config_promoted": false,
+  "zero_drops_all_runs": true
+}
