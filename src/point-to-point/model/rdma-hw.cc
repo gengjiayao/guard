@@ -155,6 +155,14 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Multiplier for GUARD's proactive-release in-flight threshold",
                           DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardReleaseGamma),
                           MakeDoubleChecker<double>(0.0))
+            .AddAttribute("GuardRegistrationThresholdBdps",
+                          "Messages up to this many BDPs use full-path passive feedback instead of receiver membership",
+                          DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardRegistrationThresholdBdps),
+                          MakeDoubleChecker<double>(1.0,16.0))
+            .AddAttribute("GuardPassiveTarget",
+                          "Unscaled HPCC utilization target for unregistered multi-RTT messages",
+                          DoubleValue(0.95), MakeDoubleAccessor(&RdmaHw::m_guardPassiveTarget),
+                          MakeDoubleChecker<double>(0.0,1.0))
             .AddAttribute("GuardSelectiveRegistration",
                           "Register only GUARD flows larger than one BDP",
                           BooleanValue(true),
@@ -1196,8 +1204,7 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
         !m_guardMembershipCoalesceWindow.IsZero()) {
         DataRate line_rate = m_nic[nic_idx].dev->GetDataRate();
         uint64_t bdp_bytes = baseRtt * line_rate.GetBitRate() / 8000000000lu;
-        bool receiver_will_register = !m_guardSelectiveRegistration ||
-                                      (bdp_bytes > 0 && size > bdp_bytes);
+        bool receiver_will_register = GuardNeedsReceiverControl(size,bdp_bytes);
         qp->m_guard_wait_first_grant = receiver_will_register;
         if (receiver_will_register) m_guardFirstGrantGatedFlows++;
     }
@@ -1503,7 +1510,16 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
         // guard: strip last-hop INT info (the receiver grant handles this link)
         if (m_cc_mode == 11) {
             m_guardIntHopsBeforeStrip += ch.udp.ih.nhop;
-            if (!m_guardKeepLastHopInt && ch.udp.ih.nhop > 0) {
+            bool passive_full_path=false;
+            if(m_guardRegistrationThresholdBdps>1 && m_guardSelectiveRegistration) {
+                uint64_t bdp=104000; FlowStatTag fst;
+                if(p->PeekPacketTag(fst) && fst.HasBaseRtt()) {
+                    bdp=std::max<uint64_t>(1,fst.GetBaseRttSeconds()*
+                        m_nic[GetNicIdxOfRxQp(rxQp)].dev->GetDataRate().GetBitRate()/8.0);
+                }
+                passive_full_path=UsesGuardPassiveControl(flow_size,bdp);
+            }
+            if (!m_guardKeepLastHopInt && !passive_full_path && ch.udp.ih.nhop > 0) {
                 int last_hop = --ch.udp.ih.nhop;
                 memset(&ch.udp.ih.hop[last_hop], 0, sizeof(ch.udp.ih.hop[last_hop]));
                 m_guardIntRecordsStripped++;
@@ -1593,7 +1609,7 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
                     fst.GetFirstGrantGateBytes();
                 rxQp->m_guard_has_first_grant_gate_bytes = true;
             }
-            if (flow_start && (!m_guardSelectiveRegistration || flow_size > guard_bdp)) {
+            if (flow_start && GuardNeedsReceiverControl(flow_size,guard_bdp)) {
                 HandleRccRequest(rxQp, p, ch);
             }
         } else {
@@ -2475,7 +2491,8 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
     // network.  Keep the receiver cap, which still protects the destination,
     // but stop letting a stale shared-fabric estimate stretch completion.
     if (m_cc_mode == CC_MODE_GUARD && m_guardTailBypass &&
-        !qp->m_guard_tail_bypass) {
+        !qp->m_guard_tail_bypass &&
+        !UsesGuardPassiveControl(qp->m_size,qp->m_baseRtt*qp->m_max_rate.GetBitRate()/8000000000ULL)) {
         uint64_t bdp_bytes =
             qp->m_baseRtt * qp->m_max_rate.GetBitRate() / 8000000000lu;
         uint64_t acknowledged_remaining =
@@ -2877,11 +2894,23 @@ void RdmaHw::HyperIncreaseMlx(Ptr<RdmaQueuePair> q) {
 /***********************
  * Rate CC
  ***********************/
+bool RdmaHw::GuardNeedsReceiverControl(uint64_t size,uint64_t bdp) const {
+    return !m_guardSelectiveRegistration ||
+        (bdp>0 && size>(long double)m_guardRegistrationThresholdBdps*bdp);
+}
+
+bool RdmaHw::UsesGuardPassiveControl(uint64_t size,uint64_t bdp) const {
+    return m_cc_mode==CC_MODE_GUARD && m_guardSelectiveRegistration &&
+        m_guardRegistrationThresholdBdps>1 && bdp>0 && size>bdp &&
+        !GuardNeedsReceiverControl(size,bdp);
+}
+
 bool RdmaHw::UsesGuardTailBypass(Ptr<RdmaQueuePair> qp) const {
     // Eligibility is latched once per flow, but congestion permission is not.
     // Continue processing INT while bypassing so a later busy fabric restores
     // the shared-fabric cap instead of leaving a flow permanently uncontrolled.
     return m_cc_mode == CC_MODE_GUARD && qp->m_guard_tail_bypass &&
+           !UsesGuardPassiveControl(qp->m_size,qp->m_baseRtt*qp->m_max_rate.GetBitRate()/8000000000ULL) &&
            (!m_guardTailCongestionGate ||
             qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples);
 }
@@ -2949,7 +2978,7 @@ void RdmaHw::MaybeSendGuardCapReport(Ptr<RdmaQueuePair> qp) {
     }
     uint64_t bdp_bytes =
         qp->m_baseRtt * qp->m_max_rate.GetBitRate() / 8000000000lu;
-    if (m_guardSelectiveRegistration && bdp_bytes > 0 && qp->m_size <= bdp_bytes) {
+    if (!GuardNeedsReceiverControl(qp->m_size,bdp_bytes)) {
         return;
     }
     Time now = Simulator::Now();
@@ -8628,6 +8657,13 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
                         m_guardElephantFabricTargetMaxEffective,
                         effective_target);
                 }
+            }
+            if(UsesGuardPassiveControl(qp->m_size,
+                    qp->m_baseRtt*qp->m_max_rate.GetBitRate()/8000000000ULL)) {
+                // No receiver grant covers the last hop for these messages.
+                // Keep every hop's telemetry and use the unscaled passive
+                // target; the active-layer overdrive is inapplicable here.
+                effective_target=std::min(m_targetUtil,m_guardPassiveTarget);
             }
             if (!m_multipleRate) {
                 // for aggregate (single R)

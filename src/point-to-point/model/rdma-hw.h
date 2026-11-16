@@ -448,6 +448,10 @@ class RdmaHw : public Object {
      ***********************/
     double m_guardEwmaBeta;
     double m_guardReleaseGamma;
+    double m_guardRegistrationThresholdBdps;
+    double m_guardPassiveTarget;
+    bool GuardNeedsReceiverControl(uint64_t size, uint64_t bdp) const;
+    bool UsesGuardPassiveControl(uint64_t size, uint64_t bdp) const;
     bool m_guardSelectiveRegistration;
     bool m_guardProactiveRelease;
     bool m_guardKeepLastHopInt;

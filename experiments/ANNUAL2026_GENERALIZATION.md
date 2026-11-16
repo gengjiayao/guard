@@ -137,3 +137,27 @@ remaining-work and admission-size classification, K=1 versus K=2, and bounded
 byte credit. Collective-specific duplex/cohort/burst options are disabled in
 all candidate profiles. Homa is rerun with this frozen binary and identical
 input. This remains development; the reserved final inputs are still untouched.
+
+## Passive medium-message path
+
+Probe7 completed 32 runs at input 6102. WebSearch 50% gains ranged 15.34--22.19%,
+but WebSearch 80% gains remained 0.13--8.63%. AliStorage 50% gains remained
+3.08--5.96%; only conservative admission-size policies retained >10% gains at
+80%. This disproves generalization of the attractive 6101 results. No final
+input has been used and no claim of joint success is justified.
+
+`GuardRegistrationThresholdBdps` preserves the default one-BDP behavior at 1.
+Larger values let multi-RTT messages up to the threshold use the existing HPCC
+feedback path without receiver-set registration. They retain ALL hop telemetry,
+use the unscaled passive utilization target, and cannot activate the grant-only
+tail bypass. The one-BDP transport safety window, cumulative ACK/recovery,
+physical rates and queue mappings are unchanged. Larger messages retain both
+receiver grants and passive shared-fabric feedback. This tests whether frequent
+medium-message membership changes unnecessarily delay the active service set.
+
+Native admission tests verify exact class boundaries, default compatibility,
+disjoint classes and the prohibition on bypassing passive feedback without
+receiver authority. Existing controller invariant tests also pass. Probe8
+compares thresholds of 2/4/8 BDPs, with fixed and adaptive sender-aware service,
+against the previous admission policy and Homa on the same 6102 inputs at
+50%/80%. All runs, regressions and failures remain available.

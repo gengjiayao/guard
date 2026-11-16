@@ -190,6 +190,7 @@ bool multi_rate = true;
 bool sample_feedback = false;
 double u_target = 0.95;
 double guard_lambda = 1.8;
+double guard_registration_threshold_bdps = 1.0;
 double guard_ewma_beta = 0.125;
 double guard_release_gamma = 1.0;
 bool guard_selective_registration = true;
@@ -1519,6 +1520,8 @@ int main(int argc, char *argv[]) {
                 guard_selective_registration = guard_oflm;
                 guard_proactive_release = guard_oflm;
                 std::cerr << "GUARD_OFLM (legacy)\t\t" << guard_oflm << '\n';
+            } else if (key.compare("GUARD_REGISTRATION_THRESHOLD_BDPS") == 0) {
+                conf >> guard_registration_threshold_bdps;
             } else if (key.compare("GUARD_SELECTIVE_REGISTRATION") == 0) {
                 conf >> guard_selective_registration;
                 std::cerr << "GUARD_SELECTIVE_REGISTRATION\t"
@@ -2867,6 +2870,8 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardReleaseGamma", DoubleValue(guard_release_gamma));
             rdmaHw->SetAttribute("GuardSelectiveRegistration",
                                  BooleanValue(guard_selective_registration));
+            rdmaHw->SetAttribute("GuardRegistrationThresholdBdps", DoubleValue(guard_registration_threshold_bdps));
+            rdmaHw->SetAttribute("GuardPassiveTarget", DoubleValue(u_target));
             rdmaHw->SetAttribute("GuardProactiveRelease",
                                  BooleanValue(guard_proactive_release));
             rdmaHw->SetAttribute("GuardKeepLastHopInt", BooleanValue(guard_keep_last_hop_int));
@@ -4403,6 +4408,8 @@ int main(int argc, char *argv[]) {
                 total_guard_elephant_aging_active_deferred++;
         }
     }
+    fprintf(guard_stats_output, "guard_admission threshold_bdps %.6f passive_target %.6f\n",
+            guard_registration_threshold_bdps,u_target);
     fprintf(guard_stats_output, "guard_sender_fair enabled %u mix_threshold_bdps %.6f mix_decisions %lu original_size %u\n",
             guard_sender_fair_share ? 1 : 0, guard_fair_mix_threshold_bdps, fair_mix_decisions,
             guard_fair_mix_original_size ? 1 : 0);

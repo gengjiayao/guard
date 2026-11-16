@@ -102,6 +102,7 @@ GUARD_LAMBDA {guard_lambda}
 GUARD_EWMA_BETA {guard_beta}
 GUARD_RELEASE_GAMMA {guard_gamma}
 GUARD_SELECTIVE_REGISTRATION {guard_selective_registration}
+GUARD_REGISTRATION_THRESHOLD_BDPS {guard_registration_threshold_bdps}
 GUARD_PROACTIVE_RELEASE {guard_proactive_release}
 GUARD_KEEP_LAST_HOP_INT {guard_keep_last_hop_int}
 GUARD_SIZE_PRIORITY {guard_size_priority}
@@ -475,6 +476,7 @@ def main():
                         help="GUARD HPCC-target multiplier >= 1 (default: 1.8)")
     parser.add_argument('--guard_oflm', type=int, choices=(0, 1), default=None,
                         help="legacy alias; an explicit 0 disables both OFLM components")
+    parser.add_argument('--guard_registration_threshold_bdps', type=float, default=1.0)
     parser.add_argument('--guard_selective_registration', type=int, choices=(0, 1), default=1,
                         help="register only flows larger than one BDP (default: 1)")
     parser.add_argument('--guard_proactive_release', type=int, choices=(0, 1), default=1,
@@ -711,6 +713,10 @@ def main():
 
     if not 0.0 <= args.guard_beta <= 1.0:
         raise Exception("CONFIG ERROR: --guard_beta must be in [0, 1].")
+    if not 1 <= args.guard_registration_threshold_bdps <= 16:
+        raise Exception("CONFIG ERROR: registration threshold must be in [1,16] BDPs.")
+    if args.guard_registration_threshold_bdps != 1 and (args.cc != "guard" or not args.guard_selective_registration or args.guard_membership_coalesce_ns):
+        raise Exception("CONFIG ERROR: passive medium messages require direct selective GUARD grants.")
     if args.guard_gamma < 0.0:
         raise Exception("CONFIG ERROR: --guard_gamma must be non-negative.")
     if args.guard_lambda < 1.0:
@@ -1432,6 +1438,7 @@ def main():
                                         guard_beta=args.guard_beta, guard_gamma=args.guard_gamma,
                                         guard_lambda=args.guard_lambda,
                                         guard_selective_registration=guard_selective_registration,
+                                        guard_registration_threshold_bdps=args.guard_registration_threshold_bdps,
                                         guard_proactive_release=guard_proactive_release,
                                         guard_keep_last_hop_int=args.guard_keep_last_hop_int,
                                         guard_size_priority=args.guard_size_priority,
