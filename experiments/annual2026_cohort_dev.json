@@ -1,0 +1,101 @@
+{
+  "credit": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125
+  },
+  "cohort": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125,
+    "guard_duplex_cohort_drain": 1
+  },
+  "unbounded": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 0,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125
+  },
+  "cohortmixedg4": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 4.0,
+    "guard_gamma": 4.0
+  },
+  "cohortmixedg8": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 4.0,
+    "guard_gamma": 8.0
+  },
+  "homa": {
+    "cc": "homa"
+  },
+  "cohortr2": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 2.0,
+    "guard_gamma": 8.0
+  },
+  "cohortr125": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.25,
+    "guard_gamma": 8.0
+  },
+  "k2g8": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125,
+    "guard_duplex_cohort_drain": 0,
+    "guard_duplex_size_ratio": 0,
+    "guard_gamma": 8.0
+  }
+}

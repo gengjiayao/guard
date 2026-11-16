@@ -111,6 +111,17 @@ int main() {
 
     duplex->m_qpMap[0]->snd_una=1000000;
     assert(duplex->GuardHasCompetingSenders());
+    duplex->m_guardDuplexCohortDrain=true;
+    duplex->m_qpMap[0]->snd_una=0;
+    duplex->RefreshGuardDuplexCohort();
+    assert(duplex->m_guardDuplexCohortActive);
+    duplex->m_qpMap[0]->snd_una=1000000;
+    duplex->RefreshGuardDuplexCohort();
+    assert(!duplex->GuardHasCompetingSenders()); // receives still draining
+    duplex->m_rate_flow_ctl_set.clear();
+    duplex->RefreshGuardDuplexCohort();
+    assert(!duplex->m_guardDuplexCohortActive);
+    assert(duplex->m_guardDuplexCohortActivations==1);
     std::set<uint32_t> selected_senders, first_grant_senders;
     for (uint32_t receiver=100;receiver<108;++receiver) {
         auto allocator=CreateObject<RdmaHw>();allocator->m_guardReceiverConcurrency=1;
@@ -130,5 +141,5 @@ int main() {
     }
     assert(selected_senders.size()==8);
     assert(first_grant_senders.size()==8);
-    std::cout<<"PASS bounded ACK clock, revocable tail bypass, capacity/fairness floors, insertion invariance and receiver grant diversity\n";
+    std::cout<<"PASS bounded pacing and ACK clock, tail safety, capacity/fairness, deterministic phase order and duplex cohort draining\n";
 }

@@ -275,6 +275,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Use receiver-relative peer order within a BDP-sized remaining-work class",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardReceiverPhaseOrder),
                           MakeBooleanChecker())
+            .AddAttribute("GuardDuplexCohortDrain",
+                          "Keep duplex grant parallelism until the registered receive cohort drains",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardDuplexCohortDrain),
+                          MakeBooleanChecker())
             .AddAttribute("GuardDuplexSizeRatio",
                           "Allow bounded receive concurrency for heterogeneous duplex messages; zero disables",
                           DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardDuplexSizeRatio),
@@ -565,6 +569,8 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_guardRateGrantsSent = 0;
     m_guardRateGrantBytesSent = 0;
     m_guardRateGrantsReceived = 0;
+    m_guardDuplexCohortActive = false;
+    m_guardDuplexCohortActivations = 0;
     m_guardPacingCreditPackets = 0;
     m_guardPacingCreditMaxNs = 0;
     m_guardPacingCreditRevocations = 0;
@@ -1165,6 +1171,7 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
                     "GUARD QP legacy-key collision against tombstone");
     m_nic[nic_idx].qpGrp->AddQp(qp);
     m_qpMap[key] = qp;
+    RefreshGuardDuplexCohort();
     m_qpIdentity[key] = identity;
 
     // set init variables
@@ -2916,6 +2923,7 @@ void RdmaHw::HandleRccRequest(Ptr<RdmaRxQueuePair> rx_qp, Ptr<Packet> p, CustomH
     }
     uint64_t active_before = m_rate_flow_ctl_set.size();
     m_rate_flow_ctl_set.emplace(PeekPointer(rx_qp));
+    RefreshGuardDuplexCohort();
     rx_qp->m_guard_last_schedule_seq = rx_qp->ReceiverNextExpectedSeq;
     rx_qp->m_guard_pending_progress_seq = rx_qp->ReceiverNextExpectedSeq;
     rx_qp->m_guard_grant_generation = 0;
@@ -3166,6 +3174,7 @@ bool RdmaHw::HandleRccRemove(Ptr<RdmaRxQueuePair> rx_qp,
     }
     rx_qp->m_guard_elephant_deferred_since_ns = -1;
     m_rate_flow_ctl_set.erase(PeekPointer(rx_qp));
+    RefreshGuardDuplexCohort();
     m_guardProgressDirtyFlows.erase(PeekPointer(rx_qp));
     m_guardProgressTransactionFlows.erase(PeekPointer(rx_qp));
     if (GuardSmallSetFastpathEnabled()) {
@@ -6473,6 +6482,22 @@ bool RdmaHw::GuardHasMultipleActiveDestinations() const {
     return false;
 }
 
+void RdmaHw::RefreshGuardDuplexCohort() {
+    if (!m_guardDuplexCohortDrain || !m_guardDuplexAdaptive || m_rate_flow_ctl_set.empty()) {
+        m_guardDuplexCohortActive = false;
+        return;
+    }
+    for (const auto &item : m_qpMap) {
+        if (!item.second->IsFinishedConst()) {
+            if (!m_guardDuplexCohortActive) m_guardDuplexCohortActivations++;
+            m_guardDuplexCohortActive = true;
+            return;
+        }
+    }
+    // Local sends finishing does not mean peers have finished their sends.
+    // Keep the cohort's parallel grants until registered receives drain.
+}
+
 bool RdmaHw::GuardHasCompetingSenders() const {
     // A bidirectional multi-peer endpoint can form reciprocal grant waits.
     // Keep its receiver allocator work-conserving instead of concentrating
@@ -6482,7 +6507,7 @@ bool RdmaHw::GuardHasCompetingSenders() const {
         // Keep this protection until the last local transfer is acknowledged.
         // Dropping to one destination is not the end of a duplex exchange:
         // concentrating credit at that point can create reciprocal tail waits.
-        bool outbound = false;
+        bool outbound = m_guardDuplexCohortDrain && m_guardDuplexCohortActive;
         for (const auto &item : m_qpMap) {
             if (!item.second->IsFinishedConst()) {outbound = true; break;}
         }

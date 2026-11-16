@@ -478,6 +478,10 @@ class RdmaHw : public Object {
     bool m_guardReceiverPhaseOrder;
     bool m_guardDuplexAdaptive;
     double m_guardDuplexSizeRatio;
+    bool m_guardDuplexCohortDrain;
+    bool m_guardDuplexCohortActive;
+    uint64_t m_guardDuplexCohortActivations;
+    void RefreshGuardDuplexCohort();
     static uint32_t ComputeGuardAckBatch(uint64_t bdp, uint32_t mtu,
                                          uint32_t configured, double fraction);
     bool m_guardFixedWindow;
