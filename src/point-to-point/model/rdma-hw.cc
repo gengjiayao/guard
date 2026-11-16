@@ -312,6 +312,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           DoubleValue(0.0),
                           MakeDoubleAccessor(&RdmaHw::m_guardMinShareFraction),
                           MakeDoubleChecker<double>(0.0, 1.0))
+            .AddAttribute("GuardLongFlowThresholdBdps",
+                          "Prioritize bounded remaining work, share long-flow grants equally; zero disables",
+                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardLongFlowThresholdBdps),
+                          MakeDoubleChecker<double>(0.0, 256.0))
             .AddAttribute("GuardServiceAgeFactor",
                           "Protect one delayed receiver flow after this many unloaded service times; zero disables",
                           DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardServiceAgeFactor),
@@ -589,6 +593,7 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_guardDuplexCohortActivations = 0;
     m_guardDuplexBurstActive = false;
     m_guardDuplexBurstActivations = 0;
+    m_guardLongFairAllocations = 0;
     m_guardServiceAgeDecisions = 0;
     m_guardPacingCreditPackets = 0;
     m_guardPacingCreditMaxNs = 0;
@@ -6741,6 +6746,57 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
     size_t count = m_rate_flow_ctl_set.size();
     if (count == 0) return targets;
     uint64_t equal_share = line_rate_bps / count;
+    if (m_guardLongFlowThresholdBdps > 0) {
+        // Only receiver-visible remaining bytes and the path BDP determine
+        // service. Never read a traffic distribution, future arrival or metric.
+        // Keep prompt service for bounded messages without serializing the
+        // entire large-flow population behind two unavailable senders.
+        std::vector<RdmaRxQueuePair*> short_flows;
+        for (auto *flow : m_rate_flow_ctl_set) {
+            uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+                ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq : 1;
+            uint64_t bdp = std::max<uint64_t>(m_mtu, flow->m_base_rtt_sec > 0
+                ? flow->m_base_rtt_sec * line_rate_bps / 8.0 : 104000);
+            if (remaining <= m_guardLongFlowThresholdBdps * bdp)
+                short_flows.push_back(flow);
+        }
+        if (short_flows.empty()) {
+            for (auto *flow : m_rate_flow_ctl_set) targets[flow] = equal_share;
+            m_guardLongFairAllocations++;
+            return targets;
+        }
+        std::sort(short_flows.begin(), short_flows.end(),
+            [](RdmaRxQueuePair *a, RdmaRxQueuePair *b) {
+                uint64_t ra = a->m_guard_flow_size > a->ReceiverNextExpectedSeq
+                    ? a->m_guard_flow_size - a->ReceiverNextExpectedSeq : 1;
+                uint64_t rb = b->m_guard_flow_size > b->ReceiverNextExpectedSeq
+                    ? b->m_guard_flow_size - b->ReceiverNextExpectedSeq : 1;
+                return ra == rb ? a->m_flow_id < b->m_flow_id : ra < rb;
+            });
+        size_t width = m_guardReceiverConcurrency > 0
+            ? std::min<size_t>(short_flows.size(), m_guardReceiverConcurrency)
+            : short_flows.size();
+        // The floor is reserved before weighted allocation, so the sum of
+        // all current targets cannot exceed the actual receiver line rate.
+        uint64_t floor = std::min<uint64_t>(equal_share,
+            std::max<uint64_t>(m_minRate.GetBitRate(), m_guardMinShareFraction * equal_share));
+        uint64_t residual = line_rate_bps - floor * count;
+        for (auto *flow : m_rate_flow_ctl_set) targets[flow] = floor;
+        long double total_weight = 0;
+        std::vector<long double> weights;
+        for (size_t i=0; i<width; ++i) {
+            auto *flow=short_flows[i];
+            uint64_t remaining = flow->m_guard_flow_size > flow->ReceiverNextExpectedSeq
+                ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq : 1;
+            long double weight = m_guardRemainingAware
+                ? std::pow((long double)m_mtu / std::max<uint64_t>(remaining,m_mtu),
+                           m_guardRemainingExponent) : 1.0L;
+            weights.push_back(weight); total_weight += weight;
+        }
+        for (size_t i=0; i<width; ++i)
+            targets[short_flows[i]] += (uint64_t)(residual * weights[i] / total_weight);
+        return targets;
+    }
     std::vector<RdmaRxQueuePair*> concurrency_candidates;
     if (m_guardReceiverConcurrency > 0 && GuardHasCompetingSenders()) {
         for (auto *flow : m_rate_flow_ctl_set) {
