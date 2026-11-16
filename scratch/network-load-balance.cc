@@ -207,6 +207,7 @@ bool guard_transport_window_floor_after_first_grant = false;
 bool guard_transport_window_whole_flow_first_gate = false;
 uint32_t guard_transport_window_ack_slack_packets = 0;
 bool guard_sender_srpt = true;
+double guard_sender_srpt_max_bdps = 0;
 bool guard_one_rtt_bypass = true;
 bool guard_tail_bypass = true;
 double guard_tail_bypass_bdps = 8.0;
@@ -1566,6 +1567,8 @@ int main(int argc, char *argv[]) {
                 conf >> guard_transport_window_ack_slack_packets;
                 std::cerr << "GUARD_TRANSPORT_WINDOW_ACK_SLACK_PACKETS\t"
                           << guard_transport_window_ack_slack_packets << '\n';
+            } else if (key.compare("GUARD_SENDER_SRPT_MAX_BDPS") == 0) {
+                conf >> guard_sender_srpt_max_bdps;
             } else if (key.compare("GUARD_SENDER_SRPT") == 0) {
                 conf >> guard_sender_srpt;
                 std::cerr << "GUARD_SENDER_SRPT\t" << guard_sender_srpt << '\n';
@@ -2904,6 +2907,7 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardTransportWindowAckSlackPackets",
                                  UintegerValue(
                                      guard_transport_window_ack_slack_packets));
+            rdmaHw->SetAttribute("GuardSenderSrptMaxBdps", DoubleValue(guard_sender_srpt_max_bdps));
             rdmaHw->SetAttribute("GuardSenderSrpt", BooleanValue(guard_sender_srpt));
             rdmaHw->SetAttribute("GuardOneRttBypass", BooleanValue(guard_one_rtt_bypass));
             rdmaHw->SetAttribute("GuardTailBypass", BooleanValue(guard_tail_bypass));

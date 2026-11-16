@@ -229,6 +229,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           MakeUintegerAccessor(
                               &RdmaHw::m_guardTransportWindowAckSlackPackets),
                           MakeUintegerChecker<uint32_t>())
+            .AddAttribute("GuardSenderSrptMaxBdps",
+                          "Prioritize bounded remaining work and rotate longer authorized messages; zero keeps unrestricted SRPT",
+                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardSenderSrptMaxBdps),
+                          MakeDoubleChecker<double>(0.0,1024.0))
             .AddAttribute("GuardSenderSrpt",
                           "Select the shortest remaining ready GUARD flow at each sender NIC",
                           BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardSenderSrpt),
@@ -1132,6 +1136,7 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
     qp->m_guard_sender_srpt = (m_cc_mode == CC_MODE_GUARD && m_guardSenderSrpt);
     qp->m_guard_tail_bypass = false;
     qp->m_guard_srpt_quantum_packets = m_guardSrptQuantumPackets;
+    qp->m_guard_sender_srpt_max_bdps = m_guardSenderSrptMaxBdps;
 
     if (m_irn) {
         qp->irn.m_enabled = m_irn;

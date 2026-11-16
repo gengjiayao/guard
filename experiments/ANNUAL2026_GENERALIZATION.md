@@ -280,3 +280,47 @@ waiting, retransmission eligibility, monotone remaining-work promotion,
 immutable identity, PFC blocking by original group, and disabled behavior.
 The complete packet-level workload campaign must additionally verify message
 completion, NACK/recovery/drop counts, and measured P95/P99 before acceptance.
+
+## Source scheduling and cross-workload validation
+
+The dynamic queue-priority campaign (probe13, 28 completed) did not improve the
+joint objective and is not selected. Its ordering/PFC behavioral checks pass,
+but functional correctness does not establish a performance benefit. The
+feature remains disabled. Additional native post-grant window and original
+collective-control checks passed after the structure changes.
+
+Probes14/15 (24 completed each) vary the passive feedback target with and without
+receiver idle-share reclamation. Higher targets improve AliStorage and low-load
+WebSearch, but alone do not meet high-load WebSearch. All results are retained.
+Probe16 (six completed) isolates sender scheduling. At WebSearch L80/6102,
+reclaim+lambda8+round-robin reaches 23,130.22 us versus fixed Homa 25,821.05 us,
+10.42% lower overall P99. P95 remains worse; this is not a universal improvement.
+
+Probe17 tests that common round-robin profile with gamma8/gamma16 on all three
+loads and both workloads, using development inputs 6101/6102/6103 (36 completed).
+For gamma8, mean paired WebSearch P99 reductions are 21.74%, 20.47%, and 12.42%
+at 50/70/80% load. AliStorage does NOT meet the objective: low load is near parity
+and high load regresses. Unrestricted round-robin therefore is not accepted as
+the final configuration. P95 regressions remain in the evidence and must not be
+hidden in a final report. No final 7101--7110 inputs have been used.
+
+The additional original-binary Homa development campaign for 6103 completed all
+six cases. A repeatability check with the unchanged original binary reproduces
+WebSearch L80/6101 exactly; L80/6102 changes from 25,821.05484 to 25,843.67244 us
+(about 0.088%). The predeclared frozen baseline remains the primary comparator;
+the repeat is retained as sensitivity evidence, not chosen as a favorable value.
+
+`GuardSenderSrptMaxBdps` now permits bounded sender SRPT. Zero preserves the
+original unlimited SRPT. At a positive cutoff, ready messages whose remaining
+bytes fit the cutoff times their own path BDP receive SRPT service. When none
+qualifies, the sender rotates among the already-eligible messages. Thus small
+messages retain completion priority while long messages do not monopolize the
+NIC and leave other receiver permissions idle. Eligibility still requires
+receiver authorization, pacing, byte-window credit and an unpaused immutable
+PFC group. No workload name, CDF, original metric rank or future arrival enters
+the choice. One common cutoff must be validated for both workloads.
+
+The native behavioral test exercises short-work selection, long-work rotation,
+per-path BDP classification, PFC/pacing/window/first-grant gates, zero-cutoff
+compatibility and disabled scheduling. Probe18 will test 8/16/32/64 BDP cutoffs
+and gamma variants at both workload extremes before any acceptance decision.

@@ -186,11 +186,19 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
             if (!time_ok) continue;
             if (first_ready == -1024) first_ready = (int)index;
             uint64_t remaining = qp->GetBytesLeft();
-            if (remaining < best_remaining) {
+            uint64_t bdp = qp->m_baseRtt * qp->m_max_rate.GetBitRate() / 8000000000ULL;
+            bool bounded = qp->m_guard_sender_srpt_max_bdps <= 0 ||
+                remaining <= qp->m_guard_sender_srpt_max_bdps * std::max<uint64_t>(1,bdp);
+            if (bounded && remaining < best_remaining) {
                 best_remaining = remaining;
                 best = (int)index;
             }
         }
+        // Preserve short-message completion priority, but do not monopolize
+        // the local NIC with one large message while other receivers have
+        // authorized ready work. Every candidate has already passed the
+        // unchanged grant, pacing, byte-window and PFC eligibility checks.
+        if (best == -1024 && first_ready != -1024) best = first_ready;
         if (best != -1024) {
             Ptr<RdmaQueuePair> shortest = m_qpGrp->Get((uint32_t)best);
             uint32_t quantum = std::max<uint32_t>(1, shortest->m_guard_srpt_quantum_packets);
