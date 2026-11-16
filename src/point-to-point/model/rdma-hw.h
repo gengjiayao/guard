@@ -500,6 +500,7 @@ class RdmaHw : public Object {
     bool m_guardRemainingAware;
     double m_guardMinShareFraction;
     double m_guardRemainingExponent;
+    bool m_guardFairMixOriginalSize;
     bool m_guardSenderFairShare;
     double m_guardFairMixThresholdBdps;
     mutable uint64_t m_guardFairMixDecisions;

@@ -312,6 +312,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           DoubleValue(0.0),
                           MakeDoubleAccessor(&RdmaHw::m_guardMinShareFraction),
                           MakeDoubleChecker<double>(0.0, 1.0))
+            .AddAttribute("GuardFairMixOriginalSize",
+                          "Use immutable registered message size to stabilize the fair-share service class",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardFairMixOriginalSize),
+                          MakeBooleanChecker())
             .AddAttribute("GuardSenderFairShare",
                           "Share receiver grants across senders, serving bounded work first within each sender",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardSenderFairShare),
@@ -6822,7 +6826,9 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
             ? flow->m_guard_flow_size-flow->ReceiverNextExpectedSeq : 1;
         double bdp=std::max<double>(m_mtu,flow->m_base_rtt_sec>0
             ? flow->m_base_rtt_sec*line_rate_bps/8.0 : 104000);
-        work.push_back(remaining/bdp);
+        // Classification may remain stable as a long message drains. The
+        // per-sender service order still uses current received-byte progress.
+        work.push_back((m_guardFairMixOriginalSize ? flow->m_guard_flow_size : remaining)/bdp);
     }
     // Widen gradually when the typical active message has substantial work.
     // A single large outlier cannot erase bounded-work priority. This uses

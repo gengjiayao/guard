@@ -223,6 +223,7 @@ double guard_long_flow_threshold_bdps = 0.0;
 bool guard_grant_bounded_release = false;
 double guard_fair_mix_threshold_bdps = 0.0;
 bool guard_sender_fair_share = false;
+bool guard_fair_mix_original_size = false;
 bool guard_duplex_cohort_drain = false;
 bool guard_duplex_burst_protection = false;
 bool guard_receiver_phase_order = false;
@@ -1622,6 +1623,8 @@ int main(int argc, char *argv[]) {
                           << guard_min_share_fraction << '\n';
             } else if (key.compare("GUARD_FAIR_MIX_THRESHOLD_BDPS") == 0) {
                 conf >> guard_fair_mix_threshold_bdps;
+            } else if (key.compare("GUARD_FAIR_MIX_ORIGINAL_SIZE") == 0) {
+                conf >> guard_fair_mix_original_size;
             } else if (key.compare("GUARD_SENDER_FAIR_SHARE") == 0) {
                 conf >> guard_sender_fair_share;
             } else if (key.compare("GUARD_GRANT_BOUNDED_RELEASE") == 0) {
@@ -2920,6 +2923,7 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardGrantBoundedRelease", BooleanValue(guard_grant_bounded_release));
             rdmaHw->SetAttribute("GuardFairMixThresholdBdps", DoubleValue(guard_fair_mix_threshold_bdps));
             rdmaHw->SetAttribute("GuardSenderFairShare", BooleanValue(guard_sender_fair_share));
+            rdmaHw->SetAttribute("GuardFairMixOriginalSize", BooleanValue(guard_fair_mix_original_size));
             rdmaHw->SetAttribute("GuardReceiverConcurrency",
                                  UintegerValue(guard_receiver_concurrency));
             rdmaHw->SetAttribute("GuardAdaptiveElephantConcurrency",
@@ -4399,8 +4403,9 @@ int main(int argc, char *argv[]) {
                 total_guard_elephant_aging_active_deferred++;
         }
     }
-    fprintf(guard_stats_output, "guard_sender_fair enabled %u mix_threshold_bdps %.6f mix_decisions %lu\n",
-            guard_sender_fair_share ? 1 : 0, guard_fair_mix_threshold_bdps, fair_mix_decisions);
+    fprintf(guard_stats_output, "guard_sender_fair enabled %u mix_threshold_bdps %.6f mix_decisions %lu original_size %u\n",
+            guard_sender_fair_share ? 1 : 0, guard_fair_mix_threshold_bdps, fair_mix_decisions,
+            guard_fair_mix_original_size ? 1 : 0);
     fprintf(guard_stats_output, "guard_grant_bounded_release enabled %u deferrals %lu\n",
             guard_grant_bounded_release ? 1 : 0, grant_bounded_release_deferrals);
     fprintf(guard_stats_output, "guard_long_fair threshold_bdps %.6f allocations %lu\n",

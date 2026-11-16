@@ -32,6 +32,17 @@ int main() {
  assert(RdmaHw::ComputeGuardFairMixFraction({16,24,32},16)==.5);
  assert(RdmaHw::ComputeGuardFairMixFraction({16,24,32},0)==0);
  assert(RdmaHw::ComputeGuardFairMixFraction({},16)==0);
+ // An immutable admission class must not collapse back to K=2 solely
+ // because the same long-message cohort is approaching completion.
+ hw->m_guardSenderFairShare=false;hw->m_guardFairMixThresholdBdps=16;
+ for(auto f:fs)f->ReceiverNextExpectedSeq=f->m_guard_flow_size-100000;
+ hw->m_guardFairMixOriginalSize=true;
+ auto stable=hw->ComputeGuardBaseTargets(C);
+ assert(stable==hw->ComputeGuardSenderFairTargets(C));
+ hw->m_guardFairMixOriginalSize=false;
+ auto remaining_class=hw->ComputeGuardBaseTargets(C);
+ assert(remaining_class==hw->ComputeGuardUnmixedTargets(C));
+ assert(remaining_class!=stable);
  std::mt19937 rng(191);
  hw->m_guardSenderFairShare=false;
  for(unsigned trial=0;trial<500;++trial) {

@@ -116,3 +116,24 @@ other-peer budgets, adaptive endpoints, capacity conservation and insertion
 order independence. Probe6 tests unconditional and adaptive sender fairness,
 with and without the bounded byte-credit change; old corrected GUARD and native
 Homa are rerun in the same binary for comparison.
+
+## Stable admission class and load generalization
+
+Probe6 completed 16 runs. Sender-aware allocation improved WebSearch development
+P99 by 12.91% (adaptive 16 BDP) to 17.26% (unconditional, byte credit), but the
+corresponding AliStorage cases failed the joint target. Adaptive 32 BDP retained
+AliStorage's 16.08% gain but yielded only 3.66% on WebSearch. Therefore the joint
+objective remains unproven and no report result is replaced with these values.
+
+`GuardFairMixOriginalSize` optionally uses the message size supplied at
+registration for admission classification. Service order within each sender
+continues to follow current receiver progress. This prevents a cohort of large
+messages from being reclassified merely as its members drain; both behaviors
+remain explicit and testable, with no traffic-label branching. Defaults remain
+unchanged. A native regression checks stable versus progress-based admission.
+
+Probe7 uses development input 6102 at both 50% and 80% host load. It compares
+remaining-work and admission-size classification, K=1 versus K=2, and bounded
+byte credit. Collective-specific duplex/cohort/burst options are disabled in
+all candidate profiles. Homa is rerun with this frozen binary and identical
+input. This remains development; the reserved final inputs are still untouched.
