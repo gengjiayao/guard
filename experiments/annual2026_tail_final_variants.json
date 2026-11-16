@@ -11,7 +11,8 @@
     "guard_duplex_cohort_drain": 1,
     "guard_duplex_size_ratio": 1.05,
     "guard_gamma": 8,
-    "guard_scheduled_size_priority": 1
+    "guard_scheduled_size_priority": 1,
+    "guard_duplex_burst_protection": 1
   },
   "hpcc": {
     "cc": "hpcc"
