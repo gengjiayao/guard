@@ -455,6 +455,7 @@ class RdmaHw : public Object {
     uint32_t m_guardAckIntervalPackets;
     double m_guardAckWindowFraction;
     bool m_guardReceiverPhaseOrder;
+    bool m_guardDuplexAdaptive;
     static uint32_t ComputeGuardAckBatch(uint64_t bdp, uint32_t mtu,
                                          uint32_t configured, double fraction);
     bool m_guardFixedWindow;
@@ -889,6 +890,7 @@ class RdmaHw : public Object {
     void SyncHwRate(Ptr<RdmaQueuePair> qp, DataRate target_cc_rate);
     bool UsesGuardTailBypass(Ptr<RdmaQueuePair> qp) const;
     bool GuardHasCompetingSenders() const;
+    bool GuardHasMultipleActiveDestinations() const;
     void MaybeSendGuardCapReport(Ptr<RdmaQueuePair> qp);
     void HandleRccRequest(Ptr<RdmaRxQueuePair> qp, Ptr<Packet> p, CustomHeader &ch);
     bool HandleRccRemove(Ptr<RdmaRxQueuePair> qp, GuardReleaseReason reason,

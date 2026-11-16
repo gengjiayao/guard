@@ -48,6 +48,15 @@ int main() {
         auto reordered=allocator->ComputeGuardBaseTargets(100000000000ULL);
         for (auto &item : targets)assert(item.second==reordered[item.first]);
     }
+    auto duplex=CreateObject<RdmaHw>();duplex->m_guardDuplexAdaptive=true;
+    assert(!duplex->GuardHasMultipleActiveDestinations());
+    for (unsigned i=0;i<2;++i) {
+        auto tx=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2+i),1,2);
+        tx->m_size=1000000;duplex->m_qpMap[i]=tx;
+    }
+    assert(duplex->GuardHasMultipleActiveDestinations());
+    duplex->m_qpMap[1]->snd_una=1000000;
+    assert(!duplex->GuardHasMultipleActiveDestinations());
     std::set<uint32_t> selected_senders;
     for (uint32_t receiver=100;receiver<108;++receiver) {
         auto allocator=CreateObject<RdmaHw>();allocator->m_guardReceiverConcurrency=1;

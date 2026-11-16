@@ -114,6 +114,7 @@ GUARD_ADAPTIVE_TARGET_MAX_BDPS {guard_adaptive_target_max_bdps}
 GUARD_ACK_INTERVAL_PACKETS {guard_ack_interval_packets}
 GUARD_ACK_WINDOW_FRACTION {guard_ack_window_fraction}
 GUARD_RECEIVER_PHASE_ORDER {guard_receiver_phase_order}
+GUARD_DUPLEX_ADAPTIVE {guard_duplex_adaptive}
 GUARD_FIXED_WINDOW {guard_fixed_window}
 GUARD_REMAINING_AWARE {guard_remaining_aware}
 GUARD_MIN_SHARE_FRACTION {guard_min_share_fraction}
@@ -495,6 +496,7 @@ def main():
                         help="largest flow using adaptive targets in BDPs; 0 means all")
     parser.add_argument('--guard_ack_window_fraction', type=float, default=0.0)
     parser.add_argument('--guard_receiver_phase_order', type=int, choices=(0,1), default=0)
+    parser.add_argument('--guard_duplex_adaptive', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_ack_interval_packets', type=int, default=8,
                         help="cumulative ACK interval for registered GUARD flows (default: 8)")
     parser.add_argument('--guard_fixed_window', type=int, choices=(0, 1), default=1,
@@ -685,6 +687,8 @@ def main():
         raise Exception("CONFIG ERROR: --guard_cap_min_share_fraction must be in [0, 1].")
     if args.guard_srpt_quantum_packets <= 0:
         raise Exception("CONFIG ERROR: --guard_srpt_quantum_packets must be positive.")
+    if (args.guard_receiver_phase_order or args.guard_duplex_adaptive) and args.guard_small_set_fastpath_limit:
+        raise Exception("CONFIG ERROR: collective grant ordering requires the legacy allocator (fastpath limit 0).")
     if not 0.0 <= args.guard_ack_window_fraction <= 1.0:
         raise Exception("GUARD ACK window fraction must be in [0,1]")
     if args.guard_ack_interval_packets <= 0:
@@ -1388,6 +1392,7 @@ def main():
                                         guard_ack_interval_packets=args.guard_ack_interval_packets,
                                         guard_ack_window_fraction=args.guard_ack_window_fraction,
                                         guard_receiver_phase_order=args.guard_receiver_phase_order,
+                                        guard_duplex_adaptive=args.guard_duplex_adaptive,
                                         guard_fixed_window=args.guard_fixed_window,
                                         guard_remaining_aware=args.guard_remaining_aware,
                                         guard_min_share_fraction=args.guard_min_share_fraction,

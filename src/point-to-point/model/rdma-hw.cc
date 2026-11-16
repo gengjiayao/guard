@@ -271,6 +271,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Use receiver-relative peer order within a BDP-sized remaining-work class",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardReceiverPhaseOrder),
                           MakeBooleanChecker())
+            .AddAttribute("GuardDuplexAdaptive",
+                          "Preserve receiver parallelism and ACK aggregation while the local NIC serves multiple peers",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardDuplexAdaptive),
+                          MakeBooleanChecker())
             .AddAttribute("GuardFixedWindow",
                           "Use a fixed one-BDP safety window while GUARD's two rate caps pace data",
                           BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardFixedWindow),
@@ -1386,8 +1390,13 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
             bdp = (uint64_t)(fst.GetBaseRttSeconds() * rate.GetBitRate() / 8.0);
             if (bdp == 0) bdp = 104000;
         }
+        // ACK traffic competes with locally injected DATA on a full-duplex
+        // collective endpoint. Retain aggregation while that NIC serves
+        // multiple peers; otherwise use the tighter window-relative clock.
+        double ack_fraction = m_guardDuplexAdaptive && GuardHasMultipleActiveDestinations()
+                                  ? 0.0 : m_guardAckWindowFraction;
         uint32_t ack_batch = ComputeGuardAckBatch(bdp, m_mtu,
-            m_guardAckIntervalPackets, m_guardAckWindowFraction);
+            m_guardAckIntervalPackets, ack_fraction);
         if (m_guardOneRttBypass && flow_size <= bdp) {
             x = 5;
             m_guardOneRttAcksSuppressed++;
@@ -6398,7 +6407,26 @@ void RdmaHw::RefreshGuardGrantsForReliability() {
     ResetGuardReliabilityRefresh();
 }
 
+bool RdmaHw::GuardHasMultipleActiveDestinations() const {
+    bool seen = false;
+    uint32_t first = 0;
+    for (const auto &item : m_qpMap) {
+        const auto &qp = item.second;
+        if (qp->IsFinishedConst()) continue;
+        uint32_t peer = qp->dip.Get();
+        if (seen && peer != first) return true;
+        first = peer;
+        seen = true;
+    }
+    return false;
+}
+
 bool RdmaHw::GuardHasCompetingSenders() const {
+    // A bidirectional multi-peer endpoint can form reciprocal grant waits.
+    // Keep its receiver allocator work-conserving instead of concentrating
+    // credit on one peer. The decision uses only live local NIC queues;
+    // it does not inspect a workload name, graph, remote state or future flow.
+    if (m_guardDuplexAdaptive && GuardHasMultipleActiveDestinations()) return false;
     // RxQP addresses are reversed: dip identifies the DATA sender. A single
     // sending NIC already schedules its own messages; imposing receiver K=1
     // on that NIC's separate QPs duplicates ordering and can leave its grant
