@@ -184,6 +184,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Retain last-hop INT in GUARD ACKs for the double-control ablation",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardKeepLastHopInt),
                           MakeBooleanChecker())
+            .AddAttribute("GuardDynamicPriority",
+                          "Promote remaining work only after an acknowledged packet-order barrier",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardDynamicPriority),
+                          MakeBooleanChecker())
             .AddAttribute("GuardScheduledSizePriority",
                           "Reserve one class for one-BDP traffic and six dyadic classes for receiver-scheduled flows",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardScheduledSizePriority),
@@ -634,6 +638,7 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_guardPacingCreditMaxNs = 0;
     m_guardPacingCreditMaxBytes = 0;
     m_guardPacingCreditRevocations = 0;
+    m_guardPriorityBarriers = m_guardPriorityPromotions = m_guardPriorityDrainAcks = 0;
     m_guardInitialWindowPriorityFlows = 0;
     m_guardInitialWindowPriorityPackets = 0;
     m_guardInitialWindowPriorityBytes = 0;
@@ -1203,6 +1208,12 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
         qp->m_pg = qp_pg;
     }
 
+    if (m_cc_mode == CC_MODE_GUARD && m_guardDynamicPriority) {
+        NS_ABORT_MSG_IF(!m_guardSizePriority || m_guardInitialWindowPriority,
+                        "Dynamic priority requires size classes and excludes initial-window promotion");
+        qp->m_guard_dynamic_priority = true;
+        qp->m_guard_schedule_pg = qp->m_pg;
+    }
     if (m_cc_mode == CC_MODE_GUARD && m_guardInitialWindowPriority) {
         NS_ABORT_MSG_IF(!m_guardSizePriority,
                         "GUARD initial-window priority requires size priority");
@@ -1499,6 +1510,15 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
             x = 5;
             m_guardLongAcksSuppressed++;
         }
+    }
+    // The final packet before a promotion requests a cumulative ACK on wire.
+    // Do not let ACK batching stall an otherwise fully drained ordering barrier.
+    if (m_cc_mode == CC_MODE_GUARD && m_guardDynamicPriority &&
+        ch.HasGuardScheduleClass() && (ch.m_tos & CustomHeader::GUARD_SCHEDULE_DRAIN_ACK) &&
+        (x == 0 || x == 1 || x == 5) &&
+        rxQp->ReceiverNextExpectedSeq >= (uint64_t)ch.udp.seq + payload_size) {
+        x = 1;
+        m_guardPriorityDrainAcks++;
     }
     if (m_cc_mode == CC_MODE_GUARD && x == 1) {
         rxQp->m_guard_last_ack_seq = rxQp->ReceiverNextExpectedSeq;
@@ -2519,6 +2539,13 @@ void RdmaHw::RedistributeQp() {
 }
 
 Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
+    if (qp->m_guard_dynamic_priority && qp->m_guard_pending_pg &&
+        qp->snd_una >= qp->m_guard_priority_barrier) {
+        // Contiguous receipt proves that no old-class packet remains in flight.
+        qp->m_guard_schedule_pg = qp->m_guard_pending_pg;
+        qp->m_guard_pending_pg = 0;
+        m_guardPriorityPromotions++;
+    }
     // Once ACK progress proves that at most one BDP remains, another delayed
     // fabric-rate sample cannot prevent that bounded tail from entering the
     // network.  Keep the receiver cap, which still protects the destination,
@@ -2583,6 +2610,20 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
     ipHeader.SetPayloadSize(p->GetSize());
     ipHeader.SetTtl(64);
     uint8_t ip_tos = 0;
+    if (qp->m_guard_dynamic_priority) {
+        uint64_t bdp = qp->m_baseRtt * qp->m_max_rate.GetBitRate() / 8000000000ULL;
+        uint64_t next = (uint64_t)seq + payload_size;
+        uint64_t remaining = qp->m_size > next ? qp->m_size-next : 0;
+        uint16_t desired = ComputeGuardSizePriority(remaining,bdp,m_guardScheduledSizePriority);
+        if (!qp->m_guard_pending_pg && remaining && desired < qp->m_guard_schedule_pg) {
+            qp->m_guard_pending_pg = desired;
+            qp->m_guard_priority_barrier = next;
+            m_guardPriorityBarriers++;
+        }
+        ip_tos = CustomHeader::EncodeGuardScheduleClass(qp->m_guard_schedule_pg);
+        if (qp->m_guard_pending_pg && next >= qp->m_guard_priority_barrier)
+            ip_tos |= CustomHeader::GUARD_SCHEDULE_DRAIN_ACK;
+    }
     if (m_cc_mode == CC_MODE_GUARD && m_guardInitialWindowPriority) {
         uint8_t scheduling_pg = qp->m_pg;
         if (!qp->m_guard_initial_priority_closed &&

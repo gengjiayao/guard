@@ -24,6 +24,8 @@
 
 #include "drop-tail-queue.h"
 #include "ns3/double.h"
+#include "ns3/custom-header.h"
+#include "ns3/abort.h"
 #include "ns3/boolean.h"
 #include "ns3/enum.h"
 #include "ns3/flow-id-num-tag.h"
@@ -68,6 +70,7 @@ BEgressQueue::BEgressQueue() : Queue() {
     m_bytesInQueueTotal = 0;
     m_rrlast = 0;
     m_strictPriority = false;
+    m_guardSchedulePfc = false;
     for (uint32_t i = 0; i < fCnt; i++) {
         m_bytesInQueue[i] = 0;
         m_queues.push_back(CreateObject<DropTailQueue>());
@@ -75,6 +78,18 @@ BEgressQueue::BEgressQueue() : Queue() {
 }
 
 void BEgressQueue::SetStrictPriority(bool enabled) { m_strictPriority = enabled; }
+void BEgressQueue::SetGuardSchedulePfc(bool enabled) { m_guardSchedulePfc = enabled; }
+bool BEgressQueue::IsQueuePaused(uint32_t index, bool paused[]) const {
+    if (m_guardSchedulePfc && index && m_queues[index]->GetNPackets()) {
+        CustomHeader h(CustomHeader::L2_Header|CustomHeader::L3_Header|CustomHeader::L4_Header);
+        m_queues[index]->Peek()->PeekHeader(h);
+        if (h.l3Prot == 0x11 && h.HasGuardScheduleClass()) {
+            NS_ABORT_MSG_IF(h.udp.pg == 0 || h.udp.pg >= qCnt, "Invalid GUARD lossless PG");
+            return paused[h.udp.pg];
+        }
+    }
+    return paused[index];
+}
 
 BEgressQueue::~BEgressQueue() {
     NS_LOG_FUNCTION_NOARGS();
@@ -114,11 +129,11 @@ BEgressQueue::DoDequeueRR(bool paused[])  // this is for switch only
     } else if (m_strictPriority) {
         for (qIndex = 1; qIndex < qCnt; qIndex++) {
             bool has_packets = m_queues[qIndex]->GetNPackets() > 0;
-            if (has_packets && !paused[qIndex]) {
+            if (has_packets && !IsQueuePaused(qIndex,paused)) {
                 found = true;
                 break;
             }
-            if (has_packets && paused[qIndex]) {
+            if (has_packets && IsQueuePaused(qIndex,paused)) {
                 FlowIDNUMTag fit;
                 Ptr<Packet> p = ConstCast<Packet, const Packet>(m_queues[qIndex]->Peek());
                 if (p->PeekPacketTag(fit)) {
@@ -131,7 +146,7 @@ BEgressQueue::DoDequeueRR(bool paused[])  // this is for switch only
     } else {
         if (!found) {
             for (qIndex = 1; qIndex <= qCnt; qIndex++) {
-                bool cond1 = !paused[(qIndex + m_rrlast) % qCnt];
+                bool cond1 = !IsQueuePaused((qIndex + m_rrlast) % qCnt,paused);
                 bool cond2 = m_queues[(qIndex + m_rrlast) % qCnt]->GetNPackets() > 0;  // round robin
 
                 if (!cond1 && cond2) {

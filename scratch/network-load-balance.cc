@@ -200,6 +200,7 @@ bool guard_proactive_release = true;
 bool guard_keep_last_hop_int = false;
 bool guard_size_priority = true;
 bool guard_scheduled_size_priority = false;
+bool guard_dynamic_priority = false;
 bool guard_initial_window_priority = false;
 uint64_t guard_transport_window_floor_rtt_ns = 0;
 bool guard_transport_window_floor_after_first_grant = false;
@@ -1538,6 +1539,8 @@ int main(int argc, char *argv[]) {
             } else if (key.compare("GUARD_KEEP_LAST_HOP_INT") == 0) {
                 conf >> guard_keep_last_hop_int;
                 std::cerr << "GUARD_KEEP_LAST_HOP_INT\t" << guard_keep_last_hop_int << '\n';
+            } else if (key.compare("GUARD_DYNAMIC_PRIORITY") == 0) {
+                conf >> guard_dynamic_priority;
             } else if (key.compare("GUARD_SCHEDULED_SIZE_PRIORITY") == 0) {
                 conf >> guard_scheduled_size_priority;
             } else if (key.compare("GUARD_SIZE_PRIORITY") == 0) {
@@ -2744,6 +2747,7 @@ int main(int argc, char *argv[]) {
                 if (cc_mode == 12 ||
                     ((cc_mode == 11 || cc_mode == 13) && guard_size_priority)) {
                     dev->GetQueue()->SetStrictPriority(true);
+                    dev->GetQueue()->SetGuardSchedulePfc(cc_mode == 11 && guard_dynamic_priority);
                 }
                 // set ecn
                 uint64_t rate = dev->GetDataRate().GetBitRate();
@@ -2884,6 +2888,7 @@ int main(int argc, char *argv[]) {
                                  BooleanValue(guard_proactive_release));
             rdmaHw->SetAttribute("GuardKeepLastHopInt", BooleanValue(guard_keep_last_hop_int));
             rdmaHw->SetAttribute("GuardSizePriority", BooleanValue(guard_size_priority));
+            rdmaHw->SetAttribute("GuardDynamicPriority", BooleanValue(guard_dynamic_priority));
             rdmaHw->SetAttribute("GuardScheduledSizePriority", BooleanValue(guard_scheduled_size_priority));
             rdmaHw->SetAttribute("GuardInitialWindowPriority",
                                  BooleanValue(guard_initial_window_priority));
@@ -4324,6 +4329,7 @@ int main(int argc, char *argv[]) {
     uint64_t total_guard_elephant_aging_rotations = 0;
     uint64_t max_guard_elephant_aging_wait_ns = 0;
     uint64_t total_guard_elephant_aging_active_deferred = 0;
+    uint64_t total_guard_priority_barriers = 0, total_guard_priority_promotions = 0, total_guard_priority_drain_acks = 0;
     uint64_t total_guard_initial_window_priority_flows = 0;
     uint64_t total_guard_initial_window_priority_packets = 0;
     uint64_t duplex_burst_activations=0;
@@ -4382,6 +4388,9 @@ int main(int argc, char *argv[]) {
         max_guard_elephant_aging_wait_ns = std::max<uint64_t>(
             max_guard_elephant_aging_wait_ns,
             driver->m_rdma->m_guardElephantAgingMaxWaitNs);
+        total_guard_priority_barriers += driver->m_rdma->m_guardPriorityBarriers;
+        total_guard_priority_promotions += driver->m_rdma->m_guardPriorityPromotions;
+        total_guard_priority_drain_acks += driver->m_rdma->m_guardPriorityDrainAcks;
         total_guard_initial_window_priority_flows +=
             driver->m_rdma->m_guardInitialWindowPriorityFlows;
         work_conserving_max_reclaimed=std::max(work_conserving_max_reclaimed,driver->m_rdma->m_guardMaxReclaimedBps);
@@ -4436,6 +4445,7 @@ int main(int argc, char *argv[]) {
     fprintf(guard_stats_output, "guard_duplex_cohort enabled %u activations %lu\n",
             guard_duplex_cohort_drain ? 1 : 0, duplex_cohort_activations);
     fprintf(guard_stats_output, "guard_duplex_burst enabled %u activations %lu\n", guard_duplex_burst_protection ? 1 : 0, duplex_burst_activations);
+    fprintf(guard_stats_output, "guard_dynamic_priority enabled %u barriers %lu promotions %lu drain_acks %lu\n", guard_dynamic_priority ? 1 : 0, total_guard_priority_barriers, total_guard_priority_promotions, total_guard_priority_drain_acks);
     fprintf(guard_stats_output, "guard_scheduled_size_priority enabled %u\n", guard_scheduled_size_priority ? 1 : 0);
     fprintf(guard_stats_output, "guard_pacing_byte_credit bdps %.6f max_credit_bytes %lu\n",
             guard_pacing_credit_bdps, pacing_credit_max_bytes);

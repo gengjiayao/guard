@@ -48,6 +48,9 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
     m_guard_tail_deferred = false;
     m_guard_wait_first_grant = false;
     m_guard_initial_priority_closed = false;
+    m_guard_dynamic_priority = false;
+    m_guard_schedule_pg = m_guard_pending_pg = 0;
+    m_guard_priority_barrier = 0;
     m_guard_last_grant_generation = 0;
     m_guard_last_generation_rate_bps = 0;
     m_guard_last_generation_ack_required = false;
@@ -149,6 +152,11 @@ uint64_t RdmaQueuePair::GetOnTheFly() {
 }
 
 bool RdmaQueuePair::IsWinBound() {
+    // A low-to-high service-queue transition must not overtake earlier DATA.
+    // Retransmissions below the barrier remain eligible during recovery.
+    if (m_guard_dynamic_priority && m_guard_pending_pg &&
+        snd_una < m_guard_priority_barrier && snd_nxt >= m_guard_priority_barrier)
+        return true;
     uint64_t first_grant_win = GetGuardFirstGrantWin();
     if (m_guard_wait_first_grant && first_grant_win != 0 &&
         snd_nxt >= first_grant_win) return true;

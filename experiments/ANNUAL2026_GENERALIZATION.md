@@ -246,3 +246,37 @@ insertion-order independence. Probe11 compares 16/32/64-us observation periods
 and existing allocation policies at 50/80% on development input 6102. Its Homa
 reference is `guard/experiments/results/generalize_frozen_baseline`, not a new
 baseline rebuilt alongside GUARD. No final validation input has been consumed.
+
+## Remaining-work service priority with explicit drain acknowledgments
+
+Probe11 completed all 24 runs; probe12 all 28. Independent audits checked all
+52 complete input identities, output hashes, raw overall P95/P99 values and
+common experiment parameters against the frozen original Homa executable.
+No common profile meets the acceptance target. At WebSearch L80/6102, reclaim32
+achieved 25,116.63 us versus fixed Homa 25,821.05 us (2.73% reduction). A single
+service queue reached 24,753.07 us, still insufficient, and significantly harmed
+short-message latency. Lower fabric targets and adaptive target rollback did
+not improve the difficult WebSearch case. All failed hypotheses remain saved.
+
+The next optional controller component is `guard_dynamic_priority=1` (default
+off). The sender computes the dyadic service class from remaining message bytes
+and path BDP. Before any low-to-high priority transition, its final old-class
+DATA packet requests a cumulative ACK using one DSCP control bit. New DATA
+waits until that exact byte boundary is acknowledged; retransmissions below
+the boundary remain eligible. Receiver ACK batching cannot suppress the drain
+ACK. At most six promotions occur per message, without any future-arrival,
+workload-name, CDF or percentile input.
+
+The UDP priority group remains immutable for QP identity, grants, admission,
+ECN and PFC. Service class is encoded separately using the existing DSCP class
+field. GUARD's opt-in switch dequeue additionally honors the head packet's
+immutable PFC group, rather than assuming the service queue is that group.
+Control packets and frozen baseline executables are unchanged. The feature
+excludes the separate initial-window-priority mode. It still obeys all sender
+rate caps, receiver grants, byte windows, and actual NIC serialization.
+
+Native behavioral checks cover wire encoding, cumulative ACK gating, lost-ACK
+waiting, retransmission eligibility, monotone remaining-work promotion,
+immutable identity, PFC blocking by original group, and disabled behavior.
+The complete packet-level workload campaign must additionally verify message
+completion, NACK/recovery/drop counts, and measured P95/P99 before acceptance.

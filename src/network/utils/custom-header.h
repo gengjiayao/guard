@@ -72,6 +72,7 @@ public:
     GUARD_RATE_GRANT = 0xF9
   };
   enum GuardScheduleClassEncoding {
+    GUARD_SCHEDULE_DRAIN_ACK = 0x40,
     GUARD_SCHEDULE_CLASS_VALID = 0x20,
     GUARD_SCHEDULE_CLASS_MASK = 0x1c
   };

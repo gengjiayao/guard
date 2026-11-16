@@ -79,6 +79,9 @@ class RdmaQueuePair : public Object {
     bool m_guard_tail_deferred;
     bool m_guard_wait_first_grant;
     bool m_guard_initial_priority_closed;
+    bool m_guard_dynamic_priority;
+    uint16_t m_guard_schedule_pg, m_guard_pending_pg;
+    uint64_t m_guard_priority_barrier;
     uint32_t m_guard_last_grant_generation;
     uint64_t m_guard_last_generation_rate_bps;
     bool m_guard_last_generation_ack_required;

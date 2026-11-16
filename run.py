@@ -108,6 +108,7 @@ GUARD_RECEIVER_HEADROOM {guard_receiver_headroom}
 GUARD_PROACTIVE_RELEASE {guard_proactive_release}
 GUARD_KEEP_LAST_HOP_INT {guard_keep_last_hop_int}
 GUARD_SIZE_PRIORITY {guard_size_priority}
+GUARD_DYNAMIC_PRIORITY {guard_dynamic_priority}
 GUARD_SCHEDULED_SIZE_PRIORITY {guard_scheduled_size_priority}
 GUARD_INITIAL_WINDOW_PRIORITY {guard_initial_window_priority}
 GUARD_TRANSPORT_WINDOW_FLOOR_RTT_NS {guard_transport_window_floor_rtt_ns}
@@ -487,6 +488,7 @@ def main():
                         help="release registered flows before completion (default: 1)")
     parser.add_argument('--guard_keep_last_hop_int', type=int, choices=(0, 1), default=0,
                         help="retain last-hop INT in GUARD for ablation (default: 0)")
+    parser.add_argument('--guard_dynamic_priority', type=int, choices=(0, 1), default=0)
     parser.add_argument('--guard_scheduled_size_priority', type=int, choices=(0, 1), default=0)
     parser.add_argument('--guard_size_priority', type=int, choices=(0, 1), default=1,
                         help="remap GUARD flows to size-based priority groups (default: 1)")
@@ -751,6 +753,8 @@ def main():
         raise Exception("CONFIG ERROR: duplex cohort drain requires duplex adaptation.")
     if args.guard_duplex_size_ratio != 0.0 and (args.guard_duplex_size_ratio <= 1.0 or not args.guard_duplex_adaptive):
         raise Exception("CONFIG ERROR: duplex size ratio must be zero or >1 with duplex adaptation enabled.")
+    if args.guard_dynamic_priority and (args.cc != "guard" or not args.guard_size_priority or args.guard_initial_window_priority):
+        raise Exception("CONFIG ERROR: dynamic priority requires GUARD size classes and no initial-window promotion.")
     if args.guard_scheduled_size_priority and not args.guard_size_priority:
         raise Exception("CONFIG ERROR: scheduled classes require size priority.")
     if not 0.0 <= args.guard_pacing_credit_bdps <= 1.0:
@@ -1458,6 +1462,7 @@ def main():
                                         guard_proactive_release=guard_proactive_release,
                                         guard_keep_last_hop_int=args.guard_keep_last_hop_int,
                                         guard_size_priority=args.guard_size_priority,
+                                        guard_dynamic_priority=args.guard_dynamic_priority,
                                         guard_scheduled_size_priority=args.guard_scheduled_size_priority,
                                         guard_initial_window_priority=args.guard_initial_window_priority,
                                         guard_transport_window_floor_rtt_ns=
