@@ -539,6 +539,7 @@ class RdmaHw : public Object {
     double m_guardGrantReliabilityRtts;
     uint32_t m_guardSrptQuantumPackets;
     double m_guardSenderSrptMaxBdps;
+    double m_guardSenderSrptCohortBdps;
     bool m_guardWorkConserving;
     bool m_guardCapAwareReclaim;
     bool m_guardElephantCapSpillover;

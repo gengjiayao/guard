@@ -58,6 +58,7 @@ public:
 	RdmaEgressQueue();
 	Ptr<Packet> DequeueQindex(int qIndex);
 	int GetNextQindex(bool paused[]);
+	static double ComputeGuardSenderCutoff(double limit, double cohort, std::vector<double> work);
 	int GetLastQueue();
 	uint32_t GetNBytes(uint32_t qIndex);
 	uint32_t GetFlowCount(void);

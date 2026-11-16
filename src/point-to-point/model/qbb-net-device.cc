@@ -105,6 +105,15 @@ Ptr<Packet> RdmaEgressQueue::DequeueQindex(int qIndex) {
     }
     return 0;
 }
+double RdmaEgressQueue::ComputeGuardSenderCutoff(double limit, double cohort,
+                                                std::vector<double> work) {
+    if (limit <= 0 || cohort <= 0 || work.empty()) return limit;
+    std::sort(work.begin(),work.end());size_t n=work.size();
+    double median=n%2 ? work[n/2] : .5*(work[n/2-1]+work[n/2]);
+    double fraction=std::max(0.0,std::min(1.0,median/cohort-1.0));
+    return std::max(1.0,limit*(1.0-.75*fraction));
+}
+
 int RdmaEgressQueue::GetNextQindex(bool paused[]) {
     bool found = false;
     uint32_t qIndex;
@@ -155,13 +164,18 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
     // flow must have bytes, window credit, an unpaused priority, and an
     // expired pacing timer.  Ties retain round-robin order.
     bool guard_srpt = false;
+    double guard_cohort = 0, guard_short_limit = 0;
     for (uint32_t index = 0; index < fcount; index++) {
         if (!m_qpGrp->IsQpFinished(index) && m_qpGrp->Get(index)->m_guard_sender_srpt) {
             guard_srpt = true;
+            guard_cohort = m_qpGrp->Get(index)->m_guard_sender_srpt_cohort_bdps;
+            guard_short_limit = m_qpGrp->Get(index)->m_guard_sender_srpt_max_bdps;
             break;
         }
     }
     if (guard_srpt) {
+        std::vector<double> cohort_work;
+        std::vector<uint32_t> eligible;
         int best = -1024;
         int first_ready = -1024;
         uint64_t best_remaining = std::numeric_limits<uint64_t>::max();
@@ -169,6 +183,12 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
             uint32_t index = (step + m_rrlast) % fcount;
             if (m_qpGrp->IsQpFinished(index)) continue;
             Ptr<RdmaQueuePair> qp = m_qpGrp->Get(index);
+            if (guard_cohort > 0 && qp->GetBytesLeft() > 0) {
+                uint64_t bdp=std::max<uint64_t>(1,qp->m_baseRtt*qp->m_max_rate.GetBitRate()/8000000000ULL);
+                // Original length keeps admission stable while an outstanding
+                // cohort drains; service ordering still uses remaining bytes.
+                cohort_work.push_back((double)qp->m_size/bdp);
+            }
             bool window_allowed =
                 !qp->IsWinBound() && (!qp->irn.m_enabled || qp->CanIrnTransmit(m_mtu));
             bool has_bytes = qp->GetBytesLeft() > 0 && window_allowed;
@@ -185,6 +205,7 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
             }
             if (!time_ok) continue;
             if (first_ready == -1024) first_ready = (int)index;
+            if (guard_cohort > 0) eligible.push_back(index);
             uint64_t remaining = qp->GetBytesLeft();
             uint64_t bdp = qp->m_baseRtt * qp->m_max_rate.GetBitRate() / 8000000000ULL;
             bool bounded = qp->m_guard_sender_srpt_max_bdps <= 0 ||
@@ -192,6 +213,20 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
             if (bounded && remaining < best_remaining) {
                 best_remaining = remaining;
                 best = (int)index;
+            }
+        }
+        if (guard_cohort > 0 && !eligible.empty()) {
+            double cutoff=ComputeGuardSenderCutoff(guard_short_limit,guard_cohort,cohort_work);
+            Settings::guard_sender_cohort_decisions++;
+            if (cutoff < guard_short_limit) Settings::guard_sender_cohort_reduced++;
+            best=-1024;best_remaining=std::numeric_limits<uint64_t>::max();
+            for(auto index:eligible) {
+                auto qp=m_qpGrp->Get(index);
+                uint64_t bdp=std::max<uint64_t>(1,qp->m_baseRtt*qp->m_max_rate.GetBitRate()/8000000000ULL);
+                uint64_t remaining=qp->GetBytesLeft();
+                if(remaining <= cutoff*bdp && remaining < best_remaining) {
+                    best_remaining=remaining;best=(int)index;
+                }
             }
         }
         // Preserve short-message completion priority, but do not monopolize

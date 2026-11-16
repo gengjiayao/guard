@@ -324,3 +324,37 @@ The native behavioral test exercises short-work selection, long-work rotation,
 per-path BDP classification, PFC/pacing/window/first-grant gates, zero-cutoff
 compatibility and disabled scheduling. Probe18 will test 8/16/32/64 BDP cutoffs
 and gamma variants at both workload extremes before any acceptance decision.
+
+## Adapt sender priority to outstanding local work
+
+Probe18 completed all 24 bounded-SRPT trials. A 32-BDP sender cutoff with the
+common lambda8/reclaim32us profile gives AliStorage L50/L80 P99 reductions of
+14.04%/11.27% and WebSearch L50/L80 reductions of 18.74%/7.67% on development
+input 6102. Probe19 completed all 32 faster/slower reclamation, window and target
+trials; none improved the joint objective. Faster measurements are not selected
+merely because their timer is shorter.
+
+Probe20 cross-checks the common 32-BDP sender cutoff at all loads and all three
+development inputs (18 complete runs). Mean paired overall P99 reductions are
+approximately 11.41%, 19.74%, 12.03% for AliStorage L50/L70/L80, and 17.26%,
+14.34%, 7.84% for WebSearch. Five aggregate workload/load cases exceed 10%, but
+WebSearch at 80% does not. The target is not achieved. Individual observations,
+P95 regressions and all raw outcomes remain available; no input is removed.
+
+`GuardSenderSrptCohortBdps` (default zero/off) adapts the bounded priority range
+to the sender's own outstanding messages. It computes the median of declared
+original lengths normalized by each path BDP, counting only local QPs with
+payload still to send. Original lengths avoid changing cohort admission solely
+because the same long messages are draining. Service order still uses current
+remaining bytes. As median work grows from the cohort threshold to twice that
+threshold, the configured short-work cutoff decreases continuously by at most
+4x, with at least one BDP retaining priority. Other already-eligible work uses
+the existing sender rotation. There is no workload identifier, CDF, future
+arrival or percentile input. Sender eligibility and all physical/rate caps
+remain unchanged. Raw statistics expose both decisions and reduced-cutoff uses.
+
+Native checks cover cutoff endpoints, outlier robustness, monotone bounded
+adaptation, stable classification while two long messages drain, priority for
+short tails, and PFC/pacing/window/first-grant gates. Probe21 compares cohort
+thresholds and two conservative combinations, using one common rule across both
+workloads. Final validation inputs 7101--7110 remain untouched.

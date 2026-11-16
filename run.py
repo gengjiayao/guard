@@ -115,6 +115,7 @@ GUARD_TRANSPORT_WINDOW_FLOOR_RTT_NS {guard_transport_window_floor_rtt_ns}
 GUARD_TRANSPORT_WINDOW_FLOOR_AFTER_FIRST_GRANT {guard_transport_window_floor_after_first_grant}
 GUARD_TRANSPORT_WINDOW_WHOLE_FLOW_FIRST_GATE {guard_transport_window_whole_flow_first_gate}
 GUARD_TRANSPORT_WINDOW_ACK_SLACK_PACKETS {guard_transport_window_ack_slack_packets}
+GUARD_SENDER_SRPT_COHORT_BDPS {guard_sender_srpt_cohort_bdps}
 GUARD_SENDER_SRPT_MAX_BDPS {guard_sender_srpt_max_bdps}
 GUARD_SENDER_SRPT {guard_sender_srpt}
 GUARD_ONE_RTT_BYPASS {guard_one_rtt_bypass}
@@ -506,6 +507,7 @@ def main():
     parser.add_argument('--guard_transport_window_ack_slack_packets',
                         type=int, default=0,
                         help="cap the floor at path BDP plus this many MTU packets (default: 0)")
+    parser.add_argument('--guard_sender_srpt_cohort_bdps', type=float, default=0)
     parser.add_argument('--guard_sender_srpt_max_bdps', type=float, default=0)
     parser.add_argument('--guard_sender_srpt', type=int, choices=(0, 1), default=1,
                         help="select shortest remaining ready GUARD flow at sender (default: 1)")
@@ -735,6 +737,10 @@ def main():
         raise Exception("CONFIG ERROR: passive medium messages require direct selective GUARD grants.")
     if args.guard_gamma < 0.0:
         raise Exception("CONFIG ERROR: --guard_gamma must be non-negative.")
+    if not 0 <= args.guard_sender_srpt_cohort_bdps <= 1024:
+        raise Exception("CONFIG ERROR: guard_sender_srpt_cohort_bdps must be in [0,1024].")
+    if args.guard_sender_srpt_cohort_bdps and args.guard_sender_srpt_max_bdps < 1:
+        raise Exception("CONFIG ERROR: cohort scheduling requires a bounded sender threshold >= 1 BDP.")
     if not 0 <= args.guard_sender_srpt_max_bdps <= 1024:
         raise Exception("CONFIG ERROR: guard_sender_srpt_max_bdps must be in [0,1024].")
     if args.guard_sender_srpt_max_bdps and (args.cc != "guard" or not args.guard_sender_srpt):
@@ -1479,6 +1485,7 @@ def main():
                                             args.guard_transport_window_whole_flow_first_gate,
                                         guard_transport_window_ack_slack_packets=
                                             args.guard_transport_window_ack_slack_packets,
+                                        guard_sender_srpt_cohort_bdps=args.guard_sender_srpt_cohort_bdps,
                                         guard_sender_srpt_max_bdps=args.guard_sender_srpt_max_bdps,
                                         guard_sender_srpt=args.guard_sender_srpt,
                                         guard_one_rtt_bypass=args.guard_one_rtt_bypass,
