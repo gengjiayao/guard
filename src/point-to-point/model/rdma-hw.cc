@@ -6634,7 +6634,7 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
     }
     size_t service_count = std::min<size_t>(concurrency_candidates.size(),
                                              effective_concurrency);
-    std::unordered_set<RdmaRxQueuePair*> service_set;
+    GuardRxSet service_set;
     if (m_guardReceiverConcurrency > 0 &&
         service_count < concurrency_candidates.size()) {
         for (auto *flow : m_rate_flow_ctl_set) {
@@ -6770,7 +6770,7 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardCapAwareTarge
     // restored as soon as the mixed-cap condition disappears.
     std::unordered_map<RdmaRxQueuePair*, uint64_t> weights;
     for (auto *flow : m_rate_flow_ctl_set) weights[flow] = 1;
-    std::unordered_set<RdmaRxQueuePair*> unassigned = m_rate_flow_ctl_set;
+    GuardRxSet unassigned = m_rate_flow_ctl_set;
     uint64_t remaining = line_rate_bps;
     while (!unassigned.empty()) {
         long double weight_sum = 0.0;

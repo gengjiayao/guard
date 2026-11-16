@@ -63,6 +63,11 @@ int main() {
         assert(sum<=100000000000ULL);
         allocator->m_rate_flow_ctl_set.clear();
         for (auto it=flows.rbegin();it!=flows.rend();++it)allocator->m_rate_flow_ctl_set.insert(PeekPointer(*it));
+        uint32_t previous_id=0;bool first=true;
+        for (auto *flow : allocator->m_rate_flow_ctl_set) {
+            assert(first || flow->m_flow_id>previous_id);
+            previous_id=flow->m_flow_id;first=false;
+        }
         auto reordered=allocator->ComputeGuardBaseTargets(100000000000ULL);
         for (auto &item : targets)assert(item.second==reordered[item.first]);
     }

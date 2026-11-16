@@ -12,6 +12,8 @@
 #include <cstdint>
 #include <memory>
 #include <map>
+#include <set>
+#include <tuple>
 #include <string>
 #include <vector>
 
@@ -19,6 +21,16 @@
 #include "rdma-queue-pair.h"
 
 namespace ns3 {
+
+// Rate-control emission order must not depend on heap addresses or ASLR.
+// These identity fields are immutable while an RxQP is registered.
+struct GuardRxIdentityLess {
+    bool operator()(const RdmaRxQueuePair *a, const RdmaRxQueuePair *b) const {
+        return std::tie(a->m_flow_id, a->sip, a->dip, a->sport, a->dport, a->m_ecn_source.qIndex) <
+               std::tie(b->m_flow_id, b->sip, b->dip, b->sport, b->dport, b->m_ecn_source.qIndex);
+    }
+};
+using GuardRxSet = std::set<RdmaRxQueuePair*, GuardRxIdentityLess>;
 
 struct RdmaInterfaceMgr {
     Ptr<QbbNetDevice> dev;
@@ -765,7 +777,7 @@ class RdmaHw : public Object {
     GuardTransitionAuditRecord m_guardTransitionAuditRecord;
     uint64_t m_guardTransitionAuditEpoch;
     std::unordered_map<RdmaRxQueuePair*, GuardLifecycleState> m_guardLifecycleStates;
-    std::unordered_set<RdmaRxQueuePair*> m_rate_flow_ctl_set;
+    GuardRxSet m_rate_flow_ctl_set;
     EventId m_guardRebalanceEvent;
     EventId m_guardMembershipEvent;
     EventId m_guardReliabilityRefreshEvent;
