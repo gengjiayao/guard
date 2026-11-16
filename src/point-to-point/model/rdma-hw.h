@@ -588,6 +588,9 @@ class RdmaHw : public Object {
     uint64_t m_guardProactiveReleases;
     uint64_t m_guardCompletionReleases;
     uint64_t m_guardMaxActiveFlows;
+    uint64_t m_guardReceiverIntervalBytes;
+    mutable uint64_t m_guardMaxReclaimedBps;
+    std::unordered_map<RdmaRxQueuePair*, uint64_t> ComputeGuardDemandTargets(uint64_t line_rate_bps) const;
     uint64_t m_guardRebalanceEvents;
     uint64_t m_guardAdaptiveGrantUpdates;
     uint64_t m_guardCapReportsSent;

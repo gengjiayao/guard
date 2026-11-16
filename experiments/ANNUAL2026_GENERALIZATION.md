@@ -218,3 +218,31 @@ Native tests verify the unchanged default, per-NIC cap and bounded aggregate
 permission budget. Probe10 compares headroom 1/1.25/1.5/2 and sender-aware
 allocation against the preceding orig32win2 profile and same-build Homa; the
 original fixed-runtime baseline remains authoritative for later acceptance.
+
+## Persistent, priority-preserving receiver reclamation
+
+Probe10 completed 28 runs. Grant headroom with continuously binding full-path
+feedback did not meet the joint objective and is not selected. The fixed original
+baseline campaign completed all 12 runs; in particular its WebSearch-L80 6102
+P99 is 25,821.05 us, stricter than some rebuilt same-source Homa results. This
+fixed runtime will be used for acceptance, with exact input hashes checked.
+
+The legacy work-conserving implementation had two concrete defects: every
+membership/progress redistribution reset all rate measurements and cancelled
+its timer, while periodic updates could replace the ordinary priority allocation
+with equal shares even without confirmed unused capacity. Both behaviors are
+now corrected. The timer and per-flow measurements persist across redistributions.
+Receiver utilization includes all DATA, including unregistered/released messages.
+Only persistent underuse with stable grant observations creates a donor cap.
+Previously confirmed donor shares stay positive and normal service returns when
+the sender makes progress at the retained cap. Reclaimed capacity goes first to
+the shortest eligible remaining work. With no confirmed donor or no recipient,
+the original target vector is preserved exactly. Total permissions stay within
+the original one-line-rate budget; no overcommit is used here.
+
+Native tests cover no-evidence priority preservation, donor bounds, recipient
+selection, service restoration, no-recipient fallback, capacity conservation and
+insertion-order independence. Probe11 compares 16/32/64-us observation periods
+and existing allocation policies at 50/80% on development input 6102. Its Homa
+reference is `guard/experiments/results/generalize_frozen_baseline`, not a new
+baseline rebuilt alongside GUARD. No final validation input has been consumed.

@@ -4328,7 +4328,7 @@ int main(int argc, char *argv[]) {
     uint64_t total_guard_initial_window_priority_packets = 0;
     uint64_t duplex_burst_activations=0;
     uint64_t pacing_credit_max_bytes=0;
-    uint64_t pacing_credit_packets=0, pacing_credit_max_ns=0, pacing_credit_revocations=0, duplex_cohort_activations=0, service_age_decisions=0, long_fair_allocations=0, grant_bounded_release_deferrals=0, fair_mix_decisions=0, post_grant_window_raises=0;
+    uint64_t pacing_credit_packets=0, pacing_credit_max_ns=0, pacing_credit_revocations=0, duplex_cohort_activations=0, service_age_decisions=0, long_fair_allocations=0, grant_bounded_release_deferrals=0, fair_mix_decisions=0, post_grant_window_raises=0, work_conserving_max_reclaimed=0;
     uint64_t total_guard_initial_window_priority_bytes = 0;
     uint64_t total_guard_initial_window_priority_transitions = 0;
     uint64_t total_guard_transport_window_raised_flows = 0;
@@ -4384,6 +4384,7 @@ int main(int argc, char *argv[]) {
             driver->m_rdma->m_guardElephantAgingMaxWaitNs);
         total_guard_initial_window_priority_flows +=
             driver->m_rdma->m_guardInitialWindowPriorityFlows;
+        work_conserving_max_reclaimed=std::max(work_conserving_max_reclaimed,driver->m_rdma->m_guardMaxReclaimedBps);
         post_grant_window_raises += driver->m_rdma->m_guardPostGrantWindowRaises;
         fair_mix_decisions += driver->m_rdma->m_guardFairMixDecisions;
         grant_bounded_release_deferrals += driver->m_rdma->m_guardGrantBoundedReleaseDeferrals;
@@ -4417,6 +4418,7 @@ int main(int argc, char *argv[]) {
                 total_guard_elephant_aging_active_deferred++;
         }
     }
+    fprintf(guard_stats_output, "guard_work_conserving_max_reclaimed_bps %lu\n",work_conserving_max_reclaimed);
     fprintf(guard_stats_output, "guard_receiver_headroom factor %.6f\n",guard_receiver_headroom);
     fprintf(guard_stats_output, "guard_post_grant_window bdps %.6f raises %lu\n",
             guard_post_grant_window_bdps,post_grant_window_raises);

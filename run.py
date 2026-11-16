@@ -733,6 +733,8 @@ def main():
         raise Exception("CONFIG ERROR: --guard_gamma must be non-negative.")
     if args.guard_lambda < 1.0:
         raise Exception("CONFIG ERROR: --guard_lambda must be at least 1.0.")
+    if args.guard_work_conserving and args.guard_cap_aware_reclaim:
+        raise Exception("CONFIG ERROR: use one receiver reclamation controller at a time.")
     if args.guard_rebalance_interval_us <= 0:
         raise Exception("CONFIG ERROR: --guard_rebalance_interval_us must be positive.")
     if not 1.0 <= args.guard_cap_headroom <= 2.0:

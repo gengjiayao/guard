@@ -664,6 +664,8 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_guardProactiveReleases = 0;
     m_guardCompletionReleases = 0;
     m_guardMaxActiveFlows = 0;
+    m_guardReceiverIntervalBytes = 0;
+    m_guardMaxReclaimedBps = 0;
     m_guardRebalanceEvents = 0;
     m_guardAdaptiveGrantUpdates = 0;
     m_guardCapReportsSent = 0;
@@ -1452,6 +1454,10 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
         return 0;
     }
 
+    // Count all received DATA, including short/unregistered and already
+    // released messages, when deciding whether the receiver is underused.
+    if(m_cc_mode==CC_MODE_GUARD && m_guardWorkConserving)
+        m_guardReceiverIntervalBytes+=payload_size;
     bool cnp_check = false;
     int x = ReceiverCheckSeq(ch.udp.seq, rxQp, payload_size, cnp_check);
     if (m_guardTransitionPrefixBarrierEnabled &&
@@ -6744,8 +6750,8 @@ void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation)
     uint32_t nic_idx = GetNicIdxOfRxQp(sample);
     uint64_t line_rate_bps = m_nic[nic_idx].dev->GetDataRate().GetBitRate();
     std::unordered_map<RdmaRxQueuePair*, uint64_t> targets =
-        m_guardCapAwareReclaim
-            ? ComputeGuardCapAwareTargets(line_rate_bps)
+        m_guardWorkConserving ? ComputeGuardDemandTargets(line_rate_bps)
+            : m_guardCapAwareReclaim ? ComputeGuardCapAwareTargets(line_rate_bps)
             : ComputeGuardBaseTargets(line_rate_bps);
     if(m_guardReceiverHeadroom>1) {
         NS_ABORT_MSG_IF(m_cc_mode!=CC_MODE_GUARD || !m_guardKeepLastHopInt ||
@@ -6839,18 +6845,24 @@ void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation)
         }
     }
     for (auto *flow : m_rate_flow_ctl_set) {
-        flow->m_guard_interval_bytes = 0;
-        flow->m_guard_demand_samples = 0;
-        flow->m_guard_below_threshold_samples = 0;
-        flow->m_guard_demand_limited = false;
+        if(!m_guardWorkConserving) {
+            flow->m_guard_interval_bytes = 0;
+            flow->m_guard_demand_samples = 0;
+            flow->m_guard_below_threshold_samples = 0;
+            flow->m_guard_demand_limited = false;
+        }
         uint32_t rate_mbps = encoded_rates[flow];
         flow->m_guard_grant_rate_bps = (uint64_t)rate_mbps * 1000000;
         SendRateControlPacket(flow, rate_mbps, set_change, generation,
                               ack_required_generation);
     }
-    m_guardUnderutilizedSamples = 0;
-    if (m_guardRebalanceEvent.IsRunning()) Simulator::Cancel(m_guardRebalanceEvent);
-    m_guardLastRebalanceTime = Time(0);
+    if(!m_guardWorkConserving) {
+        m_guardUnderutilizedSamples = 0;
+        if (m_guardRebalanceEvent.IsRunning()) Simulator::Cancel(m_guardRebalanceEvent);
+        m_guardLastRebalanceTime = Time(0);
+    } else {
+        ScheduleGuardRebalance();
+    }
 }
 
 double RdmaHw::ComputeGuardFairMixFraction(std::vector<double> remaining_bdps,
@@ -7267,130 +7279,105 @@ void RdmaHw::ScheduleGuardRebalance() {
         return;
     }
     m_guardLastRebalanceTime = Simulator::Now();
+    m_guardReceiverIntervalBytes=0;
+    m_guardUnderutilizedSamples=0;
+    for(auto *flow:m_rate_flow_ctl_set) {
+        flow->m_guard_interval_bytes=0;flow->m_guard_demand_samples=0;
+        flow->m_guard_below_threshold_samples=0;flow->m_guard_demand_limited=false;
+        flow->m_guard_sample_grant_bps=0;flow->m_guard_measured_rate_bps=0;
+    }
     m_guardRebalanceEvent = Simulator::Schedule(
         m_guardRebalanceInterval, &RdmaHw::RebalanceGuardRates, this);
 }
 
+std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardDemandTargets(
+    uint64_t line_rate_bps) const {
+    auto base=ComputeGuardBaseTargets(line_rate_bps);
+    if(base.size()<2) return base;
+    auto targets=base;
+    std::vector<RdmaRxQueuePair*> recipients;
+    uint64_t reclaimed=0;
+    uint64_t floor=std::min<uint64_t>(line_rate_bps/base.size(),
+        std::max<uint64_t>(m_minRate.GetBitRate(),m_guardMinShareFraction*(line_rate_bps/base.size())));
+    for(auto *flow:m_rate_flow_ctl_set) {
+        if(!flow->m_guard_demand_limited) {recipients.push_back(flow);continue;}
+        uint64_t cap=std::max<uint64_t>(floor,std::min<long double>(line_rate_bps,
+            flow->m_guard_measured_rate_bps/m_guardDemandThreshold));
+        if(cap<targets[flow]) {reclaimed+=targets[flow]-cap;targets[flow]=cap;}
+    }
+    if(reclaimed==0 || recipients.empty()) return base;
+    std::sort(recipients.begin(),recipients.end(),[](RdmaRxQueuePair *a,RdmaRxQueuePair *b) {
+        uint64_t ar=a->m_guard_flow_size>a->ReceiverNextExpectedSeq
+            ? a->m_guard_flow_size-a->ReceiverNextExpectedSeq : 1;
+        uint64_t br=b->m_guard_flow_size>b->ReceiverNextExpectedSeq
+            ? b->m_guard_flow_size-b->ReceiverNextExpectedSeq : 1;
+        return ar==br ? a->m_flow_id<b->m_flow_id : ar<br;
+    });
+    m_guardMaxReclaimedBps=std::max(m_guardMaxReclaimedBps,reclaimed);
+    for(auto *flow:recipients) {
+        uint64_t extra=std::min(reclaimed,line_rate_bps-targets[flow]);
+        targets[flow]+=extra;reclaimed-=extra;if(reclaimed==0)break;
+    }
+    return targets;
+}
+
 void RdmaHw::RebalanceGuardRates() {
-    if (!m_guardWorkConserving || m_rate_flow_ctl_set.size() < 2) {
-        m_guardLastRebalanceTime = Time(0);
-        return;
+    if(!m_guardWorkConserving || m_rate_flow_ctl_set.size()<2) {
+        m_guardLastRebalanceTime=Time(0);m_guardReceiverIntervalBytes=0;return;
     }
-    if (IsGuardMembershipDirty()) {
-        m_guardProgressEventsCoalesced++;
-        m_guardRebalanceEvent = Simulator::Schedule(
-            m_guardRebalanceInterval, &RdmaHw::RebalanceGuardRates, this);
-        return;
+    if(IsGuardMembershipDirty()) {
+        m_guardRebalanceEvent=Simulator::Schedule(m_guardRebalanceInterval,&RdmaHw::RebalanceGuardRates,this);return;
     }
-    Time now = Simulator::Now();
-    Time elapsed = now - m_guardLastRebalanceTime;
-    m_guardLastRebalanceTime = now;
-    if (elapsed.IsZero()) {
-        m_guardRebalanceEvent = Simulator::Schedule(
-            m_guardRebalanceInterval, &RdmaHw::RebalanceGuardRates, this);
-        return;
+    Time now=Simulator::Now();Time elapsed=now-m_guardLastRebalanceTime;
+    m_guardLastRebalanceTime=now;
+    if(elapsed.IsZero()) {
+        m_guardRebalanceEvent=Simulator::Schedule(m_guardRebalanceInterval,&RdmaHw::RebalanceGuardRates,this);return;
     }
-
-    RdmaRxQueuePair *sample = *m_rate_flow_ctl_set.begin();
-    uint32_t nic_idx = GetNicIdxOfRxQp(sample);
-    uint64_t line_rate_bps = m_nic[nic_idx].dev->GetDataRate().GetBitRate();
-    const uint64_t unlimited = std::numeric_limits<uint64_t>::max();
-    uint64_t aggregate_measured = 0;
-    for (auto *flow : m_rate_flow_ctl_set) {
-        uint64_t measured = (uint64_t)(
-            (double)flow->m_guard_interval_bytes * 8.0 / elapsed.GetSeconds());
-        flow->m_guard_interval_bytes = 0;
-        flow->m_guard_measured_rate_bps = measured;
-        flow->m_guard_demand_samples++;
-        aggregate_measured += measured;
-    }
-    if ((double)aggregate_measured < m_guardReceiverUtilThreshold * line_rate_bps) {
-        m_guardUnderutilizedSamples++;
-    } else {
-        m_guardUnderutilizedSamples = 0;
-    }
-    bool receiver_underutilized = m_guardUnderutilizedSamples >= 3;
-
-    std::vector<std::pair<uint64_t, RdmaRxQueuePair*> > demands;
-    demands.reserve(m_rate_flow_ctl_set.size());
-    bool has_unlimited_demand = false;
-    for (auto *flow : m_rate_flow_ctl_set) {
-        uint64_t measured = flow->m_guard_measured_rate_bps;
-
-        uint64_t grant = std::max<uint64_t>(flow->m_guard_grant_rate_bps, 1);
-        if (m_guardUnderutilizedSamples > 0 &&
-            (double)measured < m_guardDemandThreshold * grant) {
-            flow->m_guard_below_threshold_samples++;
-        } else {
-            flow->m_guard_below_threshold_samples = 0;
+    auto *sample=*m_rate_flow_ctl_set.begin();
+    uint64_t capacity=m_nic[GetNicIdxOfRxQp(sample)].dev->GetDataRate().GetBitRate();
+    double aggregate=m_guardReceiverIntervalBytes*8.0/elapsed.GetSeconds();
+    m_guardReceiverIntervalBytes=0;
+    m_guardUnderutilizedSamples=aggregate<m_guardReceiverUtilThreshold*capacity
+        ? std::min<uint32_t>(100,m_guardUnderutilizedSamples+1) : 0;
+    for(auto *flow:m_rate_flow_ctl_set) {
+        uint64_t grant=std::max<uint64_t>(flow->m_guard_grant_rate_bps,1);
+        uint64_t previous=flow->m_guard_sample_grant_bps;
+        uint64_t delta=grant>previous?grant-previous:previous-grant;
+        if(previous==0 || delta>std::max(grant,previous)/4) {
+            flow->m_guard_demand_samples=0;flow->m_guard_below_threshold_samples=0;
         }
-        if (!receiver_underutilized) {
-            flow->m_guard_demand_limited = false;
-        } else if (flow->m_guard_demand_limited) {
-            if ((double)measured >= 0.95 * grant) {
-                flow->m_guard_demand_limited = false;
-                flow->m_guard_below_threshold_samples = 0;
+        uint64_t measured=flow->m_guard_interval_bytes*8.0/elapsed.GetSeconds();
+        flow->m_guard_interval_bytes=0;
+        flow->m_guard_measured_rate_bps=flow->m_guard_demand_samples==0 ? measured
+            : (flow->m_guard_measured_rate_bps/2+measured/2);
+        flow->m_guard_sample_grant_bps=grant;
+        flow->m_guard_demand_samples=std::min<uint32_t>(100,flow->m_guard_demand_samples+1);
+        if(flow->m_guard_demand_samples<2)continue;
+        if(flow->m_guard_demand_limited) {
+            // Probe shares remain positive. Progress at the retained cap
+            // restores ordinary priority as soon as a sender is available.
+            if(flow->m_guard_measured_rate_bps>=.8*grant) {
+                flow->m_guard_demand_limited=false;flow->m_guard_below_threshold_samples=0;
             }
-        } else if (flow->m_guard_below_threshold_samples >= 3) {
-            flow->m_guard_demand_limited = true;
-            flow->m_guard_below_threshold_samples = 0;
-        }
-        uint64_t demand = unlimited;
-        if (flow->m_guard_demand_limited) {
-            demand = std::min<uint64_t>(
-                line_rate_bps, (uint64_t)(measured / m_guardDemandThreshold));
-        } else {
-            has_unlimited_demand = true;
-        }
-        demands.push_back(std::make_pair(demand, flow));
+        } else if(m_guardUnderutilizedSamples>=2 && grant>=capacity/m_rate_flow_ctl_set.size()
+                  && flow->m_guard_measured_rate_bps<m_guardDemandThreshold*grant) {
+            if(++flow->m_guard_below_threshold_samples>=2)flow->m_guard_demand_limited=true;
+        } else flow->m_guard_below_threshold_samples=0;
     }
-
-    std::sort(demands.begin(), demands.end(),
-              [](const std::pair<uint64_t, RdmaRxQueuePair*> &left,
-                 const std::pair<uint64_t, RdmaRxQueuePair*> &right) {
-                  return left.first < right.first;
-              });
-    uint64_t remaining = line_rate_bps;
-    size_t unassigned = demands.size();
-    std::unordered_map<RdmaRxQueuePair*, uint64_t> targets;
-    for (auto const &entry : demands) {
-        uint64_t fair_share = unassigned == 0 ? 0 : remaining / unassigned;
-        if (entry.first != unlimited && entry.first < fair_share) {
-            targets[entry.second] = entry.first;
-            remaining -= entry.first;
-            unassigned--;
-        } else {
-            break;
-        }
+    auto targets=ComputeGuardDemandTargets(capacity);
+    bool changed=false;
+    for(auto *flow:m_rate_flow_ctl_set) {
+        uint64_t current=flow->m_guard_grant_rate_bps,target=targets[flow];
+        uint64_t delta=target>current?target-current:current-target;
+        if(delta>=std::max<uint64_t>(100000000,current/20))changed=true;
     }
-    uint64_t residual_share = unassigned == 0 ? 0 : remaining / unassigned;
-    for (auto const &entry : demands) {
-        if (targets.find(entry.second) == targets.end()) {
-            targets[entry.second] = residual_share;
-        }
+    ++m_guardRebalanceEvents;
+    if(changed)for(auto *flow:m_rate_flow_ctl_set) {
+        uint32_t mbps=std::max<uint32_t>(1,targets[flow]/1000000);
+        flow->m_guard_grant_rate_bps=(uint64_t)mbps*1000000;
+        SendRateControlPacket(flow,mbps,"demand");++m_guardAdaptiveGrantUpdates;
     }
-
-    m_guardRebalanceEvents++;
-    bool update_vector = false;
-    for (auto *flow : m_rate_flow_ctl_set) {
-        uint64_t target = std::max<uint64_t>(1000000, targets[flow]);
-        uint64_t current = flow->m_guard_grant_rate_bps;
-        uint64_t difference = target > current ? target - current : current - target;
-        uint64_t threshold = std::max<uint64_t>(100000000, current / 20);
-        if (difference >= threshold) update_vector = true;
-    }
-    if (update_vector && has_unlimited_demand) {
-        for (auto *flow : m_rate_flow_ctl_set) {
-            uint64_t target = std::max<uint64_t>(1000000, targets[flow]);
-            uint32_t rate_mbps = std::max<uint32_t>(1, target / 1000000);
-            flow->m_guard_grant_rate_bps = (uint64_t)rate_mbps * 1000000;
-            SendRateControlPacket(flow, rate_mbps, "demand");
-            m_guardAdaptiveGrantUpdates++;
-        }
-    }
-
-    m_guardRebalanceEvent = Simulator::Schedule(
-        m_guardRebalanceInterval, &RdmaHw::RebalanceGuardRates, this);
+    m_guardRebalanceEvent=Simulator::Schedule(m_guardRebalanceInterval,&RdmaHw::RebalanceGuardRates,this);
 }
 
 void RdmaHw::ConfigureGuardLifecycleTrace(GuardLifecycleTraceSink *sink) {

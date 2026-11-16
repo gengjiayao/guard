@@ -231,6 +231,7 @@ RdmaRxQueuePair::RdmaRxQueuePair() {
     m_guard_last_acked_upper_bound_bps = 0;
     m_guard_last_issued_generation = 0;
     m_guard_last_issued_target_bps = 0;
+    m_guard_sample_grant_bps = 0;
     m_guard_measured_rate_bps = 0;
     m_guard_demand_samples = 0;
     m_guard_below_threshold_samples = 0;
