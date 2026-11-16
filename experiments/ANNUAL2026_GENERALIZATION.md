@@ -425,3 +425,20 @@ unchanged window/pacing/PFC gates. Stable-original-class and cohort tests also
 pass. Probe25 compares five weighted profiles against a disabled-feature control
 on the same runtime and frozen development inputs. Selection must consider both
 P99 and the observed P95 tradeoff; no final data have yet been examined.
+
+
+Probe25 completed all 24 trials and passed the independent output-hash, identity,
+completion and quantile audit (360 files). The disabled-feature control exactly
+reproduces probe24 for all four shared inputs, including P95, P99 and size bins.
+Rate-weighted service did not improve the joint objective: its cohort32 option
+improves AliStorage L50/L80 by12.83%/19.88% but WebSearch L80 by only6.50%.
+It remains off in the selected configuration. Its negative outcomes and source
+commit remain available; no feature is described as beneficial without data.
+
+The stable original-size/cohort profile from probe24, reproduced by probe25's
+control on the current runtime, is selected for fresh final validation. Its
+six-case P99 development result and known WebSearch P95 tradeoff are stated
+above. A separate protocol must freeze the complete configuration and both
+runtime fingerprints BEFORE generating final inputs7101--7110. All four
+algorithms will run every final input; no development input is reused as final
+validation, and a final failure will not be converted to a positive claim.
