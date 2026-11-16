@@ -130,6 +130,7 @@ GUARD_RECEIVER_PHASE_ORDER {guard_receiver_phase_order}
 GUARD_DUPLEX_ADAPTIVE {guard_duplex_adaptive}
 GUARD_DUPLEX_SIZE_RATIO {guard_duplex_size_ratio}
 GUARD_DUPLEX_COHORT_DRAIN {guard_duplex_cohort_drain}
+GUARD_DUPLEX_BURST_PROTECTION {guard_duplex_burst_protection}
 GUARD_FIXED_WINDOW {guard_fixed_window}
 GUARD_REMAINING_AWARE {guard_remaining_aware}
 GUARD_MIN_SHARE_FRACTION {guard_min_share_fraction}
@@ -517,6 +518,7 @@ def main():
     parser.add_argument('--guard_pacing_credit_bdps', type=float, default=0.0)
     parser.add_argument('--guard_ack_window_fraction', type=float, default=0.0)
     parser.add_argument('--guard_receiver_phase_order', type=int, choices=(0,1), default=0)
+    parser.add_argument('--guard_duplex_burst_protection', type=int, choices=(0, 1), default=0)
     parser.add_argument('--guard_duplex_cohort_drain', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_duplex_size_ratio', type=float, default=0.0)
     parser.add_argument('--guard_duplex_adaptive', type=int, choices=(0,1), default=0)
@@ -713,6 +715,8 @@ def main():
         raise Exception("CONFIG ERROR: --guard_srpt_quantum_packets must be positive.")
     if (args.guard_receiver_phase_order or args.guard_duplex_adaptive) and args.guard_small_set_fastpath_limit:
         raise Exception("CONFIG ERROR: collective grant ordering requires the legacy allocator (fastpath limit 0).")
+    if args.guard_duplex_burst_protection and not args.guard_duplex_adaptive:
+        raise Exception("CONFIG ERROR: burst protection requires duplex adaptation.")
     if args.guard_duplex_cohort_drain and not args.guard_duplex_adaptive:
         raise Exception("CONFIG ERROR: duplex cohort drain requires duplex adaptation.")
     if args.guard_duplex_size_ratio != 0.0 and (args.guard_duplex_size_ratio <= 1.0 or not args.guard_duplex_adaptive):
@@ -1438,6 +1442,7 @@ def main():
                                         guard_duplex_adaptive=args.guard_duplex_adaptive,
                                         guard_duplex_size_ratio=args.guard_duplex_size_ratio,
                                         guard_duplex_cohort_drain=args.guard_duplex_cohort_drain,
+                                        guard_duplex_burst_protection=args.guard_duplex_burst_protection,
                                         guard_fixed_window=args.guard_fixed_window,
                                         guard_remaining_aware=args.guard_remaining_aware,
                                         guard_min_share_fraction=args.guard_min_share_fraction,

@@ -1,0 +1,34 @@
+{
+  "guard": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0,
+    "guard_receiver_phase_order": 0,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 1.0,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.05,
+    "guard_gamma": 8,
+    "guard_scheduled_size_priority": 1
+  },
+  "burst": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0,
+    "guard_receiver_phase_order": 0,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 1.0,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.05,
+    "guard_gamma": 8,
+    "guard_scheduled_size_priority": 1,
+    "guard_duplex_burst_protection": 1
+  },
+  "homa": {
+    "cc": "homa"
+  }
+}

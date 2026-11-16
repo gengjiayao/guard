@@ -11,6 +11,40 @@
 #include <vector>
 using namespace ns3;
 
+void TestDuplexBurstProtection() {
+    auto hw=CreateObject<RdmaHw>();hw->m_cc_mode=11;
+    hw->m_guardDuplexAdaptive=true;hw->m_guardDuplexBurstProtection=true;
+    hw->m_guardDuplexSizeRatio=1.05;
+    std::vector<Ptr<RdmaQueuePair>> txs;
+    for(unsigned i=0;i<8;++i) {
+        auto q=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2+i),1,2);
+        q->m_size=262144;q->m_baseRtt=8320;q->m_max_rate=DataRate(100000000000ULL);
+        hw->m_qpMap[i]=q;txs.push_back(q);hw->ObserveGuardDuplexBurst(q);
+        assert(hw->m_guardDuplexBurstActive==(i==7));
+    }
+    assert(hw->m_guardDuplexBurstActivations==1);
+    auto a=CreateObject<RdmaRxQueuePair>(),b=CreateObject<RdmaRxQueuePair>();
+    a->sip=b->sip=1;a->dip=2;b->dip=3;
+    a->m_guard_flow_size=262144;b->m_guard_flow_size=2097152;
+    hw->m_rate_flow_ctl_set.insert(PeekPointer(a));hw->m_rate_flow_ctl_set.insert(PeekPointer(b));
+    assert(!hw->GuardHasCompetingSenders());
+    for(auto q:txs)q->snd_una=q->m_size;
+    hw->RefreshGuardDuplexBurst();assert(hw->m_guardDuplexBurstActive);
+    hw->m_rate_flow_ctl_set.clear();hw->RefreshGuardDuplexBurst();
+    assert(!hw->m_guardDuplexBurstActive && hw->m_guardRecentLargeStarts.empty());
+    // Repeated destinations and one-BDP messages cannot qualify a burst.
+    for(unsigned i=0;i<16;++i) {
+        txs[0]->snd_una=0;hw->ObserveGuardDuplexBurst(txs[0]);
+        txs[1]->m_size=104000;hw->ObserveGuardDuplexBurst(txs[1]);
+    }
+    assert(!hw->m_guardDuplexBurstActive && hw->m_guardRecentLargeStarts.size()==1);
+    // Observations older than one base RTT cannot combine into a burst.
+    uint64_t now=Simulator::Now().GetNanoSeconds();
+    for(unsigned i=2;i<5;++i)hw->m_guardRecentLargeStarts[i]=now-16640;
+    hw->ObserveGuardDuplexBurst(txs[3]);
+    assert(hw->m_guardRecentLargeStarts.size()==1 && !hw->m_guardDuplexBurstActive);
+}
+
 void TestAgeProtectedGrant() {
     auto hw=CreateObject<RdmaHw>();hw->m_cc_mode=11;
     hw->m_guardReceiverConcurrency=2;hw->m_guardConcurrencyMinBdps=0;
@@ -198,6 +232,7 @@ int main() {
     assert(selected_senders.size()==8);
     assert(first_grant_senders.size()==8);
     Simulator::Schedule(MilliSeconds(1), &TestAgeProtectedGrant);
+    Simulator::Schedule(MilliSeconds(1), &TestDuplexBurstProtection);
     Simulator::Run();Simulator::Destroy();
     std::cout<<"PASS bounded aging, bounded pacing and ACK clock, tail safety, capacity/fairness, deterministic phase order and duplex cohort draining\n";
 }

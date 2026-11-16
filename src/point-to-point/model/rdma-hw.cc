@@ -283,6 +283,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Use receiver-relative peer order within a BDP-sized remaining-work class",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardReceiverPhaseOrder),
                           MakeBooleanChecker())
+            .AddAttribute("GuardDuplexBurstProtection",
+                          "Keep parallel receiver grants during a local burst to eight or more large-flow destinations",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardDuplexBurstProtection),
+                          MakeBooleanChecker())
             .AddAttribute("GuardDuplexCohortDrain",
                           "Keep duplex grant parallelism until the registered receive cohort drains",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardDuplexCohortDrain),
@@ -583,6 +587,8 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_guardRateGrantsReceived = 0;
     m_guardDuplexCohortActive = false;
     m_guardDuplexCohortActivations = 0;
+    m_guardDuplexBurstActive = false;
+    m_guardDuplexBurstActivations = 0;
     m_guardServiceAgeDecisions = 0;
     m_guardPacingCreditPackets = 0;
     m_guardPacingCreditMaxNs = 0;
@@ -1189,6 +1195,7 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
                     "GUARD QP completed tuple cannot be reused");
     NS_ABORT_MSG_IF(insertion == GUARD_QP_INSERT_TOMBSTONE_COLLISION,
                     "GUARD QP legacy-key collision against tombstone");
+    RefreshGuardDuplexBurst();
     m_nic[nic_idx].qpGrp->AddQp(qp);
     m_qpMap[key] = qp;
     RefreshGuardDuplexCohort();
@@ -1198,6 +1205,7 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
     DataRate m_bps = m_nic[nic_idx].dev->GetDataRate();
     qp->m_rate = m_bps;
     qp->m_max_rate = m_bps;
+    ObserveGuardDuplexBurst(qp);
     if (m_cc_mode == 1) {
         qp->mlx.m_targetRate = m_bps;
     } else if (m_cc_mode == 3 || m_cc_mode == 11 || m_cc_mode == 13) {
@@ -2399,6 +2407,7 @@ void RdmaHw::QpComplete(Ptr<RdmaQueuePair> qp) {
     m_qpCompleteCallback(qp);
     // delete TxQueuePair
     DeleteQueuePair(qp);
+    RefreshGuardDuplexBurst();
 }
 
 void RdmaHw::SetLinkDown(Ptr<QbbNetDevice> dev) {
@@ -6521,7 +6530,44 @@ bool RdmaHw::GuardHasMultipleActiveDestinations() const {
     return false;
 }
 
+void RdmaHw::ObserveGuardDuplexBurst(Ptr<RdmaQueuePair> qp) {
+    if (m_cc_mode != CC_MODE_GUARD || !m_guardDuplexBurstProtection ||
+        !m_guardDuplexAdaptive || qp == NULL) return;
+    uint64_t rtt = qp->m_baseRtt;
+    uint64_t bdp = static_cast<long double>(rtt) * qp->m_max_rate.GetBitRate() / 8e9;
+    if (rtt == 0 || bdp == 0 || qp->m_size <= bdp) return;
+    uint64_t now = Simulator::Now().GetNanoSeconds();
+    for (auto it=m_guardRecentLargeStarts.begin(); it!=m_guardRecentLargeStarts.end();) {
+        if (now - it->second > rtt) it=m_guardRecentLargeStarts.erase(it);
+        else ++it;
+    }
+    m_guardRecentLargeStarts[qp->dip.Get()] = now;
+    if (!m_guardDuplexBurstActive && m_guardRecentLargeStarts.size() >= 8) {
+        m_guardDuplexBurstActive = true;
+        m_guardDuplexBurstActivations++;
+        // A burst may begin while a receive set is already being served.
+        if (!m_rate_flow_ctl_set.empty()) RedistributeGuardRates("duplex_burst");
+    }
+}
+
+void RdmaHw::RefreshGuardDuplexBurst() {
+    if (!m_guardDuplexBurstProtection || !m_guardDuplexAdaptive) {
+        m_guardDuplexBurstActive = false;
+        m_guardRecentLargeStarts.clear();
+        return;
+    }
+    if (!m_rate_flow_ctl_set.empty()) return;
+    for (const auto &item : m_qpMap) {
+        const auto &qp = item.second;
+        uint64_t bdp = static_cast<long double>(qp->m_baseRtt) * qp->m_max_rate.GetBitRate() / 8e9;
+        if (!qp->IsFinishedConst() && bdp > 0 && qp->m_size > bdp) return;
+    }
+    m_guardDuplexBurstActive = false;
+    m_guardRecentLargeStarts.clear();
+}
+
 void RdmaHw::RefreshGuardDuplexCohort() {
+    RefreshGuardDuplexBurst();
     if (!m_guardDuplexCohortDrain || !m_guardDuplexAdaptive || m_rate_flow_ctl_set.empty()) {
         m_guardDuplexCohortActive = false;
         return;
@@ -6543,6 +6589,10 @@ bool RdmaHw::GuardHasCompetingSenders() const {
     // credit on one peer. The decision uses only live local NIC queues;
     // it does not inspect a workload name, graph, remote state or future flow.
     if (m_guardDuplexAdaptive) {
+        // Registration bursts to multiple destinations can form a reciprocal
+        // grant wait even when messages differ in size. Use only locally
+        // observed starts; no workload labels, barriers or future flows.
+        if (m_guardDuplexBurstProtection && m_guardDuplexBurstActive) return false;
         // Keep this protection until the last local transfer is acknowledged.
         // Dropping to one destination is not the end of a duplex exchange:
         // concentrating credit at that point can create reciprocal tail waits.

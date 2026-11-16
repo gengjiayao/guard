@@ -484,6 +484,12 @@ class RdmaHw : public Object {
     bool m_guardReceiverPhaseOrder;
     bool m_guardDuplexAdaptive;
     double m_guardDuplexSizeRatio;
+    bool m_guardDuplexBurstProtection;
+    bool m_guardDuplexBurstActive;
+    uint64_t m_guardDuplexBurstActivations;
+    std::map<uint32_t, uint64_t> m_guardRecentLargeStarts;
+    void ObserveGuardDuplexBurst(Ptr<RdmaQueuePair> qp);
+    void RefreshGuardDuplexBurst();
     bool m_guardDuplexCohortDrain;
     bool m_guardDuplexCohortActive;
     uint64_t m_guardDuplexCohortActivations;
