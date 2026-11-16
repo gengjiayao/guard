@@ -500,6 +500,10 @@ class RdmaHw : public Object {
     bool m_guardRemainingAware;
     double m_guardMinShareFraction;
     double m_guardRemainingExponent;
+    bool m_guardGrantBoundedRelease;
+    uint64_t m_guardGrantBoundedReleaseDeferrals;
+    static uint64_t ComputeGuardGrantBoundedReleaseBytes(double measured_bytes_per_sec,
+        uint64_t grant_bps, double base_rtt_sec, double gamma);
     double m_guardLongFlowThresholdBdps;
     mutable uint64_t m_guardLongFairAllocations;
     double m_guardServiceAgeFactor;

@@ -312,6 +312,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           DoubleValue(0.0),
                           MakeDoubleAccessor(&RdmaHw::m_guardMinShareFraction),
                           MakeDoubleChecker<double>(0.0, 1.0))
+            .AddAttribute("GuardGrantBoundedRelease",
+                          "Bound proactive release by the retained receiver grant as well as measured arrival rate",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardGrantBoundedRelease),
+                          MakeBooleanChecker())
             .AddAttribute("GuardLongFlowThresholdBdps",
                           "Prioritize bounded remaining work, share long-flow grants equally; zero disables",
                           DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardLongFlowThresholdBdps),
@@ -593,6 +597,7 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_guardDuplexCohortActivations = 0;
     m_guardDuplexBurstActive = false;
     m_guardDuplexBurstActivations = 0;
+    m_guardGrantBoundedReleaseDeferrals = 0;
     m_guardLongFairAllocations = 0;
     m_guardServiceAgeDecisions = 0;
     m_guardPacingCreditPackets = 0;
@@ -1629,6 +1634,14 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
             double v_th_double =
                 rxQp->m_est_rate * rxQp->m_base_rtt_sec * m_guardReleaseGamma;
             uint64_t v_th = (uint64_t)v_th_double;
+            if (m_guardGrantBoundedRelease) {
+                uint64_t bounded = ComputeGuardGrantBoundedReleaseBytes(
+                    rxQp->m_est_rate, rxQp->m_guard_grant_rate_bps,
+                    rxQp->m_base_rtt_sec, m_guardReleaseGamma);
+                if (v_remain < v_th && v_remain >= bounded)
+                    m_guardGrantBoundedReleaseDeferrals++;
+                v_th = bounded;
+            }
 
             if (v_remain < v_th && !rxQp->m_proactive_released) {
                 bool released = m_guardSerializedDraining
@@ -2966,6 +2979,21 @@ void RdmaHw::MaybeSendGuardCapReport(Ptr<RdmaQueuePair> qp) {
     uint32_t nic_idx = GetNicIdxOfQp(qp);
     m_nic[nic_idx].dev->RdmaEnqueueHighPrioQ(packet);
     m_nic[nic_idx].dev->TriggerTransmit();
+}
+
+uint64_t RdmaHw::ComputeGuardGrantBoundedReleaseBytes(double measured_bytes_per_sec,
+    uint64_t grant_bps, double base_rtt_sec, double gamma) {
+    if (!(measured_bytes_per_sec > 0) || !(base_rtt_sec > 0) ||
+        !(gamma > 0) || grant_bps == 0 || !std::isfinite(measured_bytes_per_sec) ||
+        !std::isfinite(base_rtt_sec) || !std::isfinite(gamma)) return 0;
+    // An arrival burst can reflect a previous, larger grant. Once removed,
+    // this flow receives no further reallocations and keeps its final cap.
+    // Never release more work than that retained cap can serve in gamma RTTs.
+    long double bytes_per_sec = std::min<long double>(measured_bytes_per_sec,
+                                                     grant_bps / 8.0L);
+    long double bytes = bytes_per_sec * base_rtt_sec * gamma;
+    return (uint64_t)std::min<long double>(bytes,
+        std::numeric_limits<uint64_t>::max());
 }
 
 void RdmaHw::HandleRccRequest(Ptr<RdmaRxQueuePair> rx_qp, Ptr<Packet> p, CustomHeader &ch) {

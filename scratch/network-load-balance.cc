@@ -220,6 +220,7 @@ double guard_pacing_credit_bdps = 0.0;
 double guard_duplex_size_ratio = 0.0;
 double guard_service_age_factor = 0.0;
 double guard_long_flow_threshold_bdps = 0.0;
+bool guard_grant_bounded_release = false;
 bool guard_duplex_cohort_drain = false;
 bool guard_duplex_burst_protection = false;
 bool guard_receiver_phase_order = false;
@@ -1617,6 +1618,8 @@ int main(int argc, char *argv[]) {
                 conf >> guard_min_share_fraction;
                 std::cerr << "GUARD_MIN_SHARE_FRACTION\t"
                           << guard_min_share_fraction << '\n';
+            } else if (key.compare("GUARD_GRANT_BOUNDED_RELEASE") == 0) {
+                conf >> guard_grant_bounded_release;
             } else if (key.compare("GUARD_LONG_FLOW_THRESHOLD_BDPS") == 0) {
                 conf >> guard_long_flow_threshold_bdps;
             } else if (key.compare("GUARD_SERVICE_AGE_FACTOR") == 0) {
@@ -2908,6 +2911,7 @@ int main(int argc, char *argv[]) {
                                  DoubleValue(guard_remaining_exponent));
             rdmaHw->SetAttribute("GuardServiceAgeFactor", DoubleValue(guard_service_age_factor));
             rdmaHw->SetAttribute("GuardLongFlowThresholdBdps", DoubleValue(guard_long_flow_threshold_bdps));
+            rdmaHw->SetAttribute("GuardGrantBoundedRelease", BooleanValue(guard_grant_bounded_release));
             rdmaHw->SetAttribute("GuardReceiverConcurrency",
                                  UintegerValue(guard_receiver_concurrency));
             rdmaHw->SetAttribute("GuardAdaptiveElephantConcurrency",
@@ -4299,7 +4303,7 @@ int main(int argc, char *argv[]) {
     uint64_t total_guard_initial_window_priority_packets = 0;
     uint64_t duplex_burst_activations=0;
     uint64_t pacing_credit_max_bytes=0;
-    uint64_t pacing_credit_packets=0, pacing_credit_max_ns=0, pacing_credit_revocations=0, duplex_cohort_activations=0, service_age_decisions=0, long_fair_allocations=0;
+    uint64_t pacing_credit_packets=0, pacing_credit_max_ns=0, pacing_credit_revocations=0, duplex_cohort_activations=0, service_age_decisions=0, long_fair_allocations=0, grant_bounded_release_deferrals=0;
     uint64_t total_guard_initial_window_priority_bytes = 0;
     uint64_t total_guard_initial_window_priority_transitions = 0;
     uint64_t total_guard_transport_window_raised_flows = 0;
@@ -4355,6 +4359,7 @@ int main(int argc, char *argv[]) {
             driver->m_rdma->m_guardElephantAgingMaxWaitNs);
         total_guard_initial_window_priority_flows +=
             driver->m_rdma->m_guardInitialWindowPriorityFlows;
+        grant_bounded_release_deferrals += driver->m_rdma->m_guardGrantBoundedReleaseDeferrals;
         long_fair_allocations += driver->m_rdma->m_guardLongFairAllocations;
         service_age_decisions += driver->m_rdma->m_guardServiceAgeDecisions;
         duplex_cohort_activations += driver->m_rdma->m_guardDuplexCohortActivations;
@@ -4385,6 +4390,8 @@ int main(int argc, char *argv[]) {
                 total_guard_elephant_aging_active_deferred++;
         }
     }
+    fprintf(guard_stats_output, "guard_grant_bounded_release enabled %u deferrals %lu\n",
+            guard_grant_bounded_release ? 1 : 0, grant_bounded_release_deferrals);
     fprintf(guard_stats_output, "guard_long_fair threshold_bdps %.6f allocations %lu\n",
             guard_long_flow_threshold_bdps, long_fair_allocations);
     fprintf(guard_stats_output, "guard_service_age factor %.6f decisions %lu\n",

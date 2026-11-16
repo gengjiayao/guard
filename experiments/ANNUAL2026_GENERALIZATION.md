@@ -50,3 +50,33 @@ long-flow service restoration and disabled mode; existing
 
 Campaign `generalize_probe3` compares 8, 16 and 32 BDP thresholds against the
 unchanged old GUARD, equal-grant GUARD and Homa on identical 6101 traces.
+
+## Grant-bounded proactive release
+
+Probe3 completed all 12 runs. Pure bounded-work priority still trades WebSearch
+against AliStorage; none is accepted as a final profile. The old GUARD and
+equal-grant arms reproduced their P99 values from probe1. Homa WebSearch P99
+was 34,031.01 us in this binary versus 33,435.79 us in the earlier binary;
+therefore always rerun baselines with the frozen final runtime, rather than
+reusing a favorable baseline from an older build.
+
+`generalize_release_trace` completed two unchanged-GUARD runs with bounded
+lifecycle/controller tracing. AliStorage flow 4688 was proactively released
+with 763,317 bytes remaining, retained a 100 Mb/s grant, and took 65,930.416 us
+after release to complete. Five further traced flows showed the same prolonged
+low-grant tail. WebSearch had no traced post-release tail longer than 1 ms;
+this defect is real, but does not explain the entire WebSearch regression.
+Raw trace outputs: mix/output/322512021 (Ali), mix/output/765828437 (Web).
+
+`GuardGrantBoundedRelease` bounds the release threshold by both measured
+arrival rate and the last receiver-issued grant. An arrival burst from a prior
+higher grant must not authorize removal of work requiring far more than gamma
+RTTs at the retained cap. Disabled by default for controlled comparison.
+The passive fabric cap may further limit actual delivery; the bound is a
+necessary service-budget check, not a guarantee of tail completion time.
+Native regression `tests/guard_release_bound.cc` checks the observed low-grant
+case, monotonicity, rate bounds and invalid/zero input handling.
+
+Probe4 compares the correction alone, equal grants, bounded-work grants and a
+one-RTT release threshold against unchanged old GUARD and Homa. No acceptance
+claim precedes measured overall P99 and later independent validation.

@@ -137,6 +137,7 @@ GUARD_MIN_SHARE_FRACTION {guard_min_share_fraction}
 GUARD_REMAINING_EXPONENT {guard_remaining_exponent}
 GUARD_SERVICE_AGE_FACTOR {guard_service_age_factor}
 GUARD_LONG_FLOW_THRESHOLD_BDPS {guard_long_flow_threshold_bdps}
+GUARD_GRANT_BOUNDED_RELEASE {guard_grant_bounded_release}
 GUARD_RECEIVER_CONCURRENCY {guard_receiver_concurrency}
 GUARD_ADAPTIVE_ELEPHANT_CONCURRENCY {guard_adaptive_elephant_concurrency}
 GUARD_SIZE_CLASS_ELEPHANT_CONCURRENCY {guard_size_class_elephant_concurrency}
@@ -531,6 +532,7 @@ def main():
                         help="weight receiver grants by remaining flow size (default: 1)")
     parser.add_argument('--guard_min_share_fraction', type=float, default=0.0,
                         help="guaranteed fraction of equal receiver share in [0,1] (default: 0)")
+    parser.add_argument('--guard_grant_bounded_release', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_long_flow_threshold_bdps', type=float, default=0.0)
     parser.add_argument('--guard_service_age_factor', type=float, default=0.0)
     parser.add_argument('--guard_remaining_exponent', type=float, default=1.0,
@@ -1455,6 +1457,7 @@ def main():
                                         guard_remaining_exponent=args.guard_remaining_exponent,
                                         guard_service_age_factor=args.guard_service_age_factor,
                                         guard_long_flow_threshold_bdps=args.guard_long_flow_threshold_bdps,
+                                        guard_grant_bounded_release=args.guard_grant_bounded_release,
                                         guard_receiver_concurrency=args.guard_receiver_concurrency,
                                         guard_adaptive_elephant_concurrency=args.guard_adaptive_elephant_concurrency,
                                         guard_size_class_elephant_concurrency=
