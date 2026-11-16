@@ -82,3 +82,14 @@ Run `python3 experiments/analyze_collectives.py experiments/results/annual2026_f
 For an extracted archive, pass its `raw` directory via `--raw-root`.
 The analysis checks raw file hashes before producing tables. All generated
 summaries use actual outputs; no manually entered performance numbers are used.
+
+## Final results
+
+The frozen 200 runs completed 295,424 flow records with every input identity and
+DAG edge checked. Switch drops and RDMA timeout recoveries were zero. Homa
+recorded seven native retransmissions; all messages completed. The four required
+mechanism cases have lower mean FCT than each baseline. The primary results and
+limitations are committed in experiments/reports/annual2026. The paired 95%
+interval against Homa crosses zero for 1 MiB All-to-All; All-to-Allv and 1 MiB
+Ring are not evidence of uniform superiority. All development outcomes are
+preserved in the evidence archive.

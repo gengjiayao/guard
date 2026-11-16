@@ -1,0 +1,40 @@
+{
+  "plan_git": "9d6325dfda4adbb88d78c30d83ec17279a717bcc",
+  "runs": 200,
+  "seeds": [
+    1601,
+    1602,
+    1603,
+    1604,
+    1605
+  ],
+  "flow_records": 295424,
+  "integrity": {
+    "switch_drops_total": 0,
+    "timeout_recoveries": 0,
+    "irn_retransmit_packets": 0,
+    "homa_retransmit_packets": 7,
+    "recovery_nacks_generated": 0
+  },
+  "guard_activity": {
+    "grants_sent": 894345,
+    "grant_bytes_sent": 53660700,
+    "proactive_releases": 25080,
+    "hpcc_rate_updates_applied": 21872,
+    "hpcc_actual_rate_changes": 6189,
+    "reactive_binding_rate_changes": 5697,
+    "grant_event_rate_changes": 668069
+  },
+  "tests": [
+    "native controller capacity/fairness and duplex tail tests",
+    "actual Packet tag round trip",
+    "3 workload generator tests",
+    "5 simulator dependency rejection cases"
+  ],
+  "limits": [
+    "All-to-Allv mean CCT is above HPCC and Homa",
+    "1 MiB Ring has no clear benefit over DCQCN",
+    "1 MiB All-to-All paired 95% interval versus Homa includes zero",
+    "network-only 16-node ns-3 model; no GPU compute time or physical prototype"
+  ]
+}
