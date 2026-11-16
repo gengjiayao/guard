@@ -26,6 +26,24 @@ int main() {
     qp->m_guard_tail_bypass=true;qp->m_guard_tail_safe_samples=2;
     assert(hw->UsesGuardTailBypass(qp));
     qp->m_guard_tail_safe_samples=0;assert(!hw->UsesGuardTailBypass(qp));
+    // A congestion spike arriving between full RTT updates must revoke a
+    // previously granted bypass; a burst of fast safe ACKs cannot re-arm it.
+    hw->m_guardQueueBudgetBdps=.5;hw->m_guardTailSafeRatio=.9;
+    hw->UpdateGuardTailSafety(qp,.1,true);
+    assert(!hw->UsesGuardTailBypass(qp));
+    hw->UpdateGuardTailSafety(qp,.1,true);
+    assert(hw->UsesGuardTailBypass(qp));
+    hw->UpdateGuardTailSafety(qp,.6,false);
+    assert(!hw->UsesGuardTailBypass(qp));
+    for (unsigned i=0;i<100;++i)hw->UpdateGuardTailSafety(qp,.1,false);
+    assert(!hw->UsesGuardTailBypass(qp));
+    hw->UpdateGuardTailSafety(qp,.1,true);
+    hw->UpdateGuardTailSafety(qp,.1,true);
+    assert(hw->UsesGuardTailBypass(qp));
+    hw->m_guardTailCongestionGate=false;
+    hw->UpdateGuardTailSafety(qp,100,false);
+    assert(qp->m_guard_tail_safe_samples==2); // disabled policy unchanged
+
     for (unsigned count=2;count<=32;++count) for (double fraction : {0.0,.1,1.0}) {
         auto allocator=CreateObject<RdmaHw>();
         allocator->m_guardReceiverConcurrency=1;

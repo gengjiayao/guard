@@ -2762,6 +2762,20 @@ bool RdmaHw::UsesGuardTailBypass(Ptr<RdmaQueuePair> qp) const {
             qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples);
 }
 
+void RdmaHw::UpdateGuardTailSafety(Ptr<RdmaQueuePair> qp,
+                                    double current_queue_bdps, bool full_rtt) {
+    if (m_cc_mode != CC_MODE_GUARD || !m_guardTailCongestionGate) return;
+    // Congestion revokes permission on ANY fresh telemetry sample. Only a
+    // full feedback round may earn permission; fast ACKs must not manufacture
+    // several independent safe rounds from one flight of packets.
+    if (current_queue_bdps > m_guardTailSafeRatio * m_guardQueueBudgetBdps) {
+        qp->m_guard_tail_safe_samples = 0;
+    } else if (full_rtt) {
+        qp->m_guard_tail_safe_samples = std::min<uint32_t>(
+            m_guardTailSafeSamples, qp->m_guard_tail_safe_samples + 1);
+    }
+}
+
 uint32_t RdmaHw::ComputeGuardAckBatch(uint64_t bdp, uint32_t mtu,
                                      uint32_t configured, double fraction) {
     if (configured <= 1 || fraction <= 0.0 || bdp == 0 || mtu == 0)
@@ -8195,7 +8209,12 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
                 double queue_bdps =
                     (double)std::min(ih.hop[i].GetQlen(), qp->hp.hop[i].GetQlen()) *
                     qp->m_max_rate.GetBitRate() / ih.hop[i].GetLineRate() / qp->m_win;
-                max_queue_bdps = std::max(max_queue_bdps, queue_bdps);
+                // HPCC keeps its differential estimator. GUARD's permission
+                // and queue budget use the newest queue, not min(old,new): a
+                // newly growing queue must revoke tail bypass immediately.
+                double current_queue_bdps = (double)ih.hop[i].GetQlen() *
+                    qp->m_max_rate.GetBitRate() / ih.hop[i].GetLineRate() / qp->m_win;
+                max_queue_bdps = std::max(max_queue_bdps, current_queue_bdps);
                 double u = txRate / ih.hop[i].GetLineRate() + queue_bdps;
 #if PRINT_LOG
                 if (print) printf(" %.3lf %.3lf", txRate, u);
@@ -8319,19 +8338,7 @@ void RdmaHw::UpdateRateHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch
             }
 
             if (updated_any) {
-                if (m_cc_mode == CC_MODE_GUARD && m_guardTailCongestionGate &&
-                    !fast_react) {
-                    // Permit a bounded tail while the fabric queue stays below
-                    // the configured budget. A fully utilized but unqueued link
-                    // does not need to stall its tail; a growing queue revokes
-                    // permission even when lambda permits utilization above one.
-                    if (max_queue_bdps <= m_guardTailSafeRatio * m_guardQueueBudgetBdps) {
-                        qp->m_guard_tail_safe_samples = std::min<uint32_t>(
-                            m_guardTailSafeSamples, qp->m_guard_tail_safe_samples + 1);
-                    } else {
-                        qp->m_guard_tail_safe_samples = 0;
-                    }
-                }
+                UpdateGuardTailSafety(qp, max_queue_bdps, !fast_react);
                 m_guardHpccRateUpdatesApplied++;
                 if (fast_react) {
                     m_guardHpccFastComputations++;
