@@ -191,6 +191,7 @@ bool sample_feedback = false;
 double u_target = 0.95;
 double guard_lambda = 1.8;
 double guard_registration_threshold_bdps = 1.0;
+double guard_post_grant_window_bdps = 1.0;
 double guard_ewma_beta = 0.125;
 double guard_release_gamma = 1.0;
 bool guard_selective_registration = true;
@@ -1520,6 +1521,8 @@ int main(int argc, char *argv[]) {
                 guard_selective_registration = guard_oflm;
                 guard_proactive_release = guard_oflm;
                 std::cerr << "GUARD_OFLM (legacy)\t\t" << guard_oflm << '\n';
+            } else if (key.compare("GUARD_POST_GRANT_WINDOW_BDPS") == 0) {
+                conf >> guard_post_grant_window_bdps;
             } else if (key.compare("GUARD_REGISTRATION_THRESHOLD_BDPS") == 0) {
                 conf >> guard_registration_threshold_bdps;
             } else if (key.compare("GUARD_SELECTIVE_REGISTRATION") == 0) {
@@ -2871,6 +2874,7 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardSelectiveRegistration",
                                  BooleanValue(guard_selective_registration));
             rdmaHw->SetAttribute("GuardRegistrationThresholdBdps", DoubleValue(guard_registration_threshold_bdps));
+            rdmaHw->SetAttribute("GuardPostGrantWindowBdps", DoubleValue(guard_post_grant_window_bdps));
             rdmaHw->SetAttribute("GuardPassiveTarget", DoubleValue(u_target));
             rdmaHw->SetAttribute("GuardProactiveRelease",
                                  BooleanValue(guard_proactive_release));
@@ -4320,7 +4324,7 @@ int main(int argc, char *argv[]) {
     uint64_t total_guard_initial_window_priority_packets = 0;
     uint64_t duplex_burst_activations=0;
     uint64_t pacing_credit_max_bytes=0;
-    uint64_t pacing_credit_packets=0, pacing_credit_max_ns=0, pacing_credit_revocations=0, duplex_cohort_activations=0, service_age_decisions=0, long_fair_allocations=0, grant_bounded_release_deferrals=0, fair_mix_decisions=0;
+    uint64_t pacing_credit_packets=0, pacing_credit_max_ns=0, pacing_credit_revocations=0, duplex_cohort_activations=0, service_age_decisions=0, long_fair_allocations=0, grant_bounded_release_deferrals=0, fair_mix_decisions=0, post_grant_window_raises=0;
     uint64_t total_guard_initial_window_priority_bytes = 0;
     uint64_t total_guard_initial_window_priority_transitions = 0;
     uint64_t total_guard_transport_window_raised_flows = 0;
@@ -4376,6 +4380,7 @@ int main(int argc, char *argv[]) {
             driver->m_rdma->m_guardElephantAgingMaxWaitNs);
         total_guard_initial_window_priority_flows +=
             driver->m_rdma->m_guardInitialWindowPriorityFlows;
+        post_grant_window_raises += driver->m_rdma->m_guardPostGrantWindowRaises;
         fair_mix_decisions += driver->m_rdma->m_guardFairMixDecisions;
         grant_bounded_release_deferrals += driver->m_rdma->m_guardGrantBoundedReleaseDeferrals;
         long_fair_allocations += driver->m_rdma->m_guardLongFairAllocations;
@@ -4408,6 +4413,8 @@ int main(int argc, char *argv[]) {
                 total_guard_elephant_aging_active_deferred++;
         }
     }
+    fprintf(guard_stats_output, "guard_post_grant_window bdps %.6f raises %lu\n",
+            guard_post_grant_window_bdps,post_grant_window_raises);
     fprintf(guard_stats_output, "guard_admission threshold_bdps %.6f passive_target %.6f\n",
             guard_registration_threshold_bdps,u_target);
     fprintf(guard_stats_output, "guard_sender_fair enabled %u mix_threshold_bdps %.6f mix_decisions %lu original_size %u\n",

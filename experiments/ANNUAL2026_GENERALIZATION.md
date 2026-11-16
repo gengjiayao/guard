@@ -161,3 +161,30 @@ receiver authority. Existing controller invariant tests also pass. Probe8
 compares thresholds of 2/4/8 BDPs, with fixed and adaptive sender-aware service,
 against the previous admission policy and Homa on the same 6102 inputs at
 50%/80%. All runs, regressions and failures remain available.
+
+## Post-grant transport window
+
+Probe8 completed 24 runs. Enlarging the passive admission range did not solve
+the joint target and is not selected; the ordinary one-BDP registration boundary
+remains the candidate default. All regressions, including larger AliStorage
+tails for 4/8-BDP passive admission, are retained.
+
+Queue summaries show p99 queue occupancy of 288,850 bytes (Ali50) and 425,100
+bytes (Web80) for the preceding orig32 profile. At 100 Gb/s these queues can add
+23--34 us at a busy link, exceeding the unloaded 4.16/8.32-us path RTT used by
+the original fixed transport window. This motivates testing whether that
+safety window leaves granted service unused while acknowledgments are delayed;
+it does not by itself prove the bottleneck.
+
+`GuardPostGrantWindowBdps` defaults to 1. A larger configured bound is applied
+ONLY after an actual receiver grant passes the existing validity checks. The
+initial ungranted window remains one BDP. Both pacing caps, physical rates and
+reliability behavior remain unchanged; passive messages are excluded. The
+expanded window cannot exceed the configured 2/4-BDP test limit or useful flow
+size. The NIC is awakened if it was waiting solely for window credit.
+
+Native tests verify unchanged initial flight, grant authority, bounded in-flight
+bytes, unchanged rate caps, idempotence, first-grant barrier behavior, and passive
+exclusion. Probe9 tests this control-window change with bounded-work, sender-fair
+and adaptive allocation at 50%/80% load on development input 6102. Homa is rerun
+with the same frozen runtime. Overall P99 remains the acceptance metric.

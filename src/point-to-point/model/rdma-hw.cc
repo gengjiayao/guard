@@ -155,6 +155,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Multiplier for GUARD's proactive-release in-flight threshold",
                           DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardReleaseGamma),
                           MakeDoubleChecker<double>(0.0))
+            .AddAttribute("GuardPostGrantWindowBdps",
+                          "Bounded transport window after a validated receiver grant; initial flight stays one BDP",
+                          DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardPostGrantWindowBdps),
+                          MakeDoubleChecker<double>(1.0,4.0))
             .AddAttribute("GuardRegistrationThresholdBdps",
                           "Messages up to this many BDPs use full-path passive feedback instead of receiver membership",
                           DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardRegistrationThresholdBdps),
@@ -617,6 +621,7 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_guardDuplexCohortActivations = 0;
     m_guardDuplexBurstActive = false;
     m_guardDuplexBurstActivations = 0;
+    m_guardPostGrantWindowRaises = 0;
     m_guardFairMixDecisions = 0;
     m_guardGrantBoundedReleaseDeferrals = 0;
     m_guardLongFairAllocations = 0;
@@ -1778,6 +1783,21 @@ int RdmaHw::ReceiveCnp(Ptr<Packet> p, CustomHeader &ch) {
     return 0;
 }
 
+bool RdmaHw::MaybeExpandGuardPostGrantWindow(Ptr<RdmaQueuePair> qp) {
+    if(m_cc_mode!=CC_MODE_GUARD || m_guardPostGrantWindowBdps<=1 ||
+       !m_guardFixedWindow || qp->m_win==0 || qp->hp.m_grantRate.GetBitRate()==0 ||
+       !GuardNeedsReceiverControl(qp->m_size,qp->m_win)) return false;
+    long double requested=std::ceil((long double)qp->m_win*m_guardPostGrantWindowBdps);
+    NS_ABORT_MSG_IF(requested>std::numeric_limits<uint32_t>::max(),
+                    "GUARD post-grant window exceeds byte accounting");
+    uint64_t bounded=std::max<uint64_t>(qp->m_win,
+        std::min<uint64_t>(qp->m_size,(uint64_t)requested));
+    if(bounded<=qp->GetGuardTransportWin()) return false;
+    qp->m_guard_transport_win=bounded;
+    ++m_guardPostGrantWindowRaises;
+    return true;
+}
+
 int RdmaHw::ReceiveRate(Ptr<Packet> p, CustomHeader &ch) {
     // find qp
     bool compact = ch.l3Prot == CustomHeader::GUARD_RATE_GRANT;
@@ -1835,6 +1855,9 @@ int RdmaHw::ReceiveRate(Ptr<Packet> p, CustomHeader &ch) {
     DataRate curRate(rate_str);
 
     qp->hp.m_grantRate = curRate;
+    // Only an accepted real receiver grant opens this bounded extra window.
+    // The initial ungranted burst and both pacing-rate caps are unchanged.
+    bool expanded_transport_window=MaybeExpandGuardPostGrantWindow(qp);
     bool released_first_grant_gate = false;
     if (qp->m_guard_wait_first_grant) {
         qp->m_guard_wait_first_grant = false;
@@ -1879,7 +1902,7 @@ int RdmaHw::ReceiveRate(Ptr<Packet> p, CustomHeader &ch) {
     TraceGuardControllerEvent(qp, "grant", qp->hp.m_curRate, binding,
                               changed, false, 0, qp->snd_nxt, -1.0,
                               m_targetUtil, -1.0);
-    if (released_first_grant_gate) {
+    if (released_first_grant_gate || expanded_transport_window) {
         uint32_t nic_idx = GetNicIdxOfQp(qp);
         m_nic[nic_idx].dev->TriggerTransmit();
     }

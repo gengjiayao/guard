@@ -448,6 +448,9 @@ class RdmaHw : public Object {
      ***********************/
     double m_guardEwmaBeta;
     double m_guardReleaseGamma;
+    double m_guardPostGrantWindowBdps;
+    uint64_t m_guardPostGrantWindowRaises;
+    bool MaybeExpandGuardPostGrantWindow(Ptr<RdmaQueuePair> qp);
     double m_guardRegistrationThresholdBdps;
     double m_guardPassiveTarget;
     bool GuardNeedsReceiverControl(uint64_t size, uint64_t bdp) const;
