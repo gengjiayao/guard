@@ -488,76 +488,193 @@ void ReadFlowInput() {
     }
 }
 
+
+// Optional workload DAG. Every transport uses the same completion dependencies.
+// This models network collective completion; GPU reduction compute is not timed.
+std::string flow_dependency_file = "none";
+struct DependencyFlow {
+    FlowInput input;
+    std::vector<uint32_t> parents, children;
+    uint32_t pending = 0;
+    bool scheduled = false, complete = false;
+};
+std::vector<DependencyFlow> dependency_flows;
+FILE *dependency_output = NULL;
+void StartInputFlow(const FlowInput &input, FILE *infile);
+
+void StartDependencyFlow(uint32_t id) {
+    DependencyFlow &entry = dependency_flows.at(id);
+    NS_ABORT_MSG_IF(entry.pending != 0 || entry.complete,
+                    "collective flow launched before its dependencies completed");
+    for (uint32_t parent : entry.parents) {
+        NS_ABORT_MSG_IF(!dependency_flows[parent].complete,
+                        "collective dependency was not satisfied");
+    }
+    FlowInput input = entry.input;
+    input.start_time = Simulator::Now().GetSeconds();
+    StartInputFlow(input, flow_input_stream);
+}
+
+void ScheduleDependencyFlow(uint32_t id) {
+    DependencyFlow &entry = dependency_flows.at(id);
+    NS_ABORT_MSG_IF(entry.scheduled || entry.pending != 0,
+                    "duplicate collective flow launch");
+    entry.scheduled = true;
+    Time earliest = Seconds(entry.input.start_time);
+    Time wait = earliest > Simulator::Now() ? earliest - Simulator::Now() : NanoSeconds(0);
+    Simulator::Schedule(wait, &StartDependencyFlow, id);
+}
+
+void CompleteDependencyFlow(Ptr<RdmaQueuePair> qp) {
+    if (dependency_flows.empty()) return;
+    NS_ABORT_MSG_IF(qp->m_flow_id < 0 ||
+                    static_cast<size_t>(qp->m_flow_id) >= dependency_flows.size(),
+                    "invalid collective flow identity");
+    uint32_t id = qp->m_flow_id;
+    DependencyFlow &entry = dependency_flows[id];
+    NS_ABORT_MSG_IF(!entry.scheduled || entry.complete, "duplicate collective completion");
+    entry.complete = true;
+    fprintf(dependency_output, "%u %u %u %u %lu %lu %lu\n", id,
+            entry.input.src, entry.input.dst, entry.input.maxPacketCount,
+            Seconds(entry.input.start_time).GetNanoSeconds(),
+            qp->startTime.GetNanoSeconds(), Simulator::Now().GetNanoSeconds());
+    fflush(dependency_output);
+    for (uint32_t child : entry.children) {
+        NS_ABORT_MSG_IF(dependency_flows[child].pending == 0,
+                        "collective dependency underflow");
+        if (--dependency_flows[child].pending == 0) ScheduleDependencyFlow(child);
+    }
+}
+
+void LoadDependencyFlows() {
+    dependency_flows.resize(flow_num);
+    for (uint32_t id = 0; id < flow_num; ++id) {
+        FlowInput &input = dependency_flows[id].input;
+        NS_ABORT_MSG_IF(!(flowf >> input.src >> input.dst >> input.pg >>
+                        input.maxPacketCount >> input.start_time), "short flow input");
+        input.idx = id;
+        NS_ABORT_MSG_IF(input.src >= n.GetN() || input.dst >= n.GetN() ||
+                        n.Get(input.src)->GetNodeType() != 0 ||
+                        n.Get(input.dst)->GetNodeType() != 0 ||
+                        input.maxPacketCount == 0, "invalid collective flow");
+    }
+    std::ifstream dependencies(flow_dependency_file.c_str());
+    uint32_t declared = 0;
+    NS_ABORT_MSG_IF(!(dependencies >> declared) || declared != flow_num,
+                    "dependency count differs from flow count");
+    std::vector<bool> seen(flow_num, false);
+    for (uint32_t row = 0; row < flow_num; ++row) {
+        uint32_t id, count;
+        NS_ABORT_MSG_IF(!(dependencies >> id >> count) || id >= flow_num ||
+                        seen[id] || count >= flow_num, "invalid dependency row");
+        seen[id] = true;
+        std::set<uint32_t> unique;
+        for (uint32_t j = 0; j < count; ++j) {
+            uint32_t parent;
+            NS_ABORT_MSG_IF(!(dependencies >> parent) || parent >= flow_num ||
+                            parent == id || !unique.insert(parent).second,
+                            "invalid dependency edge");
+            dependency_flows[id].parents.push_back(parent);
+            dependency_flows[parent].children.push_back(id);
+        }
+        dependency_flows[id].pending = count;
+    }
+    std::string extra;
+    NS_ABORT_MSG_IF(dependencies >> extra, "extra dependency records");
+    std::vector<uint32_t> counts(flow_num), ready;
+    for (uint32_t id = 0; id < flow_num; ++id) {
+        counts[id] = dependency_flows[id].pending;
+        if (!counts[id]) ready.push_back(id);
+    }
+    for (size_t cursor = 0; cursor < ready.size(); ++cursor) {
+        for (uint32_t child : dependency_flows[ready[cursor]].children) {
+            if (--counts[child] == 0) ready.push_back(child);
+        }
+    }
+    NS_ABORT_MSG_IF(ready.size() != flow_num, "cycle in collective dependencies");
+    dependency_output = fopen((fct_output_file + ".dag.tsv").c_str(), "w");
+    NS_ABORT_MSG_IF(!dependency_output, "cannot open collective completion log");
+    fprintf(dependency_output, "flow_id src dst bytes release_ns start_ns finish_ns\n");
+    for (uint32_t id = 0; id < flow_num; ++id) {
+        if (!dependency_flows[id].pending) ScheduleDependencyFlow(id);
+    }
+    flowf.close();
+}
+
 /**
  * Scheduling flows given in /config/L_XX....txt file
  */
+void StartInputFlow(const FlowInput &input, FILE *infile) {
+    uint32_t pg, src, dst, sport, dport, maxPacketCount, target_len;
+    pg = input.pg;
+    src = input.src;
+    dst = input.dst;
+
+    // src port
+    sport = portNumber[src];  // get a new port number
+    portNumber[src] = portNumber[src] + 1;
+
+    // dst port
+    dport = dportNumber[dst];
+    dportNumber[dst] = dportNumber[dst] + 1;
+
+    target_len = input.maxPacketCount;  // this is actually not packet-count, but bytes
+    if (target_len == 0) {
+        target_len = 1;
+    }
+    assert(n.Get(src)->GetNodeType() == 0 && n.Get(dst)->GetNodeType() == 0);
+
+    /**
+     * Turn on if you want to record all input streams into output file for logging.
+     * But, the input stream can be found in config. We do not recommend to do this
+     * as it consumes storage resource, redundantly.
+     */
+    if (0) {  // logging input streams to "XXXX_out_in.txt"
+        /************************
+         * record flow's 4-tuple
+         ************************/
+        fprintf(infile, "%u %u %u %u %u %lu\n", src, dst, sport, dport, target_len,
+                (uint64_t)(input.start_time * (uint64_t)1000000000));
+        fflush(infile);
+
+        /***********    FCT Tracking    **************/
+        UdpServerHelper server0(dport);
+        server0.SetAttribute("FlowSize", UintegerValue(target_len));
+        server0.SetAttribute("irn", BooleanValue(enable_irn));
+        server0.SetAttribute("StatHostSrc", UintegerValue(src));
+        server0.SetAttribute("StatHostDst", UintegerValue(dst));
+        server0.SetAttribute("StatRxLen", UintegerValue(target_len));
+        server0.SetAttribute("StatFlowID", UintegerValue(input.idx));
+        server0.SetAttribute("Port", UintegerValue(dport));
+
+        ApplicationContainer apps0s = server0.Install(n.Get(dst));  // DST
+        apps0s.Start(Seconds(Time(0)));
+        apps0s.Stop(Seconds(100.0));
+    }  // end of logging input streams
+
+    if (pairRtt.find(n.Get(src)) == pairRtt.end() ||
+        pairRtt[n.Get(src)].find(n.Get(dst)) == pairRtt[n.Get(src)].end()) {
+        std::cerr << "pairRtt src: " << src << " -> dst: " << dst
+                  << " ==> cannot be found from database" << std::endl;
+        assert(false);
+    }
+
+    RdmaClientHelper clientHelper(
+        pg, serverAddress[src], serverAddress[dst], sport, dport, target_len,
+        has_win ? (global_t == 1 ? maxBdp : pairBdp[n.Get(src)][n.Get(dst)]) : 0,
+        global_t == 1 ? maxRtt : pairRtt[n.Get(src)][n.Get(dst)]);
+    clientHelper.SetAttribute("StatFlowID", IntegerValue(input.idx));
+
+    ApplicationContainer appCon = clientHelper.Install(n.Get(src));  // SRC
+    appCon.Start(Seconds(Time(0)));
+    appCon.Stop(Seconds(100.0));
+
+}
+
 void ScheduleFlowInputs(FILE *infile) {
     NS_LOG_DEBUG("ScheduleFlowInputs at " << Simulator::Now());
     while (flow_input.idx < flow_num && Seconds(flow_input.start_time) == Simulator::Now()) {
-        uint32_t pg, src, dst, sport, dport, maxPacketCount, target_len;
-        pg = flow_input.pg;
-        src = flow_input.src;
-        dst = flow_input.dst;
-
-        // src port
-        sport = portNumber[src];  // get a new port number
-        portNumber[src] = portNumber[src] + 1;
-
-        // dst port
-        dport = dportNumber[dst];
-        dportNumber[dst] = dportNumber[dst] + 1;
-
-        target_len = flow_input.maxPacketCount;  // this is actually not packet-count, but bytes
-        if (target_len == 0) {
-            target_len = 1;
-        }
-        assert(n.Get(src)->GetNodeType() == 0 && n.Get(dst)->GetNodeType() == 0);
-
-        /**
-         * Turn on if you want to record all input streams into output file for logging.
-         * But, the input stream can be found in config. We do not recommend to do this
-         * as it consumes storage resource, redundantly.
-         */
-        if (0) {  // logging input streams to "XXXX_out_in.txt"
-            /************************
-             * record flow's 4-tuple
-             ************************/
-            fprintf(infile, "%u %u %u %u %u %lu\n", src, dst, sport, dport, target_len,
-                    (uint64_t)(flow_input.start_time * (uint64_t)1000000000));
-            fflush(infile);
-
-            /***********    FCT Tracking    **************/
-            UdpServerHelper server0(dport);
-            server0.SetAttribute("FlowSize", UintegerValue(target_len));
-            server0.SetAttribute("irn", BooleanValue(enable_irn));
-            server0.SetAttribute("StatHostSrc", UintegerValue(src));
-            server0.SetAttribute("StatHostDst", UintegerValue(dst));
-            server0.SetAttribute("StatRxLen", UintegerValue(target_len));
-            server0.SetAttribute("StatFlowID", UintegerValue(flow_input.idx));
-            server0.SetAttribute("Port", UintegerValue(dport));
-
-            ApplicationContainer apps0s = server0.Install(n.Get(dst));  // DST
-            apps0s.Start(Seconds(Time(0)));
-            apps0s.Stop(Seconds(100.0));
-        }  // end of logging input streams
-
-        if (pairRtt.find(n.Get(src)) == pairRtt.end() ||
-            pairRtt[n.Get(src)].find(n.Get(dst)) == pairRtt[n.Get(src)].end()) {
-            std::cerr << "pairRtt src: " << src << " -> dst: " << dst
-                      << " ==> cannot be found from database" << std::endl;
-            assert(false);
-        }
-
-        RdmaClientHelper clientHelper(
-            pg, serverAddress[src], serverAddress[dst], sport, dport, target_len,
-            has_win ? (global_t == 1 ? maxBdp : pairBdp[n.Get(src)][n.Get(dst)]) : 0,
-            global_t == 1 ? maxRtt : pairRtt[n.Get(src)][n.Get(dst)]);
-        clientHelper.SetAttribute("StatFlowID", IntegerValue(flow_input.idx));
-
-        ApplicationContainer appCon = clientHelper.Install(n.Get(src));  // SRC
-        appCon.Start(Seconds(Time(0)));
-        appCon.Stop(Seconds(100.0));
-
+        StartInputFlow(flow_input, infile);
         flow_input.idx++;
         ReadFlowInput();
     }
@@ -772,6 +889,7 @@ void qp_finish(FILE *fout, Ptr<RdmaQueuePair> q) {
                   (Simulator::Now() - q->startTime).GetTimeStep(), standalone_fct));
     Settings::cnt_finished_flows++;
     fflush(fout);
+    CompleteDependencyFlow(q);
 }
 
 /**
@@ -1286,6 +1404,8 @@ int main(int argc, char *argv[]) {
                 conf >> v;
                 flow_file = v;
                 std::cerr << "FLOW_FILE\t\t\t" << flow_file << "\n";
+            } else if (key.compare("FLOW_DEPENDENCY_FILE") == 0) {
+                conf >> flow_dependency_file;
             } else if (key.compare("FLOWGEN_START_TIME") == 0) {
                 double v;
                 conf >> v;
@@ -2648,6 +2768,7 @@ int main(int argc, char *argv[]) {
     topo2bdpMap[std::string("leaf_spine_8_100G_OS4")] = 104000;  // RTT=8320 --> all 100G links
     topo2bdpMap[std::string("leaf_spine_12_100G_OS4")] = 104000;  // RTT=8320 --> all 100G links
     topo2bdpMap[std::string("leaf_spine_16_100G_OS1")] = 104000;  // RTT=8320 --> all 100G links
+    topo2bdpMap[std::string("leaf_spine_16_100G_OS2")] = 104000;
     topo2bdpMap[std::string("leaf_spine_16_100G_OS4")] = 104000;  // RTT=8320 --> all 100G links
     topo2bdpMap[std::string("leaf_spine_128_100G_OS2")] = 104000;  // RTT=8320 --> all 100G links
     topo2bdpMap[std::string("leaf_spine_128_100G_OS1")] = 104000;  // RTT=8320 --> all 100G links
@@ -3181,7 +3302,9 @@ int main(int argc, char *argv[]) {
 
     flow_input.idx = 0;
     port_per_host = new uint16_t[node_num - switch_num];
-    if (flow_num > 0) {
+    if (flow_num > 0 && flow_dependency_file != "none") {
+        LoadDependencyFlows();
+    } else if (flow_num > 0) {
         // generate flows
         ReadFlowInput();
         Simulator::Schedule(Seconds(0), &ScheduleFlowInputs, flow_input_stream);

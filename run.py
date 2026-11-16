@@ -21,6 +21,7 @@ MAX_RAND_RANGE = 1000000000
 # config template
 config_template = """TOPOLOGY_FILE config/{topo}.txt
 FLOW_FILE {flow_file}
+FLOW_DEPENDENCY_FILE {flow_dependency_file}
 
 FLOW_INPUT_FILE mix/output/{id}/{id}_in.txt
 FLOW_BW_OUTPUT_FILE mix/output/{id}/{id}_flow_bw.txt
@@ -196,6 +197,7 @@ topo2bdp = {
     "leaf_spine_8_100G_OS2": 104000,  # 2-tier -> all 100Gbps
     "leaf_spine_8_100G_OS4": 104000,  # 2-tier -> all 100Gbps
     "leaf_spine_12_100G_OS4": 104000,  # 2-tier -> all 100Gbps
+    "leaf_spine_16_100G_OS2": 104000,
     "leaf_spine_16_100G_OS1": 104000,  # 2-tier -> all 100Gbps
     "leaf_spine_16_100G_OS4": 104000,  # 2-tier -> all 100Gbps
     "leaf_spine_128_100G_OS2": 104000,  # 2-tier -> all 100Gbps
@@ -410,6 +412,8 @@ def main():
                         help="abort before ns-3 when traffic exceeds this flow count (default: 150000)")
     parser.add_argument('--flow_file', type=str,
                         help="use an existing flow file instead of generating random CDF traffic")
+    parser.add_argument('--flow_dependencies', type=str,
+                        help='completion-dependency DAG sidecar for the explicit flow file')
     parser.add_argument('--buffer', dest="buffer", action='store',
                         default='9', help="the switch buffer size (MB) (default: 9)")
     parser.add_argument('--netload', dest='netload', action='store', type=int,
@@ -1012,6 +1016,9 @@ def main():
         n_host = int(line[0]) - int(line[1])
 
     assert (hostload >= 0 and hostload < 100)
+    dependency_config_path = "none"
+    if args.flow_dependencies and not args.flow_file:
+        raise Exception("--flow_dependencies requires --flow_file")
     custom_flow_source = None
     if args.flow_file:
         custom_flow_source = os.path.abspath(os.path.expanduser(args.flow_file))
@@ -1042,6 +1049,10 @@ def main():
         print("The new directory is created  - {}".format(output_dir + "/"))
         flow_path = os.path.join(output_dir, "{}_input_flow.txt".format(config_ID))
         shutil.copyfile(custom_flow_source, flow_path)
+        if args.flow_dependencies:
+            dependency_path = os.path.join(output_dir, "{}_input_dependencies.txt".format(config_ID))
+            shutil.copyfile(os.path.abspath(args.flow_dependencies), dependency_path)
+            dependency_config_path = os.path.relpath(dependency_path, os.getcwd())
         flow_config_path = os.path.relpath(flow_path, os.getcwd())
         print("Custom traffic snapshot: {} -> {}".format(
             custom_flow_source, flow_config_path))
@@ -1326,6 +1337,7 @@ def main():
         ewma_gain = 0.00390625
 
         config = config_template.format(id=config_ID, topo=topo, flow_file=flow_config_path,
+                                        flow_dependency_file=dependency_config_path,
                                         qlen_mon_start=qlen_mon_start, qlen_mon_end=qlen_mon_end, flowgen_start_time=flowgen_start_time,
                                         flowgen_stop_time=flowgen_stop_time, sw_monitoring_interval=sw_monitoring_interval,
                                         qlen_monitoring_interval=qlen_monitoring_interval,
