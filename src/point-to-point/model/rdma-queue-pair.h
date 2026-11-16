@@ -89,6 +89,11 @@ class RdmaQueuePair : public Object {
     uint32_t m_guard_srpt_quantum_packets;
     double m_guard_sender_srpt_max_bdps;
     bool m_guard_sender_srpt_original_class;
+    bool m_guard_sender_rate_fair;
+    double m_guard_sender_finish;
+    double m_guard_sender_head_finish;
+    uint64_t m_guard_sender_head_rate;
+    bool m_guard_sender_head_ready;
     double m_guard_sender_srpt_cohort_bdps;
     Time m_guard_last_cap_report_time;
     uint64_t m_guard_last_cap_report_rate_bps;

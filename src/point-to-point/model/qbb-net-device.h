@@ -46,6 +46,7 @@ public:
 	uint32_t m_rrlast;
 	int32_t m_guardSrptLastIndex;
 	uint32_t m_guardSrptConsecutive;
+	double m_guardVirtualTime;
 	Ptr<DropTailQueue> m_ackQ; // highest priority queue
 	Ptr<RdmaQueuePairGroup> m_qpGrp; // queue pairs
 	std::unordered_map<int32_t, Time> current_pause_time;

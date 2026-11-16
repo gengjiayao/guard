@@ -384,3 +384,44 @@ the last one BDP regains bounded priority, original short messages keep their
 priority, and PFC continues to block otherwise preferred work. Probe22 will
 compare original-size cutoffs and two feedback/release alternatives on the same
 frozen development traces and original Homa comparator.
+
+
+## Joint development profile and rate-weighted sender service
+
+Probe22 completed 24 trials; fixed original-size sender admission alone did not
+meet the joint objective. Probe23 completed 24 trials combining stable admission
+with the existing local cohort adaptation. Both campaigns passed independent
+raw-FCT, identity, complete-flow and all-output-hash audits.
+
+Probe24 validates the common original32cohort32g16 profile at all three loads on
+all three development inputs (18 complete runs). Its mean paired overall P99
+reductions versus the unchanged original Homa runtime are:
+
+| Workload | 50% | 70% | 80% |
+| --- | ---: | ---: | ---: |
+| AliStorage2019 | 13.45% | 25.72% | 20.81% |
+| WebSearch | 22.23% | 20.61% | 12.26% |
+
+All six aggregate development cases exceed 10%; this is NOT a final-validation
+claim. WebSearch P95 increases by 27.82%, 54.71% and 82.46%, respectively, while
+AliStorage P95 improves by 9.06%, 17.51% and 18.38%. These regressions remain part
+of the evidence and must not be omitted. Every input completed, all file hashes
+and independent quantiles passed audit. Inputs7101--7110 remain untouched.
+
+GuardSenderRateFair (default off) optionally schedules non-short eligible DATA
+using self-clocked virtual finish tags weighted by each QP's current effective
+congestion-controlled rate. This aligns local service with the combined receiver
+authorization and passive cap instead of giving every large ready flow one equal
+packet turn. Bounded short-message priority remains intact. Tags are charged only
+when DATA is dequeued; the head tag is cached while a ready packet waits. Pacing,
+PFC or window blockage invalidates the pending tag, so a returning QP starts no
+earlier than the NIC virtual clock and cannot bank unbounded service credit.
+A rate change recomputes that pending tag from the new effective rate. Eligibility,
+packet priority, receiver rate limits and physical capacity do not change.
+
+Native tests verify 20:80 rate service, immediate reversed-rate service, no charge
+for read-only selection, bounded credit after PFC, short-message priority and
+unchanged window/pacing/PFC gates. Stable-original-class and cohort tests also
+pass. Probe25 compares five weighted profiles against a disabled-feature control
+on the same runtime and frozen development inputs. Selection must consider both
+P99 and the observed P95 tradeoff; no final data have yet been examined.

@@ -82,6 +82,7 @@ RdmaEgressQueue::RdmaEgressQueue() {
     m_rrlast = 0;
     m_guardSrptLastIndex = -1;
     m_guardSrptConsecutive = 0;
+    m_guardVirtualTime = 0;
     m_qlast = 0;
     m_mtu = 1000;
     m_ackQ = CreateObject<DropTailQueue>();
@@ -97,7 +98,19 @@ Ptr<Packet> RdmaEgressQueue::DequeueQindex(int qIndex) {
         return p;
     }
     if (qIndex >= 0) {  // qp
-        Ptr<Packet> p = m_rdmaGetNxtPkt(m_qpGrp->Get(qIndex));
+        auto qp=m_qpGrp->Get(qIndex);
+        uint64_t payload=qp->m_guard_sender_rate_fair ? std::min<uint64_t>(m_mtu,qp->GetBytesLeft()) : 0;
+        Ptr<Packet> p = m_rdmaGetNxtPkt(qp);
+        if(p && qp->m_guard_sender_rate_fair) {
+            // Charge only transmitted DATA, using current active/passive rate.
+            // Re-entering QPs cannot bank credit while blocked or inactive.
+            double finish=qp->m_guard_sender_head_ready ? qp->m_guard_sender_head_finish
+                : std::max(m_guardVirtualTime,qp->m_guard_sender_finish)
+                    +payload*8.0/std::max<uint64_t>(1,qp->m_rate.GetBitRate());
+            qp->m_guard_sender_finish=finish;
+            qp->m_guard_sender_head_ready=false;
+            m_guardVirtualTime=std::max(m_guardVirtualTime,finish);
+        }
         m_rrlast = qIndex;
         m_qlast = qIndex;
         m_traceRdmaDequeue(p, m_qpGrp->Get(qIndex)->m_pg);
@@ -178,6 +191,8 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
         std::vector<uint32_t> eligible;
         int best = -1024;
         int first_ready = -1024;
+        int rate_ready = -1024;
+        double rate_finish = std::numeric_limits<double>::max();
         uint64_t best_remaining = std::numeric_limits<uint64_t>::max();
         for (uint32_t step = 1; step <= fcount; step++) {
             uint32_t index = (step + m_rrlast) % fcount;
@@ -193,18 +208,30 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
                 !qp->IsWinBound() && (!qp->irn.m_enabled || qp->CanIrnTransmit(m_mtu));
             bool has_bytes = qp->GetBytesLeft() > 0 && window_allowed;
             if (!has_bytes) {
+                qp->m_guard_sender_head_ready=false;
                 if (qp->IsFinishedConst()) m_qpGrp->SetQpFinished(index);
                 continue;
             }
             bool time_ok = qp->m_nextAvail <= Simulator::Now();
             if (paused[qp->m_pg]) {
+                qp->m_guard_sender_head_ready=false;
                 if (time_ok && !MAP_KEY_EXISTS(current_pause_time, qp->m_flow_id)) {
                     current_pause_time[qp->m_flow_id] = Simulator::Now();
                 }
                 continue;
             }
-            if (!time_ok) continue;
+            if (!time_ok) {qp->m_guard_sender_head_ready=false;continue;}
             if (first_ready == -1024) first_ready = (int)index;
+            if(qp->m_guard_sender_rate_fair) {
+                uint64_t rate=std::max<uint64_t>(1,qp->m_rate.GetBitRate());
+                if(!qp->m_guard_sender_head_ready || qp->m_guard_sender_head_rate!=rate) {
+                    qp->m_guard_sender_head_finish=std::max(m_guardVirtualTime,qp->m_guard_sender_finish)
+                        +std::min<uint64_t>(m_mtu,qp->GetBytesLeft())*8.0/rate;
+                    qp->m_guard_sender_head_rate=rate;qp->m_guard_sender_head_ready=true;
+                }
+                double finish=qp->m_guard_sender_head_finish;
+                if(finish<rate_finish) {rate_finish=finish;rate_ready=(int)index;}
+            }
             if (guard_cohort > 0) eligible.push_back(index);
             uint64_t remaining = qp->GetBytesLeft();
             uint64_t bdp = qp->m_baseRtt * qp->m_max_rate.GetBitRate() / 8000000000ULL;
@@ -238,13 +265,14 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
         // the local NIC with one large message while other receivers have
         // authorized ready work. Every candidate has already passed the
         // unchanged grant, pacing, byte-window and PFC eligibility checks.
-        if (best == -1024 && first_ready != -1024) best = first_ready;
+        int fallback=rate_ready != -1024 ? rate_ready : first_ready;
+        if (best == -1024 && fallback != -1024) best = fallback;
         if (best != -1024) {
             Ptr<RdmaQueuePair> shortest = m_qpGrp->Get((uint32_t)best);
             uint32_t quantum = std::max<uint32_t>(1, shortest->m_guard_srpt_quantum_packets);
             if (best == m_guardSrptLastIndex && m_guardSrptConsecutive >= quantum &&
-                first_ready != -1024 && first_ready != best) {
-                best = first_ready;
+                fallback != -1024 && fallback != best) {
+                best = fallback;
                 Settings::guard_sender_srpt_forced_rr++;
             }
             Ptr<RdmaQueuePair> qp = m_qpGrp->Get((uint32_t)best);

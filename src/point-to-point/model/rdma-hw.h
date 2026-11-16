@@ -540,6 +540,7 @@ class RdmaHw : public Object {
     uint32_t m_guardSrptQuantumPackets;
     double m_guardSenderSrptMaxBdps;
     bool m_guardSenderSrptOriginalClass;
+    bool m_guardSenderRateFair;
     double m_guardSenderSrptCohortBdps;
     bool m_guardWorkConserving;
     bool m_guardCapAwareReclaim;
