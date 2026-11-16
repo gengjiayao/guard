@@ -471,10 +471,14 @@ class RdmaHw : public Object {
     uint32_t m_guardAckIntervalPackets;
     double m_guardAckWindowFraction;
     double m_guardPacingCreditRtts;
+    double m_guardPacingCreditBdps;
+    uint64_t m_guardPacingCreditMaxBytes;
     uint64_t m_guardPacingCreditPackets;
     uint64_t m_guardPacingCreditMaxNs;
     uint64_t m_guardPacingCreditRevocations;
     static Time ComputeGuardPacingDeadline(Time now, Time previous, Time sending, Time credit);
+    static Time ComputeGuardByteCredit(uint64_t base_rtt_ns, uint64_t line_bps,
+                                       uint64_t current_bps, double fraction);
     bool m_guardReceiverPhaseOrder;
     bool m_guardDuplexAdaptive;
     double m_guardDuplexSizeRatio;

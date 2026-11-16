@@ -215,6 +215,7 @@ double guard_adaptive_target_max_bdps = 0.0;
 uint32_t guard_ack_interval_packets = 8;
 double guard_ack_window_fraction = 0.0;
 double guard_pacing_credit_rtts = 0.0;
+double guard_pacing_credit_bdps = 0.0;
 double guard_duplex_size_ratio = 0.0;
 double guard_service_age_factor = 0.0;
 bool guard_duplex_cohort_drain = false;
@@ -1581,6 +1582,8 @@ int main(int argc, char *argv[]) {
                 conf >> guard_adaptive_target_max_bdps;
                 std::cerr << "GUARD_ADAPTIVE_TARGET_MAX_BDPS\t"
                           << guard_adaptive_target_max_bdps << '\n';
+            } else if (key.compare("GUARD_PACING_CREDIT_BDPS") == 0) {
+                conf >> guard_pacing_credit_bdps;
             } else if (key.compare("GUARD_PACING_CREDIT_RTTS") == 0) {
                 conf >> guard_pacing_credit_rtts;
             } else if (key.compare("GUARD_ACK_WINDOW_FRACTION") == 0) {
@@ -2878,6 +2881,7 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardAdaptiveTargetMaxBdps",
                                  DoubleValue(guard_adaptive_target_max_bdps));
             rdmaHw->SetAttribute("GuardPacingCreditRtts", DoubleValue(guard_pacing_credit_rtts));
+            rdmaHw->SetAttribute("GuardPacingCreditBdps", DoubleValue(guard_pacing_credit_bdps));
             rdmaHw->SetAttribute("GuardAckWindowFraction", DoubleValue(guard_ack_window_fraction));
             rdmaHw->SetAttribute("GuardReceiverPhaseOrder", BooleanValue(guard_receiver_phase_order));
             rdmaHw->SetAttribute("GuardDuplexAdaptive", BooleanValue(guard_duplex_adaptive));
@@ -4281,6 +4285,7 @@ int main(int argc, char *argv[]) {
     uint64_t total_guard_elephant_aging_active_deferred = 0;
     uint64_t total_guard_initial_window_priority_flows = 0;
     uint64_t total_guard_initial_window_priority_packets = 0;
+    uint64_t pacing_credit_max_bytes=0;
     uint64_t pacing_credit_packets=0, pacing_credit_max_ns=0, pacing_credit_revocations=0, duplex_cohort_activations=0, service_age_decisions=0;
     uint64_t total_guard_initial_window_priority_bytes = 0;
     uint64_t total_guard_initial_window_priority_transitions = 0;
@@ -4339,6 +4344,7 @@ int main(int argc, char *argv[]) {
             driver->m_rdma->m_guardInitialWindowPriorityFlows;
         service_age_decisions += driver->m_rdma->m_guardServiceAgeDecisions;
         duplex_cohort_activations += driver->m_rdma->m_guardDuplexCohortActivations;
+        pacing_credit_max_bytes = std::max(pacing_credit_max_bytes, driver->m_rdma->m_guardPacingCreditMaxBytes);
         pacing_credit_packets += driver->m_rdma->m_guardPacingCreditPackets;
         pacing_credit_max_ns = std::max(pacing_credit_max_ns, driver->m_rdma->m_guardPacingCreditMaxNs);
         pacing_credit_revocations += driver->m_rdma->m_guardPacingCreditRevocations;
@@ -4368,6 +4374,8 @@ int main(int argc, char *argv[]) {
             guard_service_age_factor, service_age_decisions);
     fprintf(guard_stats_output, "guard_duplex_cohort enabled %u activations %lu\n",
             guard_duplex_cohort_drain ? 1 : 0, duplex_cohort_activations);
+    fprintf(guard_stats_output, "guard_pacing_byte_credit bdps %.6f max_credit_bytes %lu\n",
+            guard_pacing_credit_bdps, pacing_credit_max_bytes);
     fprintf(guard_stats_output, "guard_pacing_credit rtts %.6f packets %lu max_credit_ns %lu revocations %lu\n",
             guard_pacing_credit_rtts, pacing_credit_packets, pacing_credit_max_ns, pacing_credit_revocations);
     fprintf(guard_stats_output,

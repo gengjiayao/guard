@@ -1,0 +1,70 @@
+{
+  "guard": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 1.0,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.05,
+    "guard_gamma": 8
+  },
+  "homa": {
+    "cc": "homa"
+  },
+  "srpt": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 0,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 1.0,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.05,
+    "guard_gamma": 8
+  },
+  "srptk1": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 0,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 1.0,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.05,
+    "guard_gamma": 8
+  },
+  "srptk4": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 4,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 0,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 1.0,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.05,
+    "guard_gamma": 8
+  },
+  "srptfloor0": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0,
+    "guard_receiver_phase_order": 0,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 1.0,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.05,
+    "guard_gamma": 8
+  }
+}

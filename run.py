@@ -113,6 +113,7 @@ GUARD_QUEUE_BUDGET_BDPS {guard_queue_budget_bdps}
 GUARD_ADAPTIVE_TARGET_MAX_BDPS {guard_adaptive_target_max_bdps}
 GUARD_ACK_INTERVAL_PACKETS {guard_ack_interval_packets}
 GUARD_PACING_CREDIT_RTTS {guard_pacing_credit_rtts}
+GUARD_PACING_CREDIT_BDPS {guard_pacing_credit_bdps}
 GUARD_ACK_WINDOW_FRACTION {guard_ack_window_fraction}
 GUARD_RECEIVER_PHASE_ORDER {guard_receiver_phase_order}
 GUARD_DUPLEX_ADAPTIVE {guard_duplex_adaptive}
@@ -501,6 +502,7 @@ def main():
     parser.add_argument('--guard_adaptive_target_max_bdps', type=float, default=0.0,
                         help="largest flow using adaptive targets in BDPs; 0 means all")
     parser.add_argument('--guard_pacing_credit_rtts', type=float, default=0.0)
+    parser.add_argument('--guard_pacing_credit_bdps', type=float, default=0.0)
     parser.add_argument('--guard_ack_window_fraction', type=float, default=0.0)
     parser.add_argument('--guard_receiver_phase_order', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_duplex_cohort_drain', type=int, choices=(0,1), default=0)
@@ -703,6 +705,10 @@ def main():
         raise Exception("CONFIG ERROR: duplex cohort drain requires duplex adaptation.")
     if args.guard_duplex_size_ratio != 0.0 and (args.guard_duplex_size_ratio <= 1.0 or not args.guard_duplex_adaptive):
         raise Exception("CONFIG ERROR: duplex size ratio must be zero or >1 with duplex adaptation enabled.")
+    if not 0.0 <= args.guard_pacing_credit_bdps <= 1.0:
+        raise Exception("CONFIG ERROR: byte credit must be in [0,1].")
+    if args.guard_pacing_credit_bdps > 0.0 and args.guard_pacing_credit_rtts > 0.0:
+        raise Exception("CONFIG ERROR: select one pacing credit budget, bytes or time.")
     if not 0.0 <= args.guard_pacing_credit_rtts <= 1.0:
         raise Exception("CONFIG ERROR: --guard_pacing_credit_rtts must be in [0, 1].")
     if not 0.0 <= args.guard_ack_window_fraction <= 1.0:
@@ -1409,6 +1415,7 @@ def main():
                                         guard_adaptive_target_max_bdps=args.guard_adaptive_target_max_bdps,
                                         guard_ack_interval_packets=args.guard_ack_interval_packets,
                                         guard_pacing_credit_rtts=args.guard_pacing_credit_rtts,
+                                        guard_pacing_credit_bdps=args.guard_pacing_credit_bdps,
                                         guard_ack_window_fraction=args.guard_ack_window_fraction,
                                         guard_receiver_phase_order=args.guard_receiver_phase_order,
                                         guard_duplex_adaptive=args.guard_duplex_adaptive,

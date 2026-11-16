@@ -59,6 +59,23 @@ int main() {
         Time d=RdmaHw::ComputeGuardPacingDeadline(now,NanoSeconds(10000-idle),packet,budget);
         assert(d>=now-budget+packet && d<=now+packet);
     }
+    // Across small and large grants the recovered bytes cannot exceed the
+    // configured fraction of BDP. A packet may cross the pacing deadline.
+    for (uint64_t rate : {100000000ULL, 1000000000ULL, 10000000000ULL, 100000000000ULL}) {
+        for (double f : {0.0, .125, .25, .5, 1.0}) {
+            Time credit=RdmaHw::ComputeGuardByteCredit(8320,100000000000ULL,rate,f);
+            long double bytes=static_cast<long double>(credit.GetNanoSeconds())*rate/8e9;
+            assert(bytes<=104000*f+.00001);
+            assert(bytes>=104000*f-rate/8e9-.00001);
+            Time tx=NanoSeconds(static_cast<int64_t>(8e12/rate));
+            Time tick=NanoSeconds(100000000);
+            Time d=RdmaHw::ComputeGuardPacingDeadline(tick,NanoSeconds(0),tx,credit);
+            unsigned packets=1;
+            while(d<=tick && packets<1000) {d=RdmaHw::ComputeGuardPacingDeadline(tick,d,tx,credit);++packets;}
+            assert(packets*1000<=104000*f+1000);
+        }
+    }
+    assert(RdmaHw::ComputeGuardByteCredit(8320,100000000000ULL,0,1).IsZero());
     auto hw=CreateObject<RdmaHw>();hw->m_cc_mode=11;
     auto qp=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),1,2);
     hw->m_guardTailCongestionGate=true;hw->m_guardTailSafeSamples=2;
