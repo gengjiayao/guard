@@ -26,8 +26,12 @@ namespace ns3 {
 // These identity fields are immutable while an RxQP is registered.
 struct GuardRxIdentityLess {
     bool operator()(const RdmaRxQueuePair *a, const RdmaRxQueuePair *b) const {
-        return std::tie(a->m_flow_id, a->sip, a->dip, a->sport, a->dport, a->m_ecn_source.qIndex) <
-               std::tie(b->m_flow_id, b->sip, b->dip, b->sport, b->dport, b->m_ecn_source.qIndex);
+        uint32_t a_phase = a->dip - a->sip;
+        uint32_t b_phase = b->dip - b->sip;
+        // Stagger otherwise simultaneous grants across receivers. A global
+        // flow-ID order makes all receivers wake the same sender first.
+        return std::tie(a_phase, a->m_flow_id, a->sip, a->dip, a->sport, a->dport, a->m_ecn_source.qIndex) <
+               std::tie(b_phase, b->m_flow_id, b->sip, b->dip, b->sport, b->dport, b->m_ecn_source.qIndex);
     }
 };
 using GuardRxSet = std::set<RdmaRxQueuePair*, GuardRxIdentityLess>;
@@ -473,6 +477,7 @@ class RdmaHw : public Object {
     static Time ComputeGuardPacingDeadline(Time now, Time previous, Time sending, Time credit);
     bool m_guardReceiverPhaseOrder;
     bool m_guardDuplexAdaptive;
+    double m_guardDuplexSizeRatio;
     static uint32_t ComputeGuardAckBatch(uint64_t bdp, uint32_t mtu,
                                          uint32_t configured, double fraction);
     bool m_guardFixedWindow;

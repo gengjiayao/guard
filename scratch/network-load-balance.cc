@@ -215,6 +215,7 @@ double guard_adaptive_target_max_bdps = 0.0;
 uint32_t guard_ack_interval_packets = 8;
 double guard_ack_window_fraction = 0.0;
 double guard_pacing_credit_rtts = 0.0;
+double guard_duplex_size_ratio = 0.0;
 bool guard_receiver_phase_order = false;
 bool guard_duplex_adaptive = false;
 bool guard_fixed_window = true;
@@ -1582,6 +1583,8 @@ int main(int argc, char *argv[]) {
                 conf >> guard_pacing_credit_rtts;
             } else if (key.compare("GUARD_ACK_WINDOW_FRACTION") == 0) {
                 conf >> guard_ack_window_fraction;
+            } else if (key.compare("GUARD_DUPLEX_SIZE_RATIO") == 0) {
+                conf >> guard_duplex_size_ratio;
             } else if (key.compare("GUARD_DUPLEX_ADAPTIVE") == 0) {
                 conf >> guard_duplex_adaptive;
             } else if (key.compare("GUARD_RECEIVER_PHASE_ORDER") == 0) {
@@ -2872,6 +2875,7 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardAckWindowFraction", DoubleValue(guard_ack_window_fraction));
             rdmaHw->SetAttribute("GuardReceiverPhaseOrder", BooleanValue(guard_receiver_phase_order));
             rdmaHw->SetAttribute("GuardDuplexAdaptive", BooleanValue(guard_duplex_adaptive));
+            rdmaHw->SetAttribute("GuardDuplexSizeRatio", DoubleValue(guard_duplex_size_ratio));
             rdmaHw->SetAttribute("GuardAckIntervalPackets",
                                  UintegerValue(guard_ack_interval_packets));
             rdmaHw->SetAttribute("GuardFixedWindow", BooleanValue(guard_fixed_window));

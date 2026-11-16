@@ -101,9 +101,17 @@ int main() {
         duplex_rx.push_back(rx);duplex->m_rate_flow_ctl_set.insert(PeekPointer(rx));
     }
     assert(!duplex->GuardHasCompetingSenders()); // one outbound peer remains
+    duplex->m_guardDuplexSizeRatio=4.0;
+    duplex_rx[0]->m_guard_flow_size=1048576;
+    duplex_rx[1]->m_guard_flow_size=4194304;
+    assert(duplex->GuardHasCompetingSenders());
+    duplex_rx[1]->m_guard_flow_size=3145728;
+    assert(!duplex->GuardHasCompetingSenders());
+    duplex->m_guardDuplexSizeRatio=0.0;
+
     duplex->m_qpMap[0]->snd_una=1000000;
     assert(duplex->GuardHasCompetingSenders());
-    std::set<uint32_t> selected_senders;
+    std::set<uint32_t> selected_senders, first_grant_senders;
     for (uint32_t receiver=100;receiver<108;++receiver) {
         auto allocator=CreateObject<RdmaHw>();allocator->m_guardReceiverConcurrency=1;
         allocator->m_guardMinShareFraction=.1;allocator->m_guardConcurrencyMinBdps=0;
@@ -115,10 +123,12 @@ int main() {
             flow->m_base_rtt_sec=8.32e-6;flow->m_flow_id=sender;
             flows.push_back(flow);allocator->m_rate_flow_ctl_set.insert(PeekPointer(flow));
         }
+        first_grant_senders.insert((*allocator->m_rate_flow_ctl_set.begin())->dip);
         auto rates=allocator->ComputeGuardBaseTargets(100000000000ULL);
         auto best=std::max_element(rates.begin(),rates.end(),[](const std::pair<RdmaRxQueuePair* const,uint64_t>&a,const std::pair<RdmaRxQueuePair* const,uint64_t>&b){return a.second<b.second;});
         selected_senders.insert(best->first->dip);
     }
     assert(selected_senders.size()==8);
+    assert(first_grant_senders.size()==8);
     std::cout<<"PASS bounded ACK clock, revocable tail bypass, capacity/fairness floors, insertion invariance and receiver grant diversity\n";
 }

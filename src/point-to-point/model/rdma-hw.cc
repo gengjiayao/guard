@@ -275,6 +275,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Use receiver-relative peer order within a BDP-sized remaining-work class",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardReceiverPhaseOrder),
                           MakeBooleanChecker())
+            .AddAttribute("GuardDuplexSizeRatio",
+                          "Allow bounded receive concurrency for heterogeneous duplex messages; zero disables",
+                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardDuplexSizeRatio),
+                          MakeDoubleChecker<double>(0.0))
             .AddAttribute("GuardDuplexAdaptive",
                           "Preserve receiver parallelism and ACK aggregation while the local NIC serves multiple peers",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardDuplexAdaptive),
@@ -6478,8 +6482,24 @@ bool RdmaHw::GuardHasCompetingSenders() const {
         // Keep this protection until the last local transfer is acknowledged.
         // Dropping to one destination is not the end of a duplex exchange:
         // concentrating credit at that point can create reciprocal tail waits.
+        bool outbound = false;
         for (const auto &item : m_qpMap) {
-            if (!item.second->IsFinishedConst()) return false;
+            if (!item.second->IsFinishedConst()) {outbound = true; break;}
+        }
+        if (outbound) {
+            if (m_guardDuplexSizeRatio <= 0.0) return false;
+            uint64_t smallest = std::numeric_limits<uint64_t>::max(), largest = 0;
+            for (auto *flow : m_rate_flow_ctl_set) {
+                if (flow->m_guard_flow_size == 0) return false;
+                smallest = std::min(smallest, flow->m_guard_flow_size);
+                largest = std::max(largest, flow->m_guard_flow_size);
+            }
+            // Symmetric, similarly-sized duplex exchanges keep parallel grants
+            // to avoid reciprocal waits. Heterogeneous message sets instead
+            // retain the configured K and its starvation floor: an unrelated
+            // outbound message must not disable receiver scheduling wholesale.
+            if (largest == 0 || largest < m_guardDuplexSizeRatio * smallest)
+                return false;
         }
     }
     // RxQP addresses are reversed: dip identifies the DATA sender. A single
