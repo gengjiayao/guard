@@ -192,6 +192,7 @@ double u_target = 0.95;
 double guard_lambda = 1.8;
 double guard_registration_threshold_bdps = 1.0;
 double guard_post_grant_window_bdps = 1.0;
+double guard_receiver_headroom = 1.0;
 double guard_ewma_beta = 0.125;
 double guard_release_gamma = 1.0;
 bool guard_selective_registration = true;
@@ -1521,6 +1522,8 @@ int main(int argc, char *argv[]) {
                 guard_selective_registration = guard_oflm;
                 guard_proactive_release = guard_oflm;
                 std::cerr << "GUARD_OFLM (legacy)\t\t" << guard_oflm << '\n';
+            } else if (key.compare("GUARD_RECEIVER_HEADROOM") == 0) {
+                conf >> guard_receiver_headroom;
             } else if (key.compare("GUARD_POST_GRANT_WINDOW_BDPS") == 0) {
                 conf >> guard_post_grant_window_bdps;
             } else if (key.compare("GUARD_REGISTRATION_THRESHOLD_BDPS") == 0) {
@@ -2875,6 +2878,7 @@ int main(int argc, char *argv[]) {
                                  BooleanValue(guard_selective_registration));
             rdmaHw->SetAttribute("GuardRegistrationThresholdBdps", DoubleValue(guard_registration_threshold_bdps));
             rdmaHw->SetAttribute("GuardPostGrantWindowBdps", DoubleValue(guard_post_grant_window_bdps));
+            rdmaHw->SetAttribute("GuardReceiverHeadroom", DoubleValue(guard_receiver_headroom));
             rdmaHw->SetAttribute("GuardPassiveTarget", DoubleValue(u_target));
             rdmaHw->SetAttribute("GuardProactiveRelease",
                                  BooleanValue(guard_proactive_release));
@@ -4413,6 +4417,7 @@ int main(int argc, char *argv[]) {
                 total_guard_elephant_aging_active_deferred++;
         }
     }
+    fprintf(guard_stats_output, "guard_receiver_headroom factor %.6f\n",guard_receiver_headroom);
     fprintf(guard_stats_output, "guard_post_grant_window bdps %.6f raises %lu\n",
             guard_post_grant_window_bdps,post_grant_window_raises);
     fprintf(guard_stats_output, "guard_admission threshold_bdps %.6f passive_target %.6f\n",

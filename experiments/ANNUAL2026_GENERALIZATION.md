@@ -188,3 +188,33 @@ bytes, unchanged rate caps, idempotence, first-grant barrier behavior, and passi
 exclusion. Probe9 tests this control-window change with bounded-work, sender-fair
 and adaptive allocation at 50%/80% load on development input 6102. Homa is rerun
 with the same frozen runtime. Overall P99 remains the acceptance metric.
+
+## Full-path feedback with bounded grant headroom
+
+Probe9 completed 32 runs. On development input 6102, orig32 with a post-grant
+2-BDP window reduced AliStorage P99 by 10.44% at 50% and 16.90% at 80%; 4 BDP
+produced 10.73% and 21.32%. WebSearch 80% remained below target, so this is not
+joint success. All comparisons in that probe used its same-build Homa runs.
+
+Homa's numerical results have varied across GUARD-only rebuilt runtimes despite
+unchanged baseline algorithms. The exact cause is not yet isolated. To eliminate
+this confound, original `/home/gengjiayao/ict/guard` remains at 6c438d7 with its
+binary hashes verified identical to the earlier WebSearch formal campaign.
+`generalize_frozen_baseline` runs development inputs 6101/6102 at 50/70/80% on
+that fixed original runtime. Subsequent acceptance must use a fixed baseline
+runtime and verified identical input hashes, rather than a favorable baseline
+from a different rebuild. Do not merge or rebuild the original while it runs.
+
+`GuardReceiverHeadroom` tests limited grant overcommit (1--2 times the allocation
+budget) to let available senders use shares temporarily unused by busy peers.
+No physical capacity changes. Every individual grant remains at most the NIC's
+actual rate. Enabling headroom requires full last-hop INT, the unscaled 0.95
+passive target, no grant-only tail bypass, and ordinary direct grants without
+legacy reclaimers. Thus both active permissions and full-path passive feedback
+continue to constrain actual send rates. Runtime assertions enforce the same
+requirements as the runner. Default factor 1 preserves all prior behavior.
+
+Native tests verify the unchanged default, per-NIC cap and bounded aggregate
+permission budget. Probe10 compares headroom 1/1.25/1.5/2 and sender-aware
+allocation against the preceding orig32win2 profile and same-build Homa; the
+original fixed-runtime baseline remains authoritative for later acceptance.

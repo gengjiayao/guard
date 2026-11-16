@@ -104,6 +104,7 @@ GUARD_RELEASE_GAMMA {guard_gamma}
 GUARD_SELECTIVE_REGISTRATION {guard_selective_registration}
 GUARD_REGISTRATION_THRESHOLD_BDPS {guard_registration_threshold_bdps}
 GUARD_POST_GRANT_WINDOW_BDPS {guard_post_grant_window_bdps}
+GUARD_RECEIVER_HEADROOM {guard_receiver_headroom}
 GUARD_PROACTIVE_RELEASE {guard_proactive_release}
 GUARD_KEEP_LAST_HOP_INT {guard_keep_last_hop_int}
 GUARD_SIZE_PRIORITY {guard_size_priority}
@@ -477,6 +478,7 @@ def main():
                         help="GUARD HPCC-target multiplier >= 1 (default: 1.8)")
     parser.add_argument('--guard_oflm', type=int, choices=(0, 1), default=None,
                         help="legacy alias; an explicit 0 disables both OFLM components")
+    parser.add_argument('--guard_receiver_headroom', type=float, default=1.0)
     parser.add_argument('--guard_post_grant_window_bdps', type=float, default=1.0)
     parser.add_argument('--guard_registration_threshold_bdps', type=float, default=1.0)
     parser.add_argument('--guard_selective_registration', type=int, choices=(0, 1), default=1,
@@ -715,6 +717,10 @@ def main():
 
     if not 0.0 <= args.guard_beta <= 1.0:
         raise Exception("CONFIG ERROR: --guard_beta must be in [0, 1].")
+    if not 1 <= args.guard_receiver_headroom <= 2:
+        raise Exception("CONFIG ERROR: receiver headroom must be in [1,2].")
+    if args.guard_receiver_headroom != 1 and (args.cc != "guard" or not args.guard_keep_last_hop_int or args.guard_tail_bypass or args.guard_lambda != 1 or args.guard_work_conserving or args.guard_cap_aware_reclaim or args.guard_membership_coalesce_ns):
+        raise Exception("CONFIG ERROR: receiver headroom requires full-path passive feedback, lambda=1, no tail bypass, and direct grants without legacy reclamation.")
     if not 1 <= args.guard_post_grant_window_bdps <= 4:
         raise Exception("CONFIG ERROR: post-grant window must be in [1,4] BDPs.")
     if args.guard_post_grant_window_bdps != 1 and (args.cc != "guard" or not args.guard_fixed_window or args.guard_membership_coalesce_ns or args.guard_transport_window_floor_rtt_ns):
@@ -1446,6 +1452,7 @@ def main():
                                         guard_selective_registration=guard_selective_registration,
                                         guard_registration_threshold_bdps=args.guard_registration_threshold_bdps,
                                         guard_post_grant_window_bdps=args.guard_post_grant_window_bdps,
+                                        guard_receiver_headroom=args.guard_receiver_headroom,
                                         guard_proactive_release=guard_proactive_release,
                                         guard_keep_last_hop_int=args.guard_keep_last_hop_int,
                                         guard_size_priority=args.guard_size_priority,

@@ -155,6 +155,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Multiplier for GUARD's proactive-release in-flight threshold",
                           DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardReleaseGamma),
                           MakeDoubleChecker<double>(0.0))
+            .AddAttribute("GuardReceiverHeadroom",
+                          "Bounded grant overcommit under full-path passive control",
+                          DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardReceiverHeadroom),
+                          MakeDoubleChecker<double>(1.0,2.0))
             .AddAttribute("GuardPostGrantWindowBdps",
                           "Bounded transport window after a validated receiver grant; initial flight stays one BDP",
                           DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardPostGrantWindowBdps),
@@ -6726,6 +6730,10 @@ bool RdmaHw::GuardHasCompetingSenders() const {
     return false;
 }
 
+uint64_t RdmaHw::ComputeGuardHeadroomGrant(uint64_t target,uint64_t line_rate,double factor) {
+    return (uint64_t)std::min<long double>(line_rate,(long double)target*factor);
+}
+
 void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation) {
     if (m_rate_flow_ctl_set.empty()) return;
     if (generation == 0 && IsGuardMembershipDirty()) {
@@ -6739,6 +6747,18 @@ void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation)
         m_guardCapAwareReclaim
             ? ComputeGuardCapAwareTargets(line_rate_bps)
             : ComputeGuardBaseTargets(line_rate_bps);
+    if(m_guardReceiverHeadroom>1) {
+        NS_ABORT_MSG_IF(m_cc_mode!=CC_MODE_GUARD || !m_guardKeepLastHopInt ||
+            m_guardTailBypass || m_targetUtil>1 || m_guardWorkConserving ||
+            m_guardCapAwareReclaim || !m_guardMembershipCoalesceWindow.IsZero(),
+            "GUARD grant headroom requires direct grants and continuously binding full-path feedback");
+        // Receiver grants are permissions, not extra physical capacity.
+        // Limited headroom lets other eligible senders use a temporarily idle
+        // share. Full-path feedback, including the receiver link, resolves
+        // concurrent use; every sender remains capped at the actual NIC rate.
+        for(auto &entry:targets)entry.second=ComputeGuardHeadroomGrant(
+            entry.second,line_rate_bps,m_guardReceiverHeadroom);
+    }
     std::vector<uint64_t> concurrency_remaining;
     if (m_guardReceiverConcurrency > 0 && GuardHasCompetingSenders()) {
         for (auto *flow : m_rate_flow_ctl_set) {
