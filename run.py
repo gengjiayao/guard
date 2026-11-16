@@ -18,6 +18,16 @@ from datetime import date
 random.seed(datetime.now().timestamp())
 MAX_RAND_RANGE = 1000000000
 
+def reserve_run_directory(parent, config_id):
+    """Atomically reserve a private output; never reuse a concurrent run."""
+    while True:
+        output_dir = os.path.join(parent, str(config_id))
+        try:
+            os.makedirs(output_dir)
+            return str(config_id), output_dir
+        except FileExistsError:
+            config_id = random.SystemRandom().randrange(MAX_RAND_RANGE)
+
 # config template
 config_template = """TOPOLOGY_FILE config/{topo}.txt
 FLOW_FILE {flow_file}
@@ -1082,8 +1092,10 @@ def main():
     output_dir = os.path.join(os.getcwd(), "mix", "output", config_ID)
 
     if args.flow_file:
-        assert not os.path.exists(output_dir)
-        os.makedirs(output_dir)
+        # Concurrent drivers may choose the same identifier before either
+        # creates its directory. Reserve atomically and never reuse outputs.
+        config_ID, output_dir = reserve_run_directory(
+            os.path.join(os.getcwd(), "mix", "output"), config_ID)
         print("The new directory is created  - {}".format(output_dir + "/"))
         flow_path = os.path.join(output_dir, "{}_input_flow.txt".format(config_ID))
         shutil.copyfile(custom_flow_source, flow_path)

@@ -8,8 +8,9 @@ from experiments.annual2026_collectives import sha,dump
 
 def interval(xs):
     m=statistics.fmean(xs)
-    if len(xs)==5:
-        e=2.7764451051977987*statistics.stdev(xs)/math.sqrt(5)
+    critical={5:2.7764451051977987,10:2.2621571628540993}
+    if len(xs) in critical:
+        e=critical[len(xs)]*statistics.stdev(xs)/math.sqrt(len(xs))
         return {'mean':m,'ci95_low':m-e,'ci95_high':m+e}
     return {'mean':m,'ci95_low':None,'ci95_high':None}
 

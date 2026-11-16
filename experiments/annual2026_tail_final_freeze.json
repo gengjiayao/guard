@@ -1,0 +1,122 @@
+{
+  "frozen_utc": "2026-11-16T14:14:13Z",
+  "controller_source": "99ffb5fade455efe5cbcbe9a89c5a06b105e9728",
+  "variants": {
+    "guard": {
+      "cc": "guard",
+      "guard_receiver_concurrency": 2,
+      "guard_concurrency_min_bdps": 0,
+      "guard_min_share_fraction": 0,
+      "guard_receiver_phase_order": 0,
+      "guard_duplex_adaptive": 1,
+      "guard_ack_window_fraction": 0.0625,
+      "guard_pacing_credit_rtts": 1.0,
+      "guard_duplex_cohort_drain": 1,
+      "guard_duplex_size_ratio": 1.05,
+      "guard_gamma": 8,
+      "guard_scheduled_size_priority": 1
+    },
+    "hpcc": {
+      "cc": "hpcc"
+    },
+    "dcqcn": {
+      "cc": "dcqcn"
+    },
+    "homa": {
+      "cc": "homa"
+    }
+  },
+  "primary": {
+    "cdf": "AliStorage2019",
+    "load": 80,
+    "seeds": [
+      3101,
+      3102,
+      3103,
+      3104,
+      3105,
+      3106,
+      3107,
+      3108,
+      3109,
+      3110
+    ],
+    "metric": "per-seed overall P99 FCT; mean paired percent reduction vs Homa; two-sided 95% t interval, df=9"
+  },
+  "sensitivity": {
+    "cdf": "AliStorage2019",
+    "loads": [
+      50,
+      70
+    ],
+    "seeds": [
+      3101,
+      3102,
+      3103,
+      3104,
+      3105
+    ]
+  },
+  "regression": {
+    "cases": [
+      "incast2",
+      "incast7",
+      "mixed",
+      "fabric",
+      "alltoall256k",
+      "alltoall1m",
+      "alltoallv",
+      "ring1m",
+      "ring16m",
+      "concurrent"
+    ],
+    "seeds": [
+      3101,
+      3102,
+      3103,
+      3104,
+      3105
+    ]
+  },
+  "selection": "Candidate selected only using development seeds 2101/2102. Scheduled classes, gamma=8, time credit=1 RTT had 14.63% and 19.32% lower overall P99 than unchanged Homa. Do not tune from holdout, drop seeds, or filter flow sizes.",
+  "runtime": {
+    "build/scratch/network-load-balance": "538261d2d4d41e9e46d43e106f3cc31d1750b3259672af907888087cdc08a155",
+    "build/libns3.19-antenna-optimized.so": "4d692486d2f44b7c972dddee2c4b6f786affe156c7f9f17c0aadda9cf6ae170b",
+    "build/libns3.19-aodv-optimized.so": "32354a68d92f27cf535f1a670b3df8474d8ff33de39a1a7023fb03625c4e6614",
+    "build/libns3.19-applications-optimized.so": "b6d1715fc911d7dadaf19d2de70aa50b1cc858efbeb92f72c853f1b5b6299467",
+    "build/libns3.19-bridge-optimized.so": "ef08d453a9ac8e12101d0105e3717b291e43121f3c3df1ad9979aa26dfed1b3c",
+    "build/libns3.19-buildings-optimized.so": "8c6f85018d0668b4ee9c50fb418023da7f8a3bfa8fad9f982f1729896a0b6de4",
+    "build/libns3.19-config-store-optimized.so": "0cba0592fec89a1fbda9dcbcf4ec79b2ba40de29eb1c0ff71521740d962c7d0a",
+    "build/libns3.19-core-optimized.so": "874620490fd9136de8a7b4f33aa4f1376ad0302cfec94f26722645ab5db6ecb9",
+    "build/libns3.19-csma-layout-optimized.so": "4d9897b08fc382f74c2a15ff4038944a4b094b8811ec42e68be2afe8aed98666",
+    "build/libns3.19-csma-optimized.so": "1151d3088fa365dadd7f608f99aaf2cb52475faeae0115a289ed0b8ee76696fc",
+    "build/libns3.19-dsdv-optimized.so": "a9b9f92df66da872c71a2237a138c46a2a0099d08856d06e1af50a445b4d721d",
+    "build/libns3.19-dsr-optimized.so": "4acd6407ae339ea854450eaaf72d4de06a1d51da2a95cc78267fc44ec8aadec4",
+    "build/libns3.19-emu-optimized.so": "a4bbde18feb136d86c22c4a35b578f11c61f53e6ba52bb47842b3cd30162c72a",
+    "build/libns3.19-energy-optimized.so": "8c5646891d295ffbffc61ea4c8a9036829c2c8d902d5f4fd4222d4c3994b46c5",
+    "build/libns3.19-flow-monitor-optimized.so": "db2a04c2ee7c780f9cd686ce9add67170d49bb58697b9b5d62555dbe9d31c80c",
+    "build/libns3.19-internet-optimized.so": "4a3955dc08f18e7ffc5420be4f9e3a8b86431f80d314c4ecddd79a89ce7d8fec",
+    "build/libns3.19-lte-optimized.so": "2084ce7658abd5480c6b45b061a78577ea494b5b0b1f1e9e497843ee5be05968",
+    "build/libns3.19-mesh-optimized.so": "588eef07977a3aebb995c32a2d8f6a5daa004521e303b63bea73a04c76479554",
+    "build/libns3.19-mobility-optimized.so": "f5cd675863dd479995f12d20e5445481b010f4256f0cc271dd2f8a3e6524e7d6",
+    "build/libns3.19-mpi-optimized.so": "a090044c60959d38fa40e82a149330fce7c566ec56e5461b7541f85dafafffea",
+    "build/libns3.19-netanim-optimized.so": "07560d4b10467a52ef24be8d2878f80d5d2574be1c24a975cfe3db4ebe73e5ee",
+    "build/libns3.19-network-optimized.so": "22c68fdbb6a1d43ed0d702c98589d1faa7ec9a4631c8abf9d850d1cd0672171c",
+    "build/libns3.19-nix-vector-routing-optimized.so": "9acea20899b99178e294586ac36367cb463518b2783f4f2051bf5a86bc490f4d",
+    "build/libns3.19-olsr-optimized.so": "b02a6b33c845e1a4658e6a3f6972e1cc1fa447cead21d9ffccdbf5759b49072d",
+    "build/libns3.19-point-to-point-layout-optimized.so": "de8c398d0f3d2885ed13885a64eb38f2954043a79b43d280434d503bbf59c0ef",
+    "build/libns3.19-point-to-point-optimized.so": "de67fcfa72872e344d3ee49e1eeab5ab055a5e91b009cc62b9abebf5a312ec17",
+    "build/libns3.19-propagation-optimized.so": "6bfad4b0708a169c03e5fbd404acf1c251d4d11ec419082077a018931dc87d06",
+    "build/libns3.19-spectrum-optimized.so": "47d6d02cc7aae97df5e34cd53e4e36d01e0082ee376702507719f92baa2d3d77",
+    "build/libns3.19-stats-optimized.so": "7cdc6d072fac21e128f5cdb7dc67f5c01c8e109b4cd8e2f2a5e5dd0872f85515",
+    "build/libns3.19-tap-bridge-optimized.so": "9a16cf8a57f0da1fbbbb5a3886d8c7c7f541c62cfb6c5866acab97d1b0166a3a",
+    "build/libns3.19-test-optimized.so": "6fcf5db5b2423313a2bafcdeca8f3187acc627da5ee6e9d235bc066fc7d851f7",
+    "build/libns3.19-tools-optimized.so": "d98a8f18a4ca997ace0f204717d26aec176e73262dabb05ad3c99817e085f3ff",
+    "build/libns3.19-topology-read-optimized.so": "dc7e9ff40210b373f7846e51c84fe78d048aa6f5811d7eb1ccf5973e83cd2f30",
+    "build/libns3.19-uan-optimized.so": "a18a081c57705fdb6d3a0b572f5990a60242f2e22ab7c341dec965e9f308471a",
+    "build/libns3.19-virtual-net-device-optimized.so": "91e9af1fd031b54ee3556db64e4d0d90df2fa9b8b8e4c7d0ad32d8514e929b3a",
+    "build/libns3.19-wifi-optimized.so": "746b6dab815ac0fb9352f3d561a453e4ddd0f12989ef6f67fbbef33ffeb81f98",
+    "build/libns3.19-wimax-optimized.so": "9087f649894a7d060480a6a5575df026395fbeed2d11625a238e84e0879b8af2"
+  },
+  "failure_record": "annual2026_priority_tail_dev/2101-byte125 failed before simulator start due concurrent directory allocation; retained. Atomic allocation now tested with 200 forced collisions. Other 11 records completed and input identities checked."
+}
