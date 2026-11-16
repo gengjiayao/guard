@@ -396,6 +396,8 @@ def main():
         print("The new directory is created - {}".format(os.getcwd() + "/mix/output/"))
 
     parser = argparse.ArgumentParser(description='run simulation')
+    parser.add_argument('--no_build', type=int, choices=(0, 1), default=0,
+                        help="run an already-built simulator without invoking waf (default: 0)")
     parser.add_argument('--cc', dest='cc', action='store',
                         choices=tuple(cc_modes), default='dcqcn',
                         help="congestion-control mode (default: dcqcn)")
@@ -1494,9 +1496,17 @@ def main():
         history.write("\n")
 
     print(run_command)
+    simulation_command = ["./waf", "--run", "scratch/network-load-balance {}".format(config_name)]
+    simulation_env = os.environ.copy()
+    if args.no_build:
+        binary = os.path.join(os.getcwd(), "build", "scratch", "network-load-balance")
+        if not os.path.isfile(binary) or not os.access(binary, os.X_OK):
+            raise RuntimeError("--no_build requires an existing executable simulator")
+        simulation_command = [binary, config_name]
+        simulation_env["LD_LIBRARY_PATH"] = os.path.join(os.getcwd(), "build") + ":" + simulation_env.get("LD_LIBRARY_PATH", "")
+    print("Simulator command: {}".format(simulation_command))
     with open(output_log, "w") as simulation_log:
-        simulation = subprocess.run(
-            ["./waf", "--run", "scratch/network-load-balance {}".format(config_name)],
+        simulation = subprocess.run(simulation_command, env=simulation_env,
             stdout=simulation_log, stderr=subprocess.STDOUT)
     if simulation.returncode != 0:
         raise RuntimeError(
