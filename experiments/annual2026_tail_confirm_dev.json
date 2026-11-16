@@ -1,0 +1,57 @@
+{
+  "homa": {
+    "cc": "homa"
+  },
+  "r105c0125g8": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.05,
+    "guard_gamma": 8
+  },
+  "r105c1g8": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 1.0,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.05,
+    "guard_gamma": 8
+  },
+  "r105c0125g16": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125,
+    "guard_duplex_cohort_drain": 1,
+    "guard_duplex_size_ratio": 1.05,
+    "guard_gamma": 16
+  },
+  "k2g8": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.125,
+    "guard_duplex_cohort_drain": 0,
+    "guard_duplex_size_ratio": 0,
+    "guard_gamma": 8.0
+  }
+}
