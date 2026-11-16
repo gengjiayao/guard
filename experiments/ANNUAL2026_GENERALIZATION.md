@@ -358,3 +358,29 @@ adaptation, stable classification while two long messages drain, priority for
 short tails, and PFC/pacing/window/first-grant gates. Probe21 compares cohort
 thresholds and two conservative combinations, using one common rule across both
 workloads. Final validation inputs 7101--7110 remain untouched.
+
+## Stable per-message sender admission
+
+Probe21 completed all 24 cohort-adaptation trials. The 32-BDP cohort case gives
+AliStorage L50/L80 P99 reductions of 13.47%/16.30% and WebSearch L50/L80 reductions
+of 22.54%/8.82% on input6102. The high-load WebSearch target remains unmet. The
+aggressive 8-BDP cohort threshold also regresses high-load AliStorage; that
+negative result remains in the campaign. No final-validation input was used.
+
+`GuardSenderSrptOriginalClass` optionally admits priority service by declared
+original message length rather than promoting an originally large message when
+several megabytes remain. Within the bounded original-size class, the existing
+remaining-byte ordering is retained. Originally large messages continue to
+rotate among other ready authorized work, except that at most their last one
+BDP of unsent payload receives priority to finish promptly. This aligns stable
+sender admission with immutable size classes and avoids changing a large
+message's service category merely as it drains. It does not change receiver
+authorization, packet sequence, pacing, byte windows, PFC groups or line rates.
+Disabled by default; it never reads CDFs, workload names or measured quantiles.
+
+Native behavioral tests verify that an originally large message with five BDPs
+left stays in rotation, disabling the option restores remaining-work admission,
+the last one BDP regains bounded priority, original short messages keep their
+priority, and PFC continues to block otherwise preferred work. Probe22 will
+compare original-size cutoffs and two feedback/release alternatives on the same
+frozen development traces and original Homa comparator.

@@ -208,8 +208,10 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
             if (guard_cohort > 0) eligible.push_back(index);
             uint64_t remaining = qp->GetBytesLeft();
             uint64_t bdp = qp->m_baseRtt * qp->m_max_rate.GetBitRate() / 8000000000ULL;
+            uint64_t admission_work=qp->m_guard_sender_srpt_original_class ? qp->m_size : remaining;
             bool bounded = qp->m_guard_sender_srpt_max_bdps <= 0 ||
-                remaining <= qp->m_guard_sender_srpt_max_bdps * std::max<uint64_t>(1,bdp);
+                admission_work <= qp->m_guard_sender_srpt_max_bdps * std::max<uint64_t>(1,bdp) ||
+                (qp->m_guard_sender_srpt_original_class && remaining <= bdp);
             if (bounded && remaining < best_remaining) {
                 best_remaining = remaining;
                 best = (int)index;
@@ -224,7 +226,10 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
                 auto qp=m_qpGrp->Get(index);
                 uint64_t bdp=std::max<uint64_t>(1,qp->m_baseRtt*qp->m_max_rate.GetBitRate()/8000000000ULL);
                 uint64_t remaining=qp->GetBytesLeft();
-                if(remaining <= cutoff*bdp && remaining < best_remaining) {
+                uint64_t admission_work=qp->m_guard_sender_srpt_original_class ? qp->m_size : remaining;
+                bool bounded=admission_work <= cutoff*bdp ||
+                    (qp->m_guard_sender_srpt_original_class && remaining <= bdp);
+                if(bounded && remaining < best_remaining) {
                     best_remaining=remaining;best=(int)index;
                 }
             }

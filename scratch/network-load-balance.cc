@@ -208,6 +208,7 @@ bool guard_transport_window_whole_flow_first_gate = false;
 uint32_t guard_transport_window_ack_slack_packets = 0;
 bool guard_sender_srpt = true;
 double guard_sender_srpt_max_bdps = 0;
+bool guard_sender_srpt_original_class = false;
 double guard_sender_srpt_cohort_bdps = 0;
 bool guard_one_rtt_bypass = true;
 bool guard_tail_bypass = true;
@@ -1570,6 +1571,8 @@ int main(int argc, char *argv[]) {
                           << guard_transport_window_ack_slack_packets << '\n';
             } else if (key.compare("GUARD_SENDER_SRPT_COHORT_BDPS") == 0) {
                 conf >> guard_sender_srpt_cohort_bdps;
+            } else if (key.compare("GUARD_SENDER_SRPT_ORIGINAL_CLASS") == 0) {
+                conf >> guard_sender_srpt_original_class;
             } else if (key.compare("GUARD_SENDER_SRPT_MAX_BDPS") == 0) {
                 conf >> guard_sender_srpt_max_bdps;
             } else if (key.compare("GUARD_SENDER_SRPT") == 0) {
@@ -2911,6 +2914,7 @@ int main(int argc, char *argv[]) {
                                  UintegerValue(
                                      guard_transport_window_ack_slack_packets));
             rdmaHw->SetAttribute("GuardSenderSrptCohortBdps", DoubleValue(guard_sender_srpt_cohort_bdps));
+            rdmaHw->SetAttribute("GuardSenderSrptOriginalClass", BooleanValue(guard_sender_srpt_original_class));
             rdmaHw->SetAttribute("GuardSenderSrptMaxBdps", DoubleValue(guard_sender_srpt_max_bdps));
             rdmaHw->SetAttribute("GuardSenderSrpt", BooleanValue(guard_sender_srpt));
             rdmaHw->SetAttribute("GuardOneRttBypass", BooleanValue(guard_one_rtt_bypass));
@@ -4318,6 +4322,7 @@ int main(int argc, char *argv[]) {
     fprintf(guard_stats_output, "guard_sender_cohort threshold_bdps %.6f short_limit_bdps %.6f decisions %lu reduced %lu\n",
             guard_sender_srpt_cohort_bdps, guard_sender_srpt_max_bdps,
             Settings::guard_sender_cohort_decisions, Settings::guard_sender_cohort_reduced);
+    fprintf(guard_stats_output, "guard_sender_original_class enabled %u\n", guard_sender_srpt_original_class ? 1 : 0);
     uint64_t total_guard_one_rtt_bypass_flows = 0;
     uint64_t total_guard_one_rtt_bypass_feedbacks = 0;
     uint64_t total_guard_one_rtt_acks_suppressed = 0;

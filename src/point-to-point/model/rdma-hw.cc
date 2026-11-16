@@ -233,6 +233,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Adapt bounded sender priority to the local outstanding-work cohort; zero disables",
                           DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardSenderSrptCohortBdps),
                           MakeDoubleChecker<double>(0.0,1024.0))
+            .AddAttribute("GuardSenderSrptOriginalClass",
+                          "Keep original long-message admission while prioritizing a bounded one-BDP tail",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardSenderSrptOriginalClass),
+                          MakeBooleanChecker())
             .AddAttribute("GuardSenderSrptMaxBdps",
                           "Prioritize bounded remaining work and rotate longer authorized messages; zero keeps unrestricted SRPT",
                           DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardSenderSrptMaxBdps),
@@ -1141,6 +1145,7 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
     qp->m_guard_tail_bypass = false;
     qp->m_guard_srpt_quantum_packets = m_guardSrptQuantumPackets;
     qp->m_guard_sender_srpt_max_bdps = m_guardSenderSrptMaxBdps;
+    qp->m_guard_sender_srpt_original_class = m_guardSenderSrptOriginalClass;
     qp->m_guard_sender_srpt_cohort_bdps = m_guardSenderSrptCohortBdps;
     NS_ABORT_MSG_IF(m_cc_mode == CC_MODE_GUARD && m_guardSenderSrptCohortBdps > 0 &&
         (!m_guardSenderSrpt || m_guardSenderSrptMaxBdps < 1),
