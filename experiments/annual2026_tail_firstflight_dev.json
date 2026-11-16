@@ -1,0 +1,49 @@
+{
+  "homa": {
+    "cc": "homa"
+  },
+  "first": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_initial_window_priority": 1
+  },
+  "firstcredit": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_initial_window_priority": 1,
+    "guard_pacing_credit_rtts": 0.125
+  },
+  "firstcreditk2": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_initial_window_priority": 1,
+    "guard_pacing_credit_rtts": 0.5
+  },
+  "firstcreditk2g4": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_initial_window_priority": 1,
+    "guard_pacing_credit_rtts": 0.5,
+    "guard_gamma": 4.0
+  }
+}

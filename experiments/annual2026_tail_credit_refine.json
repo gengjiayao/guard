@@ -1,0 +1,80 @@
+{
+  "credit05k2": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.5
+  },
+  "homa": {
+    "cc": "homa"
+  },
+  "credit05k4": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 4,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.5
+  },
+  "credit05sqrt": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 4,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.5,
+    "guard_adaptive_elephant_concurrency": 1
+  },
+  "credit05floor25": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.25,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.5
+  },
+  "credit05gamma2": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.5,
+    "guard_gamma": 2.0
+  },
+  "credit05gamma4": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.5,
+    "guard_gamma": 4.0
+  },
+  "credit05k2last": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 0,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_pacing_credit_rtts": 0.5,
+    "guard_keep_last_hop_int": 1,
+    "guard_tail_congestion_gate": 1
+  }
+}
