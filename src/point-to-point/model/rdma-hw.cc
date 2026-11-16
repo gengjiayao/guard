@@ -6426,7 +6426,14 @@ bool RdmaHw::GuardHasCompetingSenders() const {
     // Keep its receiver allocator work-conserving instead of concentrating
     // credit on one peer. The decision uses only live local NIC queues;
     // it does not inspect a workload name, graph, remote state or future flow.
-    if (m_guardDuplexAdaptive && GuardHasMultipleActiveDestinations()) return false;
+    if (m_guardDuplexAdaptive) {
+        // Keep this protection until the last local transfer is acknowledged.
+        // Dropping to one destination is not the end of a duplex exchange:
+        // concentrating credit at that point can create reciprocal tail waits.
+        for (const auto &item : m_qpMap) {
+            if (!item.second->IsFinishedConst()) return false;
+        }
+    }
     // RxQP addresses are reversed: dip identifies the DATA sender. A single
     // sending NIC already schedules its own messages; imposing receiver K=1
     // on that NIC's separate QPs duplicates ordering and can leave its grant

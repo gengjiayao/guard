@@ -1,0 +1,41 @@
+{
+  "old": {
+    "cc": "guard"
+  },
+  "tail16": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625
+  },
+  "tail64": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.015625
+  },
+  "tail16floor0": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625
+  },
+  "tail64floor0": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.015625
+  }
+}

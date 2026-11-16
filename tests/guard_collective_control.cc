@@ -57,6 +57,14 @@ int main() {
     assert(duplex->GuardHasMultipleActiveDestinations());
     duplex->m_qpMap[1]->snd_una=1000000;
     assert(!duplex->GuardHasMultipleActiveDestinations());
+    std::vector<Ptr<RdmaRxQueuePair>> duplex_rx;
+    for (unsigned i=0;i<2;++i) {
+        auto rx=CreateObject<RdmaRxQueuePair>();rx->sip=1;rx->dip=2+i;
+        duplex_rx.push_back(rx);duplex->m_rate_flow_ctl_set.insert(PeekPointer(rx));
+    }
+    assert(!duplex->GuardHasCompetingSenders()); // one outbound peer remains
+    duplex->m_qpMap[0]->snd_una=1000000;
+    assert(duplex->GuardHasCompetingSenders());
     std::set<uint32_t> selected_senders;
     for (uint32_t receiver=100;receiver<108;++receiver) {
         auto allocator=CreateObject<RdmaHw>();allocator->m_guardReceiverConcurrency=1;
