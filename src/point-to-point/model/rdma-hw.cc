@@ -300,6 +300,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           DoubleValue(0.0),
                           MakeDoubleAccessor(&RdmaHw::m_guardMinShareFraction),
                           MakeDoubleChecker<double>(0.0, 1.0))
+            .AddAttribute("GuardServiceAgeFactor",
+                          "Protect one delayed receiver flow after this many unloaded service times; zero disables",
+                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardServiceAgeFactor),
+                          MakeDoubleChecker<double>(0.0))
             .AddAttribute("GuardRemainingExponent",
                           "Exponent of inverse remaining bytes in GUARD receiver weighting",
                           DoubleValue(1.0),
@@ -571,6 +575,7 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_guardRateGrantsReceived = 0;
     m_guardDuplexCohortActive = false;
     m_guardDuplexCohortActivations = 0;
+    m_guardServiceAgeDecisions = 0;
     m_guardPacingCreditPackets = 0;
     m_guardPacingCreditMaxNs = 0;
     m_guardPacingCreditRevocations = 0;
@@ -6690,6 +6695,30 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
                       return left_remaining < right_remaining;
                   return left->m_flow_id < right->m_flow_id;
               });
+    bool protect_aged = false;
+    if (m_guardServiceAgeFactor > 0.0 && m_guardReceiverConcurrency > 0 &&
+        concurrency_candidates.size() > m_guardReceiverConcurrency) {
+        RdmaRxQueuePair *oldest = NULL;
+        double worst_slowdown = m_guardServiceAgeFactor;
+        int64_t now = Simulator::Now().GetNanoSeconds();
+        for (auto *flow : concurrency_candidates) {
+            if (flow->m_guard_register_ns < 0 || now <= flow->m_guard_register_ns ||
+                flow->ReceiverNextExpectedSeq >= flow->m_guard_flow_size) continue;
+            double service_ns = 8e9 * flow->m_guard_flow_size / line_rate_bps +
+                                std::max(1.0, 1e9 * flow->m_base_rtt_sec);
+            double slowdown = (now - flow->m_guard_register_ns) / service_ns;
+            if (slowdown > worst_slowdown) {
+                worst_slowdown = slowdown;
+                oldest = flow;
+            }
+        }
+        if (oldest != NULL) {
+            concurrency_candidates.erase(std::find(concurrency_candidates.begin(),
+                                                    concurrency_candidates.end(), oldest));
+            concurrency_candidates.insert(concurrency_candidates.begin(), oldest);
+            protect_aged = true;
+        }
+    }
     uint32_t effective_concurrency = ComputeGuardEffectiveElephantConcurrency(
         m_guardReceiverConcurrency, concurrency_candidates.size(),
         m_guardAdaptiveElephantConcurrency);
@@ -6736,6 +6765,7 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
             std::max<uint64_t>(m_minRate.GetBitRate(), service_floor));
         uint64_t residual = line_rate_bps - minimum_rate * deferred_count
             - service_floor * service_set.size();
+        if (protect_aged) m_guardServiceAgeDecisions++;
         double weight_sum = 0.0;
         uint64_t min_remaining = std::numeric_limits<uint64_t>::max();
         for (auto *flow : service_set) {
@@ -6751,7 +6781,10 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
                                      ? flow->m_guard_flow_size - flow->ReceiverNextExpectedSeq
                                      : 1;
             remaining = std::max<uint64_t>(remaining, m_mtu);
-            double weight = (!m_guardRemainingAware || m_guardRemainingExponent == 0.0)
+            // Once a flow is protected, reserve it an equal service share.
+            // Merely selecting an old large flow while inverse-size weighting
+            // gives it almost no rate would not bound its continued wait.
+            double weight = (!m_guardRemainingAware || m_guardRemainingExponent == 0.0 || protect_aged)
                                 ? 1.0
                                 : std::pow((double)min_remaining / remaining,
                                            m_guardRemainingExponent);

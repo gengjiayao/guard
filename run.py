@@ -122,6 +122,7 @@ GUARD_FIXED_WINDOW {guard_fixed_window}
 GUARD_REMAINING_AWARE {guard_remaining_aware}
 GUARD_MIN_SHARE_FRACTION {guard_min_share_fraction}
 GUARD_REMAINING_EXPONENT {guard_remaining_exponent}
+GUARD_SERVICE_AGE_FACTOR {guard_service_age_factor}
 GUARD_RECEIVER_CONCURRENCY {guard_receiver_concurrency}
 GUARD_ADAPTIVE_ELEPHANT_CONCURRENCY {guard_adaptive_elephant_concurrency}
 GUARD_SIZE_CLASS_ELEPHANT_CONCURRENCY {guard_size_class_elephant_concurrency}
@@ -513,6 +514,7 @@ def main():
                         help="weight receiver grants by remaining flow size (default: 1)")
     parser.add_argument('--guard_min_share_fraction', type=float, default=0.0,
                         help="guaranteed fraction of equal receiver share in [0,1] (default: 0)")
+    parser.add_argument('--guard_service_age_factor', type=float, default=0.0)
     parser.add_argument('--guard_remaining_exponent', type=float, default=1.0,
                         help="inverse-remaining-size exponent in [0,2] (default: 1)")
     parser.add_argument('--guard_receiver_concurrency', type=int, default=0,
@@ -721,6 +723,8 @@ def main():
         raise Exception("CONFIG ERROR: --guard_adaptive_target_max_bdps must be in [0, 64].")
     if not 0.0 <= args.guard_min_share_fraction <= 1.0:
         raise Exception("CONFIG ERROR: --guard_min_share_fraction must be in [0, 1].")
+    if not 0.0 <= args.guard_service_age_factor <= 64.0:
+        raise Exception("CONFIG ERROR: service age factor must be in [0,64].")
     if not 0.0 <= args.guard_remaining_exponent <= 2.0:
         raise Exception("CONFIG ERROR: --guard_remaining_exponent must be in [0, 2].")
     if args.guard_receiver_concurrency < 0:
@@ -1414,6 +1418,7 @@ def main():
                                         guard_remaining_aware=args.guard_remaining_aware,
                                         guard_min_share_fraction=args.guard_min_share_fraction,
                                         guard_remaining_exponent=args.guard_remaining_exponent,
+                                        guard_service_age_factor=args.guard_service_age_factor,
                                         guard_receiver_concurrency=args.guard_receiver_concurrency,
                                         guard_adaptive_elephant_concurrency=args.guard_adaptive_elephant_concurrency,
                                         guard_size_class_elephant_concurrency=

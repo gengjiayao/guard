@@ -3,12 +3,36 @@
 #include "ns3/boolean.h"
 #include "ns3/double.h"
 #include "ns3/uinteger.h"
+#include "ns3/simulator.h"
 #include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <set>
 #include <vector>
 using namespace ns3;
+
+void TestAgeProtectedGrant() {
+    auto hw=CreateObject<RdmaHw>();hw->m_cc_mode=11;
+    hw->m_guardReceiverConcurrency=2;hw->m_guardConcurrencyMinBdps=0;
+    hw->m_guardMinShareFraction=.05;hw->m_guardDuplexAdaptive=false;
+    hw->m_guardRemainingAware=true;hw->m_guardRemainingExponent=1;
+    std::vector<Ptr<RdmaRxQueuePair>> fs;
+    for(unsigned i=0;i<3;++i) {
+        auto f=CreateObject<RdmaRxQueuePair>();f->sip=1;f->dip=2+i;f->m_flow_id=i;
+        f->m_guard_flow_size=i==2?2000000:200000*(i+1);
+        f->ReceiverNextExpectedSeq=1000;f->m_base_rtt_sec=8.32e-6;
+        f->m_guard_register_ns=i==2?0:Simulator::Now().GetNanoSeconds();
+        fs.push_back(f);hw->m_rate_flow_ctl_set.insert(PeekPointer(f));
+    }
+    auto base=hw->ComputeGuardBaseTargets(100000000000ULL);
+    assert(base[PeekPointer(fs[2])]<2000000000ULL);
+    hw->m_guardServiceAgeFactor=4;
+    auto aged=hw->ComputeGuardBaseTargets(100000000000ULL);
+    assert(aged[PeekPointer(fs[2])]>40000000000ULL);
+    assert(aged[PeekPointer(fs[0])]>40000000000ULL);
+    uint64_t total=0;for(auto &x:aged)total+=x.second;
+    assert(total<=100000000000ULL && hw->m_guardServiceAgeDecisions==1);
+}
 
 int main() {
     assert(RdmaHw::ComputeGuardAckBatch(52000,1000,8,0)==8);
@@ -141,5 +165,7 @@ int main() {
     }
     assert(selected_senders.size()==8);
     assert(first_grant_senders.size()==8);
-    std::cout<<"PASS bounded pacing and ACK clock, tail safety, capacity/fairness, deterministic phase order and duplex cohort draining\n";
+    Simulator::Schedule(MilliSeconds(1), &TestAgeProtectedGrant);
+    Simulator::Run();Simulator::Destroy();
+    std::cout<<"PASS bounded aging, bounded pacing and ACK clock, tail safety, capacity/fairness, deterministic phase order and duplex cohort draining\n";
 }
