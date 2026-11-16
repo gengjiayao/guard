@@ -1,0 +1,60 @@
+{
+  "d64x2": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.015625,
+    "guard_remaining_exponent": 2
+  },
+  "d64x05": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.015625,
+    "guard_remaining_exponent": 0.5
+  },
+  "d64floor0": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.015625
+  },
+  "d64floor25": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.25,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.015625
+  },
+  "d16fullack": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_one_rtt_bypass": 0
+  },
+  "d64fullack": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_duplex_adaptive": 1,
+    "guard_ack_window_fraction": 0.015625,
+    "guard_one_rtt_bypass": 0
+  }
+}
