@@ -263,6 +263,14 @@ TypeId RdmaHw::GetTypeId(void) {
                           UintegerValue(8),
                           MakeUintegerAccessor(&RdmaHw::m_guardAckIntervalPackets),
                           MakeUintegerChecker<uint32_t>(1))
+            .AddAttribute("GuardAckWindowFraction",
+                          "Bound a cumulative ACK batch by this fraction of path BDP; zero disables",
+                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardAckWindowFraction),
+                          MakeDoubleChecker<double>(0.0, 1.0))
+            .AddAttribute("GuardReceiverPhaseOrder",
+                          "Use receiver-relative peer order within a BDP-sized remaining-work class",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardReceiverPhaseOrder),
+                          MakeBooleanChecker())
             .AddAttribute("GuardFixedWindow",
                           "Use a fixed one-BDP safety window while GUARD's two rate caps pace data",
                           BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardFixedWindow),
@@ -1378,14 +1386,16 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
             bdp = (uint64_t)(fst.GetBaseRttSeconds() * rate.GetBitRate() / 8.0);
             if (bdp == 0) bdp = 104000;
         }
+        uint32_t ack_batch = ComputeGuardAckBatch(bdp, m_mtu,
+            m_guardAckIntervalPackets, m_guardAckWindowFraction);
         if (m_guardOneRttBypass && flow_size <= bdp) {
             x = 5;
             m_guardOneRttAcksSuppressed++;
-        } else if (m_guardAckIntervalPackets > 1 &&
+        } else if (ack_batch > 1 &&
                    rxQp->m_guard_last_ack_seq != 0 &&
                    rxQp->ReceiverNextExpectedSeq <
                        rxQp->m_guard_last_ack_seq +
-                           (uint64_t)m_guardAckIntervalPackets * m_mtu) {
+                           (uint64_t)ack_batch * m_mtu) {
             x = 5;
             m_guardLongAcksSuppressed++;
         }
@@ -2741,6 +2751,16 @@ bool RdmaHw::UsesGuardTailBypass(Ptr<RdmaQueuePair> qp) const {
     return m_cc_mode == CC_MODE_GUARD && qp->m_guard_tail_bypass &&
            (!m_guardTailCongestionGate ||
             qp->m_guard_tail_safe_samples >= m_guardTailSafeSamples);
+}
+
+uint32_t RdmaHw::ComputeGuardAckBatch(uint64_t bdp, uint32_t mtu,
+                                     uint32_t configured, double fraction) {
+    if (configured <= 1 || fraction <= 0.0 || bdp == 0 || mtu == 0)
+        return std::max<uint32_t>(1, configured);
+    // Do not let ACK coalescing consume most of a short path's send window.
+    // No timer or extra packet is injected; an existing data arrival clocks ACKs.
+    uint64_t packets = static_cast<uint64_t>(bdp * fraction / mtu);
+    return std::max<uint32_t>(1, std::min<uint64_t>(configured, packets));
 }
 
 void RdmaHw::SyncHwRate(Ptr<RdmaQueuePair> qp, DataRate target_cc_rate) {
@@ -6514,14 +6534,30 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
                 concurrency_candidates.push_back(flow);
         }
     }
+    uint64_t receiver_quantum = m_mtu;
+    for (auto *flow : m_rate_flow_ctl_set) {
+        receiver_quantum = std::max<uint64_t>(receiver_quantum,
+            flow->m_base_rtt_sec > 0 ? flow->m_base_rtt_sec * line_rate_bps / 8.0 : 104000);
+    }
     std::sort(concurrency_candidates.begin(), concurrency_candidates.end(),
-              [](RdmaRxQueuePair *left, RdmaRxQueuePair *right) {
+              [this, receiver_quantum](RdmaRxQueuePair *left, RdmaRxQueuePair *right) {
                   uint64_t left_remaining =
                       left->m_guard_flow_size > left->ReceiverNextExpectedSeq
                           ? left->m_guard_flow_size - left->ReceiverNextExpectedSeq : 0;
                   uint64_t right_remaining =
                       right->m_guard_flow_size > right->ReceiverNextExpectedSeq
                           ? right->m_guard_flow_size - right->ReceiverNextExpectedSeq : 0;
+                  if (m_guardReceiverPhaseOrder) {
+                      uint64_t lclass = left_remaining / receiver_quantum;
+                      uint64_t rclass = right_remaining / receiver_quantum;
+                      if (lclass != rclass) return lclass < rclass;
+                      // Receiver-relative cyclic order prevents equal-sized
+                      // exchanges from all reserving the same source NIC first.
+                      // Use only peer identity and received-byte progress.
+                      uint32_t lphase = left->dip - left->sip;
+                      uint32_t rphase = right->dip - right->sip;
+                      if (lphase != rphase) return lphase < rphase;
+                  }
                   if (left_remaining != right_remaining)
                       return left_remaining < right_remaining;
                   return left->m_flow_id < right->m_flow_id;
@@ -6565,9 +6601,13 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
         // share the remaining receiver capacity among all shorter flows and
         // only the K shortest elephants.
         size_t deferred_count = concurrency_candidates.size() - service_count;
-        uint64_t minimum_rate = std::min<uint64_t>(
-            m_minRate.GetBitRate(), line_rate_bps / count);
-        uint64_t residual = line_rate_bps - minimum_rate * deferred_count;
+        // Apply the same configured fairness floor to the bounded
+        // scheduler as to the unbounded weighted allocator.
+        uint64_t service_floor = m_guardMinShareFraction * equal_share;
+        uint64_t minimum_rate = std::min<uint64_t>(equal_share,
+            std::max<uint64_t>(m_minRate.GetBitRate(), service_floor));
+        uint64_t residual = line_rate_bps - minimum_rate * deferred_count
+            - service_floor * service_set.size();
         double weight_sum = 0.0;
         uint64_t min_remaining = std::numeric_limits<uint64_t>::max();
         for (auto *flow : service_set) {
@@ -6591,9 +6631,9 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
             weight_sum += weight;
         }
         for (auto *flow : m_rate_flow_ctl_set) {
-            targets[flow] = service_set.find(flow) == service_set.end() ? minimum_rate : 0;
+            targets[flow] = service_set.find(flow) == service_set.end() ? minimum_rate : service_floor;
             if (service_set.find(flow) != service_set.end()) {
-                targets[flow] = (uint64_t)(
+                targets[flow] += (uint64_t)(
                     residual * weights[flow] / std::max(weight_sum, 1e-12));
             }
         }

@@ -1,0 +1,63 @@
+{
+  "old": {
+    "cc": "guard"
+  },
+  "clock": {
+    "cc": "guard",
+    "guard_ack_window_fraction": 0.0625
+  },
+  "safe": {
+    "cc": "guard",
+    "guard_tail_congestion_gate": 1,
+    "guard_adaptive_fabric_target": 1
+  },
+  "clock_safe": {
+    "cc": "guard",
+    "guard_ack_window_fraction": 0.0625,
+    "guard_tail_congestion_gate": 1,
+    "guard_adaptive_fabric_target": 1
+  },
+  "phase": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1
+  },
+  "phase_clock": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_ack_window_fraction": 0.0625
+  },
+  "phase_gate": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_tail_congestion_gate": 1
+  },
+  "phase_safe": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 1,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_tail_congestion_gate": 1,
+    "guard_adaptive_fabric_target": 1
+  },
+  "k2": {
+    "cc": "guard",
+    "guard_receiver_concurrency": 2,
+    "guard_concurrency_min_bdps": 0,
+    "guard_min_share_fraction": 0.05,
+    "guard_receiver_phase_order": 1,
+    "guard_ack_window_fraction": 0.0625,
+    "guard_tail_congestion_gate": 1
+  }
+}

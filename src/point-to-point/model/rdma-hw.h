@@ -453,6 +453,10 @@ class RdmaHw : public Object {
     double m_guardQueueBudgetBdps;
     double m_guardAdaptiveTargetMaxBdps;
     uint32_t m_guardAckIntervalPackets;
+    double m_guardAckWindowFraction;
+    bool m_guardReceiverPhaseOrder;
+    static uint32_t ComputeGuardAckBatch(uint64_t bdp, uint32_t mtu,
+                                         uint32_t configured, double fraction);
     bool m_guardFixedWindow;
     bool m_guardRemainingAware;
     double m_guardMinShareFraction;

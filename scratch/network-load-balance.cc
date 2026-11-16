@@ -213,6 +213,8 @@ double guard_target_floor = 0.95;
 double guard_queue_budget_bdps = 0.5;
 double guard_adaptive_target_max_bdps = 0.0;
 uint32_t guard_ack_interval_packets = 8;
+double guard_ack_window_fraction = 0.0;
+bool guard_receiver_phase_order = false;
 bool guard_fixed_window = true;
 bool guard_remaining_aware = true;
 double guard_min_share_fraction = 0.0;
@@ -1574,6 +1576,10 @@ int main(int argc, char *argv[]) {
                 conf >> guard_adaptive_target_max_bdps;
                 std::cerr << "GUARD_ADAPTIVE_TARGET_MAX_BDPS\t"
                           << guard_adaptive_target_max_bdps << '\n';
+            } else if (key.compare("GUARD_ACK_WINDOW_FRACTION") == 0) {
+                conf >> guard_ack_window_fraction;
+            } else if (key.compare("GUARD_RECEIVER_PHASE_ORDER") == 0) {
+                conf >> guard_receiver_phase_order;
             } else if (key.compare("GUARD_ACK_INTERVAL_PACKETS") == 0) {
                 conf >> guard_ack_interval_packets;
                 std::cerr << "GUARD_ACK_INTERVAL_PACKETS\t"
@@ -2856,6 +2862,8 @@ int main(int argc, char *argv[]) {
                                  DoubleValue(guard_queue_budget_bdps));
             rdmaHw->SetAttribute("GuardAdaptiveTargetMaxBdps",
                                  DoubleValue(guard_adaptive_target_max_bdps));
+            rdmaHw->SetAttribute("GuardAckWindowFraction", DoubleValue(guard_ack_window_fraction));
+            rdmaHw->SetAttribute("GuardReceiverPhaseOrder", BooleanValue(guard_receiver_phase_order));
             rdmaHw->SetAttribute("GuardAckIntervalPackets",
                                  UintegerValue(guard_ack_interval_packets));
             rdmaHw->SetAttribute("GuardFixedWindow", BooleanValue(guard_fixed_window));

@@ -1,0 +1,69 @@
+#include "ns3/rdma-hw.h"
+#include "ns3/rdma-queue-pair.h"
+#include "ns3/boolean.h"
+#include "ns3/double.h"
+#include "ns3/uinteger.h"
+#include <algorithm>
+#include <cassert>
+#include <iostream>
+#include <set>
+#include <vector>
+using namespace ns3;
+
+int main() {
+    assert(RdmaHw::ComputeGuardAckBatch(52000,1000,8,0)==8);
+    assert(RdmaHw::ComputeGuardAckBatch(52000,1000,8,.125)==6);
+    assert(RdmaHw::ComputeGuardAckBatch(104000,1000,8,.125)==8);
+    assert(RdmaHw::ComputeGuardAckBatch(4000,1000,8,.125)==1);
+    for (uint64_t bdp=1;bdp<250000;bdp+=127) {
+        uint32_t batch=RdmaHw::ComputeGuardAckBatch(bdp,1000,8,.125);
+        assert(batch>=1 && batch<=8);
+        assert(batch==1 || batch*1000<=bdp*.125);
+    }
+    auto hw=CreateObject<RdmaHw>();hw->m_cc_mode=11;
+    auto qp=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),1,2);
+    hw->m_guardTailCongestionGate=true;hw->m_guardTailSafeSamples=2;
+    qp->m_guard_tail_bypass=true;qp->m_guard_tail_safe_samples=2;
+    assert(hw->UsesGuardTailBypass(qp));
+    qp->m_guard_tail_safe_samples=0;assert(!hw->UsesGuardTailBypass(qp));
+    for (unsigned count=2;count<=32;++count) for (double fraction : {0.0,.1,1.0}) {
+        auto allocator=CreateObject<RdmaHw>();
+        allocator->m_guardReceiverConcurrency=1;
+        allocator->m_guardMinShareFraction=fraction;
+        allocator->m_guardConcurrencyMinBdps=0;
+        allocator->m_guardReceiverPhaseOrder=true;
+        std::vector<Ptr<RdmaRxQueuePair>> flows;
+        for (unsigned i=0;i<count;++i) {
+            auto flow=CreateObject<RdmaRxQueuePair>();flow->sip=1000;flow->dip=2000+i;
+            flow->m_guard_flow_size=1000000+i*10000;flow->ReceiverNextExpectedSeq=i*1000;
+            flow->m_base_rtt_sec=8.32e-6;flow->m_flow_id=i;
+            flows.push_back(flow);allocator->m_rate_flow_ctl_set.insert(PeekPointer(flow));
+        }
+        auto targets=allocator->ComputeGuardBaseTargets(100000000000ULL);
+        uint64_t sum=0,floor=fraction*(100000000000ULL/count);
+        for (auto &item : targets) {assert(item.second>=floor);sum+=item.second;}
+        assert(sum<=100000000000ULL);
+        allocator->m_rate_flow_ctl_set.clear();
+        for (auto it=flows.rbegin();it!=flows.rend();++it)allocator->m_rate_flow_ctl_set.insert(PeekPointer(*it));
+        auto reordered=allocator->ComputeGuardBaseTargets(100000000000ULL);
+        for (auto &item : targets)assert(item.second==reordered[item.first]);
+    }
+    std::set<uint32_t> selected_senders;
+    for (uint32_t receiver=100;receiver<108;++receiver) {
+        auto allocator=CreateObject<RdmaHw>();allocator->m_guardReceiverConcurrency=1;
+        allocator->m_guardMinShareFraction=.1;allocator->m_guardConcurrencyMinBdps=0;
+        allocator->m_guardReceiverPhaseOrder=true;
+        std::vector<Ptr<RdmaRxQueuePair>> flows;
+        for (uint32_t sender=100;sender<108;++sender) if(sender!=receiver) {
+            auto flow=CreateObject<RdmaRxQueuePair>();flow->sip=receiver;flow->dip=sender;
+            flow->m_guard_flow_size=1048576;flow->ReceiverNextExpectedSeq=1000;
+            flow->m_base_rtt_sec=8.32e-6;flow->m_flow_id=sender;
+            flows.push_back(flow);allocator->m_rate_flow_ctl_set.insert(PeekPointer(flow));
+        }
+        auto rates=allocator->ComputeGuardBaseTargets(100000000000ULL);
+        auto best=std::max_element(rates.begin(),rates.end(),[](const std::pair<RdmaRxQueuePair* const,uint64_t>&a,const std::pair<RdmaRxQueuePair* const,uint64_t>&b){return a.second<b.second;});
+        selected_senders.insert(best->first->dip);
+    }
+    assert(selected_senders.size()==8);
+    std::cout<<"PASS bounded ACK clock, revocable tail bypass, capacity/fairness floors, insertion invariance and receiver grant diversity\n";
+}
