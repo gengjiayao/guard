@@ -138,6 +138,8 @@ GUARD_REMAINING_EXPONENT {guard_remaining_exponent}
 GUARD_SERVICE_AGE_FACTOR {guard_service_age_factor}
 GUARD_LONG_FLOW_THRESHOLD_BDPS {guard_long_flow_threshold_bdps}
 GUARD_GRANT_BOUNDED_RELEASE {guard_grant_bounded_release}
+GUARD_FAIR_MIX_THRESHOLD_BDPS {guard_fair_mix_threshold_bdps}
+GUARD_SENDER_FAIR_SHARE {guard_sender_fair_share}
 GUARD_RECEIVER_CONCURRENCY {guard_receiver_concurrency}
 GUARD_ADAPTIVE_ELEPHANT_CONCURRENCY {guard_adaptive_elephant_concurrency}
 GUARD_SIZE_CLASS_ELEPHANT_CONCURRENCY {guard_size_class_elephant_concurrency}
@@ -532,6 +534,8 @@ def main():
                         help="weight receiver grants by remaining flow size (default: 1)")
     parser.add_argument('--guard_min_share_fraction', type=float, default=0.0,
                         help="guaranteed fraction of equal receiver share in [0,1] (default: 0)")
+    parser.add_argument('--guard_sender_fair_share', type=int, choices=(0,1), default=0)
+    parser.add_argument('--guard_fair_mix_threshold_bdps', type=float, default=0.0)
     parser.add_argument('--guard_grant_bounded_release', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_long_flow_threshold_bdps', type=float, default=0.0)
     parser.add_argument('--guard_service_age_factor', type=float, default=0.0)
@@ -751,6 +755,12 @@ def main():
         raise Exception("CONFIG ERROR: --guard_adaptive_target_max_bdps must be in [0, 64].")
     if not 0.0 <= args.guard_min_share_fraction <= 1.0:
         raise Exception("CONFIG ERROR: --guard_min_share_fraction must be in [0, 1].")
+    if not 0.0 <= args.guard_fair_mix_threshold_bdps <= 256.0:
+        raise Exception("CONFIG ERROR: fair mix threshold must be in [0,256] BDPs.")
+    if (args.guard_fair_mix_threshold_bdps or args.guard_sender_fair_share) and (args.cc != "guard" or args.guard_membership_coalesce_ns or args.guard_long_flow_threshold_bdps):
+        raise Exception("CONFIG ERROR: sender fairness requires ordinary direct GUARD grants.")
+    if args.guard_fair_mix_threshold_bdps and args.guard_sender_fair_share:
+        raise Exception("CONFIG ERROR: choose adaptive or unconditional sender fairness.")
     if not 0.0 <= args.guard_long_flow_threshold_bdps <= 256.0:
         raise Exception("CONFIG ERROR: long flow threshold must be in [0,256] BDPs.")
     if args.guard_long_flow_threshold_bdps and args.guard_membership_coalesce_ns:
@@ -1458,6 +1468,8 @@ def main():
                                         guard_service_age_factor=args.guard_service_age_factor,
                                         guard_long_flow_threshold_bdps=args.guard_long_flow_threshold_bdps,
                                         guard_grant_bounded_release=args.guard_grant_bounded_release,
+                                        guard_fair_mix_threshold_bdps=args.guard_fair_mix_threshold_bdps,
+                                        guard_sender_fair_share=args.guard_sender_fair_share,
                                         guard_receiver_concurrency=args.guard_receiver_concurrency,
                                         guard_adaptive_elephant_concurrency=args.guard_adaptive_elephant_concurrency,
                                         guard_size_class_elephant_concurrency=

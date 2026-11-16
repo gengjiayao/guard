@@ -500,6 +500,12 @@ class RdmaHw : public Object {
     bool m_guardRemainingAware;
     double m_guardMinShareFraction;
     double m_guardRemainingExponent;
+    bool m_guardSenderFairShare;
+    double m_guardFairMixThresholdBdps;
+    mutable uint64_t m_guardFairMixDecisions;
+    static double ComputeGuardFairMixFraction(std::vector<double> remaining_bdps, double threshold);
+    std::unordered_map<RdmaRxQueuePair*, uint64_t> ComputeGuardUnmixedTargets(uint64_t line_rate_bps) const;
+    std::unordered_map<RdmaRxQueuePair*, uint64_t> ComputeGuardSenderFairTargets(uint64_t line_rate_bps) const;
     bool m_guardGrantBoundedRelease;
     uint64_t m_guardGrantBoundedReleaseDeferrals;
     static uint64_t ComputeGuardGrantBoundedReleaseBytes(double measured_bytes_per_sec,

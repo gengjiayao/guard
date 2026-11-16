@@ -312,6 +312,14 @@ TypeId RdmaHw::GetTypeId(void) {
                           DoubleValue(0.0),
                           MakeDoubleAccessor(&RdmaHw::m_guardMinShareFraction),
                           MakeDoubleChecker<double>(0.0, 1.0))
+            .AddAttribute("GuardSenderFairShare",
+                          "Share receiver grants across senders, serving bounded work first within each sender",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardSenderFairShare),
+                          MakeBooleanChecker())
+            .AddAttribute("GuardFairMixThresholdBdps",
+                          "Blend sender-fair grants as median remaining work grows beyond this threshold",
+                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardFairMixThresholdBdps),
+                          MakeDoubleChecker<double>(0.0, 256.0))
             .AddAttribute("GuardGrantBoundedRelease",
                           "Bound proactive release by the retained receiver grant as well as measured arrival rate",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardGrantBoundedRelease),
@@ -597,6 +605,7 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_guardDuplexCohortActivations = 0;
     m_guardDuplexBurstActive = false;
     m_guardDuplexBurstActivations = 0;
+    m_guardFairMixDecisions = 0;
     m_guardGrantBoundedReleaseDeferrals = 0;
     m_guardLongFairAllocations = 0;
     m_guardServiceAgeDecisions = 0;
@@ -6768,7 +6777,66 @@ void RdmaHw::RedistributeGuardRates(const char *set_change, uint32_t generation)
     m_guardLastRebalanceTime = Time(0);
 }
 
+double RdmaHw::ComputeGuardFairMixFraction(std::vector<double> remaining_bdps,
+                                           double threshold) {
+    if (threshold <= 0 || remaining_bdps.empty()) return 0;
+    std::sort(remaining_bdps.begin(),remaining_bdps.end());
+    size_t n=remaining_bdps.size();
+    double median=n%2 ? remaining_bdps[n/2]
+        : .5*(remaining_bdps[n/2-1]+remaining_bdps[n/2]);
+    return std::min(1.0,std::max(0.0,median/threshold-1.0));
+}
+
+std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardSenderFairTargets(
+    uint64_t line_rate_bps) const {
+    std::unordered_map<RdmaRxQueuePair*, uint64_t> targets;
+    if (m_rate_flow_ctl_set.empty()) return targets;
+    std::map<uint32_t,RdmaRxQueuePair*> leaders;
+    auto remaining=[](RdmaRxQueuePair *f) {return f->m_guard_flow_size>f->ReceiverNextExpectedSeq
+        ? f->m_guard_flow_size-f->ReceiverNextExpectedSeq : 1;};
+    for (auto *f:m_rate_flow_ctl_set) {
+        auto it=leaders.find(f->dip);
+        if(it==leaders.end() || remaining(f)<remaining(it->second) ||
+           (remaining(f)==remaining(it->second) && f->m_flow_id<it->second->m_flow_id))
+            leaders[f->dip]=f;
+    }
+    // Multiple messages from one NIC do not represent independent senders.
+    // Reserve the same bounded floor for deferred work, then allocate one
+    // equal service budget per sender to its shortest remaining message.
+    uint64_t equal=line_rate_bps/m_rate_flow_ctl_set.size();
+    uint64_t floor=std::min<uint64_t>(equal,std::max<uint64_t>(m_minRate.GetBitRate(),m_guardMinShareFraction*equal));
+    uint64_t residual=line_rate_bps-floor*m_rate_flow_ctl_set.size();
+    for(auto *f:m_rate_flow_ctl_set)targets[f]=floor;
+    for(auto &entry:leaders)targets[entry.second]+=residual/leaders.size();
+    return targets;
+}
+
 std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
+    uint64_t line_rate_bps) const {
+    if(m_guardSenderFairShare) return ComputeGuardSenderFairTargets(line_rate_bps);
+    auto targets=ComputeGuardUnmixedTargets(line_rate_bps);
+    if(m_guardFairMixThresholdBdps<=0 || targets.size()<2) return targets;
+    std::vector<double> work;
+    for(auto *flow:m_rate_flow_ctl_set) {
+        uint64_t remaining=flow->m_guard_flow_size>flow->ReceiverNextExpectedSeq
+            ? flow->m_guard_flow_size-flow->ReceiverNextExpectedSeq : 1;
+        double bdp=std::max<double>(m_mtu,flow->m_base_rtt_sec>0
+            ? flow->m_base_rtt_sec*line_rate_bps/8.0 : 104000);
+        work.push_back(remaining/bdp);
+    }
+    // Widen gradually when the typical active message has substantial work.
+    // A single large outlier cannot erase bounded-work priority. This uses
+    // only received progress and active membership, never a workload label.
+    double fraction=ComputeGuardFairMixFraction(work,m_guardFairMixThresholdBdps);
+    if(fraction<=0) return targets;
+    ++m_guardFairMixDecisions;
+    auto fair=ComputeGuardSenderFairTargets(line_rate_bps);
+    for(auto &entry:targets)
+        entry.second=(uint64_t)((1.0L-fraction)*entry.second+fraction*(long double)fair[entry.first]);
+    return targets;
+}
+
+std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardUnmixedTargets(
     uint64_t line_rate_bps) const {
     std::unordered_map<RdmaRxQueuePair*, uint64_t> targets;
     size_t count = m_rate_flow_ctl_set.size();

@@ -80,3 +80,39 @@ case, monotonicity, rate bounds and invalid/zero input handling.
 Probe4 compares the correction alone, equal grants, bounded-work grants and a
 one-RTT release threshold against unchanged old GUARD and Homa. No acceptance
 claim precedes measured overall P99 and later independent validation.
+
+## Sender-aware receiver budgets
+
+Probe4 (12 completed runs) confirms that grant-bounded release eliminates the
+observed AliStorage pathological drain: makespan 78,719.271 -> 25,863.512 us.
+Its overall P99 is 782.44 us versus Homa 928.62 us in that build; this is still
+a development result. WebSearch remains regressed with K=2. Per-flow equal
+grants yield 30,734.99 us versus Homa 34,031.34 us, insufficient margin.
+
+Probe5 (8 completed runs; same runtime and trace hashes as probe4) tests bounded
+byte-based pacing credit. Equal grants with 0.25 BDP credit yield WebSearch P99
+30,551.47 us, but AliStorage P99 1,416.39 us. K=2 with the same credit yields
+AliStorage 766.49 us but WebSearch 46,484.38 us. Thus no common fixed profile has
+met the objective. All negative results remain in the result directories.
+
+Lifecycle evidence at WebSearch trace times 20/40/60 ms shows respectively
+101/149/219 registered messages but only 90/118/150 distinct sender-receiver
+pairs (maximum 3/4/4 messages per pair). Equal allocation per message can reserve
+multiple budgets from the same physical sender while its local SRPT scheduler
+serves only one at a time.
+
+`GuardSenderFairShare` allocates the residual capacity equally across distinct
+senders. Within each sender, the shortest remaining received-byte work receives
+that budget; other messages retain their configured minimum floor. Total
+receiver capacity is unchanged. `GuardFairMixThresholdBdps` instead blends this
+allocation with the existing K-limited bounded-work allocation when median
+remaining active work grows from the configured threshold to twice it. The
+median excludes domination by a single long outlier; the continuous transition
+avoids a hard mode switch. It uses no CDF label or future information. Both
+options default off, are mutually exclusive, and use ordinary direct grants.
+
+Native tests exercise per-sender selection, progress-based promotion, unchanged
+other-peer budgets, adaptive endpoints, capacity conservation and insertion
+order independence. Probe6 tests unconditional and adaptive sender fairness,
+with and without the bounded byte-credit change; old corrected GUARD and native
+Homa are rerun in the same binary for comparison.
