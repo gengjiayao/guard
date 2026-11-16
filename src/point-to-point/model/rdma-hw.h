@@ -452,6 +452,8 @@ class RdmaHw : public Object {
     bool m_guardProactiveRelease;
     bool m_guardKeepLastHopInt;
     bool m_guardSizePriority;
+    bool m_guardScheduledSizePriority;
+    static uint16_t ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled);
     bool m_guardInitialWindowPriority;
     Time m_guardTransportWindowFloorRtt;
     bool m_guardTransportWindowFloorAfterFirstGrant;

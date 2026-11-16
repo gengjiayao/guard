@@ -168,6 +168,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Retain last-hop INT in GUARD ACKs for the double-control ablation",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardKeepLastHopInt),
                           MakeBooleanChecker())
+            .AddAttribute("GuardScheduledSizePriority",
+                          "Reserve one class for one-BDP traffic and six dyadic classes for receiver-scheduled flows",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardScheduledSizePriority),
+                          MakeBooleanChecker())
             .AddAttribute("GuardSizePriority",
                           "Remap GUARD flows to size-based priority groups",
                           BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardSizePriority),
@@ -1041,6 +1045,19 @@ void print_rate(RdmaQueuePair *qp) {
     Simulator::Schedule(NanoSeconds(time), &print_rate, qp);
 }
 
+uint16_t RdmaHw::ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled) {
+    bdp = std::max<uint64_t>(bdp, 1);
+    // The registration boundary is one BDP. Six remaining data queues
+    // distinguish registered messages instead of collapsing all >8 BDP
+    // messages into one queue. Identity/PFC class stays fixed for the flow.
+    long double threshold = static_cast<long double>(bdp) * (scheduled ? 1.0L : .25L);
+    for (uint16_t pg=1; pg<7; ++pg, threshold*=2.0L) {
+        if (bytes < static_cast<uint64_t>(std::min(threshold,
+                static_cast<long double>(std::numeric_limits<uint64_t>::max())))) return pg;
+    }
+    return 7;
+}
+
 void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Address dip,
                           uint16_t sport, uint16_t dport, uint32_t win, uint64_t baseRtt,
                           int32_t flow_id) {
@@ -1126,22 +1143,15 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
         if (qp->m_guard_one_rtt_bypass) m_guardOneRttBypassFlows++;
     }
 
-    // For GUARD modes, borrow homa's idea of routing short
-    // messages to higher-priority switch queues (lower pg = higher prio in
-    // this codebase). All packets of one flow stay on the same pg, so the
-    // QP-key / pause-check / RCC-grant routing all stay consistent.
-    // Bucket boundaries match homa's unscheduled cutoffs.
+    // Lower pg is higher priority. All packets retain one immutable pg,
+    // preserving QP lookup, PFC accounting, packet order and grant routing.
+    // Optional scheduled classes align queue boundaries with registration.
+    // This uses the local path BDP and known message length, not a workload CDF.
     if ((m_cc_mode == 11 || m_cc_mode == 13) && m_guardSizePriority) {
         DataRate line_rate = m_nic[nic_idx].dev->GetDataRate();
         uint64_t bdp_bytes = baseRtt * line_rate.GetBitRate() / 8000000000lu;
-        if (bdp_bytes == 0) bdp_bytes = 1;
-        if (size < bdp_bytes / 4)           qp_pg = 1;
-        else if (size < bdp_bytes / 2)      qp_pg = 2;
-        else if (size < bdp_bytes)          qp_pg = 3;
-        else if (size < 2 * bdp_bytes)      qp_pg = 4;
-        else if (size < 4 * bdp_bytes)      qp_pg = 5;
-        else if (size < 8 * bdp_bytes)      qp_pg = 6;
-        else                                qp_pg = 7;
+        qp_pg = ComputeGuardSizePriority(size, bdp_bytes,
+            m_cc_mode == CC_MODE_GUARD && m_guardScheduledSizePriority);
         qp->m_pg = qp_pg;
     }
 

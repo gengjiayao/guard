@@ -35,6 +35,21 @@ void TestAgeProtectedGrant() {
 }
 
 int main() {
+    // Default priorities exactly preserve existing integer boundaries.
+    for(uint64_t bdp : {1ULL, 5ULL, 52000ULL, 104000ULL}) {
+        uint16_t previous=1;
+        for(uint64_t bytes=1;bytes<64*bdp;bytes+=std::max<uint64_t>(1,bdp/97)) {
+            uint16_t old=bytes<bdp/4?1:bytes<bdp/2?2:bytes<bdp?3:bytes<2*bdp?4:bytes<4*bdp?5:bytes<8*bdp?6:7;
+            assert(RdmaHw::ComputeGuardSizePriority(bytes,bdp,false)==old);
+            uint16_t pg=RdmaHw::ComputeGuardSizePriority(bytes,bdp,true);
+            assert(pg>=previous && pg>=1 && pg<=7);previous=pg;
+        }
+        for(unsigned power=0;power<6;++power) {
+            uint64_t threshold=bdp*(1ULL<<power);
+            assert(RdmaHw::ComputeGuardSizePriority(threshold,bdp,true)==power+2);
+            if(threshold>1)assert(RdmaHw::ComputeGuardSizePriority(threshold-1,bdp,true)==power+1);
+        }
+    }
     assert(RdmaHw::ComputeGuardAckBatch(52000,1000,8,0)==8);
     assert(RdmaHw::ComputeGuardAckBatch(52000,1000,8,.125)==6);
     assert(RdmaHw::ComputeGuardAckBatch(104000,1000,8,.125)==8);

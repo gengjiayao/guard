@@ -196,6 +196,7 @@ bool guard_selective_registration = true;
 bool guard_proactive_release = true;
 bool guard_keep_last_hop_int = false;
 bool guard_size_priority = true;
+bool guard_scheduled_size_priority = false;
 bool guard_initial_window_priority = false;
 uint64_t guard_transport_window_floor_rtt_ns = 0;
 bool guard_transport_window_floor_after_first_grant = false;
@@ -1522,6 +1523,8 @@ int main(int argc, char *argv[]) {
             } else if (key.compare("GUARD_KEEP_LAST_HOP_INT") == 0) {
                 conf >> guard_keep_last_hop_int;
                 std::cerr << "GUARD_KEEP_LAST_HOP_INT\t" << guard_keep_last_hop_int << '\n';
+            } else if (key.compare("GUARD_SCHEDULED_SIZE_PRIORITY") == 0) {
+                conf >> guard_scheduled_size_priority;
             } else if (key.compare("GUARD_SIZE_PRIORITY") == 0) {
                 conf >> guard_size_priority;
                 std::cerr << "GUARD_SIZE_PRIORITY\t" << guard_size_priority << '\n';
@@ -2850,6 +2853,7 @@ int main(int argc, char *argv[]) {
                                  BooleanValue(guard_proactive_release));
             rdmaHw->SetAttribute("GuardKeepLastHopInt", BooleanValue(guard_keep_last_hop_int));
             rdmaHw->SetAttribute("GuardSizePriority", BooleanValue(guard_size_priority));
+            rdmaHw->SetAttribute("GuardScheduledSizePriority", BooleanValue(guard_scheduled_size_priority));
             rdmaHw->SetAttribute("GuardInitialWindowPriority",
                                  BooleanValue(guard_initial_window_priority));
             rdmaHw->SetAttribute("GuardTransportWindowFloorRtt",
@@ -4374,6 +4378,7 @@ int main(int argc, char *argv[]) {
             guard_service_age_factor, service_age_decisions);
     fprintf(guard_stats_output, "guard_duplex_cohort enabled %u activations %lu\n",
             guard_duplex_cohort_drain ? 1 : 0, duplex_cohort_activations);
+    fprintf(guard_stats_output, "guard_scheduled_size_priority enabled %u\n", guard_scheduled_size_priority ? 1 : 0);
     fprintf(guard_stats_output, "guard_pacing_byte_credit bdps %.6f max_credit_bytes %lu\n",
             guard_pacing_credit_bdps, pacing_credit_max_bytes);
     fprintf(guard_stats_output, "guard_pacing_credit rtts %.6f packets %lu max_credit_ns %lu revocations %lu\n",
