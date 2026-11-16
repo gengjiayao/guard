@@ -1,0 +1,11 @@
+case,hpcc_feedback_updates,hpcc_rate_updates_applied,reactive_binding_rate_changes,grant_event_rate_changes,registrations
+incast2,3360,0,0,120,80
+incast7,15400,0,0,2820,280
+mixed,11634,2258,106,1517,2920
+fabric,5076,4756,3247,0,320
+alltoall256k,0,0,0,93757,2400
+alltoall1m,82515,8276,955,415555,2400
+alltoallv,4876,1542,0,52199,2400
+ring1m,0,0,0,0,2280
+ring16m,37427,5040,1389,0,4800
+concurrent,7179,0,0,102101,7200
