@@ -112,6 +112,7 @@ GUARD_TARGET_FLOOR {guard_target_floor}
 GUARD_QUEUE_BUDGET_BDPS {guard_queue_budget_bdps}
 GUARD_ADAPTIVE_TARGET_MAX_BDPS {guard_adaptive_target_max_bdps}
 GUARD_ACK_INTERVAL_PACKETS {guard_ack_interval_packets}
+GUARD_PACING_CREDIT_RTTS {guard_pacing_credit_rtts}
 GUARD_ACK_WINDOW_FRACTION {guard_ack_window_fraction}
 GUARD_RECEIVER_PHASE_ORDER {guard_receiver_phase_order}
 GUARD_DUPLEX_ADAPTIVE {guard_duplex_adaptive}
@@ -496,6 +497,7 @@ def main():
                         help="queued BDPs for full target rollback in [0.01,4] (default: 0.5)")
     parser.add_argument('--guard_adaptive_target_max_bdps', type=float, default=0.0,
                         help="largest flow using adaptive targets in BDPs; 0 means all")
+    parser.add_argument('--guard_pacing_credit_rtts', type=float, default=0.0)
     parser.add_argument('--guard_ack_window_fraction', type=float, default=0.0)
     parser.add_argument('--guard_receiver_phase_order', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_duplex_adaptive', type=int, choices=(0,1), default=0)
@@ -691,6 +693,8 @@ def main():
         raise Exception("CONFIG ERROR: --guard_srpt_quantum_packets must be positive.")
     if (args.guard_receiver_phase_order or args.guard_duplex_adaptive) and args.guard_small_set_fastpath_limit:
         raise Exception("CONFIG ERROR: collective grant ordering requires the legacy allocator (fastpath limit 0).")
+    if not 0.0 <= args.guard_pacing_credit_rtts <= 1.0:
+        raise Exception("CONFIG ERROR: --guard_pacing_credit_rtts must be in [0, 1].")
     if not 0.0 <= args.guard_ack_window_fraction <= 1.0:
         raise Exception("GUARD ACK window fraction must be in [0,1]")
     if args.guard_ack_interval_packets <= 0:
@@ -1392,6 +1396,7 @@ def main():
                                         guard_queue_budget_bdps=args.guard_queue_budget_bdps,
                                         guard_adaptive_target_max_bdps=args.guard_adaptive_target_max_bdps,
                                         guard_ack_interval_packets=args.guard_ack_interval_packets,
+                                        guard_pacing_credit_rtts=args.guard_pacing_credit_rtts,
                                         guard_ack_window_fraction=args.guard_ack_window_fraction,
                                         guard_receiver_phase_order=args.guard_receiver_phase_order,
                                         guard_duplex_adaptive=args.guard_duplex_adaptive,

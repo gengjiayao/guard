@@ -214,6 +214,7 @@ double guard_queue_budget_bdps = 0.5;
 double guard_adaptive_target_max_bdps = 0.0;
 uint32_t guard_ack_interval_packets = 8;
 double guard_ack_window_fraction = 0.0;
+double guard_pacing_credit_rtts = 0.0;
 bool guard_receiver_phase_order = false;
 bool guard_duplex_adaptive = false;
 bool guard_fixed_window = true;
@@ -1577,6 +1578,8 @@ int main(int argc, char *argv[]) {
                 conf >> guard_adaptive_target_max_bdps;
                 std::cerr << "GUARD_ADAPTIVE_TARGET_MAX_BDPS\t"
                           << guard_adaptive_target_max_bdps << '\n';
+            } else if (key.compare("GUARD_PACING_CREDIT_RTTS") == 0) {
+                conf >> guard_pacing_credit_rtts;
             } else if (key.compare("GUARD_ACK_WINDOW_FRACTION") == 0) {
                 conf >> guard_ack_window_fraction;
             } else if (key.compare("GUARD_DUPLEX_ADAPTIVE") == 0) {
@@ -2865,6 +2868,7 @@ int main(int argc, char *argv[]) {
                                  DoubleValue(guard_queue_budget_bdps));
             rdmaHw->SetAttribute("GuardAdaptiveTargetMaxBdps",
                                  DoubleValue(guard_adaptive_target_max_bdps));
+            rdmaHw->SetAttribute("GuardPacingCreditRtts", DoubleValue(guard_pacing_credit_rtts));
             rdmaHw->SetAttribute("GuardAckWindowFraction", DoubleValue(guard_ack_window_fraction));
             rdmaHw->SetAttribute("GuardReceiverPhaseOrder", BooleanValue(guard_receiver_phase_order));
             rdmaHw->SetAttribute("GuardDuplexAdaptive", BooleanValue(guard_duplex_adaptive));
@@ -4265,6 +4269,7 @@ int main(int argc, char *argv[]) {
     uint64_t total_guard_elephant_aging_active_deferred = 0;
     uint64_t total_guard_initial_window_priority_flows = 0;
     uint64_t total_guard_initial_window_priority_packets = 0;
+    uint64_t pacing_credit_packets=0, pacing_credit_max_ns=0, pacing_credit_revocations=0;
     uint64_t total_guard_initial_window_priority_bytes = 0;
     uint64_t total_guard_initial_window_priority_transitions = 0;
     uint64_t total_guard_transport_window_raised_flows = 0;
@@ -4320,6 +4325,9 @@ int main(int argc, char *argv[]) {
             driver->m_rdma->m_guardElephantAgingMaxWaitNs);
         total_guard_initial_window_priority_flows +=
             driver->m_rdma->m_guardInitialWindowPriorityFlows;
+        pacing_credit_packets += driver->m_rdma->m_guardPacingCreditPackets;
+        pacing_credit_max_ns = std::max(pacing_credit_max_ns, driver->m_rdma->m_guardPacingCreditMaxNs);
+        pacing_credit_revocations += driver->m_rdma->m_guardPacingCreditRevocations;
         total_guard_initial_window_priority_packets +=
             driver->m_rdma->m_guardInitialWindowPriorityPackets;
         total_guard_initial_window_priority_bytes +=
@@ -4342,6 +4350,8 @@ int main(int argc, char *argv[]) {
                 total_guard_elephant_aging_active_deferred++;
         }
     }
+    fprintf(guard_stats_output, "guard_pacing_credit rtts %.6f packets %lu max_credit_ns %lu revocations %lu\n",
+            guard_pacing_credit_rtts, pacing_credit_packets, pacing_credit_max_ns, pacing_credit_revocations);
     fprintf(guard_stats_output,
             "guard_initial_window_priority enabled %u flows %lu packets %lu bytes %lu "
             "transitions %lu unscheduled_pg 3\n",

@@ -263,6 +263,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           UintegerValue(8),
                           MakeUintegerAccessor(&RdmaHw::m_guardAckIntervalPackets),
                           MakeUintegerChecker<uint32_t>(1))
+            .AddAttribute("GuardPacingCreditRtts",
+                          "Bounded catch-up of unused pacing service, in base RTTs",
+                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardPacingCreditRtts),
+                          MakeDoubleChecker<double>(0.0, 1.0))
             .AddAttribute("GuardAckWindowFraction",
                           "Bound a cumulative ACK batch by this fraction of path BDP; zero disables",
                           DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardAckWindowFraction),
@@ -557,6 +561,9 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_guardRateGrantsSent = 0;
     m_guardRateGrantBytesSent = 0;
     m_guardRateGrantsReceived = 0;
+    m_guardPacingCreditPackets = 0;
+    m_guardPacingCreditMaxNs = 0;
+    m_guardPacingCreditRevocations = 0;
     m_guardInitialWindowPriorityFlows = 0;
     m_guardInitialWindowPriorityPackets = 0;
     m_guardInitialWindowPriorityBytes = 0;
@@ -2575,13 +2582,34 @@ void RdmaHw::HandleTimeout(Ptr<RdmaQueuePair> qp, Time rto) {
     dev->TriggerTransmit();
 }
 
+Time RdmaHw::ComputeGuardPacingDeadline(Time now, Time previous,
+                                       Time sending, Time credit) {
+    if (credit.IsZero()) return now + sending;
+    return std::max(previous, now - credit) + sending;
+}
+
 void RdmaHw::UpdateNextAvail(Ptr<RdmaQueuePair> qp, Time interframeGap, uint32_t pkt_size) {
     Time sendingTime;
     if (m_rateBound)
         sendingTime = interframeGap + Seconds(qp->m_rate.CalculateTxTime(pkt_size));
     else
         sendingTime = interframeGap + Seconds(qp->m_max_rate.CalculateTxTime(pkt_size));
-    qp->m_nextAvail = Simulator::Now() + sendingTime;
+    Time now = Simulator::Now();
+    Time credit = NanoSeconds(0);
+    if (m_cc_mode == CC_MODE_GUARD && m_guardPacingCreditRtts > 0.0) {
+        // Service missed while the NIC sends another QP is recoverable, but
+        // only within a bounded RTT budget. The current min(grant,fabric)
+        // rate still governs long-run traffic; the transport window and
+        // physical NIC rate still bound every burst.
+        credit = NanoSeconds(static_cast<uint64_t>(qp->m_baseRtt * m_guardPacingCreditRtts));
+    }
+    Time next = ComputeGuardPacingDeadline(now, qp->m_nextAvail, sendingTime, credit);
+    if (next < now + sendingTime) {
+        m_guardPacingCreditPackets++;
+        m_guardPacingCreditMaxNs = std::max<uint64_t>(m_guardPacingCreditMaxNs,
+            (now + sendingTime - next).GetNanoSeconds());
+    }
+    qp->m_nextAvail = next;
 }
 
 void RdmaHw::ChangeRate(Ptr<RdmaQueuePair> qp, DataRate new_rate) {
@@ -2589,6 +2617,12 @@ void RdmaHw::ChangeRate(Ptr<RdmaQueuePair> qp, DataRate new_rate) {
     Time sendingTime = Seconds(qp->m_rate.CalculateTxTime(qp->lastPktSize));
     Time new_sendintTime = Seconds(new_rate.CalculateTxTime(qp->lastPktSize));
     qp->m_nextAvail = qp->m_nextAvail + new_sendintTime - sendingTime;
+    if (m_cc_mode == CC_MODE_GUARD && m_guardPacingCreditRtts > 0.0 &&
+        new_rate < qp->m_rate && qp->m_nextAvail < Simulator::Now()) {
+        // A receiver/fabric rate reduction revokes saved service immediately.
+        qp->m_nextAvail = Simulator::Now();
+        m_guardPacingCreditRevocations++;
+    }
     // update nic's next avail event
     uint32_t nic_idx = GetNicIdxOfQp(qp);
     m_nic[nic_idx].dev->UpdateNextAvail(qp->m_nextAvail);

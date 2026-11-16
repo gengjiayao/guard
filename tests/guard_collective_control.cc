@@ -20,6 +20,21 @@ int main() {
         assert(batch>=1 && batch<=8);
         assert(batch==1 || batch*1000<=bdp*.125);
     }
+    // A delayed flow may recover bounded missed service. Long idle periods
+    // never create an unbounded burst and zero credit preserves old pacing.
+    Time now=NanoSeconds(10000), packet=NanoSeconds(1000), budget=NanoSeconds(2000);
+    assert(RdmaHw::ComputeGuardPacingDeadline(now,NanoSeconds(0),packet,NanoSeconds(0))==now+packet);
+    Time deadline=RdmaHw::ComputeGuardPacingDeadline(now,NanoSeconds(0),packet,budget);
+    assert(deadline==NanoSeconds(9000));
+    unsigned burst=1;
+    while(deadline<=now && burst<100) {
+        deadline=RdmaHw::ComputeGuardPacingDeadline(now,deadline,packet,budget);++burst;
+    }
+    assert(burst==3 && deadline>now); // rate*credit plus one packet maximum
+    for (int idle=0;idle<=100000;idle+=127) {
+        Time d=RdmaHw::ComputeGuardPacingDeadline(now,NanoSeconds(10000-idle),packet,budget);
+        assert(d>=now-budget+packet && d<=now+packet);
+    }
     auto hw=CreateObject<RdmaHw>();hw->m_cc_mode=11;
     auto qp=CreateObject<RdmaQueuePair>(3,Ipv4Address(1),Ipv4Address(2),1,2);
     hw->m_guardTailCongestionGate=true;hw->m_guardTailSafeSamples=2;
