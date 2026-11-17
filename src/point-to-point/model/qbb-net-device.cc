@@ -82,6 +82,8 @@ RdmaEgressQueue::RdmaEgressQueue() {
     m_rrlast = 0;
     m_guardSrptLastIndex = -1;
     m_guardSrptConsecutive = 0;
+    m_guardServiceSinceFair = 0;
+    m_guardFairLastFlowId = -1;
     m_guardVirtualTime = 0;
     m_qlast = 0;
     m_mtu = 1000;
@@ -101,6 +103,16 @@ Ptr<Packet> RdmaEgressQueue::DequeueQindex(int qIndex) {
         auto qp=m_qpGrp->Get(qIndex);
         uint64_t payload=qp->m_guard_sender_rate_fair ? std::min<uint64_t>(m_mtu,qp->GetBytesLeft()) : 0;
         Ptr<Packet> p = m_rdmaGetNxtPkt(qp);
+        if (p && qp->m_guard_sender_srpt && Settings::guard_sender_service_budget) {
+            // Account actual DATA service, never a scheduler inspection or
+            // control packet. The budget spans changes in shortest identity.
+            uint32_t quantum=std::max<uint32_t>(1,qp->m_guard_srpt_quantum_packets);
+            if (m_guardServiceSinceFair >= quantum) {
+                m_guardServiceSinceFair=0;
+                m_guardFairLastFlowId=qp->m_flow_id;
+                ++Settings::guard_sender_srpt_forced_rr;
+            } else ++m_guardServiceSinceFair;
+        }
         if(p && qp->m_guard_sender_rate_fair) {
             // Charge only transmitted DATA, using current active/passive rate.
             // Re-entering QPs cannot bank credit while blocked or inactive.
@@ -192,6 +204,8 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
         int best = -1024;
         int first_ready = -1024;
         int rate_ready = -1024;
+        int fair_next=-1024, fair_wrap=-1024;
+        int32_t next_id=std::numeric_limits<int32_t>::max(), wrap_id=next_id;
         double rate_finish = std::numeric_limits<double>::max();
         uint64_t best_remaining = std::numeric_limits<uint64_t>::max();
         for (uint32_t step = 1; step <= fcount; step++) {
@@ -222,6 +236,15 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
             }
             if (!time_ok) {qp->m_guard_sender_head_ready=false;continue;}
             if (first_ready == -1024) first_ready = (int)index;
+            if (Settings::guard_sender_service_budget) {
+                int32_t id=qp->m_flow_id;
+                // Stable message identities preserve rotation when the QP
+                // vector compacts. Only currently eligible work participates.
+                if (fair_wrap==-1024 || id<wrap_id) {fair_wrap=index;wrap_id=id;}
+                if (id>m_guardFairLastFlowId && (fair_next==-1024 || id<next_id)) {
+                    fair_next=index;next_id=id;
+                }
+            }
             if(qp->m_guard_sender_rate_fair) {
                 uint64_t rate=std::max<uint64_t>(1,qp->m_rate.GetBitRate());
                 if(!qp->m_guard_sender_head_ready || qp->m_guard_sender_head_rate!=rate) {
@@ -270,7 +293,12 @@ int RdmaEgressQueue::GetNextQindex(bool paused[]) {
         if (best != -1024) {
             Ptr<RdmaQueuePair> shortest = m_qpGrp->Get((uint32_t)best);
             uint32_t quantum = std::max<uint32_t>(1, shortest->m_guard_srpt_quantum_packets);
-            if (best == m_guardSrptLastIndex && m_guardSrptConsecutive >= quantum &&
+            if (Settings::guard_sender_service_budget && m_guardServiceSinceFair>=quantum) {
+                int fair=fair_next!=-1024 ? fair_next : fair_wrap;
+                if (fair!=-1024) best=fair;
+            }
+            if (!Settings::guard_sender_service_budget &&
+                best == m_guardSrptLastIndex && m_guardSrptConsecutive >= quantum &&
                 fallback != -1024 && fallback != best) {
                 best = fallback;
                 Settings::guard_sender_srpt_forced_rr++;

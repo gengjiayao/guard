@@ -34,5 +34,13 @@ int main() {
   for(auto f:fs)hw->m_rate_flow_ctl_set.insert(PeekPointer(f));
   assert(before==hw->ComputeGuardSenderFairTargets(C));
  }
+ hw->m_guardSenderFairShare=false;hw->m_guardFairMixOriginalSize=true;
+ hw->m_guardFairMixThresholdBdps=1;hw->m_guardReceiverConcurrency=1;hw->m_guardConcurrencyMinBdps=0;
+ for(unsigned i=0;i<fs.size();++i){fs[i]->m_guard_flow_size=2000000+i*1000000;fs[i]->ReceiverNextExpectedSeq=0;fs[i]->m_base_rtt_sec=8e-6;}
+ hw->m_guardFairMixScale=0;auto focused=hw->ComputeGuardBaseTargets(C);
+ hw->m_guardFairMixScale=1;auto fair=hw->ComputeGuardBaseTargets(C);assert(focused!=fair);
+ hw->m_guardFairMixScale=.5;auto mixed=hw->ComputeGuardBaseTargets(C);uint64_t sum=0;
+ for(auto &entry:mixed){auto f=entry.first;uint64_t expected=(uint64_t)(.5L*focused[f]+.5L*fair[f]);assert(entry.second<=expected+1 && expected<=entry.second+1);sum+=entry.second;}
+ assert(sum<=C);
  std::cout<<"PASS: equal-mode compatibility, remaining-work preference, bounded weight ratio, per-source deduplication, floors, capacity and permutation invariance\n";
 }

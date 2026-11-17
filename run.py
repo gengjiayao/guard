@@ -152,6 +152,7 @@ GUARD_SERVICE_AGE_FACTOR {guard_service_age_factor}
 GUARD_LONG_FLOW_THRESHOLD_BDPS {guard_long_flow_threshold_bdps}
 GUARD_GRANT_BOUNDED_RELEASE {guard_grant_bounded_release}
 GUARD_FAIR_MIX_THRESHOLD_BDPS {guard_fair_mix_threshold_bdps}
+GUARD_FAIR_MIX_SCALE {guard_fair_mix_scale}
 GUARD_SENDER_FAIR_EXPONENT {guard_sender_fair_exponent}
 GUARD_SENDER_FAIR_RATIO {guard_sender_fair_ratio}
 GUARD_SENDER_FAIR_SHARE {guard_sender_fair_share}
@@ -177,7 +178,8 @@ GUARD_INITIAL_COLLECTION_FULL_DEADLINE {guard_initial_collection_full_deadline}
 GUARD_SMALL_SET_FASTPATH_LIMIT {guard_small_set_fastpath_limit}
 GUARD_TRANSITION_PREFIX_BARRIER {guard_transition_prefix_barrier}
 {guard_transition_prefix_fail_closed_config}{guard_transition_prefix_wire_watchdog_config}{guard_transition_prefix_ack_clock_fallback_config}GUARD_GRANT_RELIABILITY_RTTS {guard_grant_reliability_rtts}
-{guard_mixed_pg_vector_fastpath_config}{guard_serialized_progress_refresh_config}{guard_serialized_draining_config}{guard_capacity_admission_deferral_config}GUARD_SRPT_QUANTUM_PACKETS {guard_srpt_quantum_packets}
+{guard_mixed_pg_vector_fastpath_config}{guard_serialized_progress_refresh_config}{guard_serialized_draining_config}{guard_capacity_admission_deferral_config}GUARD_SENDER_SERVICE_BUDGET {guard_sender_service_budget}
+GUARD_SRPT_QUANTUM_PACKETS {guard_srpt_quantum_packets}
 GUARD_WORK_CONSERVING {guard_work_conserving}
 GUARD_CAP_AWARE_RECLAIM {guard_cap_aware_reclaim}
 GUARD_CAP_HEADROOM {guard_cap_headroom}
@@ -567,6 +569,7 @@ def main():
     parser.add_argument('--guard_sender_fair_exponent', type=float, default=0)
     parser.add_argument('--guard_sender_fair_ratio', type=float, default=4)
     parser.add_argument('--guard_sender_fair_share', type=int, choices=(0,1), default=0)
+    parser.add_argument('--guard_fair_mix_scale', type=float, default=1)
     parser.add_argument('--guard_fair_mix_threshold_bdps', type=float, default=0.0)
     parser.add_argument('--guard_grant_bounded_release', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_long_flow_threshold_bdps', type=float, default=0.0)
@@ -648,6 +651,7 @@ def main():
                         help="V18 wait for draining capacity before admitting a frozen cohort (default: 0)")
     parser.add_argument('--guard_grant_reliability_rtts', type=float, default=0.0,
                         help="cached grant refresh in equal-share service rounds [0,64] (default: 0)")
+    parser.add_argument('--guard_sender_service_budget', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_srpt_quantum_packets', type=int, default=64,
                         help="consecutive SRPT packet bound before RR service (default: 64)")
     parser.add_argument('--guard_work_conserving', type=int, choices=(0, 1), default=0,
@@ -779,6 +783,8 @@ def main():
         raise Exception("CONFIG ERROR: --guard_cap_headroom must be in [1, 2].")
     if not 0.0 <= args.guard_cap_min_share_fraction <= 1.0:
         raise Exception("CONFIG ERROR: --guard_cap_min_share_fraction must be in [0, 1].")
+    if args.guard_sender_service_budget and (args.cc != "guard" or not args.guard_sender_srpt):
+        raise Exception("CONFIG ERROR: aggregate sender service budget requires GUARD SRPT.")
     if args.guard_srpt_quantum_packets <= 0:
         raise Exception("CONFIG ERROR: --guard_srpt_quantum_packets must be positive.")
     if (args.guard_receiver_phase_order or args.guard_duplex_adaptive) and args.guard_small_set_fastpath_limit:
@@ -825,6 +831,8 @@ def main():
         raise Exception("CONFIG ERROR: --guard_adaptive_target_max_bdps must be in [0, 64].")
     if not 0.0 <= args.guard_min_share_fraction <= 1.0:
         raise Exception("CONFIG ERROR: --guard_min_share_fraction must be in [0, 1].")
+    if not 0 <= args.guard_fair_mix_scale <= 1:
+        raise Exception("CONFIG ERROR: fair mix scale must be in [0,1].")
     if args.guard_fair_mix_original_size and not args.guard_fair_mix_threshold_bdps:
         raise Exception("CONFIG ERROR: immutable fair-share class requires an adaptive threshold.")
     if not 0.0 <= args.guard_fair_mix_threshold_bdps <= 256.0:
@@ -1554,6 +1562,7 @@ def main():
                                         guard_long_flow_threshold_bdps=args.guard_long_flow_threshold_bdps,
                                         guard_grant_bounded_release=args.guard_grant_bounded_release,
                                         guard_fair_mix_threshold_bdps=args.guard_fair_mix_threshold_bdps,
+                                        guard_fair_mix_scale=args.guard_fair_mix_scale,
                                         guard_sender_fair_exponent=args.guard_sender_fair_exponent,
                                         guard_sender_fair_ratio=args.guard_sender_fair_ratio,
                                         guard_sender_fair_share=args.guard_sender_fair_share,
@@ -1603,6 +1612,7 @@ def main():
                                             "GUARD_CAPACITY_ADMISSION_DEFERRAL 1\n"
                                             if args.guard_capacity_admission_deferral else ""),
                                         guard_grant_reliability_rtts=args.guard_grant_reliability_rtts,
+                                        guard_sender_service_budget=args.guard_sender_service_budget,
                                         guard_srpt_quantum_packets=args.guard_srpt_quantum_packets,
                                         guard_work_conserving=args.guard_work_conserving,
                                         guard_cap_aware_reclaim=args.guard_cap_aware_reclaim,

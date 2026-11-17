@@ -235,6 +235,7 @@ double guard_service_age_factor = 0.0;
 double guard_long_flow_threshold_bdps = 0.0;
 bool guard_grant_bounded_release = false;
 double guard_fair_mix_threshold_bdps = 0.0;
+double guard_fair_mix_scale = 1;
 bool guard_sender_fair_share = false;
 double guard_sender_fair_exponent = 0;
 double guard_sender_fair_ratio = 4;
@@ -1662,6 +1663,8 @@ int main(int argc, char *argv[]) {
                 conf >> guard_min_share_fraction;
                 std::cerr << "GUARD_MIN_SHARE_FRACTION\t"
                           << guard_min_share_fraction << '\n';
+            } else if (key.compare("GUARD_FAIR_MIX_SCALE") == 0) {
+                conf >> guard_fair_mix_scale;
             } else if (key.compare("GUARD_FAIR_MIX_THRESHOLD_BDPS") == 0) {
                 conf >> guard_fair_mix_threshold_bdps;
             } else if (key.compare("GUARD_FAIR_MIX_ORIGINAL_SIZE") == 0) {
@@ -1841,6 +1844,8 @@ int main(int argc, char *argv[]) {
                 guard_capacity_admission_deferral = enabled != 0;
                 std::cerr << "GUARD_CAPACITY_ADMISSION_DEFERRAL\t"
                           << enabled << '\n';
+            } else if (key.compare("GUARD_SENDER_SERVICE_BUDGET") == 0) {
+                conf >> Settings::guard_sender_service_budget;
             } else if (key.compare("GUARD_SRPT_QUANTUM_PACKETS") == 0) {
                 conf >> guard_srpt_quantum_packets;
                 std::cerr << "GUARD_SRPT_QUANTUM_PACKETS\t"
@@ -2981,6 +2986,7 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardLongFlowThresholdBdps", DoubleValue(guard_long_flow_threshold_bdps));
             rdmaHw->SetAttribute("GuardGrantBoundedRelease", BooleanValue(guard_grant_bounded_release));
             rdmaHw->SetAttribute("GuardFairMixThresholdBdps", DoubleValue(guard_fair_mix_threshold_bdps));
+            rdmaHw->SetAttribute("GuardFairMixScale", DoubleValue(guard_fair_mix_scale));
             rdmaHw->SetAttribute("GuardSenderFairExponent", DoubleValue(guard_sender_fair_exponent));
             rdmaHw->SetAttribute("GuardSenderFairRatio", DoubleValue(guard_sender_fair_ratio));
             rdmaHw->SetAttribute("GuardSenderFairShare", BooleanValue(guard_sender_fair_share));

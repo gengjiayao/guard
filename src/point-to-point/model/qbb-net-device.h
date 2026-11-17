@@ -46,6 +46,8 @@ public:
 	uint32_t m_rrlast;
 	int32_t m_guardSrptLastIndex;
 	uint32_t m_guardSrptConsecutive;
+    uint32_t m_guardServiceSinceFair;
+    int32_t m_guardFairLastFlowId;
 	double m_guardVirtualTime;
 	Ptr<DropTailQueue> m_ackQ; // highest priority queue
 	Ptr<RdmaQueuePairGroup> m_qpGrp; // queue pairs

@@ -376,6 +376,8 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Share receiver grants across senders, serving bounded work first within each sender",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardSenderFairShare),
                           MakeBooleanChecker())
+            .AddAttribute("GuardFairMixScale", "Maximum fraction of receiver capacity assigned by sender-fair service",
+                          DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardFairMixScale), MakeDoubleChecker<double>(0.0,1.0))
             .AddAttribute("GuardFairMixThresholdBdps",
                           "Blend sender-fair grants as median remaining work grows beyond this threshold",
                           DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardFairMixThresholdBdps),
@@ -7026,7 +7028,7 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardBaseTargets(
     // Widen gradually when the typical active message has substantial work.
     // A single large outlier cannot erase bounded-work priority. This uses
     // only received progress and active membership, never a workload label.
-    double fraction=ComputeGuardFairMixFraction(work,m_guardFairMixThresholdBdps);
+    double fraction=m_guardFairMixScale*ComputeGuardFairMixFraction(work,m_guardFairMixThresholdBdps);
     if(fraction<=0) return targets;
     ++m_guardFairMixDecisions;
     auto fair=ComputeGuardSenderFairTargets(line_rate_bps);

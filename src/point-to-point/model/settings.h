@@ -140,6 +140,7 @@ class Settings {
     static uint64_t guard_sender_srpt_selections;
     static uint64_t guard_sender_srpt_non_rr_selections;
     static uint64_t guard_sender_srpt_forced_rr;
+    static bool guard_sender_service_budget;
     static uint64_t guard_sender_cohort_decisions, guard_sender_cohort_reduced;
 };
 

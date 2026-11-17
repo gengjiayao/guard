@@ -524,6 +524,7 @@ class RdmaHw : public Object {
     double m_guardSenderFairExponent;
     double m_guardSenderFairRatio;
     double m_guardFairMixThresholdBdps;
+    double m_guardFairMixScale;
     mutable uint64_t m_guardFairMixDecisions;
     static double ComputeGuardFairMixFraction(std::vector<double> remaining_bdps, double threshold);
     std::unordered_map<RdmaRxQueuePair*, uint64_t> ComputeGuardUnmixedTargets(uint64_t line_rate_bps) const;

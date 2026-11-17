@@ -27,6 +27,7 @@ uint32_t Settings::dropped_pkt_sw_egress = 0;
 uint64_t Settings::guard_sender_srpt_selections = 0;
 uint64_t Settings::guard_sender_srpt_non_rr_selections = 0;
 uint64_t Settings::guard_sender_srpt_forced_rr = 0;
+bool Settings::guard_sender_service_budget = false;
 uint64_t Settings::guard_sender_cohort_decisions = 0, Settings::guard_sender_cohort_reduced = 0;
 
 /* for load balancer */
