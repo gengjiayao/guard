@@ -462,6 +462,7 @@ class RdmaHw : public Object {
     bool m_guardKeepLastHopInt;
     bool m_guardSizePriority;
     double m_guardPriorityGrowth;
+    double m_guardPriorityTailGrowth;
     bool m_guardGrantRefreshDedup;
     uint64_t m_guardDuplicateGrantsSuppressed;
     static bool IsGuardDuplicateRefresh(uint64_t previous_bps, uint64_t current_bps,
@@ -469,7 +470,7 @@ class RdmaHw : public Object {
     bool m_guardScheduledSizePriority;
     bool m_guardDynamicPriority;
     uint64_t m_guardPriorityBarriers, m_guardPriorityPromotions, m_guardPriorityDrainAcks;
-    static uint16_t ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled, double growth=2.0);
+    static uint16_t ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled, double growth=2.0, double tail_growth=0.0);
     bool m_guardInitialWindowPriority;
     Time m_guardTransportWindowFloorRtt;
     bool m_guardTransportWindowFloorAfterFirstGrant;
@@ -477,6 +478,8 @@ class RdmaHw : public Object {
     uint32_t m_guardTransportWindowAckSlackPackets;
     bool m_guardSenderSrpt;
     bool m_guardOneRttBypass;
+    bool m_guardCompactShort;
+    uint64_t m_guardCompactShortPackets;
     bool m_guardTailBypass;
     double m_guardTailBypassBdps;
     bool m_guardTailCongestionGate;

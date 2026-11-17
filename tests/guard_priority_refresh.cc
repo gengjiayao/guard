@@ -16,6 +16,9 @@ int main() {
  assert(RdmaHw::ComputeGuardSizePriority(4000000,bdp,true,4)==4);
  assert(RdmaHw::ComputeGuardSizePriority(8000000,bdp,true,4)==5);
  assert(RdmaHw::ComputeGuardSizePriority(30000000,bdp,true,4)==6);
+ assert(RdmaHw::ComputeGuardSizePriority(8000000,bdp,true,4,2)==5);
+ assert(RdmaHw::ComputeGuardSizePriority(20000000,bdp,true,4,2)==6);
+ assert(RdmaHw::ComputeGuardSizePriority(30000000,bdp,true,4,2)==7);
  auto duplicate=RdmaHw::IsGuardDuplicateRefresh;
  assert(duplicate(10,10,100,8000,"progress",0,false));
  assert(duplicate(10,10,31999,8000,"demand",0,false));

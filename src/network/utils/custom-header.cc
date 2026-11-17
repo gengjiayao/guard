@@ -45,6 +45,7 @@ CustomHeader::CustomHeader ()
     m_checksum (0),
     m_headerSize(5*4)
 {
+    udp.guard_no_int = false;
 }
 CustomHeader::CustomHeader (uint32_t _headerType)
   : brief(1), headerType(_headerType), 
@@ -62,6 +63,7 @@ CustomHeader::CustomHeader (uint32_t _headerType)
     m_checksum (0),
     m_headerSize(5*4)
 {
+    udp.guard_no_int = false;
 }
 
 TypeId 
@@ -93,7 +95,7 @@ uint32_t CustomHeader::GetSerializedSize (void) const{
 		if (l3Prot == 0x6) // TCP
 			len += tcp.length * 4;
 		else if (l3Prot == 0x11) // UDP
-			len += GetUdpHeaderSize();
+			len += GetUdpHeaderSize() - (IntHeader::mode == 0 && udp.guard_no_int ? IntHeader::GetStaticSize() : 0);
 		else if (l3Prot == 0xFC || l3Prot == 0xFD || l3Prot == 0xFB)
 			len += GetAckSerializedSize();
 		else if (l3Prot == GUARD_RATE_GRANT)
@@ -172,7 +174,7 @@ void CustomHeader::Serialize (Buffer::Iterator start) const{
 		  i.WriteHtonU16 (0);
 		  // SeqTsHeader
 		  i.WriteHtonU32 (udp.seq);
-		  i.WriteHtonU16 (udp.pg);
+		  i.WriteHtonU16 (udp.pg | (IntHeader::mode == 0 && udp.guard_no_int ? 0x8000 : 0));
 		  // homa request flag
 		  if (IntHeader::mode == 2) {
 			  i.WriteHtonU16 (udp.is_request_package);
@@ -198,7 +200,7 @@ void CustomHeader::Serialize (Buffer::Iterator start) const{
 			  i.WriteHtonU64 (udp.homa_resend_length);
 			  i.WriteU8 (udp.homa_restart_priority);
 		  }
-		  udp.ih.Serialize(i);
+		  if (!(IntHeader::mode == 0 && udp.guard_no_int)) udp.ih.Serialize(i);
 	  }else if (l3Prot == 0xFF){ // CNP
 		  i.WriteU8(cnp.qIndex);
 		  i.WriteU16(cnp.fid);
@@ -367,7 +369,9 @@ CustomHeader::Deserialize (Buffer::Iterator start)
 
 		  // SeqTsHeader
 		  udp.seq = i.ReadNtohU32 ();
-		  udp.pg =  i.ReadNtohU16 ();
+          udp.pg = i.ReadNtohU16();
+          udp.guard_no_int = IntHeader::mode == 0 && (udp.pg & 0x8000);
+          if (udp.guard_no_int) udp.pg &= 0x7fff;
 
 		  // homa request flag
 		  if (IntHeader::mode == 2) {
@@ -395,10 +399,10 @@ CustomHeader::Deserialize (Buffer::Iterator start)
 			  udp.homa_restart_priority = i.ReadU8();
 		  }
 
-		  if (getInt)
-			  udp.ih.Deserialize(i);
+          if (udp.guard_no_int) udp.ih = IntHeader();
+          else if (getInt) udp.ih.Deserialize(i);
 
-		  l4Size = GetUdpHeaderSize();
+		  l4Size = GetUdpHeaderSize() - (udp.guard_no_int ? IntHeader::GetStaticSize() : 0);
 		  if (IntHeader::mode == 2 && udp.is_request_package == 1) {
 			  l4Size += sizeof(udp.homa_simple_bdp) + sizeof(udp.homa_simple_requset) + sizeof(udp.homa_simple_unscheduled);
 		  }

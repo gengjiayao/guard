@@ -274,6 +274,13 @@ BEgressQueue::GetNBytes(uint32_t qIndex) const {
     return m_bytesInQueue[qIndex];
 }
 
+uint32_t BEgressQueue::GetNBytesThroughPriority(uint32_t qIndex) const {
+    NS_ASSERT_MSG(qIndex < qCnt, "priority queue index out of range");
+    uint32_t bytes = 0;
+    for (uint32_t i=0; i<=qIndex; ++i) bytes += m_bytesInQueue[i];
+    return bytes;
+}
+
 uint32_t
 BEgressQueue::GetNBytesTotal() const {
     return m_bytesInQueueTotal;

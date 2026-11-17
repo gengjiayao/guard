@@ -116,6 +116,7 @@ public:
 		  // SeqTsHeader
 		  uint16_t pg;
 		  uint32_t seq;
+		  bool guard_no_int; // high wire PG bit; logical PG remains unchanged
 		  uint16_t is_request_package; // for homa-simple
 		  IntHeader ih;
 		  // HomaSimpleHeader (only present when is_request_package==1)

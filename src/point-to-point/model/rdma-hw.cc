@@ -192,6 +192,8 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Reserve one class for one-BDP traffic and six dyadic classes for receiver-scheduled flows",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardScheduledSizePriority),
                           MakeBooleanChecker())
+            .AddAttribute("GuardPriorityTailGrowth", "Optional geometric spacing for the two largest finite size classes",
+                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardPriorityTailGrowth), MakeDoubleChecker<double>(0.0,8.0))
             .AddAttribute("GuardPriorityGrowth",
                           "Geometric spacing of immutable GUARD size priority boundaries",
                           DoubleValue(2.0), MakeDoubleAccessor(&RdmaHw::m_guardPriorityGrowth),
@@ -257,6 +259,8 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Select the shortest remaining ready GUARD flow at each sender NIC",
                           BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardSenderSrpt),
                           MakeBooleanChecker())
+            .AddAttribute("GuardCompactShort", "Omit unused INT only for bounded one-RTT bypass messages",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardCompactShort), MakeBooleanChecker())
             .AddAttribute("GuardOneRttBypass",
                           "Keep GUARD flows no larger than one BDP at line rate because delayed "
                           "fabric feedback cannot prevent their first-RTT injection",
@@ -655,6 +659,7 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_dcqcnRateIncreaseEvents = 0;
     m_dcqcnActualRateIncreases = 0;
     m_guardRateGrantsSent = 0;
+    m_guardCompactShortPackets = 0;
     m_guardDuplicateGrantsSuppressed = 0;
     m_guardRateGrantBytesSent = 0;
     m_guardRateGrantsReceived = 0;
@@ -1131,15 +1136,16 @@ void print_rate(RdmaQueuePair *qp) {
     Simulator::Schedule(NanoSeconds(time), &print_rate, qp);
 }
 
-uint16_t RdmaHw::ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled, double growth) {
+uint16_t RdmaHw::ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled, double growth, double tail_growth) {
     bdp = std::max<uint64_t>(bdp, 1);
     // The registration boundary is one BDP. Six remaining data queues
     // distinguish registered messages instead of collapsing all >8 BDP
     // messages into one queue. Identity/PFC class stays fixed for the flow.
     long double threshold = static_cast<long double>(bdp) * (scheduled ? 1.0L : .25L);
-    for (uint16_t pg=1; pg<7; ++pg, threshold*=growth) {
+    for (uint16_t pg=1; pg<7; ++pg) {
         if (bytes < static_cast<uint64_t>(std::min(threshold,
                 static_cast<long double>(std::numeric_limits<uint64_t>::max())))) return pg;
+        threshold *= tail_growth > 0 && pg >= 4 ? tail_growth : growth;
     }
     return 7;
 }
@@ -1245,7 +1251,8 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
         uint64_t bdp_bytes = baseRtt * line_rate.GetBitRate() / 8000000000lu;
         qp_pg = ComputeGuardSizePriority(size, bdp_bytes,
             m_cc_mode == CC_MODE_GUARD && m_guardScheduledSizePriority,
-            m_cc_mode == CC_MODE_GUARD ? m_guardPriorityGrowth : 2.0);
+            m_cc_mode == CC_MODE_GUARD ? m_guardPriorityGrowth : 2.0,
+            m_cc_mode == CC_MODE_GUARD ? m_guardPriorityTailGrowth : 0.0);
         qp->m_pg = qp_pg;
     }
 
@@ -2637,6 +2644,10 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
     SeqTsHeader seqTs;
     seqTs.SetSeq(seq);
     seqTs.SetPG(qp->m_pg);
+    if (m_cc_mode == CC_MODE_GUARD && m_guardCompactShort && qp->m_guard_one_rtt_bypass) {
+        seqTs.SetGuardNoInt(true);
+        ++m_guardCompactShortPackets;
+    }
     p->AddHeader(seqTs);
     // add udp header
     UdpHeader udpHeader;
@@ -2655,7 +2666,7 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
         uint64_t bdp = qp->m_baseRtt * qp->m_max_rate.GetBitRate() / 8000000000ULL;
         uint64_t next = (uint64_t)seq + payload_size;
         uint64_t remaining = qp->m_size > next ? qp->m_size-next : 0;
-        uint16_t desired = ComputeGuardSizePriority(remaining,bdp,m_guardScheduledSizePriority,m_guardPriorityGrowth);
+        uint16_t desired = ComputeGuardSizePriority(remaining,bdp,m_guardScheduledSizePriority,m_guardPriorityGrowth,m_guardPriorityTailGrowth);
         if (!qp->m_guard_pending_pg && remaining && desired < qp->m_guard_schedule_pg) {
             qp->m_guard_pending_pg = desired;
             qp->m_guard_priority_barrier = next;

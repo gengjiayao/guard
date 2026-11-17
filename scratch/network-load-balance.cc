@@ -201,7 +201,10 @@ bool guard_keep_last_hop_int = false;
 bool guard_size_priority = true;
 bool guard_scheduled_size_priority = false;
 double guard_priority_growth = 2.0;
+double guard_priority_tail_growth = 0;
 bool guard_grant_refresh_dedup = false;
+bool guard_priority_int = false;
+bool guard_compact_short = false;
 bool guard_dynamic_priority = false;
 bool guard_initial_window_priority = false;
 uint64_t guard_transport_window_floor_rtt_ns = 0;
@@ -1549,6 +1552,12 @@ int main(int argc, char *argv[]) {
                 std::cerr << "GUARD_KEEP_LAST_HOP_INT\t" << guard_keep_last_hop_int << '\n';
             } else if (key.compare("GUARD_DYNAMIC_PRIORITY") == 0) {
                 conf >> guard_dynamic_priority;
+            } else if (key.compare("GUARD_COMPACT_SHORT") == 0) {
+                conf >> guard_compact_short;
+            } else if (key.compare("GUARD_PRIORITY_INT") == 0) {
+                conf >> guard_priority_int;
+            } else if (key.compare("GUARD_PRIORITY_TAIL_GROWTH") == 0) {
+                conf >> guard_priority_tail_growth;
             } else if (key.compare("GUARD_PRIORITY_GROWTH") == 0) {
                 conf >> guard_priority_growth;
             } else if (key.compare("GUARD_GRANT_REFRESH_DEDUP") == 0) {
@@ -2915,6 +2924,7 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardDynamicPriority", BooleanValue(guard_dynamic_priority));
             rdmaHw->SetAttribute("GuardScheduledSizePriority", BooleanValue(guard_scheduled_size_priority));
             rdmaHw->SetAttribute("GuardPriorityGrowth", DoubleValue(guard_priority_growth));
+            rdmaHw->SetAttribute("GuardPriorityTailGrowth", DoubleValue(guard_priority_tail_growth));
             rdmaHw->SetAttribute("GuardGrantRefreshDedup", BooleanValue(guard_grant_refresh_dedup));
             rdmaHw->SetAttribute("GuardInitialWindowPriority",
                                  BooleanValue(guard_initial_window_priority));
@@ -2936,6 +2946,7 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardSenderSrptMaxBdps", DoubleValue(guard_sender_srpt_max_bdps));
             rdmaHw->SetAttribute("GuardSenderSrpt", BooleanValue(guard_sender_srpt));
             rdmaHw->SetAttribute("GuardOneRttBypass", BooleanValue(guard_one_rtt_bypass));
+            rdmaHw->SetAttribute("GuardCompactShort", BooleanValue(guard_compact_short));
             rdmaHw->SetAttribute("GuardTailBypass", BooleanValue(guard_tail_bypass));
             rdmaHw->SetAttribute("GuardTailBypassBdps", DoubleValue(guard_tail_bypass_bdps));
             rdmaHw->SetAttribute("GuardTailCongestionGate",
@@ -3123,6 +3134,9 @@ int main(int argc, char *argv[]) {
     for (uint32_t i = 0; i < node_num; i++) {
         if (n.Get(i)->GetNodeType() == 1) {  // switch
             Ptr<SwitchNode> sw = DynamicCast<SwitchNode>(n.Get(i));
+            NS_ABORT_MSG_IF(guard_priority_int && (cc_mode != 11 || !guard_size_priority),
+                            "GUARD priority telemetry requires strict size-priority service");
+            sw->SetAttribute("GuardPriorityInt", BooleanValue(guard_priority_int));
             sw->SetAttribute("CcMode", UintegerValue(cc_mode));
             sw->SetAttribute("AckHighPrio", UintegerValue(1));
         }
@@ -3863,6 +3877,7 @@ int main(int argc, char *argv[]) {
                 hw->m_guardRateGrantBytesSent, hw->m_guardRebalanceEvents,
                 hw->m_guardAdaptiveGrantUpdates);
         fprintf(guard_stats_output, "node %u guard_duplicate_grants_suppressed %lu\n", i, hw->m_guardDuplicateGrantsSuppressed);
+        fprintf(guard_stats_output, "node %u guard_compact_short_packets %lu\n", i, hw->m_guardCompactShortPackets);
         total_grants_sent += hw->m_guardRateGrantsSent;
         total_grant_bytes_sent += hw->m_guardRateGrantBytesSent;
         total_grants_received += hw->m_guardRateGrantsReceived;

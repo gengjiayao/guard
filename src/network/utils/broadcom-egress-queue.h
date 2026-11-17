@@ -44,6 +44,7 @@ namespace ns3 {
 		void SetGuardSchedulePfc(bool enabled);
 		uint32_t GetNBytes(uint32_t qIndex) const;
 		uint32_t GetNBytesTotal() const;
+        uint32_t GetNBytesThroughPriority(uint32_t qIndex) const;
 		uint32_t GetLastQueue();
 
 		TracedCallback<Ptr<const Packet>, uint32_t> m_traceBeqEnqueue;

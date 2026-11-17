@@ -26,6 +26,7 @@ class SwitchNode : public Node {
    protected:
     bool m_ecnEnabled;
     uint32_t m_ccMode;
+    bool m_guardPriorityInt;
     uint32_t m_ackHighPrio;  // set high priority for ACK/NACK
 
    private:

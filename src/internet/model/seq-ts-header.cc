@@ -33,6 +33,7 @@ NS_OBJECT_ENSURE_REGISTERED (SeqTsHeader);
 SeqTsHeader::SeqTsHeader ()
   : m_seq (0)
 {
+	m_guardNoInt = false;
 	if (IntHeader::mode == 1)
 		ih.ts = Simulator::Now().GetTimeStep();
 }
@@ -58,6 +59,12 @@ SeqTsHeader::GetPG (void) const
 {
 	return m_pg;
 }
+
+void SeqTsHeader::SetGuardNoInt(bool enabled) {
+  NS_ASSERT_MSG(!enabled || IntHeader::mode == 0, "compact GUARD header requires INT mode");
+  m_guardNoInt = enabled;
+}
+bool SeqTsHeader::GetGuardNoInt() const { return m_guardNoInt && IntHeader::mode == 0; }
 
 void SeqTsHeader::SetIsRequest(uint16_t is_request) {
   m_is_request = is_request;
@@ -98,7 +105,7 @@ SeqTsHeader::Print (std::ostream &os) const
 uint32_t
 SeqTsHeader::GetSerializedSize (void) const
 {
-	return GetHeaderSize();
+	return GetGuardNoInt() ? 6 : GetHeaderSize();
 }
 uint32_t SeqTsHeader::GetHeaderSize(void){
   if (IntHeader::mode == 2) {
@@ -112,28 +119,31 @@ SeqTsHeader::Serialize (Buffer::Iterator start) const
 {
   Buffer::Iterator i = start;
   i.WriteHtonU32 (m_seq);
-  i.WriteHtonU16 (m_pg);
+  i.WriteHtonU16 (m_pg | (GetGuardNoInt() ? 0x8000 : 0));
 
   if (IntHeader::mode == 2) {
     i.WriteHtonU16 (m_is_request);
   }
 
   // write IntHeader
-  ih.Serialize(i);
+  if (!GetGuardNoInt()) ih.Serialize(i);
 }
 uint32_t
 SeqTsHeader::Deserialize (Buffer::Iterator start)
 {
   Buffer::Iterator i = start;
   m_seq = i.ReadNtohU32 ();
-  m_pg =  i.ReadNtohU16 ();
+  m_pg = i.ReadNtohU16();
+  m_guardNoInt = IntHeader::mode == 0 && (m_pg & 0x8000);
+  if (m_guardNoInt) m_pg &= 0x7fff;
 
   if (IntHeader::mode == 2) {
     m_is_request = i.ReadNtohU16();
   }
 
   // read IntHeader
-  ih.Deserialize(i);
+  if (!GetGuardNoInt()) ih.Deserialize(i);
+  else ih = IntHeader();
   return GetSerializedSize ();
 }
 

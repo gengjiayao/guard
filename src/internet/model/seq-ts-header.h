@@ -52,6 +52,8 @@ public:
   Time GetTs (void) const;
 
   void SetPG (uint16_t pg);
+  void SetGuardNoInt(bool enabled);
+  bool GetGuardNoInt() const;
   uint16_t GetPG () const;
 
   void SetIsRequest (uint16_t is_request);
@@ -68,6 +70,7 @@ private:
 
   uint32_t m_seq;
   uint16_t m_pg;
+  bool m_guardNoInt;
   uint16_t m_is_request; // for homa-simple
 public:
   IntHeader ih;

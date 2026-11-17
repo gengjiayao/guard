@@ -110,7 +110,9 @@ GUARD_KEEP_LAST_HOP_INT {guard_keep_last_hop_int}
 GUARD_SIZE_PRIORITY {guard_size_priority}
 GUARD_DYNAMIC_PRIORITY {guard_dynamic_priority}
 GUARD_SCHEDULED_SIZE_PRIORITY {guard_scheduled_size_priority}
+GUARD_PRIORITY_INT {guard_priority_int}
 GUARD_PRIORITY_GROWTH {guard_priority_growth}
+GUARD_PRIORITY_TAIL_GROWTH {guard_priority_tail_growth}
 GUARD_GRANT_REFRESH_DEDUP {guard_grant_refresh_dedup}
 GUARD_INITIAL_WINDOW_PRIORITY {guard_initial_window_priority}
 GUARD_TRANSPORT_WINDOW_FLOOR_RTT_NS {guard_transport_window_floor_rtt_ns}
@@ -123,6 +125,7 @@ GUARD_SENDER_SRPT_ORIGINAL_CLASS {guard_sender_srpt_original_class}
 GUARD_SENDER_SRPT_MAX_BDPS {guard_sender_srpt_max_bdps}
 GUARD_SENDER_SRPT {guard_sender_srpt}
 GUARD_ONE_RTT_BYPASS {guard_one_rtt_bypass}
+GUARD_COMPACT_SHORT {guard_compact_short}
 GUARD_TAIL_BYPASS {guard_tail_bypass}
 GUARD_TAIL_BYPASS_BDPS {guard_tail_bypass_bdps}
 GUARD_TAIL_CONGESTION_GATE {guard_tail_congestion_gate}
@@ -497,6 +500,8 @@ def main():
     parser.add_argument('--guard_keep_last_hop_int', type=int, choices=(0, 1), default=0,
                         help="retain last-hop INT in GUARD for ablation (default: 0)")
     parser.add_argument('--guard_dynamic_priority', type=int, choices=(0, 1), default=0)
+    parser.add_argument('--guard_priority_int', type=int, choices=(0,1), default=0)
+    parser.add_argument('--guard_priority_tail_growth', type=float, default=0)
     parser.add_argument('--guard_priority_growth', type=float, default=2)
     parser.add_argument('--guard_grant_refresh_dedup', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_scheduled_size_priority', type=int, choices=(0, 1), default=0)
@@ -521,6 +526,7 @@ def main():
     parser.add_argument('--guard_sender_srpt_max_bdps', type=float, default=0)
     parser.add_argument('--guard_sender_srpt', type=int, choices=(0, 1), default=1,
                         help="select shortest remaining ready GUARD flow at sender (default: 1)")
+    parser.add_argument('--guard_compact_short', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_one_rtt_bypass', type=int, choices=(0, 1), default=1,
                         help="keep <=1-BDP GUARD flows at line rate (default: 1)")
     parser.add_argument('--guard_tail_bypass', type=int, choices=(0, 1), default=1,
@@ -785,6 +791,12 @@ def main():
         raise Exception("CONFIG ERROR: duplex size ratio must be zero or >1 with duplex adaptation enabled.")
     if args.guard_dynamic_priority and (args.cc != "guard" or not args.guard_size_priority or args.guard_initial_window_priority):
         raise Exception("CONFIG ERROR: dynamic priority requires GUARD size classes and no initial-window promotion.")
+    if args.guard_compact_short and (args.cc != "guard" or not args.guard_one_rtt_bypass):
+        raise Exception("CONFIG ERROR: compact short packets require GUARD one-RTT bypass.")
+    if args.guard_priority_int and (args.cc != "guard" or not args.guard_size_priority):
+        raise Exception("CONFIG ERROR: priority INT requires GUARD strict size-priority queues.")
+    if args.guard_priority_tail_growth and not 2 <= args.guard_priority_tail_growth <= 8:
+        raise Exception("CONFIG ERROR: priority tail growth must be 0 or in [2,8].")
     if not 2 <= args.guard_priority_growth <= 8:
         raise Exception("CONFIG ERROR: guard_priority_growth must be in [2,8].")
     if args.guard_scheduled_size_priority and not args.guard_size_priority:
@@ -1496,7 +1508,9 @@ def main():
                                         guard_size_priority=args.guard_size_priority,
                                         guard_dynamic_priority=args.guard_dynamic_priority,
                                         guard_scheduled_size_priority=args.guard_scheduled_size_priority,
+                                        guard_priority_int=args.guard_priority_int,
                                         guard_priority_growth=args.guard_priority_growth,
+                                        guard_priority_tail_growth=args.guard_priority_tail_growth,
                                         guard_grant_refresh_dedup=args.guard_grant_refresh_dedup,
                                         guard_initial_window_priority=args.guard_initial_window_priority,
                                         guard_transport_window_floor_rtt_ns=
@@ -1513,6 +1527,7 @@ def main():
                                         guard_sender_srpt_max_bdps=args.guard_sender_srpt_max_bdps,
                                         guard_sender_srpt=args.guard_sender_srpt,
                                         guard_one_rtt_bypass=args.guard_one_rtt_bypass,
+                                        guard_compact_short=args.guard_compact_short,
                                         guard_tail_bypass=args.guard_tail_bypass,
                                         guard_tail_bypass_bdps=args.guard_tail_bypass_bdps,
                                         guard_tail_congestion_gate=args.guard_tail_congestion_gate,

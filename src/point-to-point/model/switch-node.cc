@@ -25,6 +25,9 @@ TypeId SwitchNode::GetTypeId(void) {
             .AddConstructor<SwitchNode>()
             .AddAttribute("EcnEnabled", "Enable ECN marking.", BooleanValue(false),
                           MakeBooleanAccessor(&SwitchNode::m_ecnEnabled), MakeBooleanChecker())
+            .AddAttribute("GuardPriorityInt", "Use queue work ahead of this strict-priority packet for GUARD feedback",
+                          BooleanValue(false), MakeBooleanAccessor(&SwitchNode::m_guardPriorityInt),
+                          MakeBooleanChecker())
             .AddAttribute("CcMode", "CC mode.", UintegerValue(0),
                           MakeUintegerAccessor(&SwitchNode::m_ccMode),
                           MakeUintegerChecker<uint32_t>())
@@ -416,9 +419,18 @@ void SwitchNode::SwitchNotifyDequeue(uint32_t ifIndex, uint32_t qIndex, Ptr<Pack
             IntHeader *ih = (IntHeader *)&buf[PppHeader::GetStaticSize() + 20 + 8 +
                                               6];  // ppp, ip, udp, SeqTs, INT
             Ptr<QbbNetDevice> dev = DynamicCast<QbbNetDevice>(m_devices[ifIndex]);
-            if (m_ccMode == 3 || m_ccMode == 11) {  // HPCC / full GUARD
+            bool guard_no_int = m_ccMode == 11 &&
+                (buf[PppHeader::GetStaticSize()+20+8+4] & 0x80);
+            if (!guard_no_int && (m_ccMode == 3 || m_ccMode == 11)) {  // HPCC / full GUARD
+                // Lower-priority work does not delay a strict-priority
+                // packet. Report its actual contending queue prefix, while
+                // retaining total physical link utilization and line rate.
+                // The lowest class still observes the full queue occupancy.
+                uint32_t queue_bytes = m_ccMode == 11 && m_guardPriorityInt
+                    ? dev->GetQueue()->GetNBytesThroughPriority(qIndex)
+                    : dev->GetQueue()->GetNBytesTotal();
                 ih->PushHop(Simulator::Now().GetTimeStep(), m_txBytes[ifIndex],
-                            dev->GetQueue()->GetNBytesTotal(), dev->GetDataRate().GetBitRate());
+                            queue_bytes, dev->GetDataRate().GetBitRate());
             }
         }
     }
