@@ -242,6 +242,8 @@ RdmaRxQueuePair::RdmaRxQueuePair() {
     m_proactive_released = false;
     m_guard_interval_bytes = 0;
     m_guard_grant_rate_bps = 0;
+    m_guard_last_wire_grant_bps = 0;
+    m_guard_last_wire_grant_ns = 0;
     m_guard_grant_upper_bound_bps = 0;
     m_guard_last_acked_generation = 0;
     m_guard_last_acked_upper_bound_bps = 0;

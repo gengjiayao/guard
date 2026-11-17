@@ -275,6 +275,8 @@ class RdmaRxQueuePair : public Object {  // Rx side queue pair
     bool m_proactive_released;
     uint64_t m_guard_interval_bytes;
     uint64_t m_guard_grant_rate_bps;
+    uint64_t m_guard_last_wire_grant_bps;
+    uint64_t m_guard_last_wire_grant_ns;
     uint64_t m_guard_grant_upper_bound_bps;
     uint32_t m_guard_last_acked_generation;
     uint64_t m_guard_last_acked_upper_bound_bps;

@@ -192,6 +192,14 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Reserve one class for one-BDP traffic and six dyadic classes for receiver-scheduled flows",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardScheduledSizePriority),
                           MakeBooleanChecker())
+            .AddAttribute("GuardPriorityGrowth",
+                          "Geometric spacing of immutable GUARD size priority boundaries",
+                          DoubleValue(2.0), MakeDoubleAccessor(&RdmaHw::m_guardPriorityGrowth),
+                          MakeDoubleChecker<double>(2.0,8.0))
+            .AddAttribute("GuardGrantRefreshDedup",
+                          "Suppress unchanged progress grants for at most four RTTs or 32us",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardGrantRefreshDedup),
+                          MakeBooleanChecker())
             .AddAttribute("GuardSizePriority",
                           "Remap GUARD flows to size-based priority groups",
                           BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardSizePriority),
@@ -647,6 +655,7 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_dcqcnRateIncreaseEvents = 0;
     m_dcqcnActualRateIncreases = 0;
     m_guardRateGrantsSent = 0;
+    m_guardDuplicateGrantsSuppressed = 0;
     m_guardRateGrantBytesSent = 0;
     m_guardRateGrantsReceived = 0;
     m_guardDuplexCohortActive = false;
@@ -1122,13 +1131,13 @@ void print_rate(RdmaQueuePair *qp) {
     Simulator::Schedule(NanoSeconds(time), &print_rate, qp);
 }
 
-uint16_t RdmaHw::ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled) {
+uint16_t RdmaHw::ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled, double growth) {
     bdp = std::max<uint64_t>(bdp, 1);
     // The registration boundary is one BDP. Six remaining data queues
     // distinguish registered messages instead of collapsing all >8 BDP
     // messages into one queue. Identity/PFC class stays fixed for the flow.
     long double threshold = static_cast<long double>(bdp) * (scheduled ? 1.0L : .25L);
-    for (uint16_t pg=1; pg<7; ++pg, threshold*=2.0L) {
+    for (uint16_t pg=1; pg<7; ++pg, threshold*=growth) {
         if (bytes < static_cast<uint64_t>(std::min(threshold,
                 static_cast<long double>(std::numeric_limits<uint64_t>::max())))) return pg;
     }
@@ -1235,7 +1244,8 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
         DataRate line_rate = m_nic[nic_idx].dev->GetDataRate();
         uint64_t bdp_bytes = baseRtt * line_rate.GetBitRate() / 8000000000lu;
         qp_pg = ComputeGuardSizePriority(size, bdp_bytes,
-            m_cc_mode == CC_MODE_GUARD && m_guardScheduledSizePriority);
+            m_cc_mode == CC_MODE_GUARD && m_guardScheduledSizePriority,
+            m_cc_mode == CC_MODE_GUARD ? m_guardPriorityGrowth : 2.0);
         qp->m_pg = qp_pg;
     }
 
@@ -2645,7 +2655,7 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
         uint64_t bdp = qp->m_baseRtt * qp->m_max_rate.GetBitRate() / 8000000000ULL;
         uint64_t next = (uint64_t)seq + payload_size;
         uint64_t remaining = qp->m_size > next ? qp->m_size-next : 0;
-        uint16_t desired = ComputeGuardSizePriority(remaining,bdp,m_guardScheduledSizePriority);
+        uint16_t desired = ComputeGuardSizePriority(remaining,bdp,m_guardScheduledSizePriority,m_guardPriorityGrowth);
         if (!qp->m_guard_pending_pg && remaining && desired < qp->m_guard_schedule_pg) {
             qp->m_guard_pending_pg = desired;
             qp->m_guard_priority_barrier = next;
@@ -7799,9 +7809,30 @@ void RdmaHw::TraceGuardGrantAckSend(Ptr<RdmaQueuePair> qp, Ptr<Packet> packet,
     sink->written++;
 }
 
+bool RdmaHw::IsGuardDuplicateRefresh(uint64_t previous_bps, uint64_t current_bps,
+    uint64_t elapsed_ns, uint64_t rtt_ns, const char *reason, uint32_t generation, bool ack_required) {
+    // Membership changes, releases, reliability retransmits and transactional
+    // grants are always sent. A bounded refresh interval protects liveness.
+    if (generation || ack_required || previous_bps == 0 || previous_bps != current_bps || !reason)
+        return false;
+    if (std::string(reason) != "progress" && std::string(reason) != "demand") return false;
+    return elapsed_ns < std::max<uint64_t>(32000, 4*rtt_ns);
+}
+
 void RdmaHw::SendRateControlPacket(Ptr<RdmaRxQueuePair> rx_qp,
                                    uint32_t rate_data, const char *set_change,
                                    uint32_t generation, bool ack_required) {
+    uint64_t now = Simulator::Now().GetNanoSeconds();
+    uint64_t wire_rate = (uint64_t)rate_data * 1000000;
+    if (m_guardGrantRefreshDedup && IsGuardDuplicateRefresh(
+            rx_qp->m_guard_last_wire_grant_bps, wire_rate,
+            now-rx_qp->m_guard_last_wire_grant_ns,
+            rx_qp->m_base_rtt_sec*1e9, set_change, generation, ack_required)) {
+        ++m_guardDuplicateGrantsSuppressed;
+        return;
+    }
+    rx_qp->m_guard_last_wire_grant_bps = wire_rate;
+    rx_qp->m_guard_last_wire_grant_ns = now;
     m_guardRateGrantsSent++;
     if (generation > 0) {
         if (ack_required) {

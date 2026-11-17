@@ -461,10 +461,15 @@ class RdmaHw : public Object {
     bool m_guardProactiveRelease;
     bool m_guardKeepLastHopInt;
     bool m_guardSizePriority;
+    double m_guardPriorityGrowth;
+    bool m_guardGrantRefreshDedup;
+    uint64_t m_guardDuplicateGrantsSuppressed;
+    static bool IsGuardDuplicateRefresh(uint64_t previous_bps, uint64_t current_bps,
+        uint64_t elapsed_ns, uint64_t rtt_ns, const char *reason, uint32_t generation, bool ack_required);
     bool m_guardScheduledSizePriority;
     bool m_guardDynamicPriority;
     uint64_t m_guardPriorityBarriers, m_guardPriorityPromotions, m_guardPriorityDrainAcks;
-    static uint16_t ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled);
+    static uint16_t ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled, double growth=2.0);
     bool m_guardInitialWindowPriority;
     Time m_guardTransportWindowFloorRtt;
     bool m_guardTransportWindowFloorAfterFirstGrant;

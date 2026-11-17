@@ -200,6 +200,8 @@ bool guard_proactive_release = true;
 bool guard_keep_last_hop_int = false;
 bool guard_size_priority = true;
 bool guard_scheduled_size_priority = false;
+double guard_priority_growth = 2.0;
+bool guard_grant_refresh_dedup = false;
 bool guard_dynamic_priority = false;
 bool guard_initial_window_priority = false;
 uint64_t guard_transport_window_floor_rtt_ns = 0;
@@ -1547,6 +1549,10 @@ int main(int argc, char *argv[]) {
                 std::cerr << "GUARD_KEEP_LAST_HOP_INT\t" << guard_keep_last_hop_int << '\n';
             } else if (key.compare("GUARD_DYNAMIC_PRIORITY") == 0) {
                 conf >> guard_dynamic_priority;
+            } else if (key.compare("GUARD_PRIORITY_GROWTH") == 0) {
+                conf >> guard_priority_growth;
+            } else if (key.compare("GUARD_GRANT_REFRESH_DEDUP") == 0) {
+                conf >> guard_grant_refresh_dedup;
             } else if (key.compare("GUARD_SCHEDULED_SIZE_PRIORITY") == 0) {
                 conf >> guard_scheduled_size_priority;
             } else if (key.compare("GUARD_SIZE_PRIORITY") == 0) {
@@ -2908,6 +2914,8 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardSizePriority", BooleanValue(guard_size_priority));
             rdmaHw->SetAttribute("GuardDynamicPriority", BooleanValue(guard_dynamic_priority));
             rdmaHw->SetAttribute("GuardScheduledSizePriority", BooleanValue(guard_scheduled_size_priority));
+            rdmaHw->SetAttribute("GuardPriorityGrowth", DoubleValue(guard_priority_growth));
+            rdmaHw->SetAttribute("GuardGrantRefreshDedup", BooleanValue(guard_grant_refresh_dedup));
             rdmaHw->SetAttribute("GuardInitialWindowPriority",
                                  BooleanValue(guard_initial_window_priority));
             rdmaHw->SetAttribute("GuardTransportWindowFloorRtt",
@@ -3854,6 +3862,7 @@ int main(int argc, char *argv[]) {
                 hw->m_guardIntHopsAfterStrip, hw->m_guardIntRecordsStripped,
                 hw->m_guardRateGrantBytesSent, hw->m_guardRebalanceEvents,
                 hw->m_guardAdaptiveGrantUpdates);
+        fprintf(guard_stats_output, "node %u guard_duplicate_grants_suppressed %lu\n", i, hw->m_guardDuplicateGrantsSuppressed);
         total_grants_sent += hw->m_guardRateGrantsSent;
         total_grant_bytes_sent += hw->m_guardRateGrantBytesSent;
         total_grants_received += hw->m_guardRateGrantsReceived;
