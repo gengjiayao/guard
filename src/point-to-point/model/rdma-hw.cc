@@ -263,6 +263,8 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Select the shortest remaining ready GUARD flow at each sender NIC",
                           BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardSenderSrpt),
                           MakeBooleanChecker())
+            .AddAttribute("GuardIntStride", "Maximum scheduled-DATA spacing between INT samples; ACK boundaries always retain INT",
+                          UintegerValue(1), MakeUintegerAccessor(&RdmaHw::m_guardIntStride), MakeUintegerChecker<uint32_t>(1,64))
             .AddAttribute("GuardCompactShort", "Omit unused INT only for bounded one-RTT bypass messages",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardCompactShort), MakeBooleanChecker())
             .AddAttribute("GuardOneRttBypass",
@@ -670,6 +672,8 @@ RdmaHw::RdmaHw() : homa_simple_scheduler(this), homa_scheduler(this) {
     m_dcqcnActualRateIncreases = 0;
     m_guardRateGrantsSent = 0;
     m_guardCompactShortPackets = 0;
+    m_guardCompactScheduledPackets = 0;
+    m_guardScheduledAcksWithoutInt = 0;
     m_guardDuplicateGrantsSuppressed = 0;
     m_guardRateGrantBytesSent = 0;
     m_guardRateGrantsReceived = 0;
@@ -1469,6 +1473,13 @@ void RdmaHw::DeleteRxQp(uint32_t dip, uint16_t dport, uint16_t sport, uint16_t p
     m_rxQpIdentity.erase(key);
 }
 
+bool RdmaHw::ShouldGuardCarryInt(uint64_t seq,uint64_t payload,uint64_t size,
+    uint64_t acknowledged,uint32_t mtu,uint32_t ack_batch,uint32_t stride,bool drain) {
+    if(stride<=1 || !mtu || !seq || !acknowledged || seq+payload>=size || drain || seq%mtu) return true;
+    if((seq/mtu)%stride==0) return true;
+    return seq+payload>=acknowledged+(uint64_t)std::max<uint32_t>(1,ack_batch)*mtu;
+}
+
 int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
     uint8_t ecnbits = ch.GetIpv4EcnBits();
 
@@ -1592,6 +1603,12 @@ int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
         if (m_irn) m_irnNacksGenerated++;
     }
 
+    if(m_cc_mode==CC_MODE_GUARD && m_guardIntStride>1 && x==1 && ch.udp.guard_no_int) {
+        uint64_t bdp=104000;FlowStatTag fst;
+        if(p->PeekPacketTag(fst) && fst.HasBaseRtt())
+            bdp=std::max<uint64_t>(1,fst.GetBaseRttSeconds()*m_nic[GetNicIdxOfRxQp(rxQp)].dev->GetDataRate().GetBitRate()/8.0);
+        if(!(m_guardOneRttBypass && flow_size<=bdp))++m_guardScheduledAcksWithoutInt;
+    }
     if (x == 1 || x == 2 || x == 6) {  // generate ACK or NACK
         qbbHeader seqh;
         seqh.SetSeq(rxQp->ReceiverNextExpectedSeq);
@@ -2659,6 +2676,24 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
     if (m_cc_mode == CC_MODE_GUARD && m_guardCompactShort && qp->m_guard_one_rtt_bypass) {
         seqTs.SetGuardNoInt(true);
         ++m_guardCompactShortPackets;
+    }
+    if (m_cc_mode == CC_MODE_GUARD && m_guardIntStride>1 && !qp->m_guard_one_rtt_bypass) {
+        // An ACK that has not returned can only make snd_una older than the
+        // receiver's last ACK. Thus retaining telemetry at this conservative
+        // boundary covers every ordinary cumulative ACK without extra ACKs.
+        uint64_t bdp=std::max<uint64_t>(m_mtu,qp->m_baseRtt*qp->m_max_rate.GetBitRate()/8000000000ULL);
+        uint32_t batch=ComputeGuardAckBatch(bdp,m_mtu,m_guardAckIntervalPackets,m_guardAckWindowFraction);
+        bool drain=qp->m_guard_pending_pg!=0;
+        if(qp->m_guard_dynamic_priority) {
+            uint64_t next=(uint64_t)seq+payload_size;
+            uint64_t remaining=qp->m_size>next ? qp->m_size-next : 0;
+            uint16_t desired=std::max<uint16_t>(m_guardDynamicPriorityFloor,
+                ComputeGuardSizePriority(remaining,bdp,m_guardScheduledSizePriority,m_guardPriorityGrowth,m_guardPriorityTailGrowth));
+            drain=drain || (remaining && desired<qp->m_guard_schedule_pg);
+        }
+        if(!ShouldGuardCarryInt(seq,payload_size,qp->m_size,qp->snd_una,m_mtu,batch,m_guardIntStride,drain)) {
+            seqTs.SetGuardNoInt(true);++m_guardCompactScheduledPackets;
+        }
     }
     p->AddHeader(seqTs);
     // add udp header
@@ -8734,6 +8769,10 @@ void RdmaHw::HandleAckHp(Ptr<RdmaQueuePair> qp, Ptr<Packet> p, CustomHeader &ch)
         m_guardOneRttBypassFeedbacks++;
         return;
     }
+    // Recovery NACKs can be triggered by any packet, including an unsampled
+    // one. Such a packet still drives transport recovery; absent telemetry
+    // must never be interpreted as an empty fabric or a fresh rate sample.
+    if(m_cc_mode==CC_MODE_GUARD && m_guardIntStride>1 && ch.ack.ih.nhop==0) return;
     if (m_cc_mode == CC_MODE_GUARD && m_guardTailCongestionGate &&
         ch.ack.ih.nhop == 0) {
         // After receiver-hop removal, no remaining INT record means there is

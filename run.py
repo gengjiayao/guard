@@ -128,6 +128,7 @@ GUARD_SENDER_SRPT_MAX_BDPS {guard_sender_srpt_max_bdps}
 GUARD_SENDER_SRPT {guard_sender_srpt}
 GUARD_ONE_RTT_BYPASS {guard_one_rtt_bypass}
 GUARD_COMPACT_SHORT {guard_compact_short}
+GUARD_INT_STRIDE {guard_int_stride}
 GUARD_TAIL_BYPASS {guard_tail_bypass}
 GUARD_TAIL_BYPASS_BDPS {guard_tail_bypass_bdps}
 GUARD_TAIL_CONGESTION_GATE {guard_tail_congestion_gate}
@@ -534,6 +535,7 @@ def main():
     parser.add_argument('--guard_sender_srpt_max_bdps', type=float, default=0)
     parser.add_argument('--guard_sender_srpt', type=int, choices=(0, 1), default=1,
                         help="select shortest remaining ready GUARD flow at sender (default: 1)")
+    parser.add_argument('--guard_int_stride', type=int, default=1)
     parser.add_argument('--guard_compact_short', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_one_rtt_bypass', type=int, choices=(0, 1), default=1,
                         help="keep <=1-BDP GUARD flows at line rate (default: 1)")
@@ -809,6 +811,10 @@ def main():
         raise Exception("CONFIG ERROR: dynamic priority size threshold must be [0,1024] BDPs.")
     if args.guard_dynamic_priority and (args.cc != "guard" or not args.guard_size_priority or args.guard_initial_window_priority):
         raise Exception("CONFIG ERROR: dynamic priority requires GUARD size classes and no initial-window promotion.")
+    if not 1 <= args.guard_int_stride <= 64:
+        raise Exception("CONFIG ERROR: GUARD INT stride must be [1,64].")
+    if args.guard_int_stride>1 and (args.cc!="guard" or args.irn):
+        raise Exception("CONFIG ERROR: ACK-aligned INT compaction requires GUARD cumulative ACK transport (IRN disabled).")
     if args.guard_compact_short and (args.cc != "guard" or not args.guard_one_rtt_bypass):
         raise Exception("CONFIG ERROR: compact short packets require GUARD one-RTT bypass.")
     if args.guard_priority_int and (args.cc != "guard" or not args.guard_size_priority):
@@ -1550,6 +1556,7 @@ def main():
                                         guard_sender_srpt=args.guard_sender_srpt,
                                         guard_one_rtt_bypass=args.guard_one_rtt_bypass,
                                         guard_compact_short=args.guard_compact_short,
+                                        guard_int_stride=args.guard_int_stride,
                                         guard_tail_bypass=args.guard_tail_bypass,
                                         guard_tail_bypass_bdps=args.guard_tail_bypass_bdps,
                                         guard_tail_congestion_gate=args.guard_tail_congestion_gate,

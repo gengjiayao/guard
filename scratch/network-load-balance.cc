@@ -205,6 +205,7 @@ double guard_priority_tail_growth = 0;
 bool guard_grant_refresh_dedup = false;
 bool guard_priority_int = false;
 bool guard_compact_short = false;
+uint32_t guard_int_stride = 1;
 bool guard_dynamic_priority = false;
 double guard_dynamic_priority_min_bdps = 0;
 uint32_t guard_dynamic_priority_floor = 1;
@@ -1561,6 +1562,8 @@ int main(int argc, char *argv[]) {
                 conf >> guard_dynamic_priority_floor;
             } else if (key.compare("GUARD_DYNAMIC_PRIORITY") == 0) {
                 conf >> guard_dynamic_priority;
+            } else if (key.compare("GUARD_INT_STRIDE") == 0) {
+                conf >> guard_int_stride;
             } else if (key.compare("GUARD_COMPACT_SHORT") == 0) {
                 conf >> guard_compact_short;
             } else if (key.compare("GUARD_PRIORITY_INT") == 0) {
@@ -2966,6 +2969,7 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardSenderSrpt", BooleanValue(guard_sender_srpt));
             rdmaHw->SetAttribute("GuardOneRttBypass", BooleanValue(guard_one_rtt_bypass));
             rdmaHw->SetAttribute("GuardCompactShort", BooleanValue(guard_compact_short));
+            rdmaHw->SetAttribute("GuardIntStride", UintegerValue(guard_int_stride));
             rdmaHw->SetAttribute("GuardTailBypass", BooleanValue(guard_tail_bypass));
             rdmaHw->SetAttribute("GuardTailBypassBdps", DoubleValue(guard_tail_bypass_bdps));
             rdmaHw->SetAttribute("GuardTailCongestionGate",
@@ -3900,6 +3904,8 @@ int main(int argc, char *argv[]) {
                 hw->m_guardAdaptiveGrantUpdates);
         fprintf(guard_stats_output, "node %u guard_duplicate_grants_suppressed %lu\n", i, hw->m_guardDuplicateGrantsSuppressed);
         fprintf(guard_stats_output, "node %u guard_compact_short_packets %lu\n", i, hw->m_guardCompactShortPackets);
+        fprintf(guard_stats_output, "node %u guard_compact_scheduled_packets %lu\n", i, hw->m_guardCompactScheduledPackets);
+        fprintf(guard_stats_output, "node %u guard_scheduled_acks_without_int %lu\n", i, hw->m_guardScheduledAcksWithoutInt);
         total_grants_sent += hw->m_guardRateGrantsSent;
         total_grant_bytes_sent += hw->m_guardRateGrantBytesSent;
         total_grants_received += hw->m_guardRateGrantsReceived;
