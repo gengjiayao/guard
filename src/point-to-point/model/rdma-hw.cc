@@ -376,6 +376,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Maximum remaining-work preference ratio between active senders",
                           DoubleValue(4.0), MakeDoubleAccessor(&RdmaHw::m_guardSenderFairRatio),
                           MakeDoubleChecker<double>(1.0,64.0))
+            .AddAttribute("GuardSenderFairParallel", "Divide each physical sender budget among its registered messages",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardSenderFairParallel), MakeBooleanChecker())
+            .AddAttribute("GuardSenderFairWithinExponent", "Bounded remaining-work preference inside a physical sender budget",
+                          DoubleValue(1.0), MakeDoubleAccessor(&RdmaHw::m_guardSenderFairWithinExponent), MakeDoubleChecker<double>(0.0,2.0))
             .AddAttribute("GuardSenderFairShare",
                           "Share receiver grants across senders, serving bounded work first within each sender",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardSenderFairShare),
@@ -6991,6 +6995,48 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardSenderFairTar
         if(it==leaders.end() || remaining(f)<remaining(it->second) ||
            (remaining(f)==remaining(it->second) && f->m_flow_id<it->second->m_flow_id))
             leaders[f->dip]=f;
+    }
+    if (m_guardSenderFairParallel) {
+        // First reserve one budget per physical source; adding messages must
+        // not multiply that source's receiver capacity. Split that budget
+        // rather than starving every message behind its current leader.
+        std::map<uint32_t,std::vector<RdmaRxQueuePair*> > groups;
+        for (auto *f:m_rate_flow_ctl_set) groups[f->dip].push_back(f);
+        uint64_t least=std::numeric_limits<uint64_t>::max();
+        for (auto &entry:leaders) least=std::min(least,std::max<uint64_t>(m_mtu,remaining(entry.second)));
+        std::map<uint32_t,long double> source_weights;long double total=0;
+        for (auto &entry:leaders) {
+            long double ratio=(long double)least/std::max<uint64_t>(m_mtu,remaining(entry.second));
+            long double weight=std::max(1.0L/m_guardSenderFairRatio,
+                std::pow(ratio,(long double)m_guardSenderFairExponent));
+            source_weights[entry.first]=weight;total+=weight;
+        }
+        for (auto &group:groups) {
+            auto &members=group.second;
+            std::sort(members.begin(),members.end(),[](RdmaRxQueuePair *a,RdmaRxQueuePair *b){return a->m_flow_id<b->m_flow_id;});
+            uint64_t budget=(uint64_t)(line_rate_bps*source_weights[group.first]/total);
+            uint64_t equal=budget/members.size();
+            uint64_t floor=std::min<uint64_t>(equal,std::max<uint64_t>(m_minRate.GetBitRate(),m_guardMinShareFraction*equal));
+            uint64_t residual=budget-floor*members.size();
+            uint64_t minimum=std::max<uint64_t>(m_mtu,remaining(leaders[group.first]));
+            long double sum=0;std::vector<long double> weights;
+            for (auto *f:members) {
+                long double ratio=(long double)minimum/std::max<uint64_t>(m_mtu,remaining(f));
+                long double weight=std::max(1.0L/m_guardSenderFairRatio,
+                    std::pow(ratio,(long double)m_guardSenderFairWithinExponent));
+                weights.push_back(weight);sum+=weight;
+            }
+            uint64_t assigned=0;
+            for(size_t i=0;i<members.size();++i) {
+                uint64_t target=floor+(uint64_t)(residual*weights[i]/sum);
+                targets[members[i]]=target;assigned+=target;
+            }
+            // Return sub-bit rounding residue deterministically so each
+            // physical sender retains exactly its reserved integer budget.
+            for(size_t i=0;assigned<budget && i<members.size();++i,++assigned)
+                ++targets[members[i]];
+        }
+        return targets;
     }
     // Multiple messages from one NIC do not represent independent senders.
     // Reserve the same bounded floor for deferred work, then allocate one

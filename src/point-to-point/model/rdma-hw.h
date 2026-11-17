@@ -523,6 +523,8 @@ class RdmaHw : public Object {
     double m_guardRemainingExponent;
     bool m_guardFairMixOriginalSize;
     bool m_guardSenderFairShare;
+    bool m_guardSenderFairParallel;
+    double m_guardSenderFairWithinExponent;
     double m_guardSenderFairExponent;
     double m_guardSenderFairRatio;
     double m_guardFairMixThresholdBdps;

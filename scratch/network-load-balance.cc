@@ -239,6 +239,8 @@ bool guard_grant_bounded_release = false;
 double guard_fair_mix_threshold_bdps = 0.0;
 double guard_fair_mix_scale = 1;
 bool guard_sender_fair_share = false;
+bool guard_sender_fair_parallel = false;
+double guard_sender_fair_within_exponent = 1;
 double guard_sender_fair_exponent = 0;
 double guard_sender_fair_ratio = 4;
 bool guard_fair_mix_original_size = false;
@@ -1679,6 +1681,10 @@ int main(int argc, char *argv[]) {
                 conf >> guard_sender_fair_exponent;
             } else if (key.compare("GUARD_SENDER_FAIR_RATIO") == 0) {
                 conf >> guard_sender_fair_ratio;
+            } else if (key.compare("GUARD_SENDER_FAIR_PARALLEL") == 0) {
+                conf >> guard_sender_fair_parallel;
+            } else if (key.compare("GUARD_SENDER_FAIR_WITHIN_EXPONENT") == 0) {
+                conf >> guard_sender_fair_within_exponent;
             } else if (key.compare("GUARD_SENDER_FAIR_SHARE") == 0) {
                 conf >> guard_sender_fair_share;
             } else if (key.compare("GUARD_GRANT_BOUNDED_RELEASE") == 0) {
@@ -2998,6 +3004,8 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardSenderFairExponent", DoubleValue(guard_sender_fair_exponent));
             rdmaHw->SetAttribute("GuardSenderFairRatio", DoubleValue(guard_sender_fair_ratio));
             rdmaHw->SetAttribute("GuardSenderFairShare", BooleanValue(guard_sender_fair_share));
+            rdmaHw->SetAttribute("GuardSenderFairParallel", BooleanValue(guard_sender_fair_parallel));
+            rdmaHw->SetAttribute("GuardSenderFairWithinExponent", DoubleValue(guard_sender_fair_within_exponent));
             rdmaHw->SetAttribute("GuardFairMixOriginalSize", BooleanValue(guard_fair_mix_original_size));
             rdmaHw->SetAttribute("GuardReceiverConcurrency",
                                  UintegerValue(guard_receiver_concurrency));
