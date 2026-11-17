@@ -1,0 +1,417 @@
+{
+  "frozen_utc": "2026-11-17T02:32:45.170644+00:00",
+  "guard_controller_git": "ded12b9e8a901aa1963b336935861bf31b94d22d",
+  "baselines_source_git": "6c438d7c7223d698bc2bea3333e8eac271fe002c",
+  "guard_runtime": {
+    "build/scratch/network-load-balance": "2ce1532bac01f1dc29f166fa1afb16d9ffcac81da69f01bde65d0dc922c64bf7",
+    "build/libns3.19-antenna-optimized.so": "9b7a3987bb37104a1298847d9eebb424b534a004406f1fd0da6676bce093bc9a",
+    "build/libns3.19-antenna-test-optimized.so": "f28c5505e878a48da777ce274826b6f19e0a928ca84ac52e82d94529072e1ca5",
+    "build/libns3.19-aodv-optimized.so": "c4e05aff1f24cc07e290e422b10dcec3a2eba786a96ae7339c4a93b6984dc4bd",
+    "build/libns3.19-aodv-test-optimized.so": "43c9b078867c5db2457cd1f4e73b6cfece16978a8cbabfc6c442724675d1aba5",
+    "build/libns3.19-applications-optimized.so": "b7b7808ee51bf49c10da41e6c7abb99bd5e633c4ed2cb45a0a73db98a6b029a6",
+    "build/libns3.19-applications-test-optimized.so": "fe2c2d8e2a90270cd31a0c2b8e367352c2728b979ee6df5257228e52485ff7ce",
+    "build/libns3.19-bridge-optimized.so": "30e56f55c2435d128672ca21ffc29efa370139965776635a9b46e49a8146e2cb",
+    "build/libns3.19-buildings-optimized.so": "1c2dba99afa3af59e1736ee81f359ddbb0bbd2359fda204f8c9bbb89d96b51f8",
+    "build/libns3.19-buildings-test-optimized.so": "67577b510177a6ce5c3310a82f0db7ccac0860ebbf8436f38a18070efe87c075",
+    "build/libns3.19-config-store-optimized.so": "87fe7b314bf55c2ec10d185e6f56ce939c7d92f9da2bf56defcb2f6a41739a6d",
+    "build/libns3.19-core-optimized.so": "d7c27c39b95b7484f0351f42dc2d20241493d802b5c35257547fdfbc99cbe85e",
+    "build/libns3.19-core-test-optimized.so": "b0c475dc5a93ad9704aaebdc35baee77cc329df82eca74cd47e4c0b49d2e4548",
+    "build/libns3.19-csma-layout-optimized.so": "7bda22d769e88986346b81141a2e05cb1ceb994f0700604f195396cbf9057565",
+    "build/libns3.19-csma-optimized.so": "eca0556dcbc161b37dff4fea307f0d180214d348d74862212323eb025c63dcbd",
+    "build/libns3.19-dsdv-optimized.so": "ea3776dddae0221ee31a9c121453bf4b434c30a7174ac71d8bcd921eab419f24",
+    "build/libns3.19-dsdv-test-optimized.so": "2ce91232ec660702c713db22ba97609bb8a39e6e0f52d8542d2b5ebd264a814a",
+    "build/libns3.19-dsr-optimized.so": "bdc48575dd6e076445c0cec4060e5a00e97c4022bc641483f29a56ffc8de6d29",
+    "build/libns3.19-dsr-test-optimized.so": "486b9ea8c718b476a91cb66312d718a6054b84b12e83f97345ff0bd9e2c7f727",
+    "build/libns3.19-emu-optimized.so": "e1837d2e79ca44fc6a8305efefcabf79da69ca32fc1393303488ae5bbce8628a",
+    "build/libns3.19-energy-optimized.so": "f5d97e59ae79a79973b2eb10a49a7552cabe4d5101e984170053b0a95985bbe0",
+    "build/libns3.19-energy-test-optimized.so": "c9c3921d7d87c74e0d3fe9f99ffb2b8cc9a5fbfad9ec8f6796dda21496787076",
+    "build/libns3.19-flow-monitor-optimized.so": "381774e192085d9a387d41c9d947be84f739f22e870dd7ecc5418063f5b44347",
+    "build/libns3.19-flow-monitor-test-optimized.so": "56e9a6b08ee8afe1b6d2dedd06400b5a2518cdffb439c8f712d985a10ba841d7",
+    "build/libns3.19-internet-optimized.so": "54cdab268e308d5ed99f15def9bb8cd7083317dde7d75cdf81ad2681b8406089",
+    "build/libns3.19-internet-test-optimized.so": "02952d84e30db37d31199770aefce33252f9962b42cdf5d93fbf5b672571df00",
+    "build/libns3.19-lte-optimized.so": "1ff3eb5cc709a2ae42c793d5e1b00782dc595e2ebdb8f4191b2c87f9d5d415fe",
+    "build/libns3.19-lte-test-optimized.so": "630ba75d1b167bb7b37680fc0e3d75372caed9e9486f548705c213d8754ab0e0",
+    "build/libns3.19-mesh-optimized.so": "e78bc833ee30ae7a194ea6ea8fe1b5f4ad13cbb607fac4c867f28d55e2c8fbf6",
+    "build/libns3.19-mesh-test-optimized.so": "e5698e5a223d530a94084242be79dea8a296300687cb1d09d411f049b023ae10",
+    "build/libns3.19-mobility-optimized.so": "47195218d3ca9df19249961a05d4164255da134776a2779df107eab08a71843a",
+    "build/libns3.19-mobility-test-optimized.so": "dd1f6e5366e5cbfc6595fe906f4bdd270b48948ab45ef668f9a0dfda13e78002",
+    "build/libns3.19-mpi-optimized.so": "4659c1674d379a110dd6fe27cda88ab44f04c3a9bb0c3543c9cfc60e08898fc1",
+    "build/libns3.19-netanim-optimized.so": "29a4cba4289e65fa69ce108732e19774ea0f0c32b617c84e72c6b48c24fa7301",
+    "build/libns3.19-netanim-test-optimized.so": "5028862925901fa0a529546c6579675ea4ff42a44ecec34769fb9065f3bf82ee",
+    "build/libns3.19-network-optimized.so": "4c042e9444e9b60ce876e4f067c5616a8b9274269cdd4c117d8be6a7f17eec25",
+    "build/libns3.19-network-test-optimized.so": "14bd1b4831e7fef1b1e967b3d6fdb51910985fcd7284230b8c584458f1f536f8",
+    "build/libns3.19-nix-vector-routing-optimized.so": "093bcecb5877e33c11221856f05910ed51db947f883302b5592935cd6166fc51",
+    "build/libns3.19-olsr-optimized.so": "6425e44490c8d502d6e52ff3e2c00a678dfc02c6c7fb38fdca79618a1b66a573",
+    "build/libns3.19-olsr-test-optimized.so": "10f29845be7e1cdf42df9547d385a4ec56970d121a0d65e7f922f0dd6e3ac715",
+    "build/libns3.19-point-to-point-layout-optimized.so": "2fb6ae9e4a2236c6ad691416c9b7e12dbc4fc1e0cc76b9a89fb61f93604386be",
+    "build/libns3.19-point-to-point-optimized.so": "4198f49cf4c2c984ce15a61f7eee8e02abb9511405e8589526ef43703f9d93da",
+    "build/libns3.19-point-to-point-test-optimized.so": "03f17cf10afb55a8596b164273c99eefb26a5e2d6830bc9d31bbf89181994d96",
+    "build/libns3.19-propagation-optimized.so": "445456e1b74dde057365cb562345e5a62fdcdaa1b1f8c801d900e5a098e1c45c",
+    "build/libns3.19-propagation-test-optimized.so": "c2d19647cfca44466341914db6ee514302cfb939852eb864227c77e8bc92f067",
+    "build/libns3.19-spectrum-optimized.so": "7fd83ae1e17b72d6122ee9bc5abb37e5b82cf74c7b2b7da547d247586ddd8ebd",
+    "build/libns3.19-spectrum-test-optimized.so": "08276a2f50430c1ca64f19bcccd800edd58f84545b6f199355c85d36c23c1b29",
+    "build/libns3.19-stats-optimized.so": "0d35f1334949dbb7011d3a44170752940ebb0ffc1364d69e4700fd444b550ef4",
+    "build/libns3.19-stats-test-optimized.so": "44b9d10c1489e836265cf922c2c5eda12e88ee9ad42f970e2df439195cf39829",
+    "build/libns3.19-tap-bridge-optimized.so": "6c3dc9a7464ca0fe18583fb5a0f0d64348c0413cc45f889aaf8f98cb7ba4089b",
+    "build/libns3.19-test-optimized.so": "6fcf5db5b2423313a2bafcdeca8f3187acc627da5ee6e9d235bc066fc7d851f7",
+    "build/libns3.19-test-test-optimized.so": "867171fbdc69d452c1e370b358a2b70e009245f75a35e0b5a751b4b98ed1c1a2",
+    "build/libns3.19-tools-optimized.so": "a2fd724a2165a3c3ba4f40b262c4618df5b30332b6ed97997ed4a10f8c7cb724",
+    "build/libns3.19-tools-test-optimized.so": "966e2ec33647dd5e6919511a8fdf91411eef675ae4b7ae5ac09c6f8ff7d7eb5d",
+    "build/libns3.19-topology-read-optimized.so": "a4df55769e913470a8f5e89cd81021e7ff61d1e7a6686160b72e92af607981f3",
+    "build/libns3.19-topology-read-test-optimized.so": "7f3e6682845de339995d4d9ab46b57a55c0e5ce3ad5c437213194cadfac23775",
+    "build/libns3.19-uan-optimized.so": "0664eb253601db99bf34f003494e3c5f5596b7a7cdeabc4f9d9fb3282d97faca",
+    "build/libns3.19-uan-test-optimized.so": "7631f5e626ecf592f2776b416936e281c060b2979b4dd965e85fce6fef7ac9a4",
+    "build/libns3.19-virtual-net-device-optimized.so": "427521fab38cdcc1cdfce58a518dfe11998b23ea514e09cdde23113f79d6db3e",
+    "build/libns3.19-wifi-optimized.so": "f40da3b29b69221bdc045c52424a6f3624cb2c4b3512c6c9cbc5b9a0d8e28240",
+    "build/libns3.19-wifi-test-optimized.so": "601a9dc1f9649c0f756d80b412d105c489b443958e154fd53431067ccc2193cf",
+    "build/libns3.19-wimax-optimized.so": "c74c332a600ddd49172d2dbd945caf1ff53a25b4e71de777cbcafec1c46986f4",
+    "build/libns3.19-wimax-test-optimized.so": "ea59f1be27810678b99b4f20dd109661ea0062973777fe4845b658f5e25d4a8c"
+  },
+  "baselines_runtime": {
+    "build/scratch/network-load-balance": "632c5d479f2ef030f98b05a9b8755b166449586cdaeb6ef6999f41fd39affc3a",
+    "build/libns3.19-antenna-optimized.so": "c394472c77156db1ef9b6e295cd0ca20748a4eb7cca6442e4260f3c4aa86ee22",
+    "build/libns3.19-antenna-test-optimized.so": "f28c5505e878a48da777ce274826b6f19e0a928ca84ac52e82d94529072e1ca5",
+    "build/libns3.19-aodv-optimized.so": "9413f5ccdeaa0503828130cb48d384049f95b9c9df778792691340403dac7479",
+    "build/libns3.19-aodv-test-optimized.so": "43c9b078867c5db2457cd1f4e73b6cfece16978a8cbabfc6c442724675d1aba5",
+    "build/libns3.19-applications-optimized.so": "3e9218337b7c144bf58b7ee92fe9d193d0bc5a1d4821d8d7dd32953fa0360192",
+    "build/libns3.19-applications-test-optimized.so": "fe2c2d8e2a90270cd31a0c2b8e367352c2728b979ee6df5257228e52485ff7ce",
+    "build/libns3.19-bridge-optimized.so": "74f023af7b0b860b91519c05d2b81861bc00ef963d7baac938fdd1397229dc66",
+    "build/libns3.19-buildings-optimized.so": "38d9cc09fccaa4bfe667ab97679829036400d2407725b1ae07ab7a3e5ad01d92",
+    "build/libns3.19-buildings-test-optimized.so": "67577b510177a6ce5c3310a82f0db7ccac0860ebbf8436f38a18070efe87c075",
+    "build/libns3.19-config-store-optimized.so": "faec87e0935a6d7df0ffd98d18e9dab00760dad21040780d49d42872b96a4bce",
+    "build/libns3.19-core-optimized.so": "9648a7b18727dcbcb7d6353e2b36b8f64eee6d3a53610f9c9fa286ad3cb19a69",
+    "build/libns3.19-core-test-optimized.so": "b0c475dc5a93ad9704aaebdc35baee77cc329df82eca74cd47e4c0b49d2e4548",
+    "build/libns3.19-csma-layout-optimized.so": "5538dcdc0f04b33fc3c08c7a3fe76ab4d39542c897bbec680d2969099eb25cbe",
+    "build/libns3.19-csma-optimized.so": "6fd70f6e8600d500f1237b7fd71d6a48407137723994b1741332bbb83f2b6839",
+    "build/libns3.19-dsdv-optimized.so": "a2fd005ed8a9db786898eeef43ef9a7cbb2e79c59bc718c240540c7abe4a2e5c",
+    "build/libns3.19-dsdv-test-optimized.so": "2ce91232ec660702c713db22ba97609bb8a39e6e0f52d8542d2b5ebd264a814a",
+    "build/libns3.19-dsr-optimized.so": "bdf60e9f23a44401564ca3927528d3ae0c46ef7113008ee155abb637e7828829",
+    "build/libns3.19-dsr-test-optimized.so": "486b9ea8c718b476a91cb66312d718a6054b84b12e83f97345ff0bd9e2c7f727",
+    "build/libns3.19-emu-optimized.so": "83182ccf949ca0614f0d8979052f7038357fe9003095e2fef2ce26f28bd355f7",
+    "build/libns3.19-energy-optimized.so": "37abaf19bd6ceaa4427706ecdadce7a58ca522a69af5727a33d2f479eb56ea0e",
+    "build/libns3.19-energy-test-optimized.so": "c9c3921d7d87c74e0d3fe9f99ffb2b8cc9a5fbfad9ec8f6796dda21496787076",
+    "build/libns3.19-flow-monitor-optimized.so": "9f5498566cfd1db082b7ec53d66b17dc16d8462b3b1145b4db98f8618f338aba",
+    "build/libns3.19-flow-monitor-test-optimized.so": "56e9a6b08ee8afe1b6d2dedd06400b5a2518cdffb439c8f712d985a10ba841d7",
+    "build/libns3.19-internet-optimized.so": "f99d63d5d8135b74bd9f6feecf13aec2a09c2ad2417f74b28b215a093e8ab64f",
+    "build/libns3.19-internet-test-optimized.so": "02952d84e30db37d31199770aefce33252f9962b42cdf5d93fbf5b672571df00",
+    "build/libns3.19-lte-optimized.so": "b7af358803d4446686542b2bd9e0cf4b11c94c2013b0096c138795eabeb19530",
+    "build/libns3.19-lte-test-optimized.so": "630ba75d1b167bb7b37680fc0e3d75372caed9e9486f548705c213d8754ab0e0",
+    "build/libns3.19-mesh-optimized.so": "d2c6eeaccf860fddbf921bb36ba333165de4728737359b61e8a58a9b8269636e",
+    "build/libns3.19-mesh-test-optimized.so": "e5698e5a223d530a94084242be79dea8a296300687cb1d09d411f049b023ae10",
+    "build/libns3.19-mobility-optimized.so": "7fcce89f7f651127459f8817f7612cdfa19f943863e750d453742a177c1e2a19",
+    "build/libns3.19-mobility-test-optimized.so": "dd1f6e5366e5cbfc6595fe906f4bdd270b48948ab45ef668f9a0dfda13e78002",
+    "build/libns3.19-mpi-optimized.so": "1363192569d6e0b43111d18fa4b8d7000609e2128dd9e488188b1caded83e264",
+    "build/libns3.19-netanim-optimized.so": "46ebaa9458417e3ba41e3e3acd5c4172562725ee3836d207fae3aeca65b552eb",
+    "build/libns3.19-netanim-test-optimized.so": "5028862925901fa0a529546c6579675ea4ff42a44ecec34769fb9065f3bf82ee",
+    "build/libns3.19-network-optimized.so": "14e9fc9e2b19c4f13fd4f0136982750182ae6b07cddbb06c03ff73c4729e8292",
+    "build/libns3.19-network-test-optimized.so": "14bd1b4831e7fef1b1e967b3d6fdb51910985fcd7284230b8c584458f1f536f8",
+    "build/libns3.19-nix-vector-routing-optimized.so": "d69c5e8921583de778b3235c8f80b031a1629f11559d52cb62920e8aec047a82",
+    "build/libns3.19-olsr-optimized.so": "eae11312691585d98d62799c9d2b4afdf4c34f52706b1f28a48a912ed422d92b",
+    "build/libns3.19-olsr-test-optimized.so": "10f29845be7e1cdf42df9547d385a4ec56970d121a0d65e7f922f0dd6e3ac715",
+    "build/libns3.19-point-to-point-layout-optimized.so": "57419462aa3f446ebb26593619697a4bbc666f72608c37248e44b75123f2fb7c",
+    "build/libns3.19-point-to-point-optimized.so": "3dd9ae414e057cbb3d0652d21ec7586283bd15ec4bf309cf326578fa5861cfca",
+    "build/libns3.19-point-to-point-test-optimized.so": "03f17cf10afb55a8596b164273c99eefb26a5e2d6830bc9d31bbf89181994d96",
+    "build/libns3.19-propagation-optimized.so": "6ca9dbbbf9c0ad2ef058f954f6f1888a03e219d61db73ef3a62aad3ea1a74745",
+    "build/libns3.19-propagation-test-optimized.so": "c2d19647cfca44466341914db6ee514302cfb939852eb864227c77e8bc92f067",
+    "build/libns3.19-spectrum-optimized.so": "6b8ea71214bfe4c5e2e6f8c832ad82775ab288a5b9f5953c45f29aab83a95a7d",
+    "build/libns3.19-spectrum-test-optimized.so": "08276a2f50430c1ca64f19bcccd800edd58f84545b6f199355c85d36c23c1b29",
+    "build/libns3.19-stats-optimized.so": "9e507511e3778d23e1285396d47294ead544d85153f5243c8b4f2a5243f58996",
+    "build/libns3.19-stats-test-optimized.so": "44b9d10c1489e836265cf922c2c5eda12e88ee9ad42f970e2df439195cf39829",
+    "build/libns3.19-tap-bridge-optimized.so": "76e5df9740e838a3900c7f933eb3f7816d4063dd4e440810f6aa62222e45027f",
+    "build/libns3.19-test-optimized.so": "6fcf5db5b2423313a2bafcdeca8f3187acc627da5ee6e9d235bc066fc7d851f7",
+    "build/libns3.19-test-test-optimized.so": "867171fbdc69d452c1e370b358a2b70e009245f75a35e0b5a751b4b98ed1c1a2",
+    "build/libns3.19-tools-optimized.so": "8422077c92aba816fa154ae52cf56708a9e4e629be7123b41bc14c59c0907e32",
+    "build/libns3.19-tools-test-optimized.so": "966e2ec33647dd5e6919511a8fdf91411eef675ae4b7ae5ac09c6f8ff7d7eb5d",
+    "build/libns3.19-topology-read-optimized.so": "ba07dad8b651c42fc7cda6ec25bc907dd4e580165993eca45389bc40ac7cef3b",
+    "build/libns3.19-topology-read-test-optimized.so": "7f3e6682845de339995d4d9ab46b57a55c0e5ce3ad5c437213194cadfac23775",
+    "build/libns3.19-uan-optimized.so": "588e211d4f54501ec9f275036c9ce542351b25487755d49000cbc519e4a61ee8",
+    "build/libns3.19-uan-test-optimized.so": "7631f5e626ecf592f2776b416936e281c060b2979b4dd965e85fce6fef7ac9a4",
+    "build/libns3.19-virtual-net-device-optimized.so": "d4d09302d2253ed68801cc01ef2ca73f03d60fcc4f4aba37799d595db9e244f4",
+    "build/libns3.19-wifi-optimized.so": "b16ad83187f7e283c1c77f8d35ea4ce8cf242e6230280b5f6d0748749a36e37c",
+    "build/libns3.19-wifi-test-optimized.so": "601a9dc1f9649c0f756d80b412d105c489b443958e154fd53431067ccc2193cf",
+    "build/libns3.19-wimax-optimized.so": "06719a90688b68c2001436afb25455b832a42fea0ef8e6d0bae3c766256c8259",
+    "build/libns3.19-wimax-test-optimized.so": "ea59f1be27810678b99b4f20dd109661ea0062973777fe4845b658f5e25d4a8c"
+  },
+  "variants": {
+    "guard": {
+      "cc": "guard",
+      "guard_receiver_concurrency": 2,
+      "guard_concurrency_min_bdps": 0,
+      "guard_min_share_fraction": 0,
+      "guard_receiver_phase_order": 0,
+      "guard_duplex_adaptive": 0,
+      "guard_ack_window_fraction": 0.25,
+      "guard_pacing_credit_rtts": 1.0,
+      "guard_duplex_cohort_drain": 0,
+      "guard_duplex_size_ratio": 0,
+      "guard_gamma": 16,
+      "guard_scheduled_size_priority": 1,
+      "guard_duplex_burst_protection": 0,
+      "guard_grant_bounded_release": 1,
+      "guard_fair_mix_original_size": 1,
+      "guard_fair_mix_threshold_bdps": 32,
+      "guard_post_grant_window_bdps": 2,
+      "guard_work_conserving": 1,
+      "guard_receiver_util_threshold": 0.9,
+      "guard_demand_threshold": 0.75,
+      "guard_rebalance_interval_us": 4,
+      "guard_lambda": 4,
+      "guard_sender_srpt": 1,
+      "guard_sender_srpt_original_class": 0,
+      "guard_sender_rate_fair": 0,
+      "guard_sender_srpt_max_bdps": 0,
+      "guard_sender_srpt_cohort_bdps": 0,
+      "guard_priority_growth": 4,
+      "guard_grant_refresh_dedup": 1,
+      "guard_ack_interval_packets": 16,
+      "guard_compact_short": 1,
+      "guard_priority_tail_growth": 2,
+      "guard_priority_int": 1,
+      "guard_dynamic_priority": 1,
+      "guard_dynamic_priority_min_bdps": 64,
+      "guard_dynamic_priority_floor": 2,
+      "guard_fair_mix_scale": 0.5,
+      "guard_int_stride": 64,
+      "guard_int_predict_ack": 1,
+      "guard_grant_refresh_bdps": 0
+    }
+  },
+  "loads": [
+    50,
+    70,
+    80
+  ],
+  "workloads": [
+    "WebSearch",
+    "AliStorage2019"
+  ],
+  "duration_seconds": {
+    "WebSearch": 0.06,
+    "AliStorage2019": 0.02
+  },
+  "warmup_fraction": 0.25,
+  "validation_inputs": [
+    91001,
+    91002,
+    91003,
+    91004,
+    91005,
+    91006,
+    91007,
+    91008,
+    91009,
+    91010
+  ],
+  "runs": 360,
+  "baseline_variants": {
+    "hpcc": {
+      "cc": "hpcc"
+    },
+    "dcqcn": {
+      "cc": "dcqcn"
+    },
+    "homa": {
+      "cc": "homa"
+    },
+    "homa_repeat2": {
+      "cc": "homa"
+    },
+    "homa_repeat3": {
+      "cc": "homa"
+    }
+  },
+  "cdf_hashes": {
+    "WebSearch": "73fdd9b5c5f576baf9292abbcdc95dfd145f7a71c634a7e8a03734fe940d3242",
+    "AliStorage2019": "9991c9d4b3a836646a41faa0581d779d32b5f433f7bb0931fe3b51656d33adf1"
+  },
+  "primary": "BOTH per-run overall P95 and overall P99 FCT, all message sizes; mean paired percentage reduction against the original fixed Homa; all twelve workload/load/metric means must exceed 10%.",
+  "secondary": "All HPCC/DCQCN comparisons and confidence intervals retained. Two additional Homa executions per input provide fastest-of-three sensitivity checks for BOTH P95 and P99. No size-bin substitution, rerun selection, or pooling repetitions.",
+  "policy": "Source, runtime, one common configuration and analysis frozen before generation or inspection of the ten reserved final inputs. All failures, all input flows and all cases retained. Tuning after final validation requires new independent inputs.",
+  "development_evidence": [
+    "joint_probe16a",
+    "joint_probe16b",
+    "joint_probe17a",
+    "joint_probe17b"
+  ],
+  "selected_development_means": [
+    {
+      "arm": "predict64_no_progress",
+      "case": "AliStorage2019-L50",
+      "n": 3,
+      "p95_mean_reduction": 11.841549443389573,
+      "p99_mean_reduction": 19.014814634873716
+    },
+    {
+      "arm": "predict64_no_progress",
+      "case": "AliStorage2019-L70",
+      "n": 3,
+      "p95_mean_reduction": 19.957582267732533,
+      "p99_mean_reduction": 35.45920069877375
+    },
+    {
+      "arm": "predict64_no_progress",
+      "case": "AliStorage2019-L80",
+      "n": 3,
+      "p95_mean_reduction": 21.20763310333852,
+      "p99_mean_reduction": 34.360860100719584
+    },
+    {
+      "arm": "predict64_no_progress",
+      "case": "WebSearch-L50",
+      "n": 3,
+      "p95_mean_reduction": 20.697284177274263,
+      "p99_mean_reduction": 28.006602438341687
+    },
+    {
+      "arm": "predict64_no_progress",
+      "case": "WebSearch-L70",
+      "n": 3,
+      "p95_mean_reduction": 17.025920808140388,
+      "p99_mean_reduction": 20.018684054346874
+    },
+    {
+      "arm": "predict64_no_progress",
+      "case": "WebSearch-L80",
+      "n": 3,
+      "p95_mean_reduction": 15.270300120762577,
+      "p99_mean_reduction": 13.690800890511994
+    }
+  ],
+  "selection_reason": "Common profile with both metrics above 10% in every development case; precise ACK-aligned INT and periodic demand reallocation without redundant per-BDP grant refresh.",
+  "baseline_calibration": [
+    {
+      "case": "AliStorage2019-L50",
+      "original": {
+        "n": 36708,
+        "p95_fct_us": 19.39680000000005,
+        "p99_fct_us": 341.56985,
+        "mean_fct_us": 17.575440258254332
+      },
+      "restored": {
+        "n": 36708,
+        "p95_fct_us": 19.39680000000005,
+        "p99_fct_us": 341.56985,
+        "mean_fct_us": 17.575440258254332
+      }
+    },
+    {
+      "case": "AliStorage2019-L70",
+      "original": {
+        "n": 51272,
+        "p95_fct_us": 23.069699999999983,
+        "p99_fct_us": 727.8896600000018,
+        "mean_fct_us": 35.06922115384616
+      },
+      "restored": {
+        "n": 51272,
+        "p95_fct_us": 23.069699999999983,
+        "p99_fct_us": 727.8896600000018,
+        "mean_fct_us": 35.06922115384616
+      }
+    },
+    {
+      "case": "AliStorage2019-L80",
+      "original": {
+        "n": 58512,
+        "p95_fct_us": 24.501249999999985,
+        "p99_fct_us": 1066.5217899999998,
+        "mean_fct_us": 61.30066685466229
+      },
+      "restored": {
+        "n": 58512,
+        "p95_fct_us": 24.501249999999985,
+        "p99_fct_us": 1066.5217899999998,
+        "mean_fct_us": 61.30066685466229
+      }
+    },
+    {
+      "case": "WebSearch-L50",
+      "original": {
+        "n": 2637,
+        "p95_fct_us": 2306.5399999999963,
+        "p99_fct_us": 10235.080079999985,
+        "mean_fct_us": 525.6671915054987
+      },
+      "restored": {
+        "n": 2637,
+        "p95_fct_us": 2306.5399999999963,
+        "p99_fct_us": 10235.080079999985,
+        "mean_fct_us": 525.6671915054987
+      }
+    },
+    {
+      "case": "WebSearch-L70",
+      "original": {
+        "n": 3682,
+        "p95_fct_us": 3966.765949999998,
+        "p99_fct_us": 20494.835649999997,
+        "mean_fct_us": 897.9383549701249
+      },
+      "restored": {
+        "n": 3682,
+        "p95_fct_us": 3966.765949999998,
+        "p99_fct_us": 20494.835649999997,
+        "mean_fct_us": 897.9378025529604
+      }
+    },
+    {
+      "case": "WebSearch-L80",
+      "original": {
+        "n": 4197,
+        "p95_fct_us": 5492.019199999986,
+        "p99_fct_us": 25821.05483999998,
+        "mean_fct_us": 1152.308503693114
+      },
+      "restored": {
+        "n": 4197,
+        "p95_fct_us": 5432.988999999997,
+        "p99_fct_us": 27160.651159999987,
+        "mean_fct_us": 1158.9164474624731
+      }
+    },
+    {
+      "case": "WebSearch-L80",
+      "repeat": 2,
+      "original": {
+        "n": 4197,
+        "p95_fct_us": 5492.019199999986,
+        "p99_fct_us": 25821.05483999998,
+        "mean_fct_us": 1152.308503693114
+      },
+      "restored": {
+        "n": 4197,
+        "p95_fct_us": 5432.988999999997,
+        "p99_fct_us": 27160.651159999987,
+        "mean_fct_us": 1158.9164474624731
+      }
+    },
+    {
+      "case": "WebSearch-L80",
+      "repeat": 3,
+      "original": {
+        "n": 4197,
+        "p95_fct_us": 5492.019199999986,
+        "p99_fct_us": 25821.05483999998,
+        "mean_fct_us": 1152.308503693114
+      },
+      "restored": {
+        "n": 4197,
+        "p95_fct_us": 5432.988999999997,
+        "p99_fct_us": 27160.651159999987,
+        "mean_fct_us": 1158.9164474624731
+      }
+    }
+  ],
+  "baseline_calibration_note": "Identical source, 63 runtime hashes and inputs reproduce most original tails; WebSearch high-load Homa has process-to-process differences. The original StallCheck traverses a pointer-keyed unordered_map, a suspected source of recovery-order variability. Do not alter the baseline or substitute reruns. Primary Homa is the first prespecified Homa run; two extra runs per final input are all retained for a conservative fastest-of-three sensitivity check.",
+  "cdf_source": {
+    "WebSearch": "https://github.com/alibaba-edu/High-Precision-Congestion-Control/blob/master/traffic_gen/WebSearch_distribution.txt",
+    "AliStorage2019": "https://github.com/alibaba-edu/High-Precision-Congestion-Control/blob/master/traffic_gen/AliStorage2019.txt"
+  },
+  "analysis_sha256": "400c0262d0140eaac6fac70b66015ac16075e4d22bba768eab7f22ee1e70f106",
+  "native_correctness_tests": [
+    "guard_predicted_int",
+    "guard_ack_aligned_int",
+    "guard_compact_short",
+    "guard_dynamic_priority"
+  ]
+}
