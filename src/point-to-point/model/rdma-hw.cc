@@ -263,6 +263,8 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Select the shortest remaining ready GUARD flow at each sender NIC",
                           BooleanValue(true), MakeBooleanAccessor(&RdmaHw::m_guardSenderSrpt),
                           MakeBooleanChecker())
+            .AddAttribute("GuardIntPredictAck", "Use the cumulative ACK grid to avoid redundant telemetry during ACK return latency",
+                          BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardIntPredictAck), MakeBooleanChecker())
             .AddAttribute("GuardIntStride", "Maximum scheduled-DATA spacing between INT samples; ACK boundaries always retain INT",
                           UintegerValue(1), MakeUintegerAccessor(&RdmaHw::m_guardIntStride), MakeUintegerChecker<uint32_t>(1,64))
             .AddAttribute("GuardCompactShort", "Omit unused INT only for bounded one-RTT bypass messages",
@@ -1474,10 +1476,17 @@ void RdmaHw::DeleteRxQp(uint32_t dip, uint16_t dport, uint16_t sport, uint16_t p
 }
 
 bool RdmaHw::ShouldGuardCarryInt(uint64_t seq,uint64_t payload,uint64_t size,
-    uint64_t acknowledged,uint32_t mtu,uint32_t ack_batch,uint32_t stride,bool drain) {
+    uint64_t acknowledged,uint32_t mtu,uint32_t ack_batch,uint32_t stride,bool drain,bool predict) {
     if(stride<=1 || !mtu || !seq || !acknowledged || seq+payload>=size || drain || seq%mtu) return true;
     if((seq/mtu)%stride==0) return true;
-    return seq+payload>=acknowledged+(uint64_t)std::max<uint32_t>(1,ack_batch)*mtu;
+    uint64_t batch_bytes=(uint64_t)std::max<uint32_t>(1,ack_batch)*mtu;
+    if(predict) {
+        // All ordinary ACK anchors differ by complete batches. A promotion
+        // drain waits for its ACK before subsequent data changes this grid.
+        // Retransmissions preceding an observed anchor retain full telemetry.
+        return seq<acknowledged || (seq+payload-acknowledged)%batch_bytes==0;
+    }
+    return seq+payload>=acknowledged+batch_bytes;
 }
 
 int RdmaHw::ReceiveUdp(Ptr<Packet> p, CustomHeader &ch) {
@@ -2375,6 +2384,8 @@ int RdmaHw::ReceiveAck(Ptr<Packet> p, CustomHeader &ch) {
         }
     }
 
+    if(m_cc_mode==CC_MODE_GUARD && m_guardIntPredictAck && ch.l3Prot==0xFC)
+        qp->m_guard_int_ack_anchor=std::max<uint64_t>(qp->m_guard_int_ack_anchor,ch.ack.seq);
     if (m_cc_mode == 11 && qp->m_guard_tail_bypass && !m_guardTailCongestionGate) {
         m_guardTailBypassFeedbacks++;
     } else if (m_cc_mode == 3 || m_cc_mode == 11) {
@@ -2691,7 +2702,8 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
                 ComputeGuardSizePriority(remaining,bdp,m_guardScheduledSizePriority,m_guardPriorityGrowth,m_guardPriorityTailGrowth));
             drain=drain || (remaining && desired<qp->m_guard_schedule_pg);
         }
-        if(!ShouldGuardCarryInt(seq,payload_size,qp->m_size,qp->snd_una,m_mtu,batch,m_guardIntStride,drain)) {
+        uint64_t anchor=m_guardIntPredictAck ? qp->m_guard_int_ack_anchor : qp->snd_una;
+        if(!ShouldGuardCarryInt(seq,payload_size,qp->m_size,anchor,m_mtu,batch,m_guardIntStride,drain,m_guardIntPredictAck)) {
             seqTs.SetGuardNoInt(true);++m_guardCompactScheduledPackets;
         }
     }

@@ -482,10 +482,11 @@ class RdmaHw : public Object {
     bool m_guardOneRttBypass;
     bool m_guardCompactShort;
     uint32_t m_guardIntStride;
+    bool m_guardIntPredictAck;
     uint64_t m_guardCompactScheduledPackets;
     uint64_t m_guardScheduledAcksWithoutInt;
     static bool ShouldGuardCarryInt(uint64_t seq,uint64_t payload,uint64_t size,
-        uint64_t acknowledged,uint32_t mtu,uint32_t ack_batch,uint32_t stride,bool drain);
+        uint64_t acknowledged,uint32_t mtu,uint32_t ack_batch,uint32_t stride,bool drain,bool predict=false);
     uint64_t m_guardCompactShortPackets;
     bool m_guardTailBypass;
     double m_guardTailBypassBdps;

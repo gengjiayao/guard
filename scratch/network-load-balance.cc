@@ -206,6 +206,7 @@ bool guard_grant_refresh_dedup = false;
 bool guard_priority_int = false;
 bool guard_compact_short = false;
 uint32_t guard_int_stride = 1;
+bool guard_int_predict_ack = false;
 bool guard_dynamic_priority = false;
 double guard_dynamic_priority_min_bdps = 0;
 uint32_t guard_dynamic_priority_floor = 1;
@@ -1562,6 +1563,8 @@ int main(int argc, char *argv[]) {
                 conf >> guard_dynamic_priority_floor;
             } else if (key.compare("GUARD_DYNAMIC_PRIORITY") == 0) {
                 conf >> guard_dynamic_priority;
+            } else if (key.compare("GUARD_INT_PREDICT_ACK") == 0) {
+                conf >> guard_int_predict_ack;
             } else if (key.compare("GUARD_INT_STRIDE") == 0) {
                 conf >> guard_int_stride;
             } else if (key.compare("GUARD_COMPACT_SHORT") == 0) {
@@ -2970,6 +2973,7 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardOneRttBypass", BooleanValue(guard_one_rtt_bypass));
             rdmaHw->SetAttribute("GuardCompactShort", BooleanValue(guard_compact_short));
             rdmaHw->SetAttribute("GuardIntStride", UintegerValue(guard_int_stride));
+            rdmaHw->SetAttribute("GuardIntPredictAck", BooleanValue(guard_int_predict_ack));
             rdmaHw->SetAttribute("GuardTailBypass", BooleanValue(guard_tail_bypass));
             rdmaHw->SetAttribute("GuardTailBypassBdps", DoubleValue(guard_tail_bypass_bdps));
             rdmaHw->SetAttribute("GuardTailCongestionGate",

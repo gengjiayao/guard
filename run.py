@@ -129,6 +129,7 @@ GUARD_SENDER_SRPT {guard_sender_srpt}
 GUARD_ONE_RTT_BYPASS {guard_one_rtt_bypass}
 GUARD_COMPACT_SHORT {guard_compact_short}
 GUARD_INT_STRIDE {guard_int_stride}
+GUARD_INT_PREDICT_ACK {guard_int_predict_ack}
 GUARD_TAIL_BYPASS {guard_tail_bypass}
 GUARD_TAIL_BYPASS_BDPS {guard_tail_bypass_bdps}
 GUARD_TAIL_CONGESTION_GATE {guard_tail_congestion_gate}
@@ -535,6 +536,7 @@ def main():
     parser.add_argument('--guard_sender_srpt_max_bdps', type=float, default=0)
     parser.add_argument('--guard_sender_srpt', type=int, choices=(0, 1), default=1,
                         help="select shortest remaining ready GUARD flow at sender (default: 1)")
+    parser.add_argument('--guard_int_predict_ack', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_int_stride', type=int, default=1)
     parser.add_argument('--guard_compact_short', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_one_rtt_bypass', type=int, choices=(0, 1), default=1,
@@ -811,6 +813,8 @@ def main():
         raise Exception("CONFIG ERROR: dynamic priority size threshold must be [0,1024] BDPs.")
     if args.guard_dynamic_priority and (args.cc != "guard" or not args.guard_size_priority or args.guard_initial_window_priority):
         raise Exception("CONFIG ERROR: dynamic priority requires GUARD size classes and no initial-window promotion.")
+    if args.guard_int_predict_ack and (args.guard_int_stride<=1 or args.guard_duplex_adaptive):
+        raise Exception("CONFIG ERROR: predicted INT ACK grid requires sampling and a fixed ACK batch (duplex adaptive disabled).")
     if not 1 <= args.guard_int_stride <= 64:
         raise Exception("CONFIG ERROR: GUARD INT stride must be [1,64].")
     if args.guard_int_stride>1 and (args.cc!="guard" or args.irn):
@@ -1557,6 +1561,7 @@ def main():
                                         guard_one_rtt_bypass=args.guard_one_rtt_bypass,
                                         guard_compact_short=args.guard_compact_short,
                                         guard_int_stride=args.guard_int_stride,
+                                        guard_int_predict_ack=args.guard_int_predict_ack,
                                         guard_tail_bypass=args.guard_tail_bypass,
                                         guard_tail_bypass_bdps=args.guard_tail_bypass_bdps,
                                         guard_tail_congestion_gate=args.guard_tail_congestion_gate,

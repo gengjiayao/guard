@@ -82,6 +82,7 @@ class RdmaQueuePair : public Object {
     bool m_guard_dynamic_priority;
     uint16_t m_guard_schedule_pg, m_guard_pending_pg;
     uint64_t m_guard_priority_barrier;
+    uint64_t m_guard_int_ack_anchor; // cumulative ACK only; recovery NACKs do not shift batching
     uint32_t m_guard_last_grant_generation;
     uint64_t m_guard_last_generation_rate_bps;
     bool m_guard_last_generation_ack_required;

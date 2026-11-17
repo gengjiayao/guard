@@ -51,6 +51,7 @@ RdmaQueuePair::RdmaQueuePair(uint16_t pg, Ipv4Address _sip, Ipv4Address _dip, ui
     m_guard_dynamic_priority = false;
     m_guard_schedule_pg = m_guard_pending_pg = 0;
     m_guard_priority_barrier = 0;
+    m_guard_int_ack_anchor = 0;
     m_guard_last_grant_generation = 0;
     m_guard_last_generation_rate_bps = 0;
     m_guard_last_generation_ack_required = false;
