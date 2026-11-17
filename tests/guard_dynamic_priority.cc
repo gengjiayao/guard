@@ -45,6 +45,15 @@ int main() {
   last=next.GetGuardScheduleClass();
  }
  assert(hw->m_guardPriorityPromotions>=3 && q->m_pg==5);
+ // A protected top class must not add a new drain RTT to a one-BDP tail.
+ hw->m_guardDynamicPriorityFloor=2;auto tail=make(true);tail->m_size=2500;tail->m_guard_schedule_pg=2;
+ uint64_t barriers=hw->m_guardPriorityBarriers;
+ while(tail->GetBytesLeft()) {
+  tail->snd_una=tail->snd_nxt;auto h=header(hw->GetNxtPacket(tail));
+  assert(h.GetGuardScheduleClass()==2 && h.udp.pg==5);
+  assert(!tail->m_guard_pending_pg && !(h.m_tos & CustomHeader::GUARD_SCHEDULE_DRAIN_ACK));
+ }
+ assert(hw->m_guardPriorityBarriers==barriers);
  // Disabled flows retain their original header/queue behavior.
  auto off=make(false);auto old=header(hw->GetNxtPacket(off));
  assert(!old.HasGuardScheduleClass() && !(old.m_tos & CustomHeader::GUARD_SCHEDULE_DRAIN_ACK));

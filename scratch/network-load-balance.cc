@@ -206,6 +206,8 @@ bool guard_grant_refresh_dedup = false;
 bool guard_priority_int = false;
 bool guard_compact_short = false;
 bool guard_dynamic_priority = false;
+double guard_dynamic_priority_min_bdps = 0;
+uint32_t guard_dynamic_priority_floor = 1;
 bool guard_initial_window_priority = false;
 uint64_t guard_transport_window_floor_rtt_ns = 0;
 bool guard_transport_window_floor_after_first_grant = false;
@@ -1551,6 +1553,10 @@ int main(int argc, char *argv[]) {
             } else if (key.compare("GUARD_KEEP_LAST_HOP_INT") == 0) {
                 conf >> guard_keep_last_hop_int;
                 std::cerr << "GUARD_KEEP_LAST_HOP_INT\t" << guard_keep_last_hop_int << '\n';
+            } else if (key.compare("GUARD_DYNAMIC_PRIORITY_MIN_BDPS") == 0) {
+                conf >> guard_dynamic_priority_min_bdps;
+            } else if (key.compare("GUARD_DYNAMIC_PRIORITY_FLOOR") == 0) {
+                conf >> guard_dynamic_priority_floor;
             } else if (key.compare("GUARD_DYNAMIC_PRIORITY") == 0) {
                 conf >> guard_dynamic_priority;
             } else if (key.compare("GUARD_COMPACT_SHORT") == 0) {
@@ -2927,6 +2933,8 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardKeepLastHopInt", BooleanValue(guard_keep_last_hop_int));
             rdmaHw->SetAttribute("GuardSizePriority", BooleanValue(guard_size_priority));
             rdmaHw->SetAttribute("GuardDynamicPriority", BooleanValue(guard_dynamic_priority));
+            rdmaHw->SetAttribute("GuardDynamicPriorityMinBdps", DoubleValue(guard_dynamic_priority_min_bdps));
+            rdmaHw->SetAttribute("GuardDynamicPriorityFloor", UintegerValue(guard_dynamic_priority_floor));
             rdmaHw->SetAttribute("GuardScheduledSizePriority", BooleanValue(guard_scheduled_size_priority));
             rdmaHw->SetAttribute("GuardPriorityGrowth", DoubleValue(guard_priority_growth));
             rdmaHw->SetAttribute("GuardPriorityTailGrowth", DoubleValue(guard_priority_tail_growth));

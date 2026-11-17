@@ -109,6 +109,8 @@ GUARD_PROACTIVE_RELEASE {guard_proactive_release}
 GUARD_KEEP_LAST_HOP_INT {guard_keep_last_hop_int}
 GUARD_SIZE_PRIORITY {guard_size_priority}
 GUARD_DYNAMIC_PRIORITY {guard_dynamic_priority}
+GUARD_DYNAMIC_PRIORITY_MIN_BDPS {guard_dynamic_priority_min_bdps}
+GUARD_DYNAMIC_PRIORITY_FLOOR {guard_dynamic_priority_floor}
 GUARD_SCHEDULED_SIZE_PRIORITY {guard_scheduled_size_priority}
 GUARD_PRIORITY_INT {guard_priority_int}
 GUARD_PRIORITY_GROWTH {guard_priority_growth}
@@ -501,6 +503,8 @@ def main():
                         help="release registered flows before completion (default: 1)")
     parser.add_argument('--guard_keep_last_hop_int', type=int, choices=(0, 1), default=0,
                         help="retain last-hop INT in GUARD for ablation (default: 0)")
+    parser.add_argument('--guard_dynamic_priority_min_bdps', type=float, default=0)
+    parser.add_argument('--guard_dynamic_priority_floor', type=int, choices=range(1,8), default=1)
     parser.add_argument('--guard_dynamic_priority', type=int, choices=(0, 1), default=0)
     parser.add_argument('--guard_priority_int', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_priority_tail_growth', type=float, default=0)
@@ -795,6 +799,8 @@ def main():
         raise Exception("CONFIG ERROR: duplex cohort drain requires duplex adaptation.")
     if args.guard_duplex_size_ratio != 0.0 and (args.guard_duplex_size_ratio <= 1.0 or not args.guard_duplex_adaptive):
         raise Exception("CONFIG ERROR: duplex size ratio must be zero or >1 with duplex adaptation enabled.")
+    if not 0 <= args.guard_dynamic_priority_min_bdps <= 1024:
+        raise Exception("CONFIG ERROR: dynamic priority size threshold must be [0,1024] BDPs.")
     if args.guard_dynamic_priority and (args.cc != "guard" or not args.guard_size_priority or args.guard_initial_window_priority):
         raise Exception("CONFIG ERROR: dynamic priority requires GUARD size classes and no initial-window promotion.")
     if args.guard_compact_short and (args.cc != "guard" or not args.guard_one_rtt_bypass):
@@ -1515,6 +1521,8 @@ def main():
                                         guard_keep_last_hop_int=args.guard_keep_last_hop_int,
                                         guard_size_priority=args.guard_size_priority,
                                         guard_dynamic_priority=args.guard_dynamic_priority,
+                                        guard_dynamic_priority_min_bdps=args.guard_dynamic_priority_min_bdps,
+                                        guard_dynamic_priority_floor=args.guard_dynamic_priority_floor,
                                         guard_scheduled_size_priority=args.guard_scheduled_size_priority,
                                         guard_priority_int=args.guard_priority_int,
                                         guard_priority_growth=args.guard_priority_growth,

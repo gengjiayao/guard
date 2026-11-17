@@ -184,6 +184,10 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Retain last-hop INT in GUARD ACKs for the double-control ablation",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardKeepLastHopInt),
                           MakeBooleanChecker())
+            .AddAttribute("GuardDynamicPriorityMinBdps", "Only larger original messages amortize the priority-drain RTT",
+                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardDynamicPriorityMinBdps), MakeDoubleChecker<double>(0.0,1024.0))
+            .AddAttribute("GuardDynamicPriorityFloor", "Highest service priority reachable through drain-barrier promotion",
+                          UintegerValue(1), MakeUintegerAccessor(&RdmaHw::m_guardDynamicPriorityFloor), MakeUintegerChecker<uint16_t>(1,7))
             .AddAttribute("GuardDynamicPriority",
                           "Promote remaining work only after an acknowledged packet-order barrier",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardDynamicPriority),
@@ -1261,7 +1265,9 @@ void RdmaHw::AddQueuePair(uint64_t size, uint16_t pg, Ipv4Address sip, Ipv4Addre
     if (m_cc_mode == CC_MODE_GUARD && m_guardDynamicPriority) {
         NS_ABORT_MSG_IF(!m_guardSizePriority || m_guardInitialWindowPriority,
                         "Dynamic priority requires size classes and excludes initial-window promotion");
-        qp->m_guard_dynamic_priority = true;
+        uint64_t bdp=baseRtt*m_nic[nic_idx].dev->GetDataRate().GetBitRate()/8000000000ULL;
+        qp->m_guard_dynamic_priority = m_guardDynamicPriorityMinBdps<=0 ||
+            size > m_guardDynamicPriorityMinBdps*std::max<uint64_t>(1,bdp);
         qp->m_guard_schedule_pg = qp->m_pg;
     }
     if (m_cc_mode == CC_MODE_GUARD && m_guardInitialWindowPriority) {
@@ -2669,6 +2675,9 @@ Ptr<Packet> RdmaHw::GetNxtPacket(Ptr<RdmaQueuePair> qp) {
         uint64_t next = (uint64_t)seq + payload_size;
         uint64_t remaining = qp->m_size > next ? qp->m_size-next : 0;
         uint16_t desired = ComputeGuardSizePriority(remaining,bdp,m_guardScheduledSizePriority,m_guardPriorityGrowth,m_guardPriorityTailGrowth);
+        // Do not add another feedback RTT for a promotion into a protected
+        // one-BDP class when the configured lowest promotion is sufficient.
+        desired=std::max<uint16_t>(desired,m_guardDynamicPriorityFloor);
         if (!qp->m_guard_pending_pg && remaining && desired < qp->m_guard_schedule_pg) {
             qp->m_guard_pending_pg = desired;
             qp->m_guard_priority_barrier = next;

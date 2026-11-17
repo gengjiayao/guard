@@ -469,6 +469,8 @@ class RdmaHw : public Object {
         uint64_t elapsed_ns, uint64_t rtt_ns, const char *reason, uint32_t generation, bool ack_required);
     bool m_guardScheduledSizePriority;
     bool m_guardDynamicPriority;
+    double m_guardDynamicPriorityMinBdps;
+    uint16_t m_guardDynamicPriorityFloor;
     uint64_t m_guardPriorityBarriers, m_guardPriorityPromotions, m_guardPriorityDrainAcks;
     static uint16_t ComputeGuardSizePriority(uint64_t bytes, uint64_t bdp, bool scheduled, double growth=2.0, double tail_growth=0.0);
     bool m_guardInitialWindowPriority;
