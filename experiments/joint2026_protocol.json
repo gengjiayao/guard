@@ -1,0 +1,48 @@
+{
+  "date": "2026-11-17",
+  "objective": "One common GUARD congestion-control configuration: mean paired reduction >10% versus the original fixed Homa runtime for BOTH overall P95 and overall P99, separately in each of six workload/load cases.",
+  "cases": {
+    "cdfs": [
+      "AliStorage2019",
+      "WebSearch"
+    ],
+    "host_loads_pct": [
+      50,
+      70,
+      80
+    ]
+  },
+  "development_seeds": [
+    6101,
+    6102,
+    6103,
+    7101,
+    7102,
+    7103,
+    7104,
+    7105,
+    7106,
+    7107,
+    7108,
+    7109,
+    7110
+  ],
+  "reserved_final_seeds": [
+    91001,
+    91002,
+    91003,
+    91004,
+    91005,
+    91006,
+    91007,
+    91008,
+    91009,
+    91010
+  ],
+  "final_rule": "Freeze source, executable, libraries, configuration and analysis before generating final inputs; retain all attempts, failures, negative results, and all input flows. If final results guide another change they become development data; reserve new independent inputs.",
+  "percentiles": "Linear interpolation on all completed flow FCTs whose start time is after fixed 25% warmup. Compute P95 and P99 separately for each repetition, then mean paired percentage reductions against identical-input Homa. No size bins for acceptance.",
+  "baseline_commit": "6c438d7c7223d698bc2bea3333e8eac271fe002c",
+  "baseline_runtime": "/home/gengjiayao/ict/guard/experiments/results/generalize_frozen_runtime/original-6c438d7-runtime.tar.gz",
+  "prior_round_profile_commit": "628cc808c9e4a91791462524ce8e2d9bbc56d1ca",
+  "interpretation": "The target is an empirical acceptance criterion, not an assumed conclusion."
+}

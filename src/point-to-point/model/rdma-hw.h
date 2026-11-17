@@ -513,6 +513,8 @@ class RdmaHw : public Object {
     double m_guardRemainingExponent;
     bool m_guardFairMixOriginalSize;
     bool m_guardSenderFairShare;
+    double m_guardSenderFairExponent;
+    double m_guardSenderFairRatio;
     double m_guardFairMixThresholdBdps;
     mutable uint64_t m_guardFairMixDecisions;
     static double ComputeGuardFairMixFraction(std::vector<double> remaining_bdps, double threshold);

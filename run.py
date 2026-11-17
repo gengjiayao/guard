@@ -147,6 +147,8 @@ GUARD_SERVICE_AGE_FACTOR {guard_service_age_factor}
 GUARD_LONG_FLOW_THRESHOLD_BDPS {guard_long_flow_threshold_bdps}
 GUARD_GRANT_BOUNDED_RELEASE {guard_grant_bounded_release}
 GUARD_FAIR_MIX_THRESHOLD_BDPS {guard_fair_mix_threshold_bdps}
+GUARD_SENDER_FAIR_EXPONENT {guard_sender_fair_exponent}
+GUARD_SENDER_FAIR_RATIO {guard_sender_fair_ratio}
 GUARD_SENDER_FAIR_SHARE {guard_sender_fair_share}
 GUARD_FAIR_MIX_ORIGINAL_SIZE {guard_fair_mix_original_size}
 GUARD_RECEIVER_CONCURRENCY {guard_receiver_concurrency}
@@ -552,6 +554,8 @@ def main():
     parser.add_argument('--guard_min_share_fraction', type=float, default=0.0,
                         help="guaranteed fraction of equal receiver share in [0,1] (default: 0)")
     parser.add_argument('--guard_fair_mix_original_size', type=int, choices=(0,1), default=0)
+    parser.add_argument('--guard_sender_fair_exponent', type=float, default=0)
+    parser.add_argument('--guard_sender_fair_ratio', type=float, default=4)
     parser.add_argument('--guard_sender_fair_share', type=int, choices=(0,1), default=0)
     parser.add_argument('--guard_fair_mix_threshold_bdps', type=float, default=0.0)
     parser.add_argument('--guard_grant_bounded_release', type=int, choices=(0,1), default=0)
@@ -753,6 +757,8 @@ def main():
         raise Exception("CONFIG ERROR: guard_sender_srpt_max_bdps must be in [0,1024].")
     if args.guard_sender_srpt_max_bdps and (args.cc != "guard" or not args.guard_sender_srpt):
         raise Exception("CONFIG ERROR: bounded SRPT requires the GUARD sender scheduler.")
+    if not 0 <= args.guard_sender_fair_exponent <= 2 or not 1 <= args.guard_sender_fair_ratio <= 64:
+        raise Exception("CONFIG ERROR: sender preference exponent must be [0,2] and ratio [1,64].")
     if args.guard_lambda < 1.0:
         raise Exception("CONFIG ERROR: --guard_lambda must be at least 1.0.")
     if args.guard_work_conserving and args.guard_cap_aware_reclaim:
@@ -1525,6 +1531,8 @@ def main():
                                         guard_long_flow_threshold_bdps=args.guard_long_flow_threshold_bdps,
                                         guard_grant_bounded_release=args.guard_grant_bounded_release,
                                         guard_fair_mix_threshold_bdps=args.guard_fair_mix_threshold_bdps,
+                                        guard_sender_fair_exponent=args.guard_sender_fair_exponent,
+                                        guard_sender_fair_ratio=args.guard_sender_fair_ratio,
                                         guard_sender_fair_share=args.guard_sender_fair_share,
                                         guard_fair_mix_original_size=args.guard_fair_mix_original_size,
                                         guard_receiver_concurrency=args.guard_receiver_concurrency,

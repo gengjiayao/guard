@@ -231,6 +231,8 @@ double guard_long_flow_threshold_bdps = 0.0;
 bool guard_grant_bounded_release = false;
 double guard_fair_mix_threshold_bdps = 0.0;
 bool guard_sender_fair_share = false;
+double guard_sender_fair_exponent = 0;
+double guard_sender_fair_ratio = 4;
 bool guard_fair_mix_original_size = false;
 bool guard_duplex_cohort_drain = false;
 bool guard_duplex_burst_protection = false;
@@ -1649,6 +1651,10 @@ int main(int argc, char *argv[]) {
                 conf >> guard_fair_mix_threshold_bdps;
             } else if (key.compare("GUARD_FAIR_MIX_ORIGINAL_SIZE") == 0) {
                 conf >> guard_fair_mix_original_size;
+            } else if (key.compare("GUARD_SENDER_FAIR_EXPONENT") == 0) {
+                conf >> guard_sender_fair_exponent;
+            } else if (key.compare("GUARD_SENDER_FAIR_RATIO") == 0) {
+                conf >> guard_sender_fair_ratio;
             } else if (key.compare("GUARD_SENDER_FAIR_SHARE") == 0) {
                 conf >> guard_sender_fair_share;
             } else if (key.compare("GUARD_GRANT_BOUNDED_RELEASE") == 0) {
@@ -2956,6 +2962,8 @@ int main(int argc, char *argv[]) {
             rdmaHw->SetAttribute("GuardLongFlowThresholdBdps", DoubleValue(guard_long_flow_threshold_bdps));
             rdmaHw->SetAttribute("GuardGrantBoundedRelease", BooleanValue(guard_grant_bounded_release));
             rdmaHw->SetAttribute("GuardFairMixThresholdBdps", DoubleValue(guard_fair_mix_threshold_bdps));
+            rdmaHw->SetAttribute("GuardSenderFairExponent", DoubleValue(guard_sender_fair_exponent));
+            rdmaHw->SetAttribute("GuardSenderFairRatio", DoubleValue(guard_sender_fair_ratio));
             rdmaHw->SetAttribute("GuardSenderFairShare", BooleanValue(guard_sender_fair_share));
             rdmaHw->SetAttribute("GuardFairMixOriginalSize", BooleanValue(guard_fair_mix_original_size));
             rdmaHw->SetAttribute("GuardReceiverConcurrency",

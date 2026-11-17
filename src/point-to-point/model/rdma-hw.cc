@@ -352,6 +352,14 @@ TypeId RdmaHw::GetTypeId(void) {
                           "Use immutable registered message size to stabilize the fair-share service class",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardFairMixOriginalSize),
                           MakeBooleanChecker())
+            .AddAttribute("GuardSenderFairExponent",
+                          "Bounded remaining-work weights within sender-level receiver budgets",
+                          DoubleValue(0.0), MakeDoubleAccessor(&RdmaHw::m_guardSenderFairExponent),
+                          MakeDoubleChecker<double>(0.0,2.0))
+            .AddAttribute("GuardSenderFairRatio",
+                          "Maximum remaining-work preference ratio between active senders",
+                          DoubleValue(4.0), MakeDoubleAccessor(&RdmaHw::m_guardSenderFairRatio),
+                          MakeDoubleChecker<double>(1.0,64.0))
             .AddAttribute("GuardSenderFairShare",
                           "Share receiver grants across senders, serving bounded work first within each sender",
                           BooleanValue(false), MakeBooleanAccessor(&RdmaHw::m_guardSenderFairShare),
@@ -6959,7 +6967,23 @@ std::unordered_map<RdmaRxQueuePair*, uint64_t> RdmaHw::ComputeGuardSenderFairTar
     uint64_t floor=std::min<uint64_t>(equal,std::max<uint64_t>(m_minRate.GetBitRate(),m_guardMinShareFraction*equal));
     uint64_t residual=line_rate_bps-floor*m_rate_flow_ctl_set.size();
     for(auto *f:m_rate_flow_ctl_set)targets[f]=floor;
-    for(auto &entry:leaders)targets[entry.second]+=residual/leaders.size();
+    if(m_guardSenderFairExponent==0) {
+        for(auto &entry:leaders)targets[entry.second]+=residual/leaders.size();
+        return targets;
+    }
+    // Retain a budget for every distinct sender, while varying
+    // remaining-work service preference with a bounded configurable ratio. This avoids
+    // returning to K-only admission and its long-message starvation.
+    uint64_t least=std::numeric_limits<uint64_t>::max();
+    for(auto &entry:leaders)least=std::min(least,std::max<uint64_t>(m_mtu,remaining(entry.second)));
+    long double total=0;
+    std::map<uint32_t,long double> weights;
+    for(auto &entry:leaders) {
+        long double ratio=(long double)least/std::max<uint64_t>(m_mtu,remaining(entry.second));
+        long double weight=std::max(1.0L/m_guardSenderFairRatio,std::pow(ratio,(long double)m_guardSenderFairExponent));
+        weights[entry.first]=weight;total+=weight;
+    }
+    for(auto &entry:leaders)targets[entry.second]+=(uint64_t)(residual*weights[entry.first]/total);
     return targets;
 }
 
